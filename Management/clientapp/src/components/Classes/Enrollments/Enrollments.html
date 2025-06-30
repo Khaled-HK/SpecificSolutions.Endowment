@@ -1,0 +1,888 @@
+﻿<div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y" v-if="state==0">
+        <!-- Invoice List Widget -->
+
+        <div class="mb-6" v-if="Statistics!=0">
+            <div class="card-widget-separator-wrapper">
+                <div class="card-body card-widget-separator">
+                    <div class="row gy-4 gy-sm-1">
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center card-widget-1 border-end pb-4 pb-sm-0">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.count}}</h4>
+                                    <p class="mb-0">{{ScreenTitleSingle}}</p>
+                                </div>
+                                <div class="avatar me-sm-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-chart-pie ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <hr class="d-none d-sm-block d-lg-none me-6" />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center card-widget-2 border-end pb-4 pb-sm-0">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.active}}</h4>
+                                    <p class="mb-0">Active</p>
+                                </div>
+                                <div class="avatar me-lg-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-radioactive ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <hr class="d-none d-sm-block d-lg-none" />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center border-end pb-4 pb-sm-0 card-widget-3">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.notActive}}</h4>
+                                    <p class="mb-0">NotActive</p>
+                                </div>
+                                <div class="avatar me-sm-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-radioactive-off ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.deleted}}</h4>
+                                    <p class="mb-0">{{ScreenTitleSingle}} تم حذفها </p>
+                                </div>
+                                <div class="avatar">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-trash ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoice List Table -->
+        <div class="card-datatable table-responsive">
+            <div id="DataTables_Table_0_wrapper"
+                 class="dataTables_wrapper dt-bootstrap5 no-footer">
+
+
+                <div class="card-header border-bottom">
+                    <h5 class="card-title mb-0">{{ScreenTitle}}</h5>
+                    <div class="d-flex justify-content-between align-items-center row pt-4 gap-4 gap-md-0">
+                        <div class="col-md-4 user_role"></div>
+                        <div class="col-md-4 user_plan"></div>
+                        <div class="col-md-4 user_status"></div>
+                    </div>
+                </div>
+
+                <div class="card-header py-0 d-flex flex-column flex-md-row align-items-center">
+                    <div>
+                        <div id="DataTables_Table_0_filter"
+                             class="dataTables_filter ms-n3 mb-0 mb-md-6">
+                            <label>
+                                <input type="search" class="form-control"
+                                       @input="GetInfo()"
+                                       v-model="Search"
+                                       placeholder="فلترة البيانات "
+                                       aria-controls="DataTables_Table_0">
+                                <el-date-picker v-model="ByDate"
+                                                style="text-align: right;"
+                                                type="date"
+                                                @change="GetInfo()"
+                                                placeholder="التاريخ ">
+                                </el-date-picker>
+                            </label>
+
+                            <!--<div class="dropdown">
+                                <a href="javascript:;"
+                                   class="btn dropdown-toggle hide-arrow btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill p-0"
+                                   data-bs-toggle="dropdown">
+                                    <i class="ti ti-dots-vertical ti-md"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    <a href="#" class="dropdown-item">حالة العرض</a>
+                                    <a href="#" class="dropdown-item">تاريخ الاضافة </a>
+                                    <a href="#" class="dropdown-item">مجاني</a>
+                                </div>
+                            </div>
+                            <div class="invoice_status mb-6 mb-md-0">
+                                <select id="UserRole" class="form-select">
+                                    <option value=""> Invoice Status </option>
+                                    <option value="Downloaded" class="text-capitalize">Downloaded</option>
+                                    <option value="Draft" class="text-capitalize">Draft</option>
+                                    <option value="Paid" class="text-capitalize">Paid</option>
+                                    <option value="Partial Payment" class="text-capitalize">Partial Payment</option>
+                                    <option value="Past Due" class="text-capitalize">Past Due</option>
+                                    <option value="Sent" class="text-capitalize">Sent</option>
+                                </select>
+                            </div>-->
+                        </div>
+
+                    </div>
+                    <div class="d-flex align-items-center justify-content-md-end gap-2 justify-content-center">
+
+                        <div class="dt-action-buttons pt-0">
+                            <div class="dt-buttons btn-group flex-wrap">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-primary"
+                                            @click.prevent="state=1">
+                                        <i class="ti ti-plus ti-xs me-md-2"></i>
+                                        <span class="d-md-inline-block d-none">تسجيل طالب </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dt-action-buttons pt-0">
+                            <div class="dt-buttons btn-group flex-wrap">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-primary"
+                                            @click.prevent="state=3">
+                                        <i class="ti ti-plus ti-xs me-md-2"></i>
+                                        <span class="d-md-inline-block d-none">تسجيل  يوم </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dataTables_length ms-n2" id="DataTables_Table_0_length">
+                            <label>
+                                <select name="DataTables_Table_0_length"
+                                        aria-controls="DataTables_Table_0"
+                                        @change="GetInfo()"
+                                        v-model="pageSize"
+                                        class="form-select">
+                                    <option value="10">10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                    <option value="400">400</option>
+                                    <option value="1000">1000</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+
+                <table class="invoice-list-table table border-top dataTable no-footer dtr-column"
+                       id="DataTables_Table_0"
+                       aria-describedby="DataTables_Table_0_info"
+                       style="width: 1232px;">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>إسم الطالب</th>
+                            <th>الحالة  </th>
+                            <th>التاريخ </th>
+                            <th>وصف توضيحي</th>
+                            <th class="cell-fit">الإعدادات</th>
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        <tr class="odd" v-if="Info==0">
+                            <td valign="top" colspan="8" class="dataTables_empty">لا توجد بيانات في الوقت الحالي ......</td>
+                        </tr>
+
+                        <tr class="odd" v-for="item,index in Info" v-if="Info!=0">
+                            <td>{{index+1}}</td>
+                            <td>
+                                <div class="d-flex justify-content-start align-items-center">
+                                    <div class="avatar-wrapper">
+                                        <div class="avatar avatar-sm me-3">
+                                            <img :src="item.image" alt="Avatar" class="rounded-circle" v-if="item.image">
+                                            <img :src="CoverPath" alt="Avatar" class="rounded-circle" v-if="!item.image">
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-column">
+                                        <a href="#" class="text-heading text-truncate">
+                                            <span class="fw-medium">{{item.name}}</span>
+                                        </a>
+                                        <small class="text-truncate">{{item.phone}} </small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td v-if="item.enrollmentState==1"><span class="badge bg-label-success me-1">حضور</span></td>
+                            <td v-if="item.enrollmentState==2"><span class="badge bg-label-danger me-1">غياب </span></td>
+                            <td v-if="item.enrollmentState==3"><span class="badge bg-label-warning me-1">تم التبرير </span></td>
+                            <td>{{ChangeDate(item.enrollmentDate)}}</td>
+                            <td>{{item.descriptions}} </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+
+                                    <el-tooltip placement="top" effect="light">
+                                        <template #content>
+                                            <div>
+                                                منفذ العملية: {{ item.createdBy }}
+                                                <br />
+                                                تاريخ العملية : {{ChangeDate(item.createdOn)}}
+                                            </div>
+                                        </template>
+                                        <a href="javascript:;"
+                                           class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                           type="button">
+                                            <i class="ti ti-info-circle text-body ti-md"></i>
+                                        </a>
+                                    </el-tooltip>
+
+                                    <a href="javascript:;"
+                                       @click.prevent="OpentEditDialog(item)"
+                                       type="button"
+                                       class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill">
+                                        <i class="ti ti-edit text-body ti-md"></i>
+                                    </a>
+
+                                    <!--<a href="#" data-bs-toggle="tooltip"
+                                       @click.prevent="ChangeStatus(item.id)"
+                                       v-if="item.status==1"
+                                       class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                       data-bs-placement="top" aria-label="Preview Invoice"
+                                       data-bs-original-title="Preview Invoice">
+                                        <i class="ti ti-eye-off mx-2 ti-md"></i>
+                                    </a>
+                                    <a href="#" data-bs-toggle="tooltip"
+                                       @click.prevent="ChangeStatus(item.id)"
+                                       v-if="item.status==2"
+                                       class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                       data-bs-placement="top" aria-label="Preview Invoice"
+                                       data-bs-original-title="Preview Invoice">
+                                        <i class="ti ti-eye mx-2 ti-md"></i>
+                                    </a>-->
+                                    <a href="javascript:;" data-bs-toggle="tooltip"
+                                       @click.prevent="Delete(item.id)"
+                                       class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                       data-bs-placement="top" aria-label="Delete"
+                                       data-bs-original-title="Delete"
+                                       aria-describedby="tooltip253746">
+                                        <i class="ti ti-trash mx-2 ti-md"></i>
+                                    </a>
+                                    <!--<div class="dropdown">
+                                        <a href="javascript:;"
+                                           class="btn dropdown-toggle hide-arrow btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill p-0"
+                                           data-bs-toggle="dropdown">
+                                            <i class="ti ti-dots-vertical ti-md"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-end">
+                                            <a href="javascript:;" class="dropdown-item">Download</a>
+                                            <a href="app-invoice-edit.html" class="dropdown-item">Edit</a>
+                                            <a href="javascript:;" class="dropdown-item">Duplicate</a>
+
+                                        </div>
+                                    </div>-->
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="row mx-1">
+                    <div class="col-sm-12 col-md-6">
+                        <div class="dataTables_info" id="DataTables_Table_0_info"
+                             role="status" aria-live="polite">Showing {{pageSize}} of {{pages}} entries</div>
+                    </div>
+                    <div class="col-sm-12 col-md-6">
+                        <PaginationHelper :pageNo="pageNo"
+                                          :pageSize="pageSize"
+                                          :totalItems="pages"
+                                          @page-changed="GetInfo" />
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="container-xxl flex-grow-1 container-p-y" v-if="state==1">
+
+
+        <div class="mb-6" v-if="Statistics!=0">
+            <div class="card-widget-separator-wrapper">
+                <div class="card-body card-widget-separator">
+                    <div class="row gy-4 gy-sm-1">
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center card-widget-1 border-end pb-4 pb-sm-0">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.count}}</h4>
+                                    <p class="mb-0">عدد العمليات</p>
+                                </div>
+                                <div class="avatar me-sm-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-chart-pie ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <hr class="d-none d-sm-block d-lg-none me-6" />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center card-widget-2 border-end pb-4 pb-sm-0">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.active}}</h4>
+                                    <p class="mb-0"> الحضور</p>
+                                </div>
+                                <div class="avatar me-lg-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-radioactive ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <hr class="d-none d-sm-block d-lg-none" />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center border-end pb-4 pb-sm-0 card-widget-3">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.notActive}}</h4>
+                                    <p class="mb-0">الغياب</p>
+                                </div>
+                                <div class="avatar me-sm-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-radioactive-off ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.deleted}}</h4>
+                                    <p class="mb-0">{{ScreenTitleSingle}} تم حذفها </p>
+                                </div>
+                                <div class="avatar">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-trash ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoice List Table -->
+        <div class="card-datatable table-responsive">
+            <div id="DataTables_Table_0_wrapper" style="width: 98%;"
+                 class="dataTables_wrapper dt-bootstrap5 no-footer">
+
+                <div class="card-header border-bottom">
+                    <h5 class="card-title mb-0">تسجيل بيانات {{ScreenTitle}}</h5>
+                    <div class="d-flex justify-content-between align-items-center row pt-4 gap-4 gap-md-0">
+                        <div class="col-md-4 user_role"></div>
+                        <div class="col-md-4 user_plan"></div>
+                        <div class="col-md-4 user_status"></div>
+                    </div>
+                </div>
+
+                <br />
+                <div class="text-muted d-flex justify-content-end">
+                    <button class="btn btn-label-secondary"
+                            @click.prevent="Back()">
+                        العودة
+                    </button>
+                </div>
+
+                <el-form label-position="top"
+                         :model="ruleForm"
+                         :rules="rules"
+                         ref="ruleForm"
+                         label-width="120px"
+                         class="demo-ruleForm"
+                         style="width: 100%;">
+
+                    <div class="row row-gap-4">
+                        <div class="col-md-6 mb-md-0 mb-4">
+                            <div class="d-flex align-items-center mb-4">
+                                <el-form-item prop="StudentId" label="الطالب " style="width:100%">
+                                    <div class="input-group input-group-merge">
+                                        <el-select v-model="ruleForm.StudentId"
+                                                   style="width: 100%;"
+                                                   filterable
+                                                   placeholder="الطالب   "
+                                                   clearable>
+                                            <el-option v-for="item in StudentsByClass"
+                                                       :key="item.id"
+                                                       :label="item.name"
+                                                       :value="item.id">
+                                            </el-option>
+                                        </el-select>
+                                    </div>
+                                </el-form-item>
+                            </div>
+                            <div class="d-flex align-items-center mb-4">
+                                <el-form-item prop="EnrollmentState" label=" الحالة" style="width:100%">
+                                    <div class="input-group input-group-merge">
+                                        <el-select v-model="ruleForm.EnrollmentState"
+                                                   style="width: 100%;"
+                                                   filterable
+                                                   placeholder="الحالة "
+                                                   clearable>
+                                            <el-option v-for="item in [
+                                                            {'id':1,'name':'حضور'},
+                                                            {'id':2,'name':' غياب '},
+                                                            {'id':3,'name':'تم تقديم عذر'}
+                                                            ]"
+                                                       :key="item.id"
+                                                       :label="item.name"
+                                                       :value="item.id">
+                                            </el-option>
+                                        </el-select>
+                                    </div>
+                                </el-form-item>
+                            </div>
+
+
+                            <el-form-item prop="EnrollmentDate" label="التاريخ ">
+                                <div class="input-group input-group-merge">
+                                    <el-date-picker v-model="ruleForm.EnrollmentDate"
+                                                    type="date"
+                                                    placeholder=" التاريخ ">
+                                    </el-date-picker>
+                                </div>
+                            </el-form-item>
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-start">
+                            <el-form-item :label="`وصف  عن  ${ScreenTitleSingleAl}`" style="width:100%">
+                                <div class="input-group input-group-merge">
+                                    <span id="basic-icon-default-message2" class="input-group-text">
+                                        <i class="ti ti-info-circle"></i>
+                                    </span>
+                                    <textarea id="basic-icon-default-message"
+                                              v-model="ruleForm.Descriptions"
+                                              class="form-control"
+                                              :placeholder="`وضف توضيحي عن  ${ScreenTitleSingleAl}`"
+                                              aria-describedby="basic-icon-default-message2"
+                                              rows="4">
+
+                                    </textarea>
+                                </div>
+                            </el-form-item>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="col-12 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary me-3"
+                                @click.prevent="submitForm('ruleForm')">
+                            إضافة بيانات {{ScreenTitleSingleAl}}
+                        </button>
+                    </div>
+                    <br />
+                </el-form>
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container-xxl flex-grow-1 container-p-y" v-if="state==2">
+
+
+        <div class="mb-6" v-if="Statistics!=0">
+            <div class="card-widget-separator-wrapper">
+                <div class="card-body card-widget-separator">
+                    <div class="row gy-4 gy-sm-1">
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center card-widget-1 border-end pb-4 pb-sm-0">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.count}}</h4>
+                                    <p class="mb-0">{{ScreenTitleSingle}}</p>
+                                </div>
+                                <div class="avatar me-sm-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-chart-pie ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <hr class="d-none d-sm-block d-lg-none me-6" />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center card-widget-2 border-end pb-4 pb-sm-0">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.active}}</h4>
+                                    <p class="mb-0">Active</p>
+                                </div>
+                                <div class="avatar me-lg-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-radioactive ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <hr class="d-none d-sm-block d-lg-none" />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center border-end pb-4 pb-sm-0 card-widget-3">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.notActive}}</h4>
+                                    <p class="mb-0">NotActive</p>
+                                </div>
+                                <div class="avatar me-sm-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-radioactive-off ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.deleted}}</h4>
+                                    <p class="mb-0">{{ScreenTitleSingle}} تم حذفها </p>
+                                </div>
+                                <div class="avatar">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-trash ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoice List Table -->
+        <div class="card-datatable table-responsive">
+            <div id="DataTables_Table_0_wrapper" style="width: 98%;"
+                 class="dataTables_wrapper dt-bootstrap5 no-footer">
+
+                <div class="card-header border-bottom">
+                    <h5 class="card-title mb-0">تعديل بيانات  {{ScreenTitleSingle}}</h5>
+                    <div class="d-flex justify-content-between align-items-center row pt-4 gap-4 gap-md-0">
+                        <div class="col-md-4 user_role"></div>
+                        <div class="col-md-4 user_plan"></div>
+                        <div class="col-md-4 user_status"></div>
+                    </div>
+                </div>
+
+                <br />
+                <div class="text-muted d-flex justify-content-end">
+                    <button class="btn btn-label-secondary"
+                            @click.prevent="Back()">
+                        العودة
+                    </button>
+                </div>
+
+                <el-form label-position="top"
+                         :model="ruleForm"
+                         :rules="rules"
+                         ref="ruleForm"
+                         label-width="120px"
+                         class="demo-ruleForm"
+                         style="width: 100%;">
+
+                    <div class="row row-gap-4">
+                        <div class="col-md-6 mb-md-0 mb-4">
+                            <div class="d-flex align-items-center mb-4">
+                                <el-form-item prop="StudentId" label="الطالب " style="width:100%">
+                                    <div class="input-group input-group-merge">
+                                        <el-select v-model="ruleForm.StudentId"
+                                                   style="width: 100%;"
+                                                   filterable
+                                                   placeholder="الطالب   "
+                                                   clearable>
+                                            <el-option v-for="item in StudentsByClass"
+                                                       :key="item.id"
+                                                       :label="item.name"
+                                                       :value="item.id">
+                                            </el-option>
+                                        </el-select>
+                                    </div>
+                                </el-form-item>
+                            </div>
+                            <div class="d-flex align-items-center mb-4">
+                                <el-form-item prop="EnrollmentState" label=" الحالة" style="width:100%">
+                                    <div class="input-group input-group-merge">
+                                        <el-select v-model="ruleForm.EnrollmentState"
+                                                   style="width: 100%;"
+                                                   filterable
+                                                   placeholder="الحالة "
+                                                   clearable>
+                                            <el-option v-for="item in [
+                                  {'id':1,'name':'حضور'},
+                                  {'id':2,'name':' غياب '},
+                                  {'id':3,'name':'تم تقديم عذر'}
+                                  ]"
+                                                       :key="item.id"
+                                                       :label="item.name"
+                                                       :value="item.id">
+                                            </el-option>
+                                        </el-select>
+                                    </div>
+                                </el-form-item>
+                            </div>
+
+
+                            <el-form-item prop="EnrollmentDate" label="التاريخ ">
+                                <div class="input-group input-group-merge">
+                                    <el-date-picker v-model="ruleForm.EnrollmentDate"
+                                                    type="date"
+                                                    placeholder=" التاريخ ">
+                                    </el-date-picker>
+                                </div>
+                            </el-form-item>
+                        </div>
+                        <div class="col-md-6 mb-md-0 mb-4">
+
+                            <div class="d-flex align-items-center mb-4">
+                                <el-form-item :label="`وصف  عن  ${ScreenTitleSingleAl}`" style="width:100%">
+                                    <div class="input-group input-group-merge">
+                                        <span id="basic-icon-default-message2" class="input-group-text">
+                                            <i class="ti ti-info-circle"></i>
+                                        </span>
+                                        <textarea id="basic-icon-default-message"
+                                                  v-model="ruleForm.Descriptions"
+                                                  class="form-control"
+                                                  :placeholder="`وضف توضيحي عن  ${ScreenTitleSingleAl}`"
+                                                  aria-describedby="basic-icon-default-message2"
+                                                  rows="4">
+
+                                        </textarea>
+                                    </div>
+                                </el-form-item>
+                            </div>
+
+                            <br />
+
+
+
+
+
+                        </div>
+
+                    </div>
+                    <br />
+                    <div class="col-12 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary me-3"
+                                @click.prevent="submitEditForm('ruleForm')">
+                            تعديل بيانات {{ScreenTitleSingleAl}}
+                        </button>
+                    </div>
+                    <br />
+                </el-form>
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="container-xxl flex-grow-1 container-p-y" v-if="state==3">
+
+
+        <div class="mb-6" v-if="Statistics!=0">
+            <div class="card-widget-separator-wrapper">
+                <div class="card-body card-widget-separator">
+                    <div class="row gy-4 gy-sm-1">
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center card-widget-1 border-end pb-4 pb-sm-0">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.count}}</h4>
+                                    <p class="mb-0">عدد العمليات</p>
+                                </div>
+                                <div class="avatar me-sm-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-chart-pie ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <hr class="d-none d-sm-block d-lg-none me-6" />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center card-widget-2 border-end pb-4 pb-sm-0">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.active}}</h4>
+                                    <p class="mb-0"> الحضور</p>
+                                </div>
+                                <div class="avatar me-lg-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-radioactive ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <hr class="d-none d-sm-block d-lg-none" />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center border-end pb-4 pb-sm-0 card-widget-3">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.notActive}}</h4>
+                                    <p class="mb-0">الغياب</p>
+                                </div>
+                                <div class="avatar me-sm-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-radioactive-off ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.deleted}}</h4>
+                                    <p class="mb-0">{{ScreenTitleSingle}} تم حذفها </p>
+                                </div>
+                                <div class="avatar">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-trash ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoice List Table -->
+        <div class="card-datatable table-responsive">
+            <div id="DataTables_Table_0_wrapper" style="width: 98%;"
+                 class="dataTables_wrapper dt-bootstrap5 no-footer">
+
+                <div class="card-header border-bottom">
+                    <h5 class="card-title mb-0">تسجيل بيانات {{ScreenTitle}}</h5>
+                    <div class="d-flex justify-content-between align-items-center row pt-4 gap-4 gap-md-0">
+                        <div class="col-md-4 user_role"></div>
+                        <div class="col-md-4 user_plan"></div>
+                        <div class="col-md-4 user_status"></div>
+                    </div>
+                </div>
+
+                <br />
+                <div class="text-muted d-flex justify-content-end">
+                    <button class="btn btn-label-secondary"
+                            @click.prevent="Back()">
+                        العودة
+                    </button>
+                </div>
+
+                <el-form label-position="top"
+                         :model="ruleForm"
+                         :rules="rules"
+                         ref="ruleForm"
+                         label-width="120px"
+                         class="demo-ruleForm"
+                         style="width: 100%;">
+
+
+                    <el-form-item prop="EnrollmentDate" label="التاريخ ">
+                        <div class="input-group input-group-merge">
+                            <el-date-picker v-model="ruleForm.EnrollmentDate"
+                                            type="date"
+                                            @change="GetAllStudentsByClassForEnrollments()"
+                                            placeholder=" التاريخ ">
+                            </el-date-picker>
+                        </div>
+                    </el-form-item>
+
+
+                    <table class="invoice-list-table table border-top dataTable no-footer dtr-column"
+                           id="DataTables_Table_0"
+                           aria-describedby="DataTables_Table_0_info"
+                           style="width: 1232px;">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>إسم الطالب</th>
+                                <th>الحالة  </th>
+                                <th>وصف توضيحي</th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+                            <tr class="odd" v-if="InfoEnrollments==0">
+                                <td valign="top" colspan="8" class="dataTables_empty">لا توجد بيانات في الوقت الحالي ......</td>
+                            </tr>
+
+                            <tr class="odd" v-for="item,index in InfoEnrollments" v-if="InfoEnrollments!=0">
+                                <td>{{index+1}}</td>
+                                <td>
+                                    <div class="d-flex justify-content-start align-items-center">
+                                        <div class="avatar-wrapper">
+                                            <div class="avatar avatar-sm me-3">
+                                                <img :src="item.image" alt="Avatar" class="rounded-circle" v-if="item.image">
+                                                <img :src="CoverPath" alt="Avatar" class="rounded-circle" v-if="!item.image">
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <a href="#" class="text-heading text-truncate">
+                                                <span class="fw-medium">{{item.name}}</span>
+                                            </a>
+                                            <small class="text-truncate">{{item.phone}} </small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md mb-md-0 mb-5" v-for="(option, optionIndex) in ['حضور', 'غياب', 'تم التبرير']">
+                                            <div class="form-check custom-option custom-option-icon">
+                                                <label class="form-check-label custom-option-content" :for="'customRadioIcon' + index + optionIndex">
+                                                    <span class="custom-option-body">
+                                                        <i :class="optionIndex === 0 ? 'ti ti-checks' : (optionIndex === 1 ? 'ti ti-circle-dashed-x' : 'ti ti-notes')"></i>
+                                                        <span class="custom-option-title">{{ option }}</span>
+                                                    </span>
+                                                    <input :name="'customOptionRadioIcon' + index"
+                                                           class="form-check-input"
+                                                           type="radio"
+                                                           v-model="item.enrollmentState"
+                                                           :id="'customRadioIcon' + index + optionIndex"
+                                                           :value="optionIndex === 0 ? 1 : (optionIndex === 1 ? 2 : 3)">
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <el-form-item label="ملاحظة ان وجدت">
+                                        <div class="input-group input-group-merge">
+                                            <input type="text" id="modalAddCardName"
+                                                   class="form-control"
+                                                   v-model="item.descriptions"
+                                                   placeholder=" ملاحظة ان وجدت " />
+                                        </div>
+                                    </el-form-item>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+                    <br />
+                    <div class="col-12 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary me-3"
+                                @click.prevent="submitListForm('ruleForm')">
+                            إضافة بيانات {{ScreenTitleSingleAl}}
+                        </button>
+                    </div>
+                    <br />
+                </el-form>
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="content-backdrop fade"></div>
+</div>

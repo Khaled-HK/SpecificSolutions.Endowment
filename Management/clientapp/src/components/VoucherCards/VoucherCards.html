@@ -1,0 +1,592 @@
+﻿<div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y" v-if="state==0">
+        <!-- Invoice List Widget -->
+
+        <div class="card mb-6" v-if="Statistics!=0">
+            <div class="card-widget-separator-wrapper">
+                <div class="card-body card-widget-separator">
+                    <div class="row gy-4 gy-sm-1">
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center card-widget-1 border-end pb-4 pb-sm-0">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.waiting}}</h4>
+                                    <p class="mb-0">{{ScreenTitleSingle}} في انتظار البيع</p>
+                                </div>
+                                <div class="avatar me-sm-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-chart-pie ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <hr class="d-none d-sm-block d-lg-none me-6" />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center card-widget-2 border-end pb-4 pb-sm-0">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.waitingToPruches}}</h4>
+                                    <p class="mb-0">{{ScreenTitleSingle}} في انتظار الفتح من الموزع</p>
+                                </div>
+                                <div class="avatar me-lg-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-radioactive ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <hr class="d-none d-sm-block d-lg-none" />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center border-end pb-4 pb-sm-0 card-widget-3">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.active}}</h4>
+                                    <p class="mb-0">Active</p>
+                                </div>
+                                <div class="avatar me-sm-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-radioactive-off ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.frozen}}</h4>
+                                    <p class="mb-0">{{ScreenTitleSingle}} مجمدة </p>
+                                </div>
+                                <div class="avatar">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-snowflake    ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoice List Table -->
+        <div class="card">
+            <div class="card-datatable table-responsive">
+                <div id="DataTables_Table_0_wrapper"
+                     class="dataTables_wrapper dt-bootstrap5 no-footer">
+
+
+                    <div class="card-header border-bottom">
+                        <h5 class="card-title mb-0">{{ScreenTitle}}</h5>
+                        <div class="d-flex justify-content-between align-items-center row pt-4 gap-4 gap-md-0">
+                            <div class="col-md-4 user_role"></div>
+                            <div class="col-md-4 user_plan"></div>
+                            <div class="col-md-4 user_status"></div>
+                        </div>
+                    </div>
+
+                    <div class="card-header py-0 d-flex flex-column flex-md-row align-items-center">
+                        <div>
+                            <div id="DataTables_Table_0_filter"
+                                 class="dataTables_filter ms-n3 mb-0 mb-md-6">
+                                <label>
+                                    <input type="search" class="form-control"
+                                           @input="GetInfo()"
+                                           v-model="Search"
+                                           placeholder="فلترة البيانات "
+                                           aria-controls="DataTables_Table_0">
+                                </label>
+
+                                <div class="invoice_status mb-6 mb-md-0" style="margin-right:20px">
+                                    <select id="UserRole" class="form-select"
+                                            @change="GetInfo()"
+                                            v-model="DistributorsId">
+                                        <option v-for="item in Distributors"
+                                                :key="item.id"
+                                                :value="item.id">
+                                            {{ item.name }}
+                                        </option>
+                                    </select>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div class="d-flex align-items-center justify-content-md-end gap-2 justify-content-center">
+
+
+
+                            <div class="dt-action-buttons pt-0">
+                                <div class="dt-buttons btn-group flex-wrap">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                                @click.prevent="ClearForm(ruleForm)"
+                                                data-bs-target="#AddDialog">
+                                            <i class="ti ti-plus ti-xs me-md-2"></i>
+                                            <span class="d-md-inline-block d-none">إضافة {{ScreenTitleSingle}} </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="button" @click.prevent="Refresh()" class="btn btn-icon me-2 btn-label-secondary">
+                                <span class="ti ti-refresh ti-md"></span>
+                            </button>
+
+                            <div class="dataTables_length ms-n2" id="DataTables_Table_0_length">
+                                <label>
+                                    <select name="DataTables_Table_0_length"
+                                            aria-controls="DataTables_Table_0"
+                                            @change="GetInfo()"
+                                            v-model="pageSize"
+                                            class="form-select">
+                                        <option value="10">10</option>
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                        <option value="400">400</option>
+                                        <option value="1000">1000</option>
+                                    </select>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <table class="invoice-list-table table border-top dataTable no-footer dtr-column"
+                           id="DataTables_Table_0"
+                           aria-describedby="DataTables_Table_0_info"
+                           style="width: 1232px;">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>إسم {{ScreenTitleSingleAl}}</th>
+                                <th> حالة الباقة </th>
+                                <th> الرقم التسلسلي</th>
+                                <th> سعر الكرت </th>
+                                <th> عدد الكروت </th>
+                                <th> نسبة البيع  </th>
+                                <th class="cell-fit">الإعدادات</th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+                            <tr class="odd" v-if="Info==0">
+                                <td valign="top" colspan="8" class="dataTables_empty">لا توجد بيانات في الوقت الحالي ......</td>
+                            </tr>
+
+                            <tr class="odd" v-for="item,index in Info" v-if="Info!=0">
+                                <td>{{index+1}}</td>
+                                <td>
+                                    <div class="d-flex justify-content-start align-items-center">
+                                        <div class="avatar-wrapper">
+                                            <div class="avatar avatar-sm me-3">
+                                                <img :src="item.image" alt="Avatar" class="rounded-circle" v-if="item.image">
+                                                <img :src="CoverPath" alt="Avatar" class="rounded-circle" v-if="!item.image">
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <a href="#" class="text-heading text-truncate">
+                                                <span class="fw-medium">{{item.name}}</span>
+                                            </a>
+                                            <small class="text-truncate">{{item.user}}/{{item.phone}} </small>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td v-if="item.status==1"><span class="badge bg-label-info me-1">في انتظار تأكيد عملية البيع </span></td>
+                                <td v-if="item.status==2"><span class="badge bg-label-warning me-1"> في انتظار فتح الباقة من الموزع </span></td>
+                                <td v-if="item.status==3"><span class="badge bg-label-success me-1"> باقة مفعلة </span></td>
+                                <td v-if="item.status==4"><span class="badge bg-label-danger me-1">تم تجميد الباقة   </span></td>
+                                <td>{{item.serialNumber}} </td>
+                                <td>{{item.cardAmount}} </td>
+                                <td>{{formatNumber(item.cardCount)}} </td>
+                                <td>
+                                    <el-progress width=50 color="green" type="circle" :percentage="item.salesAvg"></el-progress>
+                                </td>
+
+                                <td>
+                                    <div class="d-flex align-items-center">
+
+                                        <a href="javascript:;"
+                                           @click.prevent="ViewInfo(item)"
+                                           type="button"
+                                           class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill">
+                                            <i class="ti ti-info-circle text-body ti-md"></i>
+                                        </a>
+
+                                        <a href="#" data-bs-toggle="tooltip"
+                                           @click.prevent="ForzePackage(item.id)"
+                                           v-if="item.status!=1"
+                                           class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                           data-bs-placement="top" aria-label="Preview Invoice"
+                                           data-bs-original-title="Preview Invoice">
+                                            <i class="ti ti-ban mx-2 ti-md"></i>
+                                        </a>
+                                        
+                                        <a href="#" data-bs-toggle="tooltip"
+                                           @click.prevent="Sale(item.id)"
+                                           v-if="item.status==1"
+                                           class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                           data-bs-placement="top" aria-label="Preview Invoice"
+                                           data-bs-original-title="Preview Invoice">
+                                            <i class="ti ti-briefcase-2 mx-2 ti-md"></i>
+                                        </a>
+                                        <a href="javascript:;" data-bs-toggle="tooltip"
+                                           @click.prevent="Delete(item.id)"
+                                           class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                           data-bs-placement="top" aria-label="Delete"
+                                           data-bs-original-title="Delete"
+                                           aria-describedby="tooltip253746">
+                                            <i class="ti ti-trash mx-2 ti-md"></i>
+                                        </a>
+                                        <!--<div class="dropdown">
+                                            <a href="javascript:;"
+                                               class="btn dropdown-toggle hide-arrow btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill p-0"
+                                               data-bs-toggle="dropdown">
+                                                <i class="ti ti-dots-vertical ti-md"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-end">
+                                                <a href="javascript:;" class="dropdown-item">Download</a>
+                                                <a href="app-invoice-edit.html" class="dropdown-item">Edit</a>
+                                                <a href="javascript:;" class="dropdown-item">Duplicate</a>
+
+                                            </div>
+                                        </div>-->
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row mx-1">
+                        <div class="col-sm-12 col-md-6">
+                            <div class="dataTables_info" id="DataTables_Table_0_info"
+                                 role="status" aria-live="polite">Showing {{pageSize}} of {{pages}} entries</div>
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            <PaginationHelper :pageNo="pageNo"
+                                              :pageSize="pageSize"
+                                              :totalItems="pages"
+                                              @page-changed="GetInfo" />
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!--Add-->
+    <div class="modal fade"
+         id="AddDialog"
+         tabindex="-1"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered1 modal-simple modal-add-new-cc">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="text-center mb-6">
+                        <h4 class="mb-2"> {{ScreenTitle}} </h4>
+                        <p>إضافة {{ScreenTitleSingle}} جديدة</p>
+                    </div>
+                    <el-form label-position="top"
+                             :model="ruleForm"
+                             :rules="rules"
+                             ref="ruleForm"
+                             label-width="120px"
+                             class="demo-ruleForm"
+                             style="width: 100%;">
+                        <form id="addNewCCForm" class="row g-6" onsubmit="return false">
+
+                            <div class="col-12">
+                                <el-form-item prop="Name" label="الموزع ">
+                                    <div class="input-group input-group-merge">
+
+                                        <el-select v-model="ruleForm.DistributorsId"
+                                                   style="width: 100%;"
+                                                   filterable
+                                                   placeholder="الموزع "
+                                                   clearable>
+                                            <el-option v-for="item in Distributors"
+                                                       :key="item.id"
+                                                       :label="item.name"
+                                                       :value="item.id">
+                                            </el-option>
+                                        </el-select>
+
+                                    </div>
+                                </el-form-item>
+                            </div>
+
+
+                            <div class="col-12">
+                                <el-form-item prop="Name" :label="`اسم ${ScreenTitleSingleAl}`">
+                                    <div class="input-group input-group-merge">
+                                        <input type="text" id="modalAddCardName"
+                                               class="form-control"
+                                               v-model="ruleForm.Name"
+                                               :placeholder="`إسم ${ScreenTitleSingleAl}`" />
+                                    </div>
+                                </el-form-item>
+                            </div>
+
+                            <div class="col-6">
+                                <el-form-item prop="CardCount" label="عدد الكروت ">
+                                    <div class="input-group input-group-merge">
+                                        <input type="number" id="modalAddCardName"
+                                               class="form-control"
+                                               v-model="ruleForm.CardCount"
+                                               placeholder="عدد الكروت " />
+                                    </div>
+                                </el-form-item>
+
+                            </div>
+
+                            <div class="col-6">
+                                <el-form-item prop="CardAmount" label=" قيمة الكرت ">
+                                    <div class="input-group input-group-merge">
+                                        <input type="number" id="modalAddCardName"
+                                               class="form-control"
+                                               v-model="ruleForm.CardAmount"
+                                               placeholder="قيمة الكرتت " />
+                                    </div>
+                                </el-form-item>
+
+                            </div>
+
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-primary me-3"
+                                        @click.prevent="submitForm('ruleForm')">
+                                    إضافة بيانات {{ScreenTitleSingleAl}}
+                                </button>
+                                <button type="reset"
+                                        id="Close"
+                                        class="btn btn-label-secondary btn-reset"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Close">
+                                    إلغاء
+                                </button>
+                            </div>
+                        </form>
+                    </el-form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <!--<div class="content-backdrop fade"></div>-->
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y" v-if="state==1">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-6 row-gap-4">
+            <div class="d-flex flex-column justify-content-center">
+                <div class="mb-1">
+                    <span class="h5">  {{SelectedItem.name}} </span>
+
+                    <span v-if="SelectedItem.status==1" class="badge bg-label-info me-1">في انتظار تأكيد عملية البيع </span>
+                    <span v-if="SelectedItem.status==2" class="badge bg-label-warning me-1"> في انتظار فتح الباقة من الموزع </span>
+                    <span v-if="SelectedItem.status==3" class="badge bg-label-success me-1"> باقة مفعلة </span>
+                    <span v-if="SelectedItem.status==4" class="badge bg-label-danger me-1">تم تجميد الباقة   </span>
+
+                </div>
+                <p class="mb-0">تاريخ إصدار الباقة : {{moment(SelectedItem.createdOn)}}</p>
+                <p class="mb-0 ">
+                    <span class="badge bg-label-danger me-1">  تاريخ صلاحية الباقة : {{moment(SelectedItem.expiryOn)}} </span>
+                </p>
+            </div>
+            <div class="d-flex align-content-center flex-wrap gap-2">
+                <button class="btn btn-label-secondary"
+                        @click.prevent="Back()">
+                    العودة
+                </button>
+            </div>
+        </div>
+
+        <!-- Order Details Table -->
+
+        <div class="row">
+            <div class="col-12 col-lg-8">
+                <div class="card mb-6">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title m-0">بيانات الباقة </h5>
+                        <h6 class="m-0">
+                            <el-popover placement="top-start"
+                                        width="200"
+                                        trigger="hover"
+                                        :content="SelectedItem.fileSecretKey">
+                                <el-button slot="reference">***************</el-button>
+                            </el-popover>
+                        </h6>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-lg-3 col-sm-6">
+                            <div class=" h-100">
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <div class="card-title mb-0">
+                                        <h5 class="mb-1 me-2">{{SelectedItem.cardCount}}</h5>
+                                        <p class="mb-0">عدد الكروت</p>
+                                    </div>
+                                    <div class="card-icon">
+                                        <span class="badge bg-label-primary rounded p-2">
+                                            <i class="ti ti-credit-card-pay ti-26px"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-sm-6">
+                            <div class=" h-100">
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <div class="card-title mb-0">
+                                        <h5 class="mb-1 me-2">{{SelectedItem.cardAmount}}</h5>
+                                        <p class="mb-0">سعر الكرت</p>
+                                    </div>
+                                    <div class="card-icon">
+                                        <span class="badge bg-label-info rounded p-2">
+                                            <i class="ti ti-coins ti-26px"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-sm-6">
+                            <div class=" h-100">
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <div class="card-title mb-0">
+                                        <h5 class="mb-1 me-2">{{SelectedItem.chargeingCount}}</h5>
+                                        <p class="mb-0"> المشحونة</p>
+                                    </div>
+                                    <div class="card-icon">
+                                        <span class="badge bg-label-success rounded p-2">
+                                            <i class="ti ti-chart-pie-2 ti-26px"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-sm-6">
+                            <div class=" h-100">
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <div class="card-title mb-0">
+                                        <h5 class="mb-1 me-2">{{SelectedItem.remindCount}}</h5>
+                                        <p class="mb-0"> المتبقية</p>
+                                    </div>
+                                    <div class="card-icon">
+                                        <span class="badge bg-label-danger rounded p-2">
+                                            <i class="ti ti-alert-octagon ti-26px"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mb-6">
+                    <div class="card-header">
+                        <h5 class="card-title m-0">حركات الباقة </h5>
+                    </div>
+                    <div class="card-body pt-1">
+                        <ul class="timeline pb-0 mb-0">
+                            <li class="timeline-item timeline-item-transparent border-primary">
+                                <span class="timeline-point timeline-point-primary"></span>
+                                <div class="timeline-event">
+                                    <div class="timeline-header">
+                                        <h6 class="mb-0">تاريخ إنشاء الباقة </h6>
+                                        <small class="text-muted" dir="ltr">{{momentTime(SelectedItem.cretedOn)}}</small>
+                                    </div>
+                                    <p class="mt-3">تم إنشاء الباقة من قبل : {{SelectedItem.createdBy}}</p>
+                                </div>
+                            </li>
+                            <li class="timeline-item timeline-item-transparent border-primary" v-if="SelectedItem.status>=2">
+                                <span class="timeline-point timeline-point-primary"></span>
+                                <div class="timeline-event">
+                                    <div class="timeline-header">
+                                        <h6 class="mb-0">تاريخ عرض الباقة للبيع </h6>
+                                        <small class="text-muted" dir="ltr">{{momentTime(SelectedItem.solidOn)}}</small>
+                                    </div>
+                                    <p class="mt-3 mb-3">تم عرض الباقة للبيع من قبل : {{SelectedItem.solidBy}}</p>
+                                </div>
+                            </li>
+                            <li class="timeline-item timeline-item-transparent border-primary" v-if="SelectedItem.status>=3">
+                                <span class="timeline-point timeline-point-success"></span>
+                                <div class="timeline-event">
+                                    <div class="timeline-header">
+                                        <h6 class="mb-0">تاريخ فتح الباقة من الموزع </h6>
+                                        <small class="text-muted" dir="ltr">{{momentTime(SelectedItem.openOn)}}</small>
+                                    </div>
+                                    <p class="mt-3 mb-3">تم فتح الباقة من قبل : {{SelectedItem.openBy}} </p>
+                                </div>
+                            </li>
+                            <li class="timeline-item timeline-item-transparent border-primary" v-if="SelectedItem.status==4">
+                                <span class="timeline-point timeline-point-danger"></span>
+                                <div class="timeline-event">
+                                    <div class="timeline-header">
+                                        <h6 class="mb-0">تاريخ تجميد الباقة</h6>
+                                        <small class="text-muted" dir="ltr">{{momentTime(SelectedItem.freezeOn)}}</small>
+                                    </div>
+                                    <p class="mt-3 mb-3">تم تجميد الباقة من قبل : {{SelectedItem.freezeBy}}</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4">
+                <div class="card mb-6">
+                    <div class="card-header">
+                        <h5 class="card-title m-0">بيانات الموزع </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-start align-items-center mb-6">
+                            <div class="avatar me-3">
+                                <img :src="SelectedItem.image" alt="Avatar" class="rounded-circle" v-if="SelectedItem.image">
+                                <img :src="CoverPath" alt="Avatar" class="rounded-circle" v-if="!SelectedItem.image">
+                            </div>
+                            <div class="d-flex flex-column">
+                                <a href="app-user-view-account.html" class="text-body text-nowrap">
+                                    <h6 class="mb-0">{{SelectedItem.user}}</h6>
+                                </a>
+                                <span>{{SelectedItem.phone}}</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-start align-items-center mb-6">
+                            <span class="avatar rounded-circle bg-label-success me-3 d-flex align-items-center justify-content-center">
+                                <i class="ti ti-shopping-cart ti-lg"></i>
+                            </span>
+                            <h6 class="text-nowrap mb-0">{{SelectedItem.packgeCount}} باقة مفعلة  </h6>
+                        </div>
+                        <div class="d-flex justify-content-start align-items-center mb-6">
+                            <span class="avatar rounded-circle bg-label-danger me-3 d-flex align-items-center justify-content-center">
+                                <i class="ti ti-ban ti-lg"></i>
+                            </span>
+                            <h6 class="text-nowrap mb-0">{{SelectedItem.packgeCountFrozen}} باقة مجمدة  </h6>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <h6 class="mb-1">بيانات التواصل</h6>
+                            <!--<h6 class="mb-1">
+                                <a href=" javascript:void(0)" data-bs-toggle="modal" data-bs-target="#editUser">Edit</a>
+                            </h6>-->
+                        </div>
+                        <p class="mb-1">البريد الإلكتروني: {{SelectedItem.email}}</p>
+                        <p class="mb-0">رقم الهاتف : {{SelectedItem.phone}}</p>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+</div>

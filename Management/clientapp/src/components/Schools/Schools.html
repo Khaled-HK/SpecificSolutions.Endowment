@@ -1,0 +1,2055 @@
+﻿<div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y" v-if="state==0">
+        <!-- Invoice List Widget -->
+         
+        <div class="row g-6 mb-6" v-if="Statistics==0">
+            <div class="col-lg-3 col-sm-6">
+                <div class="card card-border-shadow-primary h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="avatar me-4">
+                                <span class="avatar-initial rounded bg-label-primary"><i class="ti ti-building-bank ti-28px"></i></span>
+                            </div>
+                            <h4 class="mb-0">{{formatNumber(MosqueData.length)}}</h4>
+                        </div>
+                        <!--<p class="mb-1">{{ScreenTitleSingle}}</p>-->
+                        <p class="mb-0">
+                            <span class="text-heading fw-medium me-2">إجمالي عدد {{ScreenTitle}}</span>
+                            <!--<small class="text-muted">than last week</small>-->
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="invoice_status mb-6 mb-md-0"  >
+                <select id="UserRole" class="form-select"
+                        @change="GetInfo()"
+                        v-model="UserId">
+                    <option v-for="item in Users"
+                            :key="item.key"
+                            :value="item.key">
+                        {{ item.value }}
+                    </option>
+                </select>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="card card-border-shadow-success h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="avatar me-4">
+                                <span class="avatar-initial rounded bg-label-success"><i class="ti ti-radioactive ti-28px"></i></span>
+                            </div>
+                            <h4 class="mb-0">{{formatNumber(Statistics.active)}}</h4>
+                        </div>
+                        <!--<p class="mb-1">{{ScreenTitleSingle}}</p>-->
+                        <p class="mb-0">
+                            <span class="text-heading fw-medium me-2">إجمالي عدد {{ScreenTitle}} النشطة </span>
+                            <!--<small class="text-muted">than last week</small>-->
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-sm-6">
+                <div class="card card-border-shadow-danger h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="avatar me-4">
+                                <span class="avatar-initial rounded bg-label-danger"><i class="ti ti-radioactive-off ti-28px"></i></span>
+                            </div>
+                            <h4 class="mb-0">{{formatNumber(Statistics.notActive)}}</h4>
+                        </div>
+                        <!--<p class="mb-1">{{ScreenTitleSingle}}</p>-->
+                        <p class="mb-0">
+                            <span class="text-heading fw-medium me-2">إجمالي عدد {{ScreenTitle}} الموقوفة </span>
+                            <!--<small class="text-muted">than last week</small>-->
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-sm-6">
+                <div class="card card-border-shadow-info h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="avatar me-4">
+                                <span class="avatar-initial rounded bg-label-info"><i class="ti ti-wallet ti-28px"></i></span>
+                            </div>
+                            <h4 class="mb-0">{{formatNumber(Statistics.haveMony)}} د.ل</h4>
+                        </div>
+                        <!--<p class="mb-1">{{ScreenTitleSingle}}</p>-->
+                        <p class="mb-0">
+                            <span class="text-heading fw-medium me-2">إجمالي قيمة المحافظ  </span>
+                            <!--<small class="text-muted">than last week</small>-->
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+         
+        <!-- Invoice List Table -->
+        <div class="card">
+            <div class="card-datatable table-responsive">
+                <div id="DataTables_Table_0_wrapper"
+                     class="dataTables_wrapper dt-bootstrap5 no-footer">
+
+
+                    <div class="card-header border-bottom">
+                        <h5 class="card-title mb-0">{{ScreenTitle}}</h5>
+                        <div class="d-flex justify-content-between align-items-center row pt-4 gap-4 gap-md-0">
+                            <div class="col-md-4 user_role"></div>
+                            <div class="col-md-4 user_plan"></div>
+                            <div class="col-md-4 user_status"></div>
+                        </div>
+                    </div>
+
+                    <div class="card-header py-0 d-flex flex-column flex-md-row align-items-center">
+                        <div>
+                            <div id="DataTables_Table_0_filter"
+                                 class="dataTables_filter ms-n3 mb-0 mb-md-6">
+                                <label>
+                                    <input type="search" class="form-control"
+                                           @input="GetInfo()"
+                                           v-model="SearchTerm"
+                                           placeholder="فلترة البيانات "
+                                           aria-controls="DataTables_Table_0">
+                                </label>
+
+                               
+                            </div>
+
+                        </div>
+                        <div class="d-flex align-items-center justify-content-md-end gap-2 justify-content-center">
+
+                            <div class="dt-action-buttons pt-0">
+                                <div class="dt-buttons btn-group flex-wrap">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                                @click.prevent="ClearForm(ruleForm)"
+                                                data-bs-target="#AddDialog">
+                                            <i class="ti ti-plus ti-xs me-md-2"></i>
+                                            <span class="d-md-inline-block d-none">إضافة {{ScreenTitleSingle}} </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="dataTables_length ms-n2" id="DataTables_Table_0_length">
+                                <label>
+                                    <select name="DataTables_Table_0_length"
+                                            aria-controls="DataTables_Table_0"
+                                            @change="GetInfo()"
+                                            v-model="pageSize"
+                                            class="form-select">
+                                        <option value="10">10</option>
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                        <option value="400">400</option>
+                                        <option value="1000">1000</option>
+                                    </select>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                     
+                    <table class="invoice-list-table table border-top dataTable no-footer dtr-column"
+                           id="DataTables_Table_0"
+                           aria-describedby="DataTables_Table_0_info"
+                           style="width: 1232px;">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>إسم المسجد</th>
+                                <th>رقم الملف</th>
+                                <th>التعريف</th>
+                                <th>التصنيف</th>
+                                <th>المكتب</th>
+                                <th>الوحدة</th>
+                                <th>المنطقة</th>
+                                <th>أقرب معلم</th>
+                                <!--<th>تاريخ الإنشاء</th>
+                                <th>تاريخ الافتتاح</th>
+                                <th>الموقع على الخريطة</th>
+                                <th>المساحة الكلية</th>
+                                <th>المساحة المغطاة</th>
+                                <th>عدد الطوابق</th>
+                                <th>عداد الكهرباء</th>
+                                <th>مصدر الطاقة البديل</th>
+                                <th>مصدر المياه</th>
+                                <th>الصرف الصحي</th>
+                                <th>وصف مختصر</th>-->
+                                <th class="cell-fit">الإعدادات</th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+                            <tr class="odd" v-if="MosqueData.length === 0">
+                                <td valign="top" colspan="8" class="dataTables_empty">لا توجد بيانات في الوقت الحالي ......</td>
+                            </tr>
+
+                            <tr class="odd" v-for="(item, index) in MosqueData" :key="item.mosqueID">
+                                <td>{{index+1}}</td>
+                                <td>{{ item.mosqueName }}</td>
+                                <td>{{ item.fileNumber }}</td>
+                                <td>{{ item.msqueDefinition }}</td>
+                                <td>{{ item.mosqueClassification }}</td>
+                                <td>{{ item.office }}</td>
+                                <td>{{ item.unit }}</td>
+                                <td>{{ item.region }}</td>
+                                <td>{{ item.nearestLandmark }}</td>
+                                <!--<td>{{ formatDate(item.constructionDate) }}</td>
+                                <td>{{ formatDate(item.openingDate) }}</td>
+                                <td>{{ item.mapLocation }}</td>
+                                <td>{{ item.totalLandArea }}</td>
+                                <td>{{ item.totalCoveredArea }}</td>
+                                <td>{{ item.numberOfFloors }}</td>
+                                <td>{{ item.electricityMeter }}</td>
+                                <td>{{ item.alternativeEnergySource }}</td>
+                                <td>{{ item.waterSource }}</td>
+                                <td>{{ item.sanitation }}</td>
+                                <td>{{ item.briefDescription }}</td>-->
+                                <td>
+                                    <div class="d-flex justify-content-start align-items-center">
+                                        <div class="avatar-wrapper">
+                                            <div class="avatar avatar-sm me-3">
+                                                <img :src="item.image" alt="Avatar" class="rounded-circle" v-if="item.image">
+                                                <img :src="CoverPath" alt="Avatar" class="rounded-circle" v-if="!item.image">
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <a href="#" class="text-heading text-truncate">
+                                                <span class="fw-medium">{{item.mosqueName}}</span>
+                                            </a>
+                                            <!--<small class="text-truncate">{{item.academicLevel}}/{{item.academicSpecialization}}</small>-->
+                                        </div>
+                                    </div>
+                                </td>
+                                <td v-if="item.subscriptionsStatus==1"><span class="badge bg-label-success me-1">Active</span></td>
+                                <td v-if="item.subscriptionsStatus==2"><span class="badge bg-label-danger me-1">Not Active</span></td>
+                                <!--<td>
+                                    <div class="d-flex justify-content-start align-items-center">
+                                        <div class="avatar-wrapper">
+                                            <div class="avatar avatar-sm me-3">
+                                                <img :src="item.userImage" alt="Avatar" class="rounded-circle" v-if="item.userImage">
+                                                <img :src="CoverPath" alt="Avatar" class="rounded-circle" v-if="!item.userImage">
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <a href="#" class="text-heading text-truncate">
+                                                <span class="fw-medium">{{item.mosqueName}}</span>
+                                            </a>
+                                            <small class="text-truncate">{{item.mosqueName}}</small>
+                                        </div>
+                                    </div>
+                                </td>-->
+                                <!--<td>{{momentTime(item.totalLandArea)}}</td>-->
+                            <!--<td>{{formatNumber(item.totalLandArea)}} د.ل</td>-->
+                            <!--<td>{{formatNumber(item.totalLandArea)}} </td>-->
+                            <!--<td>{{formatNumber(item.totalLandArea)}} </td>-->
+                                <td v-if="item.status==1"><!--<span class="badge bg-label-success me-1">Active</span>--></td>
+                                <td v-if="item.status==2"><!--<span class="badge bg-label-danger me-1">Not Active</span>--></td>
+                                <!--<td>{{moment(item.createdOn)}}</td>
+                                     <td>{{item.createdBy}} </td>-->
+                                <td>
+                                    <div class="d-flex align-items-center">
+
+                                        <el-tooltip placement="top" effect="light">
+                                            <template #content>
+                                                <div>
+                                                    منفذ العملية: {{ item.mosqueName }}
+                                                    <br />
+                                                    تاريخ العملية : {{moment(item.createdOn)}}
+                                                    <br />
+                                                    تاريخ أخر دخول للنظام  : {{momentTime(item.lastLoginOn)}}
+                                                </div>
+                                            </template>
+                                            <a href="javascript:;"
+                                               class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                               type="button">
+                                                <i class="ti ti-info-circle text-body ti-md"></i>
+                                            </a>
+                                        </el-tooltip>
+
+                                        <a href="javascript:;"
+                                           @click.prevent="OpentInfoDialog(item)"
+                                           type="button"
+                                           class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                           data-bs-placement="top" aria-label="Edit"
+                                           data-bs-original-title="Info"
+                                           aria-describedby="tooltip253746">
+                                            <i class="ti ti-folder text-body ti-md"></i>
+                                        </a>
+                                        <div class="d-inline-block">
+
+                                            <a href="javascript:;"
+                                               class="btn btn-sm btn-text-secondary rounded-pill btn-icon dropdown-toggle hide-arrow"
+                                               data-bs-toggle="dropdown"
+                                               aria-expanded="false">
+                                                <i class="ti ti-dots-vertical ti-md"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-end m-0" style="">
+                                                <a href="javascript:;" class="dropdown-item"
+                                                   @click.prevent="OpentEditDialog(item)"
+                                                   type="button" data-bs-toggle="modal" data-bs-target="#EditDialog"
+                                                   data-bs-placement="top"
+                                                   aria-label="EditDialog"
+                                                   data-bs-original-title="Edit"
+                                                   aria-describedby="tooltip253746">
+                                                    <i class="ti ti-edit me-1"></i>
+                                                    تعديل البيانات
+                                                </a>
+
+                                                <a href="javascript:;" class="dropdown-item"
+                                                   @click.prevent="OpentSuspendsDialog(item)"
+                                                   type="button" data-bs-toggle="modal" data-bs-target="#Suspends"
+                                                   data-bs-placement="top"
+                                                   aria-label="Suspends"
+                                                   data-bs-original-title="Edit"
+                                                   aria-describedby="tooltip253746">
+                                                    <i class="ti ti-ban me-1"></i>
+                                                    إيقاف الحساب
+                                                </a>
+                                                <!--<a href="javascript:;" v-if="item.status==1" class="dropdown-item"
+                       @click.prevent="ChangeStatus(item.id)">
+                        <i class="ti ti-ban me-1"></i>
+                        إيقاف الحساب
+                    </a>-->
+                                                <!--<a href="javascript:;" v-if="item.status==2" class="dropdown-item"
+                       @click.prevent="ChangeStatus(item.id)">
+                        <i class="ti ti-brand-react me-1"></i>
+                        تفعيل الحساب
+                    </a>-->
+                                                <!--<a href="javascript:;" class="dropdown-item"
+                       @click.prevent="ResetDevice(item.id)">
+                        <i class="ti ti-device-laptop me-1"></i>
+                        تهيئة الجهاز
+                    </a>-->
+                                                <a href="javascript:;" class="dropdown-item"
+                                                   @click.prevent="ResetPassword(item.id)">
+                                                    <i class="ti ti-key me-1"></i>
+                                                    تهيئة كلمة المرور
+                                                </a>
+                                                <div class="dropdown-divider">
+                                                </div>
+                                                <a href="javascript:;"
+                                                   class="dropdown-item text-danger delete-record"
+                                                   @click.prevent="Delete(item.id)">
+                                                    <i class="ti ti-trash me-1"></i>
+                                                    حدف
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="row mx-1">
+                        <div class="col-sm-12 col-md-6">
+                            <div class="dataTables_info" id="DataTables_Table_0_info"
+                                 role="status" aria-live="polite">Showing {{pageSize}} of {{pages}} entries</div>
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            <PaginationHelper :pageNo="pageNo"
+                                              :pageSize="pageSize"
+                                              :totalItems="pages"
+                                              @page-changed="GetInfo" />
+
+                        </div>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+
+    </div>
+     
+    <!--Add -->
+    <div class="modal fade" id="AddDialog" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-simple modal-refer-and-earn">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="text-center mb-6">
+                        <h4 class="mb-2">{{ScreenTitle}}</h4>
+                        <p>إضافة {{ScreenTitleSingle}} جديدة</p>
+                    </div>
+                    <el-form label-position="top" :model="ruleForm"
+                             :rules="rules"
+                             ref="ruleForm"
+                             label-width="120px"
+                             class="demo-ruleForm" 
+                             style="width: 100%;">
+                        <form id="addNewCCForm" class="row g-6" onsubmit="return false">
+                            <!-- Basic Information Section -->
+                            <div class="col-12">
+                                <el-collapse v-model="activePanels">
+                                    <el-collapse-item title="المعلومات الأساسية" name="1">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <el-form-item prop="MosqueName" label="الاسم">
+                                                    <el-input v-model="ruleForm.MosqueName" placeholder="الاسم"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="col-6">
+                                                <el-form-item prop="FileNumber" label="رقم الملف">
+                                                    <el-input v-model="ruleForm.FileNumber" placeholder="رقم الملف"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="col-12">
+                                                <el-form-item prop="Definition" label="التعريف">
+                                                    <el-input type="textarea" v-model="ruleForm.Definition" placeholder="التعريف"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="col-6">
+                                                <el-form-item prop="Classification" label="التصنيف">
+                                                    <el-input v-model="ruleForm.Classification" placeholder="التصنيف"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="col-6">
+                                                <el-form-item prop="Office" label="المكتب">
+                                                    <el-input v-model="ruleForm.Office" placeholder="المكتب"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="col-6">
+                                                <el-form-item prop="Unit" label="الوحدة">
+                                                    <el-input v-model="ruleForm.Unit" placeholder="الوحدة"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="col">
+                                                <el-form-item prop="OfficeId" label="المكتب ">
+                                                    <div class="input-group input-group-merge">
+
+                                                        <el-select v-model="ruleForm.OfficeId"
+                                                                   style="width: 100%;"
+                                                                   filterable
+                                                                   placeholder="     المكتب  "
+                                                                   clearable>
+                                                            <el-option v-for="item in Offices"
+                                                                       :key="item.key"
+                                                                       :label="item.value"
+                                                                       :value="item.key">
+                                                            </el-option>
+                                                        </el-select>
+
+                                                    </div>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="col">
+                                                <el-form-item prop="RegionId" label="المنطقة ">
+                                                    <div class="input-group input-group-merge">
+
+                                                        <el-select v-model="ruleForm.RegionId"
+                                                                   style="width: 100%;"
+                                                                   filterable
+                                                                   placeholder="     المنطقة  "
+                                                                   clearable>
+                                                            <el-option v-for="item in Regions"
+                                                                       :key="item.key"
+                                                                       :label="item.value"
+                                                                       :value="item.key">
+                                                            </el-option>
+                                                        </el-select>
+
+                                                    </div>
+                                                </el-form-item>
+                                            </div>
+                                        </div>
+                                    </el-collapse-item>
+
+                                    <!-- Location Information Section -->
+                                    <el-collapse-item title="معلومات الموقع" name="2">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <el-form-item prop="Region" label="المنطقة">
+                                                    <el-input v-model="ruleForm.Region" placeholder="المنطقة"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="col-6">
+                                                <el-form-item prop="NearestLandmark" label="أقرب معلم">
+                                                    <el-input v-model="ruleForm.NearestLandmark" placeholder="أقرب معلم"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="col-6">
+                                                <el-form-item prop="MapLocation" label="الموقع على الخريطة">
+                                                    <el-input v-model="ruleForm.MapLocation" placeholder="الموقع على الخريطة"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                        </div>
+                                    </el-collapse-item>
+
+                                    <!-- Dates Section -->
+                                    <el-collapse-item title="التواريخ" name="3">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <el-form-item prop="ConstructionDate" label="تاريخ البناء">
+                                                    <el-date-picker v-model="ruleForm.ConstructionDate" type="date" placeholder="تاريخ البناء"></el-date-picker>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="col-6">
+                                                <el-form-item prop="OpeningDate" label="تاريخ الافتتاح">
+                                                    <el-date-picker v-model="ruleForm.OpeningDate" type="date" placeholder="تاريخ الافتتاح"></el-date-picker>
+                                                </el-form-item>
+                                            </div>
+                                        </div>
+                                    </el-collapse-item>
+
+                                    <!-- Area and Floors Section -->
+                                    <el-collapse-item title="المساحة والطوابق" name="4">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <el-form-item prop="TotalLandArea" label="المساحة الكلية للأرض">
+                                                    <el-input type="number" v-model="ruleForm.TotalLandArea" placeholder="المساحة الكلية للأرض"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="col-6">
+                                                <el-form-item prop="TotalCoveredArea" label="المساحة المغطاة">
+                                                    <el-input type="number" v-model="ruleForm.TotalCoveredArea" placeholder="المساحة المغطاة"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="col-6">
+                                                <el-form-item prop="NumberOfFloors" label="عدد الطوابق">
+                                                    <el-input type="number" v-model="ruleForm.NumberOfFloors" placeholder="عدد الطوابق"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                        </div>
+                                    </el-collapse-item>
+
+                                    <!-- Utilities Section -->
+                                    <el-collapse-item title="المرافق" name="5">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <el-form-item prop="ElectricityMeter" label="عداد الكهرباء">
+                                                    <el-input v-model="ruleForm.ElectricityMeter" placeholder="عداد الكهرباء"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="col-6">
+                                                <el-form-item prop="AlternativeEnergySource" label="مصدر الطاقة البديل">
+                                                    <el-input v-model="ruleForm.AlternativeEnergySource" placeholder="مصدر الطاقة البديل"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="col-6">
+                                                <el-form-item prop="WaterSource" label="مصدر المياه">
+                                                    <el-input v-model="ruleForm.WaterSource" placeholder="مصدر المياه"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="col-6">
+                                                <el-form-item prop="Sanitation" label="الصرف الصحي">
+                                                    <el-input v-model="ruleForm.Sanitation" placeholder="الصرف الصحي"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                        </div>
+                                    </el-collapse-item>
+
+                                    <!-- Additional Details Section -->
+                                    <el-collapse-item title="تفاصيل إضافية" name="6">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <el-form-item prop="BriefDescription" label="وصف مختصر">
+                                                    <el-input type="textarea" v-model="ruleForm.BriefDescription" placeholder="وصف مختصر"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="col-6">
+                                                <el-form-item prop="UserId" label="معرف المستخدم">
+                                                    <el-input v-model="ruleForm.UserId" placeholder="معرف المستخدم"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="col-6">
+                                                <el-form-item prop="PicturePath" label="مسار الصورة">
+                                                    <el-input v-model="ruleForm.PicturePath" placeholder="مسار الصورة"></el-input>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="col-6">
+                                                <el-form-item prop="ServicesSpecialNeeds" label="خدمات ذوي الاحتياجات الخاصة">
+                                                    <el-checkbox v-model="ruleForm.ServicesSpecialNeeds"></el-checkbox>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="col-6">
+                                                <el-form-item prop="SpecialEntranceWomen" label="مدخل خاص للنساء">
+                                                    <el-checkbox v-model="ruleForm.SpecialEntranceWomen"></el-checkbox>
+                                                </el-form-item>
+                                            </div>
+                                        </div>
+                                    </el-collapse-item>
+
+                                    <!-- Mosque Details Section -->
+                                    <el-collapse-item title="تفاصيل المسجد" name="7">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <el-form-item prop="MosqueDefinition" label="تعريف المسجد">
+                                                    <el-select v-model="ruleForm.MosqueDefinition" placeholder="اختر تعريف المسجد">
+                                                        <el-option v-for="(value, key) in mosqueDefinitions" :key="key" :label="value" :value="key"></el-option>
+                                                    </el-select>
+                                                </el-form-item>
+                                            </div>
+                                            <div class="col-6">
+                                                <el-form-item prop="MosqueClassification" label="تصنيف المسجد">
+                                                    <el-select v-model="ruleForm.MosqueClassification" placeholder="اختر تصنيف المسجد">
+                                                        <el-option v-for="(value, key) in mosqueClassifications" 
+                                                                   :key="key" :label="value" :value="key"></el-option>
+                                                    </el-select>
+                                                </el-form-item>
+                                            </div>
+                                        </div>
+                                    </el-collapse-item>
+                                </el-collapse>
+                            </div>
+
+                            <!-- Submit and Reset Buttons -->
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-primary me-3" @click.prevent="submitForm('ruleForm')">
+                                    إضافة بيانات {{ScreenTitleSingleAl}}
+                                </button>
+                                <button type="reset" id="Close" class="btn btn-label-secondary btn-reset" data-bs-dismiss="modal" aria-label="Close">
+                                    إلغاء
+                                </button>
+                            </div>
+                        </form>
+                    </el-form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Edit-->
+    <div class="modal fade"
+         id="EditDialog"
+         tabindex="-1"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-simple modal-refer-and-earn">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="text-center mb-6">
+                        <div class="bs-stepper-content p-1" style="text-align: center;">
+                            <h5 class="mb-1">الصورة الشخصية  </h5>
+                            <img :src="SelectedItem.image"
+                                 class="img-fluid"
+                                 alt="Create App img"
+                                 width="120" />
+                        </div>
+                    </div>
+                    <el-form label-position="top"
+                             :model="ruleForm"
+                             :rules="rules"
+                             ref="ruleForm"
+                             label-width="120px"
+                             class="demo-ruleForm"
+                             style="width: 100%;">
+                        <div id="wizard-create-app" class="bs-stepper vertical mt-2 shadow-none">
+                             
+                            <div class="bs-stepper-header border-0 p-1">
+                                <form id="addNewCCForm" class="row g-6" onsubmit="return false">
+                                    <div class="col-4">
+                                        <el-form-item prop="MosqueName" label="إسم المدرسة  ">
+                                            <div class="input-group input-group-merge">
+                                                <input type="text" id="modalAddCardName2"
+                                                       class="form-control"
+                                                       v-model="ruleForm.MosqueName"
+                                                       placeholder="إسم المدرسة " />
+                                            </div>
+                                        </el-form-item>
+                                    </div>
+                                    <div class="col-8">
+                                        <el-form-item prop="Descriptions" label="وصف عن المدرسة ">
+                                            <div class="input-group input-group-merge">
+                                                <input type="text" id="modalAddCardName0"
+                                                       class="form-control"
+                                                       v-model="ruleForm.Descriptions"
+                                                       placeholder="وصف عن المدرسة " />
+                                            </div>
+                                        </el-form-item>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <el-form-item :label="`صورة الغلاف  ${ScreenTitleSingleAl}`">
+                                            <div class="input-group input-group-merge">
+                                                <input class="form-control" v-on:change="SelectImage($event.target.files[0])"
+                                                       type="file" id="formFile" />
+                                            </div>
+                                        </el-form-item>
+                                    </div>
+
+                                    <div class="divider my-6">
+                                        <div class="divider-text">بيانات الموظف المخول بالدخول  </div>
+                                    </div>
+                                     
+                                    <div class="col-6">
+                                        <el-form-item prop="UserName" label="اسم المستخدم">
+                                            <div class="input-group input-group-merge">
+                                                <input type="text" id="modalAddCardName4"
+                                                       class="form-control"
+                                                       v-model="ruleForm.UserName"
+                                                       placeholder="اسم المستخدم" />
+                                            </div>
+                                        </el-form-item>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <el-form-item prop="LoginName" label="اسم الدخول">
+                                            <div class="input-group input-group-merge">
+                                                <input type="text" id="modalAddCardName5"
+                                                       class="form-control"
+                                                       v-model="ruleForm.LoginName"
+                                                       placeholder="اسم الدخول" />
+                                            </div>
+                                        </el-form-item>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <el-form-item prop="Phone" label="رقم الهاتف ">
+                                            <div class="input-group input-group-merge">
+                                                <input type="number" id="modalAddCardName6"
+                                                       class="form-control"
+                                                       v-model="ruleForm.Phone"
+                                                       placeholder="رقم الهاتف " />
+                                            </div>
+                                        </el-form-item>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <el-form-item prop="Email" label="البريد الإكتروني">
+                                            <div class="input-group input-group-merge">
+                                                <input type="email" id="modalAddCardName"
+                                                       class="form-control"
+                                                       v-model="ruleForm.Email"
+                                                       placeholder="البريد الإكتروني" />
+                                            </div>
+                                        </el-form-item>
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+
+                        <br />
+
+                        <div class="col-12 text-center">
+                            <button type="submit" class="btn btn-primary me-3"
+                                    @click.prevent="submitEditForm('ruleForm')">
+                                تعديل بيانات {{ScreenTitleSingleAl}}
+                            </button>
+                            <button type="reset"
+                                    id="Close"
+                                    class="btn btn-label-secondary btn-reset"
+                                    data-bs-dismiss="modal"
+                                    aria-label="Close">
+                                إلغاء
+                            </button>
+                        </div>
+
+                    </el-form>
+                </div>
+            </div>
+        </div>
+    </div>
+     
+    <!--Add Suspends-->
+    <div class="modal fade"
+         id="Suspends"
+         tabindex="-1"
+         aria-hidden="true">
+        <div class="modal-dialog modal-simple modal-enable-otp modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ShapterClose"></button>
+                    <div class="text-center mb-6">
+                        <h4 class="mb-2"> إيقاف حساب المدرسة    </h4>
+                    </div>
+                    <el-form label-position="top"
+                             :model="SuspendsruleForm"
+                             :rules="Suspendsrules"
+                             ref="SuspendsruleForm"
+                             label-width="120px"
+                             class="demo-ruleForm"
+                             style="width: 100%;">
+                        <form id="addNewCCForm" class="row g-6" onsubmit="return false">
+
+                            <div class="col-12">
+                                <el-form-item prop="DropResone" label="سبب الإيقاف ">
+                                    <div class="input-group input-group-merge">
+                                        <textarea class="form-control" rows="4"
+                                                  v-model="SuspendsruleForm.DropResone"
+                                                  placeholder="سبب الإيقاف"
+                                                  spellcheck="false"></textarea>
+                                    </div>
+                                </el-form-item>
+                            </div>
+                             
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-primary me-3"
+                                        @click.prevent="SuspendssubmitForm('SuspendsruleForm')">
+                                    تأكيد عملية الإيقاف
+                                </button>
+                                <button type="reset"
+                                        id="Close"
+                                        class="btn btn-label-secondary btn-reset"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Close">
+                                    إلغاء
+                                </button>
+                            </div>
+                        </form>
+                    </el-form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-xxl flex-grow-1 container-p-y" v-if="state==1">
+        <div class="row">
+            <!-- User Sidebar -->
+            <div class="col-xl-4 col-lg-5 order-1 order-md-0">
+                <!-- User Card -->
+                <div class="card mb-6">
+                    <div class="card-body pt-12">
+                        <div class="user-avatar-section">
+                            <div class="d-flex align-items-center flex-column">
+                                <img class="img-fluid rounded mb-4"
+                                     :src="SelectedItem.image"
+                                     height="120"
+                                     width="120"
+                                     alt="User avatar" />
+                                <div class="user-info text-center">
+                                    <h5>{{SelectedItem.name}}</h5>
+                                    <span class="badge bg-label-secondary">{{SelectedItem.descriptions}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-around flex-wrap my-6 gap-0 gap-md-3 gap-lg-4">
+                            <div class="d-flex align-items-center me-5 gap-4">
+                                <div class="avatar">
+                                    <div class="avatar-initial bg-label-primary rounded">
+                                        <i class="ti ti-wallet ti-lg"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0">{{SelectedItem.walletValue}} د.ل</h5>
+                                    <span>المحفظة</span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-4">
+                                <div class="avatar">
+                                    <div class="avatar-initial bg-label-primary rounded">
+                                        <i class="ti ti-book ti-lg"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0">{{SelectedItem.subscriptionsCount}}</h5>
+                                    <span>الإشتراكات </span>
+                                </div>
+                            </div>
+                        </div>
+                        <h5 class="pb-4 border-bottom mb-4">تفاصيل الحساب</h5>
+                        <div class="info-container">
+                            <ul class="list-unstyled mb-6">
+                                <li class="mb-2">
+                                    <span class="h6">إسم المستخدم :  </span>
+                                    <span>{{SelectedItem.mosqueName}}</span>
+                                </li>
+                                <li class="mb-2">
+                                    <span class="h6">إسم الدخول:  </span>
+                                    <span>{{SelectedItem.loginName}}</span>
+                                </li>
+                                <li class="mb-2">
+                                    <span class="h6">البريد الإلكتروني:  </span>
+                                    <span>{{SelectedItem.email}}</span>
+                                </li>
+                                <li class="mb-2">
+                                    <span class="h6">رقم الهاتف :  </span>
+                                    <span>{{SelectedItem.phone}}</span>
+                                </li>
+                                <li class="mb-2">
+                                    <span class="h6">حالة الإشتراك:  </span>
+                                    <span v-if="SelectedItem.subscriptionsStatus==1" class="badge bg-label-success me-1">Active</span>
+                                    <span v-if="SelectedItem.subscriptionsStatus==2" class="badge bg-label-danger me-1">Not Active</span>
+                                </li>
+                                <li class="mb-2">
+                                    <span class="h6">حالة الحساب:  </span>
+                                    <span v-if="SelectedItem.status==1" class="badge bg-label-success me-1">Active</span>
+                                    <span v-if="SelectedItem.status==2" class="badge bg-label-danger me-1">Not Active</span>
+                                </li>
+                                <li class="mb-2">
+                                    <span class="h6">أخر عملية تسجيل دخول:  </span>
+                                    <span>{{momentTime(SelectedItem.lastLoginOn)}}</span>
+                                </li>
+                                <li class="mb-2">
+                                    <span class="h6">تاريخ فتح الحساب:  </span>
+                                    <span>{{moment(SelectedItem.createdOn)}}</span>
+                                </li>
+
+                            </ul>
+                            <!--<div class="d-flex justify-content-center">
+                                <a href="javascript:;"
+                                   class="btn btn-primary me-4"
+                                   data-bs-target="#editUser"
+                                   data-bs-toggle="modal">Edit</a>
+                                <a href="javascript:;" class="btn btn-label-danger suspend-user">Suspend</a>
+                            </div>-->
+                        </div>
+                    </div>
+                </div>
+                <!-- /User Card -->
+            </div>
+            <!--/ User Sidebar -->
+             
+            <!-- User Content -->
+
+            <div class="col-xl-8">
+                <div class="text-muted d-flex justify-content-end">
+                    <button class="btn btn-label-secondary"
+                            @click.prevent="Back()">
+                        العودة
+                    </button>
+                </div>
+                <br />
+                <div class="nav-align-top mb-6">
+                    <ul class="nav nav-pills mb-4 nav-fill" role="tablist">
+                        <li class="nav-item mb-1 mb-sm-0">
+                            <button type="button"
+                                    class="nav-link active"
+                                    role="tab"
+                                    @click="ChangeTab('Subscriptions')"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#navs-pills-justified-home"
+                                    aria-controls="navs-pills-justified-home"
+                                    aria-selected="true">
+                                <span class="d-none d-sm-block">
+                                    <i class="tf-icons ti ti-book ti-sm me-1_5 align-text-bottom"></i> الإشتراكات 
+                                </span><i class="ti ti-book ti-sm d-sm-none"></i>
+                            </button>
+                        </li>
+                        <li class="nav-item mb-1 mb-sm-0">
+                            <button type="button"
+                                    class="nav-link"
+                                    role="tab"
+                                    @click="ChangeTab('Wallet')"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#navs-pills-justified-profile"
+                                    aria-controls="navs-pills-justified-profile"
+                                    aria-selected="false">
+                                <span class="d-none d-sm-block">
+                                    <i class="tf-icons ti ti-wallet ti-sm me-1_5 align-text-bottom"></i> المحفظة الإلكترونية
+                                </span>
+                                <i class="ti ti-wallet ti-sm d-sm-none"></i>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button type="button"
+                                    class="nav-link"
+                                    role="tab"
+                                    @click="ChangeTab('Wallet')"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#navs-pills-justified-messages"
+                                    aria-controls="navs-pills-justified-messages"
+                                    aria-selected="false">
+                                <span class="d-none d-sm-block">
+                                    <i class="tf-icons ti ti-settings ti-sm me-1_5 align-text-bottom"></i>
+                                    حركات المحفظة
+                                </span>
+                                <i class="ti ti-settings ti-sm d-sm-none"></i>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button type="button"
+                                    class="nav-link"
+                                    role="tab"
+                                    @click.prevent="GetBuildingDetails(1)"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#navs-pills-justified-Device"
+                                    aria-controls="navs-pills-justified-Device"
+                                    aria-selected="false">
+                                <span class="d-none d-sm-block">
+                                    <i class="tf-icons ti ti-device-laptop ti-sm me-1_5 align-text-bottom"></i>
+                                    المرافق 
+                                </span>
+                                <i class="ti ti-device-laptop ti-sm d-sm-none"></i>
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                         
+                        <div class="tab-pane fade show active" id="navs-pills-justified-home" role="tabpanel">
+
+
+                            <div class="card mb-6" v-if="SubscriptionsStatistics!=0">
+                                <div class="card-widget-separator-wrapper">
+                                    <div class="card-body card-widget-separator">
+                                        <div class="row gy-4 gy-sm-1">
+                                            <div class="col-sm-3 col-lg-3">
+                                                <div class="d-flex justify-content-between align-items-center card-widget-2 border-end pb-4 pb-sm-0">
+                                                    <div>
+                                                        <h4 class="mb-0">{{SubscriptionsStatistics.active}}</h4>
+                                                        <p class="mb-0">الاشتراكات الحالية  </p>
+                                                    </div>
+                                                    <div class="avatar me-lg-6">
+                                                        <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                                            <i class="ti ti-radioactive ti-26px"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <hr class="d-none d-sm-block d-lg-none" />
+                                            </div>
+                                            <div class="col-sm-3 col-lg-3">
+                                                <div class="d-flex justify-content-between align-items-center border-end pb-4 pb-sm-0 card-widget-3">
+                                                    <div>
+                                                        <h4 class="mb-0">{{SubscriptionsStatistics.expiry}}</h4>
+                                                        <p class="mb-0">اشتراكات سابقة </p>
+                                                    </div>
+                                                    <div class="avatar me-sm-6">
+                                                        <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                                            <i class="ti ti-radioactive-off ti-26px"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3 col-lg-3">
+                                                <div class="d-flex justify-content-between align-items-center border-end pb-4 pb-sm-0 card-widget-3">
+                                                    <div>
+                                                        <h4 class="mb-0">{{SubscriptionsStatistics.stopped}}</h4>
+                                                        <p class="mb-0">اشتراكات موقوفة </p>
+                                                    </div>
+                                                    <div class="avatar me-sm-6">
+                                                        <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                                            <i class="ti ti-radioactive-off ti-26px"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3 col-lg-3">
+                                                <div class="d-flex justify-content-between align-items-center border-end pb-4 pb-sm-0 card-widget-3">
+                                                    <div>
+                                                        <h4 class="mb-0">{{SubscriptionsStatistics.value}}</h4>
+                                                        <p class="mb-0">قيمة الاشتراكات  </p>
+                                                    </div>
+                                                    <div class="avatar me-sm-6">
+                                                        <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                                            <i class="ti ti-radioactive-off ti-26px"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!-- Invoice List Table -->
+                            <div class="card">
+                                <div class="card-datatable table-responsive">
+                                    <div id="DataTables_Table_0_wrapper"
+                                         class="dataTables_wrapper dt-bootstrap5 no-footer">
+
+
+                                        <div class="card-header border-bottom">
+                                            <h5 class="card-title mb-0">{{SubscriptionsScreenTitle}}</h5>
+                                            <div class="d-flex justify-content-between align-items-center row pt-4 gap-4 gap-md-0">
+                                                <div class="col-md-4 user_role"></div>
+                                                <div class="col-md-4 user_plan"></div>
+                                                <div class="col-md-4 user_status"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-header py-0 d-flex flex-column flex-md-row align-items-center">
+                                            <div>
+                                                <div id="DataTables_Table_0_filter"
+                                                     class="dataTables_filter ms-n3 mb-0 mb-md-6">
+                                                    <label>
+                                                        <input type="search" class="form-control"
+                                                               @input="GetSubscriptionsInfo()"
+                                                               v-model="SubscriptionsSearch"
+                                                               placeholder="فلترة البيانات "
+                                                               aria-controls="DataTables_Table_0">
+                                                    </label>
+
+                                                </div>
+
+                                            </div>
+                                            <div class="d-flex align-items-center justify-content-md-end gap-2 justify-content-center">
+
+                                                <div class="dt-action-buttons pt-0">
+                                                    <div class="dt-buttons btn-group flex-wrap">
+                                                        <div class="btn-group">
+                                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                                                    @click.prevent="ClearForm(SubscriptionsruleForm)"
+                                                                    data-bs-target="#SubscriptionsAddDialog">
+                                                                <i class="ti ti-plus ti-xs me-md-2"></i>
+                                                                <span class="d-md-inline-block d-none">إضافة {{SubscriptionsScreenTitleSingle}} </span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="dataTables_length ms-n2" id="DataTables_Table_0_length">
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+                                        <table class="invoice-list-table table border-top dataTable no-footer dtr-column"
+                                               id="DataTables_Table_0"
+                                               aria-describedby="DataTables_Table_0_info"
+                                               style="width: 1232px;">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>الإشتراك </th>
+                                                    <th> ق/الاشتراك</th>
+                                                    <th> المدفوع </th>
+                                                    <th> الحالة  </th>
+                                                    <th class="cell-fit">الإعدادات</th>
+                                                </tr>
+
+                                            </thead>
+                                            <tbody>
+                                                <tr class="odd" v-if="SubscriptionsInfo==0">
+                                                    <td valign="top" colspan="8" class="dataTables_empty">لا توجد بيانات في الوقت الحالي ......</td>
+                                                </tr>
+
+                                                <tr class="odd" v-for="item,index in SubscriptionsInfo" v-if="SubscriptionsInfo!=0">
+                                                    <td>{{index+1}}</td>
+                                                    <td>
+                                                        <div class="d-flex justify-content-start align-items-center">
+                                                            <div class="avatar-wrapper">
+                                                                <div class="avatar avatar-sm me-3">
+                                                                    <img :src="item.subscriptionsType.image" alt="Avatar" class="rounded-circle" v-if="item.subscriptionsType.image">
+                                                                    <img :src="CoverPath" alt="Avatar" class="rounded-circle" v-if="!item.subscriptionsType.image">
+                                                                </div>
+                                                            </div>
+                                                            <div class="d-flex flex-column">
+                                                                <a href="#" class="text-heading text-truncate">
+                                                                    <span class="fw-medium">{{item.subscriptionsType.name}}</span>
+
+                                                                    <br />
+                                                                    <span class="fw-medium">
+                                                                        المدة: {{item.subscriptionsType.lenght}} أشهر
+                                                                    </span>
+                                                                    <br />
+                                                                    <span class="fw-medium">
+                                                                        {{moment(item.startDate)}} ||
+                                                                        {{moment(item.endDate)}}
+                                                                    </span>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>{{formatNumber(item.price)}} </td>
+                                                    <td>{{formatNumber(item.value)}} </td>
+                                                    <td>
+                                                        <span v-if="item.status==1" class="badge bg-label-success me-1">نشط</span>
+                                                        <span v-if="item.status==2" class="badge bg-label-danger me-1">صلاحية</span>
+                                                        <span v-if="item.status==3" class="badge bg-label-danger me-1">موقوف</span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <el-tooltip placement="top" effect="light">
+                                                                <template #content>
+                                                                    <div>
+                                                                        منفذ العملية: {{ item.createdBy }}
+                                                                        <br />
+                                                                        تاريخ العملية : {{moment(item.createdOn)}}
+                                                                        <br />
+                                                                        قناة التسجيل :
+                                                                        <span v-if="item.channel==1">لوحة التحكم  </span>
+                                                                        <span v-if="item.channel==2"> الموقع الإلكتروني  </span>
+                                                                        <span v-if="item.channel==3"> التطبيق الإلكتروني  </span>
+                                                                    </div>
+                                                                </template>
+                                                                <a href="javascript:;"
+                                                                   class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                                                   type="button">
+                                                                    <i class="ti ti-info-circle text-body ti-md"></i>
+                                                                </a>
+                                                            </el-tooltip>
+
+                                                            <a href="javascript:;"
+                                                               v-if="item.value<item.price"
+                                                               @click.prevent="OpenSubscriptionsValue(item)"
+                                                               type="button" data-bs-toggle="modal"
+                                                               data-bs-target="#SubscriptionsAddValue"
+                                                               class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                                               data-bs-placement="top" aria-label="Edit"
+                                                               data-bs-original-title="Edit"
+                                                               aria-describedby="tooltip253746">
+                                                                <i class="ti ti-cash text-body ti-md"></i>
+                                                            </a>
+                                                            <a href="javascript:;"
+                                                               @click.prevent="OpenSubscriptionsDrop(item)"
+                                                               type="button" data-bs-toggle="modal"
+                                                               data-bs-target="#SubscriptionsDrop"
+                                                               class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                                               data-bs-placement="top" aria-label="Edit"
+                                                               data-bs-original-title="Edit"
+                                                               aria-describedby="tooltip253746">
+                                                                <i class="ti ti-logout-2 text-body ti-md"></i>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                             
+
+                            <!-- Invoice List Table -->
+                            <div class="card" v-if="SubscriptionsDropInfo!=0">
+                                <div class="card-datatable table-responsive">
+                                    <div id="DataTables_Table_0_wrapper"
+                                         class="dataTables_wrapper dt-bootstrap5 no-footer">
+
+
+                                        <div class="card-header border-bottom">
+                                            <h5 class="card-title mb-0">{{SubscriptionsScreenTitle}} التي تم الإنسحاب منها </h5>
+                                            <div class="d-flex justify-content-between align-items-center row pt-4 gap-4 gap-md-0">
+                                                <div class="col-md-4 user_role"></div>
+                                                <div class="col-md-4 user_plan"></div>
+                                                <div class="col-md-4 user_status"></div>
+                                            </div>
+                                        </div>
+
+
+                                        <table class="invoice-list-table table border-top dataTable no-footer dtr-column"
+                                               id="DataTables_Table_0"
+                                               aria-describedby="DataTables_Table_0_info"
+                                               style="width: 1232px;">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>الإسم </th>
+                                                    <th> ق/الإشتراك</th>
+                                                    <th> القيمة المسترجعة </th>
+                                                </tr>
+
+                                            </thead>
+                                            <tbody>
+                                                <tr class="odd" v-if="SubscriptionsDropInfo==0">
+                                                    <td valign="top" colspan="8" class="dataTables_empty">لا توجد بيانات في الوقت الحالي ......</td>
+                                                </tr>
+
+                                                <tr class="odd" v-for="item,index in SubscriptionsDropInfo" v-if="SubscriptionsDropInfo!=0">
+                                                    <td>{{index+1}}</td>
+                                                    <td>
+                                                        <div class="d-flex justify-content-start align-items-center">
+                                                            <div class="avatar-wrapper">
+                                                                <div class="avatar avatar-sm me-3">
+                                                                    <img :src="item.subscriptionsType.image" alt="Avatar" class="rounded-circle" v-if="item.subscriptionsType.image">
+                                                                    <img :src="CoverPath" alt="Avatar" class="rounded-circle" v-if="!item.subscriptionsType.image">
+                                                                </div>
+                                                            </div>
+                                                            <div class="d-flex flex-column">
+                                                                <a href="#" class="text-heading text-truncate">
+                                                                    <span class="fw-medium">{{item.subscriptionsType.name}}</span>
+
+                                                                    <br />
+                                                                    <span class="fw-medium">
+                                                                        المدة: {{item.subscriptionsType.lenght}} أشهر
+                                                                    </span>
+                                                                    <br />
+                                                                    <span class="fw-medium">
+                                                                        {{moment(item.startDate)}} ||
+                                                                        {{moment(item.endDate)}}
+                                                                    </span>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>{{formatNumber(item.price)}} </td>
+                                                    <td>{{formatNumber(item.returnedValue)}} </td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <el-tooltip placement="top" effect="light">
+                                                                <template #content>
+                                                                    <div>
+                                                                        منفذ الإنسحاب: {{ item.dropBy }}
+                                                                        <br />
+                                                                        تاريخ الإنسحاب : {{moment(item.dropOn)}}
+                                                                        <br />
+                                                                        سبب الإنسحاب : {{item.dropResone}}
+                                                                    </div>
+                                                                </template>
+                                                                <a href="javascript:;"
+                                                                   class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                                                   type="button">
+                                                                    <i class="ti ti-info-circle text-body ti-md"></i>
+                                                                </a>
+                                                            </el-tooltip>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                             
+                        </div>
+
+                        <div class="modal fade"
+                             id="SubscriptionsAddDialog"
+                             tabindex="-1"
+                             aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-simple modal-add-new-address">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ShapterClose"></button>
+                                        <div class="text-center mb-6">
+                                            <h4 class="mb-2"> {{SubscriptionsScreenTitle}} </h4>
+                                            <p>إضافة {{SubscriptionsScreenTitleSingle}} جديدة</p>
+                                        </div>
+                                        <el-form label-position="top"
+                                                 :model="SubscriptionsruleForm"
+                                                 :rules="Subscriptionsrules"
+                                                 ref="SubscriptionsruleForm"
+                                                 label-width="120px"
+                                                 class="demo-ruleForm"
+                                                 style="width: 100%;">
+                                            <form id="addNewCCForm" class="row g-6" onsubmit="return false">
+
+
+                                                <div class="col-12">
+                                                    <div class="card-body">
+                                                        <small class="text-light fw-medium">ملاحظة <span style="color:red">*</span></small>
+                                                        <figure class="mt-2">
+                                                            <blockquote class="blockquote">
+                                                                <p class="mb-0">
+                                                                    يتم خصم قيمة الباقة  من المحفظة الخاصة بالمدرسة ولايمكن إسترجاع القيمة
+                                                                    إلا عن طريق إلغاء الإشتراك
+                                                                </p>
+                                                            </blockquote>
+                                                        </figure>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-12">
+
+                                                    <el-form-item prop="AcademicLevelId" label="الباقة المطلوبة   ">
+                                                        <div class="input-group input-group-merge">
+
+                                                            <el-select v-model="SubscriptionsruleForm.SubscriptionsTypeId"
+                                                                       style="width: 100%;"
+                                                                       filterable
+                                                                       @change="Add_GetAcademicSpecializations()"
+                                                                       placeholder="الباقة  "
+                                                                       clearable>
+                                                                <el-option v-for="item in SubscriptionsType"
+                                                                           :key="item.id"
+                                                                           :label="item.name"
+                                                                           :value="item.id">
+                                                                    <span style="float: right">{{ item.name }} // {{ item.price }} د.ل</span>
+                                                                    <span style="float: left; color: #8492a6; font-size: 13px">مدة الباقة :  {{ item.lenght }} أشهر</span>
+                                                                </el-option>
+                                                            </el-select>
+
+                                                        </div>
+                                                    </el-form-item>
+                                                </div>
+                                                 
+                                                <div class="col-12">
+                                                    <el-form-item prop="Value" label="القيمة">
+                                                        <div class="input-group input-group-merge">
+                                                            <input type="number" id="modalAddCardName7"
+                                                                   class="form-control"
+                                                                   v-model="SubscriptionsruleForm.Value"
+                                                                   placeholder="القيمة" />
+                                                        </div>
+                                                    </el-form-item>
+                                                </div>
+                                                 
+                                                <div class="col-12 text-center">
+                                                    <button type="submit" class="btn btn-primary me-3"
+                                                            @click.prevent="SubscriptionssubmitForm('SubscriptionsruleForm')">
+                                                        إضافة بيانات {{SubscriptionsScreenTitleSingleAl}}
+                                                    </button>
+                                                    <button type="reset"
+                                                            id="Close"
+                                                            class="btn btn-label-secondary btn-reset"
+                                                            data-bs-dismiss="modal"
+                                                            aria-label="Close">
+                                                        إلغاء
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </el-form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade"
+                             id="SubscriptionsAddValue"
+                             tabindex="-1"
+                             aria-hidden="true">
+                            <div class="modal-dialog modal-simple modal-enable-otp modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ShapterClose"></button>
+                                        <div class="text-center mb-6">
+                                            <h4 class="mb-2"> إستكمال القيمة   </h4>
+                                        </div>
+                                        <el-form label-position="top"
+                                                 :model="SubscriptionsValueruleForm"
+                                                 :rules="SubscriptionsValuerules"
+                                                 ref="SubscriptionsValueruleForm"
+                                                 label-width="120px"
+                                                 class="demo-ruleForm"
+                                                 style="width: 100%;">
+                                            <form id="addNewCCForm" class="row g-6" onsubmit="return false">
+                                                 
+                                                <div class="col-12">
+                                                    <el-form-item prop="Value" label="القيمة">
+                                                        <div class="input-group input-group-merge">
+                                                            <input type="text" id="modalAddCardName"
+                                                                   class="form-control"
+                                                                   v-model="SubscriptionsValueruleForm.Value"
+                                                                   placeholder="القيمة" />
+                                                        </div>
+                                                    </el-form-item>
+                                                </div>
+                                                 
+                                                <div class="col-12 text-center">
+                                                    <button type="submit" class="btn btn-primary me-3"
+                                                            @click.prevent="SubscriptionsValuesubmitForm('SubscriptionsValueruleForm')">
+                                                        خصم القيمة من المحفظة
+                                                    </button>
+                                                    <button type="reset"
+                                                            id="Close"
+                                                            class="btn btn-label-secondary btn-reset"
+                                                            data-bs-dismiss="modal"
+                                                            aria-label="Close">
+                                                        إلغاء
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </el-form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade"
+                             id="SubscriptionsDrop"
+                             tabindex="-1"
+                             aria-hidden="true">
+                            <div class="modal-dialog modal-simple modal-enable-otp modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ShapterClose"></button>
+                                        <div class="text-center mb-6">
+                                            <h4 class="mb-2"> الإنسحاب من الباقة   </h4>
+                                        </div>
+                                        <el-form label-position="top"
+                                                 :model="SubscriptionsDropruleForm"
+                                                 :rules="SubscriptionsDroprules"
+                                                 ref="SubscriptionsDropruleForm"
+                                                 label-width="120px"
+                                                 class="demo-ruleForm"
+                                                 style="width: 100%;">
+                                            <form id="addNewCCForm" class="row g-6" onsubmit="return false">
+
+                                                <div class="col-12">
+                                                    <div class="card-body">
+                                                        <small class="text-light fw-medium">ملاحظة <span style="color:red">*</span></small>
+                                                        <figure class="mt-2">
+                                                            <blockquote class="blockquote">
+                                                                <p class="mb-0">
+                                                                    يتم إرجاع القيمة المدفوعة للمحفظة الخاصة بالمدرسة
+                                                                </p>
+                                                            </blockquote>
+                                                        </figure>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <el-form-item prop="DropResone" label="سبب الإنسحاب من الباقة  ">
+                                                        <div class="input-group input-group-merge">
+                                                            <textarea class="form-control" rows="4"
+                                                                      v-model="SubscriptionsDropruleForm.DropResone"
+                                                                      placeholder="سبب الإنسحاب من الباقة "
+                                                                      spellcheck="false"></textarea>
+                                                        </div>
+                                                    </el-form-item>
+                                                </div>
+                                                 
+                                                <div class="col-12 text-center">
+                                                    <button type="submit" class="btn btn-primary me-3"
+                                                            @click.prevent="SubscriptionsDropsubmitForm('SubscriptionsDropruleForm')">
+                                                        تأكيد عملية الإنسحاب
+                                                    </button>
+                                                    <button type="reset"
+                                                            id="Close"
+                                                            class="btn btn-label-secondary btn-reset"
+                                                            data-bs-dismiss="modal"
+                                                            aria-label="Close">
+                                                        إلغاء
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </el-form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                         
+
+                        <div class="tab-pane fade" id="navs-pills-justified-profile" role="tabpanel">
+
+
+                            <!-- Invoice List Table -->
+                            <div class="card">
+                                <div class="card-datatable table-responsive">
+                                    <div id="DataTables_Table_0_wrapper"
+                                         class="dataTables_wrapper dt-bootstrap5 no-footer">
+
+
+                                        <div class="card-header border-bottom">
+                                            <h5 class="card-title mb-0">{{WalletScreenTitle}}</h5>
+                                            <div class="d-flex justify-content-between align-items-center row pt-4 gap-4 gap-md-0">
+                                                <div class="col-md-4 user_role"></div>
+                                                <div class="col-md-4 user_plan"></div>
+                                                <div class="col-md-4 user_status"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-header py-0 d-flex flex-column flex-md-row align-items-center d-flex justify-content-end">
+
+                                            <div class="d-flex align-items-center justify-content-md-end gap-2 justify-content-center">
+
+                                                <div class="dt-action-buttons pt-0">
+                                                    <div class="dt-buttons btn-group flex-wrap">
+                                                        <div class="btn-group">
+                                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                                                    @click.prevent="ClearForm(WalletruleForm)"
+                                                                    data-bs-target="#WalletAddDialog">
+                                                                <i class="ti ti-plus ti-xs me-md-2"></i>
+                                                                <span class="d-md-inline-block d-none">شحن المحفظة الإلكترونية  </span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="dataTables_length ms-n2" id="DataTables_Table_0_length">
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+                                        <table class="invoice-list-table table border-top dataTable no-footer dtr-column"
+                                               id="DataTables_Table_0"
+                                               aria-describedby="DataTables_Table_0_info"
+                                               style="width: 1232px;">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>القيمة  </th>
+                                                    <th> طريقة الدفع</th>
+                                                    <th> نوع العملية </th>
+                                                    <th class="cell-fit">الإعدادات</th>
+                                                </tr>
+
+                                            </thead>
+                                            <tbody>
+                                                <tr class="odd" v-if="WalletInfo==0">
+                                                    <td valign="top" colspan="8" class="dataTables_empty">لا توجد بيانات في الوقت الحالي ......</td>
+                                                </tr>
+
+                                                <tr class="odd" v-for="item,index in WalletInfo" v-if="WalletInfo!=0">
+                                                    <td>{{index+1}}</td>
+                                                    <td>{{formatNumber(item.value)}} </td>
+                                                    <td>{{item.paymentMethod}} </td>
+                                                    <td v-if="item.processType==1"><span class="badge bg-label-success me-1">ReCharge</span></td>
+                                                    <td v-if="item.processType!=1"><span class="badge bg-label-danger me-1">Withdraw</span></td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                             
+                                                            <el-tooltip placement="top" effect="light">
+                                                                <template #content>
+                                                                    <div>
+                                                                        منفذ العملية: {{ item.createdBy }}
+                                                                        <br />
+                                                                        تاريخ العملية : {{moment(item.createdOn)}}
+                                                                    </div>
+                                                                </template>
+                                                                <a href="javascript:;"
+                                                                   class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                                                   type="button">
+                                                                    <i class="ti ti-info-circle text-body ti-md"></i>
+                                                                </a>
+                                                            </el-tooltip>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                             
+
+                            <!-- Invoice List Table -->
+                            <div class="card" v-if="WalletInfoPurchases!=0">
+                                <div class="card-datatable table-responsive">
+                                    <div id="DataTables_Table_0_wrapper"
+                                         class="dataTables_wrapper dt-bootstrap5 no-footer">
+
+
+                                        <div class="card-header border-bottom">
+                                            <h5 class="card-title mb-0">الإشتراكات وعمليات الدفع </h5>
+                                            <div class="d-flex justify-content-between align-items-center row pt-4 gap-4 gap-md-0">
+                                                <div class="col-md-4 user_role"></div>
+                                                <div class="col-md-4 user_plan"></div>
+                                                <div class="col-md-4 user_status"></div>
+                                            </div>
+                                        </div>
+                                         
+                                        <table class="invoice-list-table table border-top dataTable no-footer dtr-column"
+                                               id="DataTables_Table_0"
+                                               aria-describedby="DataTables_Table_0_info"
+                                               style="width: 1232px;">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>الإسم  </th>
+                                                    <th> المدفوع  </th>
+                                                    <th> قيمة الإشتراك  </th>
+                                                    <th class="cell-fit">الإعدادات</th>
+                                                </tr>
+
+                                            </thead>
+                                            <tbody>
+                                                <tr class="odd" v-if="WalletInfoPurchases==0">
+                                                    <td valign="top" colspan="8" class="dataTables_empty">لا توجد بيانات في الوقت الحالي ......</td>
+                                                </tr>
+
+                                                <tr class="odd" v-for="item,index in WalletInfoPurchases" v-if="WalletInfoPurchases!=0">
+                                                    <td>{{index+1}}</td>
+                                                    <td>
+                                                        <div class="d-flex justify-content-start align-items-center">
+                                                            <div class="avatar-wrapper">
+                                                                <div class="avatar avatar-sm me-3">
+                                                                    <img :src="item.image" alt="Avatar" class="rounded-circle" v-if="item.image">
+                                                                    <img :src="CoverPath" alt="Avatar" class="rounded-circle" v-if="!item.image">
+                                                                </div>
+                                                            </div>
+                                                            <div class="d-flex flex-column">
+                                                                <a href="#" class="text-heading text-truncate">
+                                                                    <span class="fw-medium">{{item.name}}</span>
+
+                                                                    <br />
+                                                                    <span class="fw-medium">
+                                                                        المدة: {{item.lenght}} أشهر
+                                                                    </span>
+                                                                    <br />
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>{{formatNumber(item.subscriptionsPrice)}} </td>
+                                                    <td>{{formatNumber(item.value)}} </td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <el-tooltip placement="top" effect="light">
+                                                                <template #content>
+                                                                    <div>
+                                                                        منفذ العملية: {{ item.createdBy }}
+                                                                        <br />
+                                                                        تاريخ العملية : {{moment(item.createdOn)}}
+                                                                    </div>
+                                                                </template>
+                                                                <a href="javascript:;"
+                                                                   class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                                                   type="button">
+                                                                    <i class="ti ti-info-circle text-body ti-md"></i>
+                                                                </a>
+                                                            </el-tooltip>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                             
+                        </div>
+
+                        <!--Add-->
+                        <div class="modal fade"
+                             id="WalletAddDialog"
+                             tabindex="-1"
+                             aria-hidden="true">
+                            <div class="modal-dialog modal-simple modal-enable-otp modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ShapterClose"></button>
+                                        <div class="text-center mb-6">
+                                            <h4 class="mb-2"> {{WalletScreenTitle}} </h4>
+                                            <p>إضافة {{WalletScreenTitleSingle}} جديدة</p>
+                                        </div>
+                                        <el-form label-position="top"
+                                                 :model="WalletruleForm"
+                                                 :rules="Walletrules"
+                                                 ref="WalletruleForm"
+                                                 label-width="120px"
+                                                 class="demo-ruleForm"
+                                                 style="width: 100%;">
+                                            <form id="addNewCCForm" class="row g-6" onsubmit="return false">
+
+
+                                                <div class="col-12">
+                                                    <el-form-item prop="PaymentMethodId" label="طريقة الدفع  ">
+                                                        <div class="input-group input-group-merge">
+
+                                                            <el-select v-model="WalletruleForm.PaymentMethodId"
+                                                                       style="width: 100%;"
+                                                                       filterable
+                                                                       placeholder="طريقة الدفع  "
+                                                                       clearable>
+                                                                <el-option v-for="item in PaymentsMethods"
+                                                                           :key="item.id"
+                                                                           :label="item.name"
+                                                                           :value="item.id">
+                                                                </el-option>
+                                                            </el-select>
+
+                                                        </div>
+                                                    </el-form-item>
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <el-form-item prop="Value" label="القيمة">
+                                                        <div class="input-group input-group-merge">
+                                                            <input type="number" id="modalAddCardName8"
+                                                                   class="form-control"
+                                                                   v-model="WalletruleForm.Value"
+                                                                   placeholder="القيمة" />
+                                                        </div>
+                                                    </el-form-item>
+                                                </div>
+
+
+                                                <div class="col-12 text-center">
+                                                    <button type="submit" class="btn btn-primary me-3"
+                                                            @click.prevent="WalletsubmitForm('WalletruleForm')">
+                                                        شحن المحفظة الإلكترونية
+                                                    </button>
+                                                    <button type="reset"
+                                                            id="Close"
+                                                            class="btn btn-label-secondary btn-reset"
+                                                            data-bs-dismiss="modal"
+                                                            aria-label="Close">
+                                                        إلغاء
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </el-form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                          
+                        <div class="tab-pane fade" id="navs-pills-justified-messages" role="tabpanel">
+                            <!-- Invoice List Table -->
+                            <div class="card">
+                                <div class="card-datatable table-responsive">
+                                    <div id="DataTables_Table_0_wrapper"
+                                         class="dataTables_wrapper dt-bootstrap5 no-footer">
+
+
+                                        <div class="card-header border-bottom">
+                                            <h5 class="card-title mb-0">الحركات الخاصة بالمحفظة  </h5>
+                                            <div class="d-flex justify-content-between align-items-center row pt-4 gap-4 gap-md-0">
+                                                <div class="col-md-4 user_role"></div>
+                                                <div class="col-md-4 user_plan"></div>
+                                                <div class="col-md-4 user_status"></div>
+                                            </div>
+                                        </div>
+
+
+
+
+                                        <table class="invoice-list-table table border-top dataTable no-footer dtr-column"
+                                               id="DataTables_Table_0"
+                                               aria-describedby="DataTables_Table_0_info"
+                                               style="width: 1232px;">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>العملية   </th>
+                                                    <th>قناة العملية </th>
+                                                    <th>القيمة   </th>
+                                                    <th> قبل العملية </th>
+                                                    <th> بعد العملية   </th>
+                                                    <th class="cell-fit">الإعدادات</th>
+                                                </tr>
+
+                                            </thead>
+                                            <tbody>
+                                                <tr class="odd" v-if="WalletInfoTracker==0">
+                                                    <td valign="top" colspan="8" class="dataTables_empty">لا توجد بيانات في الوقت الحالي ......</td>
+                                                </tr>
+
+                                                <tr class="odd" v-for="item,index in WalletInfoTracker" v-if="WalletInfoTracker!=0">
+                                                    <td>{{index+1}}</td>
+                                                    <td v-if="item.processType==1"><span class="badge bg-label-danger me-1">شراء </span></td>
+                                                    <td v-if="item.processType==2"><span class="badge bg-label-success me-1">قيمة مسترجعة </span></td>
+                                                    <td v-if="item.processType==3"><span class="badge bg-label-success me-1">شحن محفظة </span></td>
+
+                                                    <td v-if="item.channel==1"><span class="badge bg-label-dark me-1">لوحة التحكم </span></td>
+                                                    <td v-if="item.channel==2"><span class="badge bg-label-dark me-1"> الموقع الإلكتروني </span></td>
+                                                    <td v-if="item.channel==3"><span class="badge bg-label-dark me-1">التطبيق الإلكتروني </span></td>
+                                                    <td>{{formatNumber(item.value)}} </td>
+                                                    <td>{{formatNumber(item.befroe)}} </td>
+                                                    <td>{{formatNumber(item.after)}} </td>
+
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <el-tooltip placement="top" effect="light">
+                                                                <template #content>
+                                                                    <div>
+                                                                        منفذ العملية: {{ item.createdBy }}
+                                                                        <br />
+                                                                        تاريخ العملية : {{moment(item.createdOn)}}
+                                                                        <br />
+                                                                        وصف العملية  : {{item.descriptions}}
+                                                                    </div>
+                                                                </template>
+                                                                <a href="javascript:;"
+                                                                   class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                                                   type="button">
+                                                                    <i class="ti ti-info-circle text-body ti-md"></i>
+                                                                </a>
+                                                            </el-tooltip>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                         
+                        <div class="tab-pane fade" id="navs-pills-justified-Device" role="tabpanel">
+                            <!-- Invoice List Table -->
+                            <div class="card">
+                                <div class="card-datatable table-responsive">
+                                    <div id="DataTables_Table_0_wrapper"
+                                         class="dataTables_wrapper dt-bootstrap5 no-footer">
+
+                                        <div class="card-header py-0 d-flex flex-column flex-md-row align-items-center">
+                                            <div>
+                                                <div id="DataTables_Table_0_filter"
+                                                     class="dataTables_filter ms-n3 mb-0 mb-md-6">
+                                                    <h5 class="card-title mb-0">المرافق التي تم تسجيلها   </h5>
+                                                    <div class="d-flex justify-content-between align-items-center row pt-4 gap-4 gap-md-0">
+                                                        <div class="col-md-4 user_role"></div>
+                                                        <div class="col-md-4 user_plan"></div>
+                                                        <div class="col-md-4 user_status"></div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="d-flex align-items-center justify-content-md-end gap-2 justify-content-center">
+
+                                                <div class="dt-action-buttons pt-0">
+                                                    <div class="dt-buttons btn-group flex-wrap">
+                                                        <div class="btn-group">
+                                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                                                    @click.prevent="ClearForm(SubscriptionsruleForm)"
+                                                                    data-bs-target="#AddProfileYears">
+                                                                <i class="ti ti-plus ti-xs me-md-2"></i>
+                                                                <span class="d-md-inline-block d-none">إضافة {{ProfileYearsScreenTitleSingle}} </span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="dataTables_length ms-n2" id="DataTables_Table_0_length">
+                                                </div>
+                                            </div>
+                                        </div>
+                                         
+
+                                        <table class="invoice-list-table table border-top dataTable no-footer dtr-column"
+                                               id="DataTables_Table_0"
+                                               aria-describedby="DataTables_Table_0_info"
+                                               style="width: 1232px;">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>الإسم</th>
+                                                    <th> عدد الادوار</th>
+                                                    <th> في مساحة المسجد</th>
+                                                    <th class="cell-fit">الإعدادات</th>
+                                                </tr>
+
+                                            </thead>
+                                            <tbody>
+                                                <tr class="odd" v-if="BuildingDetailData==0">
+                                                    <td valign="top" colspan="8" class="dataTables_empty">لا توجد بيانات في الوقت الحالي ......</td>
+                                                </tr>
+                                                <tr class="odd" v-for="item,index in BuildingDetailData" v-if="BuildingDetailData!=0">
+                                                    <td>{{index+1}}</td>
+                                                    <td>{{item.name}}</td>
+                                                    <td>{{item.floors}}</td>
+                                                    <td>{{item.withinMosqueArea}}</td>
+                                                    <td v-if="item.status==1"><span class="badge bg-label-success me-1">Active </span></td>
+                                                    <td v-if="item.status==2"><span class="badge bg-label-danger me-1">Not Active </span></td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <el-tooltip placement="top" effect="light">
+                                                                <template #content>
+                                                                    <div>
+                                                                        منفذ العملية: {{ item.createdBy }}
+                                                                        <br />
+                                                                        تاريخ العملية : {{moment(item.createdOn)}}
+                                                                    </div>
+                                                                </template>
+                                                                <a href="javascript:;"
+                                                                   class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                                                   type="button">
+                                                                    <i class="ti ti-info-circle text-body ti-md"></i>
+                                                                </a>
+                                                            </el-tooltip>
+
+                                                            <a href="javascript:;"
+                                                               @click.prevent="ActiveProfileYear(item.id)"
+                                                               type="button"
+                                                               v-if="item.status==2"
+                                                               class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill">
+                                                                <i class="ti ti-flame text-danger ti-md"></i>
+                                                            </a>
+                                                            <a href="javascript:;"
+                                                               v-if="item.status==1"
+                                                               @click.prevent="CloseProfileYear(item.id)"
+                                                               type="button"
+                                                               class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill">
+                                                                <i class="ti ti-flame-off text-danger ti-md"></i>
+                                                            </a>
+                                                            <a href="javascript:;"
+                                                               @click.prevent="OpenSubscriptionsDrop(item)"
+                                                               type="button" data-bs-toggle="modal"
+                                                               data-bs-target="#SubscriptionsDrop"
+                                                               class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                                               data-bs-placement="top" aria-label="Edit"
+                                                               data-bs-original-title="Edit"
+                                                               aria-describedby="tooltip253746">
+                                                                <i class="ti ti-logout-2 text-body ti-md"></i>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--Add Dialog-->
+                        <div class="modal fade"
+                             id="AddProfileYears"
+                             tabindex="-1"
+                             aria-hidden="true">
+                            <div class="modal-dialog modal-simple modal-enable-otp modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ProfileYearsClose"></button>
+                                        <div class="text-center mb-6">
+                                            <h4 class="mb-2"> إضافة مرفق جديد    </h4>
+                                        </div>
+                                        <el-form label-position="top"
+                                                 :model="buildingDetailRuleForm"
+                                                 :rules="buildingDetailRules"
+                                                 ref="buildingDetailRuleForm"
+                                                 label-width="120px"
+                                                 class="demo-ruleForm"
+                                                 style="width: 100%;">
+                                            <form id="addNewCCForm" class="row g-6" onsubmit="return false">
+
+                                                <div class="col-12">
+                                                    <el-form-item prop="Name" label="اسم المبنى">
+                                                        <div class="input-group input-group-merge">
+                                                            <input type="text" id="modalAddBuildingName"
+                                                                   class="form-control"
+                                                                   v-model="buildingDetailRuleForm.Name"
+                                                                   placeholder="أدخل اسم المبنى" />
+                                                        </div>
+                                                    </el-form-item>
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <el-form-item prop="WithinMosqueArea" label="داخل منطقة المسجد">
+                                                        <el-checkbox v-model="buildingDetailRuleForm.WithinMosqueArea">
+                                                            نعم
+                                                        </el-checkbox>
+                                                    </el-form-item>
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <el-form-item prop="Floors" label="عدد الطوابق">
+                                                        <div class="input-group input-group-merge">
+                                                            <input type="number" id="modalAddBuildingFloors"
+                                                                   class="form-control"
+                                                                   v-model="buildingDetailRuleForm.Floors"
+                                                                   placeholder="أدخل عدد الطوابق" />
+                                                        </div>
+                                                    </el-form-item>
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <el-form-item prop="BuildingCategory" label="تصنيف المبنى">
+                                                        <el-select v-model="buildingDetailRuleForm.BuildingCategory"
+                                                                   style="width: 100%;"
+                                                                   filterable
+                                                                   placeholder="اختر تصنيف المبنى"
+                                                                   clearable>
+                                                            <el-option v-for="(value, key) in BuildingCategories"
+                                                                       :key="key"
+                                                                       :label="value"
+                                                                       :value="key">
+                                                            </el-option>
+                                                        </el-select>
+                                                    </el-form-item>
+                                                
+                                                </div>
+
+
+                                                <div class="col-12 text-center">
+                                                    <button type="submit" class="btn btn-primary me-3"
+                                                            @click.prevent="buildingDetailSubmitForm('buildingDetailRuleForm')">
+                                                        إضافة المرفق
+                                                    </button>
+                                                    <button type="reset"
+                                                            id="Close"
+                                                            class="btn btn-label-secondary btn-reset"
+                                                            data-bs-dismiss="modal"
+                                                            aria-label="Close">
+                                                        إلغاء
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </el-form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-backdrop fade"></div>
+</div>

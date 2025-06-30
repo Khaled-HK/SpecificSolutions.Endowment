@@ -1,0 +1,674 @@
+﻿<div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y" v-if="state==0">
+        <!-- Invoice List Widget -->
+
+        <!--<div class="mb-6" v-if="Statistics!=0">
+            <div class="card-widget-separator-wrapper">
+                <div class="card-body card-widget-separator">
+                    <div class="row gy-4 gy-sm-1">
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center card-widget-1 border-end pb-4 pb-sm-0">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.count}}</h4>
+                                    <p class="mb-0">{{ScreenTitleSingle}}</p>
+                                </div>
+                                <div class="avatar me-sm-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-chart-pie ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <hr class="d-none d-sm-block d-lg-none me-6" />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center card-widget-2 border-end pb-4 pb-sm-0">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.active}}</h4>
+                                    <p class="mb-0">Active</p>
+                                </div>
+                                <div class="avatar me-lg-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-radioactive ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <hr class="d-none d-sm-block d-lg-none" />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center border-end pb-4 pb-sm-0 card-widget-3">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.notActive}}</h4>
+                                    <p class="mb-0">NotActive</p>
+                                </div>
+                                <div class="avatar me-sm-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-radioactive-off ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.deleted}}</h4>
+                                    <p class="mb-0">{{ScreenTitleSingle}} تم حذفها </p>
+                                </div>
+                                <div class="avatar">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-trash ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>-->
+
+        <!-- Invoice List Table -->
+        <div class="card-datatable table-responsive">
+            <div id="DataTables_Table_0_wrapper"
+                 class="dataTables_wrapper dt-bootstrap5 no-footer">
+
+
+
+                <table class="invoice-list-table table border-top dataTable no-footer dtr-column"
+                       id="DataTables_Table_0"
+                       aria-describedby="DataTables_Table_0_info"
+                       style="width: 1232px;">
+                    <thead>
+                        <tr>
+                            <th>اليوم</th>
+                            <th>الحصة الأولي </th>
+                            <th>الحصة التانية  </th>
+                            <th>الحصة التالتة  </th>
+                            <th>الحصة الرابعة  </th>
+                            <th>الحصة الخامسة  </th>
+                            <th>الحصة السادسة  </th>
+                            <th>الحصة السابعة  </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(day, index) in schedule" :key="index">
+                            <td>{{ day.Day }}</td>
+                            <td>{{ getCourse(day, 1) }}</td>
+                            <td>{{ getCourse(day, 2) }}</td>
+                            <td>{{ getCourse(day, 3) }}</td>
+                            <td>{{ getCourse(day, 4) }}</td>
+                            <td>{{ getCourse(day, 5) }}</td>
+                            <td>{{ getCourse(day, 6) }}</td>
+                            <td>{{ getCourse(day, 7) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+
+
+
+
+
+                <div class="card-header border-bottom">
+                    <h5 class="card-title mb-0">{{ScreenTitle}}</h5>
+                    <div class="d-flex justify-content-between align-items-center row pt-4 gap-4 gap-md-0">
+                        <div class="col-md-4 user_role"></div>
+                        <div class="col-md-4 user_plan"></div>
+                        <div class="col-md-4 user_status"></div>
+                    </div>
+                </div>
+
+                <div class="card-header py-0 d-flex flex-column flex-md-row align-items-center">
+                    <div>
+                        <div id="DataTables_Table_0_filter"
+                             class="dataTables_filter ms-n3 mb-0 mb-md-6">
+                            <label>
+                                <input type="search" class="form-control"
+                                       @input="GetInfo()"
+                                       v-model="Search"
+                                       placeholder="فلترة البيانات "
+                                       aria-controls="DataTables_Table_0">
+                            </label>
+
+                            <!--<div class="dropdown">
+                    <a href="javascript:;"
+                       class="btn dropdown-toggle hide-arrow btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill p-0"
+                       data-bs-toggle="dropdown">
+                        <i class="ti ti-dots-vertical ti-md"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <a href="#" class="dropdown-item">حالة العرض</a>
+                        <a href="#" class="dropdown-item">تاريخ الاضافة </a>
+                        <a href="#" class="dropdown-item">مجاني</a>
+                    </div>
+                </div>
+                <div class="invoice_status mb-6 mb-md-0">
+                    <select id="UserRole" class="form-select">
+                        <option value=""> Invoice Status </option>
+                        <option value="Downloaded" class="text-capitalize">Downloaded</option>
+                        <option value="Draft" class="text-capitalize">Draft</option>
+                        <option value="Paid" class="text-capitalize">Paid</option>
+                        <option value="Partial Payment" class="text-capitalize">Partial Payment</option>
+                        <option value="Past Due" class="text-capitalize">Past Due</option>
+                        <option value="Sent" class="text-capitalize">Sent</option>
+                    </select>
+                </div>-->
+                        </div>
+
+                    </div>
+                    <div class="d-flex align-items-center justify-content-md-end gap-2 justify-content-center">
+
+                        <div class="dt-action-buttons pt-0">
+                            <div class="dt-buttons btn-group flex-wrap">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-primary"
+                                            @click.prevent="state=1">
+                                        <i class="ti ti-plus ti-xs me-md-2"></i>
+                                        <span class="d-md-inline-block d-none">إضافة مادة للجدول  </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dataTables_length ms-n2" id="DataTables_Table_0_length">
+                            <label>
+                                <select name="DataTables_Table_0_length"
+                                        aria-controls="DataTables_Table_0"
+                                        @change="GetInfo()"
+                                        v-model="pageSize"
+                                        class="form-select">
+                                    <option value="10">10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                    <option value="400">400</option>
+                                    <option value="1000">1000</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+
+                <table class="invoice-list-table table border-top dataTable no-footer dtr-column"
+                       id="DataTables_Table_0"
+                       aria-describedby="DataTables_Table_0_info"
+                       style="width: 1232px;">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>المادة   </th>
+                            <th>الحصة  </th>
+                            <th>اليوم   </th>
+                            <th>تاريخ الادراج</th>
+                            <th>منفذ العملية</th>
+                            <th class="cell-fit">الإعدادات</th>
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        <tr class="odd" v-if="Info==0">
+                            <td valign="top" colspan="8" class="dataTables_empty">لا توجد بيانات في الوقت الحالي ......</td>
+                        </tr>
+
+                        <tr class="odd" v-for="item,index in Info" v-if="Info!=0">
+                            <td>{{index+1}}</td>
+                            <td>{{item.name}} </td>
+                            <td v-if="item.number==1"><span class="badge bg-label-gray me-1">الحصة الأولي </span></td>
+                            <td v-if="item.number==2"><span class="badge bg-label-gray me-1">الحصة التانة </span></td>
+                            <td v-if="item.number==3"><span class="badge bg-label-gray me-1">الحصة التالتة </span></td>
+                            <td v-if="item.number==4"><span class="badge bg-label-gray me-1">الحصة الرابعة </span></td>
+                            <td v-if="item.number==5"><span class="badge bg-label-gray me-1">الحصة الخامسة </span></td>
+                            <td v-if="item.number==6"><span class="badge bg-label-gray me-1">الحصة السادسة </span></td>
+                            <td v-if="item.number==7"><span class="badge bg-label-gray me-1">الحصة السابعة </span></td>
+
+                            <td v-if="item.day==6"><span class="badge bg-label-gray me-1"> السبت </span></td>
+                            <td v-if="item.day==1"><span class="badge bg-label-gray me-1"> الاحد </span></td>
+                            <td v-if="item.day==2"><span class="badge bg-label-gray me-1">الإتنين  </span></td>
+                            <td v-if="item.day==3"><span class="badge bg-label-gray me-1"> التلاتاء </span></td>
+                            <td v-if="item.day==4"><span class="badge bg-label-gray me-1"> الإربعاء </span></td>
+                            <td v-if="item.day==5"><span class="badge bg-label-gray me-1"> الخميس </span></td>
+
+
+
+                            <td>{{ChangeDate(item.createdOn)}}</td>
+                            <td>{{item.createdBy}} </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+
+                                    <a href="javascript:;"
+                                       @click.prevent="OpentEditDialog(item)"
+                                       type="button"
+                                       class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill">
+                                        <i class="ti ti-edit text-body ti-md"></i>
+                                    </a>
+
+                                    <a href="javascript:;" data-bs-toggle="tooltip"
+                                       @click.prevent="Delete(item.id)"
+                                       class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                       data-bs-placement="top" aria-label="Delete"
+                                       data-bs-original-title="Delete"
+                                       aria-describedby="tooltip253746">
+                                        <i class="ti ti-trash mx-2 ti-md"></i>
+                                    </a>
+                                    <!--<div class="dropdown">
+                            <a href="javascript:;"
+                               class="btn dropdown-toggle hide-arrow btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill p-0"
+                               data-bs-toggle="dropdown">
+                                <i class="ti ti-dots-vertical ti-md"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <a href="javascript:;" class="dropdown-item">Download</a>
+                                <a href="app-invoice-edit.html" class="dropdown-item">Edit</a>
+                                <a href="javascript:;" class="dropdown-item">Duplicate</a>
+
+                            </div>
+                        </div>-->
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="row mx-1">
+                    <div class="col-sm-12 col-md-6">
+                        <div class="dataTables_info" id="DataTables_Table_0_info"
+                             role="status" aria-live="polite">Showing {{pageSize}} of {{pages}} entries</div>
+                    </div>
+                    <div class="col-sm-12 col-md-6">
+                        <PaginationHelper :pageNo="pageNo"
+                                          :pageSize="pageSize"
+                                          :totalItems="pages"
+                                          @page-changed="GetInfo" />
+
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="container-xxl flex-grow-1 container-p-y" v-if="state==1">
+
+
+        <div class="mb-6" v-if="Statistics!=0">
+            <div class="card-widget-separator-wrapper">
+                <div class="card-body card-widget-separator">
+                    <div class="row gy-4 gy-sm-1">
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center card-widget-1 border-end pb-4 pb-sm-0">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.count}}</h4>
+                                    <p class="mb-0">{{ScreenTitleSingle}}</p>
+                                </div>
+                                <div class="avatar me-sm-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-chart-pie ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <hr class="d-none d-sm-block d-lg-none me-6" />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center card-widget-2 border-end pb-4 pb-sm-0">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.active}}</h4>
+                                    <p class="mb-0">Active</p>
+                                </div>
+                                <div class="avatar me-lg-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-radioactive ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <hr class="d-none d-sm-block d-lg-none" />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center border-end pb-4 pb-sm-0 card-widget-3">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.notActive}}</h4>
+                                    <p class="mb-0">NotActive</p>
+                                </div>
+                                <div class="avatar me-sm-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-radioactive-off ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.deleted}}</h4>
+                                    <p class="mb-0">{{ScreenTitleSingle}} تم حذفها </p>
+                                </div>
+                                <div class="avatar">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-trash ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoice List Table -->
+        <div class="card-datatable table-responsive">
+            <div id="DataTables_Table_0_wrapper" style="width: 98%;"
+                 class="dataTables_wrapper dt-bootstrap5 no-footer">
+
+                <div class="card-header border-bottom">
+                    <h5 class="card-title mb-0">إضافة بيانات {{ScreenTitleSingle}}</h5>
+                    <div class="d-flex justify-content-between align-items-center row pt-4 gap-4 gap-md-0">
+                        <div class="col-md-4 user_role"></div>
+                        <div class="col-md-4 user_plan"></div>
+                        <div class="col-md-4 user_status"></div>
+                    </div>
+                </div>
+
+                <br />
+                <div class="text-muted d-flex justify-content-end">
+                    <button class="btn btn-label-secondary"
+                            @click.prevent="Back()">
+                        العودة
+                    </button>
+                </div>
+
+                <el-form label-position="top"
+                         :model="ruleForm"
+                         :rules="rules"
+                         ref="ruleForm"
+                         label-width="120px"
+                         class="demo-ruleForm"
+                         style="width: 100%;">
+
+                    <div class="row row-gap-4">
+                        <div class="col-md-6 mb-md-0 mb-4">
+                            <div class="d-flex align-items-center mb-4">
+                                <el-form-item prop="CoursesId" label="المادة الدراسية  " style="width:100%">
+                                    <div class="input-group input-group-merge">
+                                        <el-select v-model="ruleForm.CoursesId"
+                                                   style="width: 100%;"
+                                                   filterable
+                                                   placeholder="المادة الدراسية  "
+                                                   clearable>
+                                            <el-option v-for="item in Courses"
+                                                       :key="item.id"
+                                                       :label="item.name"
+                                                       :value="item.id">
+                                            </el-option>
+                                        </el-select>
+                                    </div>
+                                </el-form-item>
+                            </div>
+                            <div class="d-flex align-items-center mb-4">
+                                <el-form-item prop="Day" label="اليوم" style="width:100%">
+                                    <div class="input-group input-group-merge">
+                                        <el-select v-model="ruleForm.Day"
+                                                   style="width: 100%;"
+                                                   filterable
+                                                   placeholder="اليوم"
+                                                   clearable>
+                                            <el-option v-for="item in [
+                                                       {'id':6,'name':'السبت'},
+                                                       {'id':1,'name':'الاحد'},
+                                                       {'id':2,'name':'الإتنين'},
+                                                       {'id':3,'name':'التلاتاء'},
+                                                       {'id':4,'name':'الإربعاء'},
+                                                       {'id':5,'name':'الخميس'}
+                                                       ]"
+                                                       :key="item.id"
+                                                       :label="item.name"
+                                                       :value="item.id">
+                                            </el-option>
+                                        </el-select>
+                                    </div>
+                                </el-form-item>
+                            </div>
+
+
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-start">
+                            <el-form-item prop="Number" label="الحصة" style="width:100%">
+                                <div class="input-group input-group-merge">
+                                    <el-select v-model="ruleForm.Number"
+                                               style="width: 100%;"
+                                               filterable
+                                               placeholder="الحصة"
+                                               clearable>
+                                        <el-option v-for="item in [
+       {'id':1,'name':'الحصة الأولي '},
+       {'id':2,'name':'الحصة التانية '},
+       {'id':3,'name':'الحصة التالتة '},
+       {'id':4,'name':'الحصة الرابعة '},
+       {'id':5,'name':'الحصة الخامسة '},
+       {'id':6,'name':'الحصة السادسة  '},
+       {'id':7,'name':'الحصة السابعة '}
+       ]"
+                                                   :key="item.id"
+                                                   :label="item.name"
+                                                   :value="item.id">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                            </el-form-item>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="col-12 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary me-3"
+                                @click.prevent="submitForm('ruleForm')">
+                            إضافة بيانات {{ScreenTitleSingleAl}}
+                        </button>
+                    </div>
+                    <br />
+                </el-form>
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container-xxl flex-grow-1 container-p-y" v-if="state==2">
+
+
+        <div class="mb-6" v-if="Statistics!=0">
+            <div class="card-widget-separator-wrapper">
+                <div class="card-body card-widget-separator">
+                    <div class="row gy-4 gy-sm-1">
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center card-widget-1 border-end pb-4 pb-sm-0">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.count}}</h4>
+                                    <p class="mb-0">{{ScreenTitleSingle}}</p>
+                                </div>
+                                <div class="avatar me-sm-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-chart-pie ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <hr class="d-none d-sm-block d-lg-none me-6" />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center card-widget-2 border-end pb-4 pb-sm-0">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.active}}</h4>
+                                    <p class="mb-0">Active</p>
+                                </div>
+                                <div class="avatar me-lg-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-radioactive ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <hr class="d-none d-sm-block d-lg-none" />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center border-end pb-4 pb-sm-0 card-widget-3">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.notActive}}</h4>
+                                    <p class="mb-0">NotActive</p>
+                                </div>
+                                <div class="avatar me-sm-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-radioactive-off ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.deleted}}</h4>
+                                    <p class="mb-0">{{ScreenTitleSingle}} تم حذفها </p>
+                                </div>
+                                <div class="avatar">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-trash ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoice List Table -->
+        <div class="card-datatable table-responsive">
+            <div id="DataTables_Table_0_wrapper" style="width: 98%;"
+                 class="dataTables_wrapper dt-bootstrap5 no-footer">
+
+                <div class="card-header border-bottom">
+                    <h5 class="card-title mb-0">تعديل بيانات  {{ScreenTitleSingle}}</h5>
+                    <div class="d-flex justify-content-between align-items-center row pt-4 gap-4 gap-md-0">
+                        <div class="col-md-4 user_role"></div>
+                        <div class="col-md-4 user_plan"></div>
+                        <div class="col-md-4 user_status"></div>
+                    </div>
+                </div>
+
+                <br />
+                <div class="text-muted d-flex justify-content-end">
+                    <button class="btn btn-label-secondary"
+                            @click.prevent="Back()">
+                        العودة
+                    </button>
+                </div>
+
+                <el-form label-position="top"
+                         :model="ruleForm"
+                         :rules="rules"
+                         ref="ruleForm"
+                         label-width="120px"
+                         class="demo-ruleForm"
+                         style="width: 100%;">
+
+                    <div class="row row-gap-4">
+                        <div class="col-md-6 mb-md-0 mb-4">
+                            <div class="d-flex align-items-center mb-4">
+                                <el-form-item prop="CoursesId" label="المادة الدراسية  " style="width:100%">
+                                    <div class="input-group input-group-merge">
+                                        <el-select v-model="ruleForm.CoursesId"
+                                                   style="width: 100%;"
+                                                   filterable
+                                                   placeholder="المادة الدراسية  "
+                                                   clearable>
+                                            <el-option v-for="item in Courses"
+                                                       :key="item.id"
+                                                       :label="item.name"
+                                                       :value="item.id">
+                                            </el-option>
+                                        </el-select>
+                                    </div>
+                                </el-form-item>
+                            </div>
+                            <div class="d-flex align-items-center mb-4">
+                                <el-form-item prop="Day" label="اليوم" style="width:100%">
+                                    <div class="input-group input-group-merge">
+                                        <el-select v-model="ruleForm.Day"
+                                                   style="width: 100%;"
+                                                   filterable
+                                                   placeholder="اليوم"
+                                                   clearable>
+                                            <el-option v-for="item in [
+                                       {'id':6,'name':'السبت'},
+                                       {'id':1,'name':'الاحد'},
+                                       {'id':2,'name':'الإتنين'},
+                                       {'id':3,'name':'التلاتاء'},
+                                       {'id':4,'name':'الإربعاء'},
+                                       {'id':5,'name':'الخميس'}
+                                       ]"
+                                                       :key="item.id"
+                                                       :label="item.name"
+                                                       :value="item.id">
+                                            </el-option>
+                                        </el-select>
+                                    </div>
+                                </el-form-item>
+                            </div>
+
+
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-start">
+                            <el-form-item prop="Number" label="الحصة" style="width:100%">
+                                <div class="input-group input-group-merge">
+                                    <el-select v-model="ruleForm.Number"
+                                               style="width: 100%;"
+                                               filterable
+                                               placeholder="الحصة"
+                                               clearable>
+                                        <el-option v-for="item in [
+                                   {'id':1,'name':'الحصة الأولي '},
+                                   {'id':2,'name':'الحصة التانية '},
+                                   {'id':3,'name':'الحصة التالتة '},
+                                   {'id':4,'name':'الحصة الرابعة '},
+                                   {'id':5,'name':'الحصة الخامسة '},
+                                   {'id':6,'name':'الحصة السادسة  '},
+                                   {'id':7,'name':'الحصة السابعة '}
+                                   ]"
+                                                   :key="item.id"
+                                                   :label="item.name"
+                                                   :value="item.id">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                            </el-form-item>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="col-12 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary me-3"
+                                @click.prevent="submitEditForm('ruleForm')">
+                            تعديل بيانات {{ScreenTitleSingleAl}}
+                        </button>
+                    </div>
+                    <br />
+                </el-form>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="content-backdrop fade"></div>
+</div>

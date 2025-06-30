@@ -1,0 +1,648 @@
+﻿<div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y" v-if="state==0">
+
+        <!-- Statistics -->
+        <div class="card mb-6" v-if="Statistics!=0">
+            <div class="card-widget-separator-wrapper">
+                <div class="card-body card-widget-separator">
+                    <div class="row gy-4 gy-sm-1">
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center card-widget-1 border-end pb-4 pb-sm-0">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.count}}</h4>
+                                    <p class="mb-0">{{ScreenTitleSingle}}</p>
+                                </div>
+                                <div class="avatar me-sm-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-chart-pie ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <hr class="d-none d-sm-block d-lg-none me-6" />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center card-widget-2 border-end pb-4 pb-sm-0">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.active}}</h4>
+                                    <p class="mb-0">{{ScreenTitleSingle}} نشط</p>
+                                </div>
+                                <div class="avatar me-lg-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-books ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <hr class="d-none d-sm-block d-lg-none" />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center border-end pb-4 pb-sm-0 card-widget-3">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.notActive}}</h4>
+                                    <p class="mb-0">{{ScreenTitleSingle}} غير نشط</p>
+                                </div>
+                                <div class="avatar me-sm-6">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-aperture ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="mb-0">{{Statistics.deleted}}</h4>
+                                    <p class="mb-0">{{ScreenTitleSingle}} محذوف</p>
+                                </div>
+                                <div class="avatar">
+                                    <span class="avatar-initial rounded bg-label-secondary text-heading">
+                                        <i class="ti ti-slideshow ti-26px"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoice List Table -->
+        <div class="card">
+            <div class="card-datatable table-responsive">
+                <div id="DataTables_Table_0_wrapper"
+                     class="dataTables_wrapper dt-bootstrap5 no-footer">
+
+
+                    <div class="card-header border-bottom">
+                        <h5 class="card-title mb-0">{{ScreenTitle}}</h5>
+                        <div class="d-flex justify-content-between align-items-center row pt-4 gap-4 gap-md-0">
+                            <div class="col-md-4 user_role"></div>
+                            <div class="col-md-4 user_plan"></div>
+                            <div class="col-md-4 user_status"></div>
+                        </div>
+                    </div>
+
+                    <div class="card-header py-0 d-flex flex-column flex-md-row align-items-center">
+                        <div>
+                            <div id="DataTables_Table_0_filter"
+                                 class="dataTables_filter ms-n3 mb-0 mb-md-6">
+                                <label>
+                                    <input type="search" class="form-control"
+                                           @input="GetInfo()"
+                                           v-model="Search"
+                                           placeholder="فلترة البيانات "
+                                           aria-controls="DataTables_Table_0">
+                                </label>
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-md-end gap-2 justify-content-center">
+
+                            <div class="dt-action-buttons pt-0">
+                                <div class="dt-buttons btn-group flex-wrap">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                                @click.prevent="ClearForm(ruleForm)"
+                                                data-bs-target="#AddDialog">
+                                            <i class="ti ti-plus ti-xs me-md-2"></i>
+                                            <span class="d-md-inline-block d-none">إضافة {{ScreenTitleSingle}} </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="button" @click.prevent="Refresh()" class="btn btn-icon me-2 btn-label-secondary">
+                                <span class="ti ti-refresh ti-md"></span>
+                            </button>
+
+                            <div class="dataTables_length ms-n2" id="DataTables_Table_0_length">
+                                <label>
+                                    <select name="DataTables_Table_0_length"
+                                            aria-controls="DataTables_Table_0"
+                                            @change="GetInfo()"
+                                            v-model="pageSize"
+                                            class="form-select">
+                                        <option value="10">10</option>
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                        <option value="400">400</option>
+                                        <option value="1000">1000</option>
+                                    </select>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <table class="invoice-list-table table border-top dataTable no-footer dtr-column"
+                           id="DataTables_Table_0"
+                           aria-describedby="DataTables_Table_0_info"
+                           style="width: 1232px;">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>إسم {{ScreenTitleSingleAl}}</th>
+                                <th> السعة </th>
+                                <th> سعر الاشتراك  </th>
+                                <th> ع/ الطلبة  </th>
+                                <th>وصف توضيحي</th>
+                                <th class="cell-fit">الإعدادات</th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+                            <tr class="odd" v-if="Info==0">
+                                <td valign="top" colspan="8" class="dataTables_empty">لا توجد بيانات في الوقت الحالي ......</td>
+                            </tr>
+
+                            <tr class="odd" v-for="item,index in Info" v-if="Info!=0">
+                                <td>{{index+1}}</td>
+                                <td>
+                                    <div class="d-flex justify-content-start align-items-center">
+                                        <div class="avatar-wrapper">
+                                            <div class="avatar avatar-sm me-3">
+                                                <img :src="item.image" alt="Avatar" class="rounded-circle" v-if="item.image">
+                                                <img :src="CoverPath" alt="Avatar" class="rounded-circle" v-if="!item.image">
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <a href="#" class="text-heading text-truncate">
+                                                <span class="fw-medium">{{item.name}}</span>
+                                            </a>
+                                            <small class="text-truncate">{{item.schools}} / {{item.profileYears}}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{formatNumber(item.capacity)}}  </td>
+                                <td>{{formatNumber(item.price)}}  </td>
+                                <td>{{formatNumber(item.studentCount)}}  </td>
+                                <td>{{item.descriptions}}  </td>
+
+                                <td>
+                                    <div class="d-flex align-items-center">
+
+                                        <el-tooltip placement="top" effect="light">
+                                            <template #content>
+                                                <div>
+                                                    منفذ العملية: {{ item.createdBy }}
+                                                    <br />
+                                                    تاريخ العملية : {{moment(item.createdOn)}}
+                                                </div>
+                                            </template>
+                                            <a href="javascript:;"
+                                               class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                               type="button">
+                                                <i class="ti ti-info-circle text-body ti-md"></i>
+                                            </a>
+                                        </el-tooltip>
+
+                                        <a href="javascript:;"
+                                           @click.prevent="OpentInfoDialog(item)"
+                                           type="button"
+                                           class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                           data-bs-placement="top" aria-label="Edit"
+                                           data-bs-original-title="Info"
+                                           aria-describedby="tooltip253746">
+                                            <i class="ti ti-folder text-body ti-md"></i>
+                                        </a>
+                                        <div class="d-inline-block">
+                                            <a href="javascript:;"
+                                               class="btn btn-sm btn-text-secondary rounded-pill btn-icon dropdown-toggle hide-arrow"
+                                               data-bs-toggle="dropdown"
+                                               aria-expanded="false">
+                                                <i class="ti ti-dots-vertical ti-md"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-end m-0" style="">
+                                                <a href="javascript:;" class="dropdown-item"
+                                                   @click.prevent="OpentEditDialog(item)"
+                                                   type="button" data-bs-toggle="modal" data-bs-target="#EditDialog"
+                                                   data-bs-placement="top"
+                                                   aria-label="EditDialog"
+                                                   data-bs-original-title="Edit"
+                                                   aria-describedby="tooltip253746">
+                                                    <i class="ti ti-edit me-1"></i>
+                                                    تعديل البيانات
+                                                </a>
+                                                <!--<a href="javascript:;" class="dropdown-item"
+                                                   @click.prevent="ChangeStatus(item.id)">
+                                                    <i class="ti ti-eye me-1"></i>
+                                                    تغير حالة العرض
+                                                </a>-->
+                                                <div class="dropdown-divider">
+                                                </div>
+                                                <a href="javascript:;"
+                                                   class="dropdown-item text-danger delete-record"
+                                                   @click.prevent="Delete(item.id)">
+                                                    <i class="ti ti-trash me-1"></i>
+                                                    حدف
+                                                </a>
+                                            </div>
+                                        </div>
+                                         
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row mx-1">
+                        <div class="col-sm-12 col-md-6">
+                            <div class="dataTables_info" id="DataTables_Table_0_info"
+                                 role="status" aria-live="polite">Showing {{pageSize}} of {{pages}} entries</div>
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            <PaginationHelper :pageNo="pageNo"
+                                              :pageSize="pageSize"
+                                              :totalItems="pages"
+                                              @page-changed="GetInfo" />
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+         
+    </div>
+    
+    <!--Add-->
+    <div class="modal fade"
+         id="AddDialog"
+         tabindex="-1"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered1 modal-simple modal-add-new-cc">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="text-center mb-6">
+                        <h4 class="mb-2"> {{ScreenTitle}} </h4>
+                        <p>إضافة {{ScreenTitleSingle}} جديدة</p>
+                    </div>
+                    <el-form label-position="top"
+                             :model="ruleForm"
+                             :rules="rules"
+                             ref="ruleForm"
+                             label-width="120px"
+                             class="demo-ruleForm"
+                             style="width: 100%;">
+                        <form id="addNewCCForm" class="row g-6" onsubmit="return false">
+                            <div class="col-12">
+                                <el-form-item prop="SchoolsId" label="المدرسة  ">
+                                    <div class="input-group input-group-merge">
+                                        <el-select v-model="ruleForm.SchoolsId"
+                                                   style="width: 100%;"
+                                                   filterable
+                                                   placeholder="  المدرسة  "
+                                                   clearable>
+                                            <el-option v-for="item in Schools"
+                                                       :key="item.id"
+                                                       :label="item.name"
+                                                       :value="item.id">
+                                            </el-option>
+                                        </el-select>
+                                    </div>
+                                </el-form-item>
+                            </div>
+                            <div class="col-12">
+                                <el-form-item prop="Name" :label="`اسم ${ScreenTitleSingleAl}`">
+                                    <div class="input-group input-group-merge">
+                                        <input type="text" id="modalAddCardName"
+                                               class="form-control"
+                                               v-model="ruleForm.Name"
+                                               :placeholder="`إسم ${ScreenTitleSingleAl}`" />
+                                    </div>
+                                </el-form-item>
+                            </div>
+
+                            <div class="col-6">
+                                <el-form-item prop="Capacity" label="السعة ">
+                                    <div class="input-group input-group-merge">
+                                        <input type="number" id="modalAddCardName"
+                                               class="form-control"
+                                               v-model="ruleForm.Capacity"
+                                               placeholder="السعة " />
+                                    </div>
+                                </el-form-item>
+                            </div>
+
+                            <div class="col-6">
+                                <el-form-item prop="Price" label="سعر الاشتراك  ">
+                                    <div class="input-group input-group-merge">
+                                        <input type="number" id="modalAddCardName"
+                                               class="form-control"
+                                               v-model="ruleForm.Price"
+                                               placeholder="سعر الاشتراك  " />
+                                    </div>
+                                </el-form-item>
+                            </div>
+
+                            <div class="col-12">
+                                <el-form-item :label="`وصف  عن  ${ScreenTitleSingleAl}`">
+                                    <div class="input-group input-group-merge">
+                                        <span id="basic-icon-default-message2" class="input-group-text">
+                                            <i class="ti ti-info-circle"></i>
+                                        </span>
+                                        <textarea id="basic-icon-default-message"
+                                                  v-model="ruleForm.Descriptions"
+                                                  class="form-control"
+                                                  :placeholder="`وضف توضيحي عن  ${ScreenTitleSingleAl}`"
+                                                  aria-label="Hi, Do you have a moment to talk Joe?"
+                                                  aria-describedby="basic-icon-default-message2">
+
+                                        </textarea>
+                                    </div>
+                                </el-form-item>
+                            </div>
+
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-primary me-3"
+                                        @click.prevent="submitForm('ruleForm')">
+                                    إضافة بيانات {{ScreenTitleSingleAl}}
+                                </button>
+                                <button type="reset"
+                                        id="Close"
+                                        class="btn btn-label-secondary btn-reset"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Close">
+                                    إلغاء
+                                </button>
+                            </div>
+                        </form>
+                    </el-form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Edit-->
+    <div class="modal fade"
+         id="EditDialog"
+         tabindex="-1"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-simple modal-upgrade-plan">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="text-center mb-6">
+                        <h4 class="mb-2"> {{ScreenTitle}} </h4>
+                        <p>التعديل في بيانات  {{ScreenTitleSingle}} </p>
+                    </div>
+                    <el-form label-position="top"
+                             :model="ruleForm"
+                             :rules="rules"
+                             ref="ruleForm"
+                             label-width="120px"
+                             class="demo-ruleForm"
+                             style="width: 100%;">
+                        <form id="addNewCCForm" class="row g-6" onsubmit="return false">
+                            <div class="col-12">
+                                <el-form-item prop="SchoolsId" label="المدرسة  ">
+                                    <div class="input-group input-group-merge">
+                                        <el-select v-model="ruleForm.SchoolsId"
+                                                   style="width: 100%;"
+                                                   filterable
+                                                   placeholder="  المدرسة  "
+                                                   clearable>
+                                            <el-option v-for="item in Schools"
+                                                       :key="item.id"
+                                                       :label="item.name"
+                                                       :value="item.id">
+                                            </el-option>
+                                        </el-select>
+                                    </div>
+                                </el-form-item>
+                            </div>
+                            <div class="col-12">
+                                <el-form-item prop="Name" :label="`اسم ${ScreenTitleSingleAl}`">
+                                    <div class="input-group input-group-merge">
+                                        <input type="text" id="modalAddCardName"
+                                               class="form-control"
+                                               v-model="ruleForm.Name"
+                                               :placeholder="`إسم ${ScreenTitleSingleAl}`" />
+                                    </div>
+                                </el-form-item>
+                            </div>
+
+                            <div class="col-6">
+                                <el-form-item prop="Capacity" label="السعة ">
+                                    <div class="input-group input-group-merge">
+                                        <input type="number" id="modalAddCardName"
+                                               class="form-control"
+                                               v-model="ruleForm.Capacity"
+                                               placeholder="السعة " />
+                                    </div>
+                                </el-form-item>
+                            </div>
+
+                            <div class="col-6">
+                                <el-form-item prop="Price" label="سعر الاشتراك  ">
+                                    <div class="input-group input-group-merge">
+                                        <input type="number" id="modalAddCardName"
+                                               class="form-control"
+                                               v-model="ruleForm.Price"
+                                               placeholder="سعر الاشتراك  " />
+                                    </div>
+                                </el-form-item>
+                            </div>
+
+                            <div class="col-12">
+                                <el-form-item :label="`وصف  عن  ${ScreenTitleSingleAl}`">
+                                    <div class="input-group input-group-merge">
+                                        <span id="basic-icon-default-message2" class="input-group-text">
+                                            <i class="ti ti-info-circle"></i>
+                                        </span>
+                                        <textarea id="basic-icon-default-message"
+                                                  v-model="ruleForm.Descriptions"
+                                                  class="form-control"
+                                                  :placeholder="`وضف توضيحي عن  ${ScreenTitleSingleAl}`"
+                                                  aria-label="Hi, Do you have a moment to talk Joe?"
+                                                  aria-describedby="basic-icon-default-message2">
+
+                    </textarea>
+                                    </div>
+                                </el-form-item>
+                            </div>
+
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-primary me-3"
+                                        @click.prevent="submitEditForm('ruleForm')">
+                                    تعديل بيانات {{ScreenTitleSingleAl}}
+                                </button>
+                                <button type="reset"
+                                        id="Close"
+                                        class="btn btn-label-secondary btn-reset"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Close">
+                                    إلغاء
+                                </button>
+                            </div>
+                        </form>
+                    </el-form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-backdrop fade"></div>
+
+
+    <!-- View Info-->
+    <div class="container-xxl flex-grow-1 container-p-y" v-if="state==2">
+        <div class="app-ecommerce">
+            <!-- Add Product -->
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-6 row-gap-4">
+                <div class="d-flex flex-column justify-content-center">
+                    <h4 class="mb-1"> المدرسة :  {{SelectedItem.Schools}}</h4>
+                    <h4 class="mb-1"> العام الدراسي :  {{SelectedItem.profileYears}}</h4>
+                    <h4 class="mb-1"> اسم الفصل :  {{SelectedItem.name}}</h4>
+                </div>
+                <div class="d-flex align-content-center flex-wrap gap-4">
+                    <div class="d-flex gap-4">
+                        <button class="btn btn-label-secondary"
+                                @click.prevent="Back()">
+                            العودة
+                        </button>
+                    </div>
+                   
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xl-12">
+                    <h6 class="text-muted">التفاصيل </h6>
+                    <div class="nav-align-top mb-6">
+                        <ul class="nav nav-pills mb-4 nav-fill" role="tablist">
+                            <li class="nav-item mb-1 mb-sm-0">
+                                <button type="button"
+                                        class="nav-link active"
+                                        role="tab"
+                                        data-bs-toggle="tab"
+                                        @click="ChangeTab('Chart')"
+                                        data-bs-target="#navs-pills-justified-chart"
+                                        aria-controls="navs-pills-justified-chart"
+                                        aria-selected="true">
+                                    <span class="d-none d-sm-block">
+                                        <i class="tf-icons ti ti-table-minus ti-sm me-1_5 align-text-bottom"></i> المواد الدراسية  
+                                    </span><i class="ti ti-table-minus ti-sm d-sm-none"></i>
+                                </button>
+                            </li>
+                            <li class="nav-item mb-1 mb-sm-0">
+                                <button type="button"
+                                        class="nav-link"
+                                        role="tab"
+                                        @click="ChangeTab('Shapter')"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#navs-pills-justified-shapter"
+                                        aria-controls="navs-pills-justified-shapter"
+                                        aria-selected="false">
+                                    <span class="d-none d-sm-block">
+                                        <i class="tf-icons ti ti-columns ti-sm me-1_5 align-text-bottom"></i>
+                                        الجدول الدراسي 
+                                    </span>
+                                    <i class="ti ti-columns ti-sm d-sm-none"></i>
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button type="button"
+                                        class="nav-link"
+                                        role="tab"
+                                        @click="ChangeTab('Lectures')"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#navs-pills-justified-lectures"
+                                        aria-controls="navs-pills-justified-lectures"
+                                        aria-selected="false">
+                                    <span class="d-none d-sm-block">
+                                        <i class="tf-icons ti ti-users-group ti-sm me-1_5 align-text-bottom"></i>
+                                        بيانات الطلبة 
+                                    </span>
+                                    <i class="ti ti-users-group ti-sm d-sm-none"></i>
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button type="button"
+                                        class="nav-link"
+                                        role="tab"
+                                        @click="ChangeTab('Exams')"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#navs-pills-justified-exams"
+                                        aria-controls="navs-pills-justified-exams"
+                                        aria-selected="false">
+                                    <span class="d-none d-sm-block">
+                                        <i class="tf-icons ti ti-school ti-sm me-1_5 align-text-bottom"></i>
+                                        الصحائف الشهرية 
+                                    </span>
+                                    <i class="ti ti-school ti-sm d-sm-none"></i>
+                                </button>
+                            </li>
+                            <li class="nav-item mb-1 mb-sm-0">
+                                <button type="button"
+                                        class="nav-link"
+                                        role="tab"
+                                        @click="ChangeTab('Students')"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#navs-pills-justified-students"
+                                        aria-controls="navs-pills-justified-students"
+                                        aria-selected="false">
+                                    <span class="d-none d-sm-block">
+                                        <i class="tf-icons ti ti-list-check ti-sm me-1_5 align-text-bottom"></i>
+                                        الحضور والانصراف 
+                                    </span>
+                                    <i class="ti ti-list-check ti-sm d-sm-none"></i>
+                                </button>
+                            </li>
+                            <li class="nav-item mb-1 mb-sm-0">
+                                <button type="button"
+                                        class="nav-link"
+                                        role="tab"
+                                        @click="ChangeTab('CoursesExams')"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#navs-pills-justified-CoursesExams"
+                                        aria-controls="navs-pills-justified-CoursesExams"
+                                        aria-selected="false">
+                                    <span class="d-none d-sm-block">
+                                        <i class="tf-icons ti ti-devices-question ti-sm me-1_5 align-text-bottom"></i>
+                                        الإختبارات 
+                                    </span>
+                                    <i class="ti ti-devices-question ti-sm d-sm-none"></i>
+                                </button>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+
+                            <div class="tab-pane fade show active" id="navs-pills-justified-chart" role="tabpanel">
+                                <Courses></Courses>
+                            </div>
+
+                            <!--Shapter Pane-->
+                            <div class="tab-pane fade" id="navs-pills-justified-shapter" role="tabpanel">
+                                <CoursesSchedules></CoursesSchedules>
+                            </div>
+
+                            <div class="tab-pane fade" id="navs-pills-justified-lectures" role="tabpanel">
+                                <Students></Students>
+                            </div>
+
+                            <div class="tab-pane fade" id="navs-pills-justified-exams" role="tabpanel">
+                                <Certificates></Certificates>
+                            </div>
+
+                            <div class="tab-pane fade" id="navs-pills-justified-students" role="tabpanel">
+                                <Enrollments></Enrollments>
+                            </div>
+                            
+                            <div class="tab-pane fade" id="navs-pills-justified-CoursesExams" role="tabpanel">
+                                <CoursesExams></CoursesExams>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+     
+</div>

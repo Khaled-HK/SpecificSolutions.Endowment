@@ -1,0 +1,133 @@
+﻿<div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y" v-if="state==0">
+        <!-- Invoice List Widget -->
+
+    
+        <!-- Invoice List Table -->
+        <div class="card">
+            <div class="card-datatable table-responsive">
+                <div id="DataTables_Table_0_wrapper"
+                     class="dataTables_wrapper dt-bootstrap5 no-footer">
+
+
+                    <div class="card-header border-bottom">
+                        <h5 class="card-title mb-0">{{ScreenTitle}}</h5>
+                        <div class="d-flex justify-content-between align-items-center row pt-4 gap-4 gap-md-0">
+                            <div class="col-md-4 user_role"></div>
+                            <div class="col-md-4 user_plan"></div>
+                            <div class="col-md-4 user_status"></div>
+                        </div>
+                    </div>
+
+                    <div class="card-header py-0 d-flex flex-column flex-md-row align-items-center">
+                        <div>
+                            <div id="DataTables_Table_0_filter"
+                                 class="dataTables_filter ms-n3 mb-0 mb-md-6">
+                                <label>
+                                    <input type="search" class="form-control"
+                                           @input="GetInfo()"
+                                           v-model="Search"
+                                           placeholder="فلترة البيانات "
+                                           aria-controls="DataTables_Table_0">
+                                </label>
+                            </div>
+
+                        </div>
+                        <div class="d-flex align-items-center justify-content-md-end gap-2 justify-content-center">
+
+
+                            <div class="dataTables_length ms-n2" id="DataTables_Table_0_length">
+                                <label>
+                                    <select name="DataTables_Table_0_length"
+                                            aria-controls="DataTables_Table_0"
+                                            @change="GetInfo()"
+                                            v-model="pageSize"
+                                            class="form-select">
+                                        <option value="10">10</option>
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                        <option value="400">400</option>
+                                        <option value="1000">1000</option>
+                                    </select>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <table class="invoice-list-table table border-top dataTable no-footer dtr-column"
+                           id="DataTables_Table_0"
+                           aria-describedby="DataTables_Table_0_info"
+                           style="width: 1232px;">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>إسم </th>
+                                <th> رقم الكرت </th>
+                                <th> السبب</th>
+                                <th> التأتير </th>
+                                <th> حالة التعبئة </th>
+                                <th> تاريخ المحاولة </th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+                            <tr class="odd" v-if="Info==0">
+                                <td valign="top" colspan="8" class="dataTables_empty">لا توجد بيانات في الوقت الحالي ......</td>
+                            </tr>
+
+                            <tr class="odd" v-for="item,index in Info" v-if="Info!=0">
+                                <td>{{index+1}}</td>
+                                <td>
+                                    <div class="d-flex justify-content-start align-items-center">
+                                        <div class="avatar-wrapper">
+                                            <div class="avatar avatar-sm me-3">
+                                                <img :src="item.image" alt="Avatar" class="rounded-circle" v-if="item.image">
+                                                <img :src="CoverPath" alt="Avatar" class="rounded-circle" v-if="!item.image">
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <a href="#" class="text-heading text-truncate">
+                                                <span class="fw-medium">{{item.name}}</span>
+                                            </a>
+                                            <small class="text-truncate">{{item.phone}} </small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{item.voucherNumber}} </td>
+                                <td>{{item.resone}} </td>
+                                <td>{{item.proseger}} </td>
+                                <td>
+                                    <span v-if="item.processStatus==1" class="badge bg-label-danger me-1">لم تنجح عملية التعبئة </span>
+                                    <span v-if="item.processStatus==2" class="badge bg-label-success me-1"> نجحت العملية </span>
+                                </td>
+                                <td>{{momentTime(item.createdOn)}} </td>
+                               
+
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row mx-1">
+                        <div class="col-sm-12 col-md-6">
+                            <div class="dataTables_info" id="DataTables_Table_0_info"
+                                 role="status" aria-live="polite">Showing {{pageSize}} of {{pages}} entries</div>
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            <PaginationHelper :pageNo="pageNo"
+                                              :pageSize="pageSize"
+                                              :totalItems="pages"
+                                              @page-changed="GetInfo" />
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,166 @@
+﻿<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-6">
+                <!-- Account -->
+                <div class="card-body">
+                    <div class="d-flex align-items-start align-items-sm-center gap-6">
+
+                       
+                        <img :src="loginDetails.image"
+                             v-if="loginDetails.image"
+                             alt="user-avatar"
+                             class="d-block w-px-100 h-px-100 rounded"
+                             id="uploadedAvatar" />
+                        <img :src="CoverPath"
+                             v-if="!loginDetails.image"
+                             alt="user-avatar"
+                             class="d-block w-px-100 h-px-100 rounded"
+                             id="uploadedAvatar" />
+                        <div class="button-wrapper">
+                            <label for="upload" class="btn btn-primary me-3 mb-4" tabindex="0">
+                                <span class="d-none d-sm-block">Upload new photo</span>
+                                <i class="ti ti-upload d-block d-sm-none"></i>
+                                <input type="file"
+                                       v-on:change="SelectImage($event.target.files[0])"
+                                       id="upload"
+                                       class="account-file-input"
+                                       hidden
+                                       accept="image/png, image/jpeg" />
+                            </label>
+                            <!--<button type="button" class="btn btn-label-secondary account-image-reset mb-4">
+            <i class="ti ti-refresh-dot d-block d-sm-none"></i>
+            <span class="d-none d-sm-block">Reset</span>
+        </button>-->
+
+                            <div><!--Allowed JPG, GIF or PNG. Max size of 800K--></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body pt-4">
+                    <form id="formAccountSettings">
+                        <el-form label-position="top"
+                                 :model="ruleForm"
+                                 :rules="rules"
+                                 ref="ruleForm"
+                                 label-width="120px"
+                                 class="demo-ruleForm"
+                                 style="width: 100%;">
+                            <div class="row">
+                                <div class="mb-4 col-md-6">
+                                    <el-form-item prop="Name" label=" الإسم  ">
+                                        <input class="form-control"
+                                               type="text"
+                                                v-model="ruleForm.Name"
+                                               placeholder="الإسم"
+                                               autofocus />
+                                    </el-form-item>
+                                </div>
+
+                                <div class="mb-4 col-md-6">
+                                    <el-form-item prop="LoginName" label=" إسم المستخدم  ">
+                                        <input class="form-control"
+                                               type="text"
+                                               v-model="ruleForm.LoginName"
+                                               placeholder="إسم المستخدم"
+                                               autofocus />
+                                    </el-form-item>
+                                </div>
+                                <div class="mb-4 col-md-6">
+                                    <el-form-item prop="Phone" label=" رقم الهاتف   ">
+                                        <input class="form-control"
+                                               type="text"
+                                               v-model="ruleForm.Phone"
+                                               placeholder="رقم الهاتف"
+                                               autofocus />
+                                    </el-form-item>
+                                </div>
+                                <div class="mb-4 col-md-6">
+                                    <el-form-item prop="Email" label="  البريد الإلكتروني   ">
+                                        <input class="form-control"
+                                               type="text"
+                                               v-model="ruleForm.Email"
+                                               placeholder=" البريد الإلكتروني"
+                                               autofocus />
+                                    </el-form-item>
+                                </div>
+
+                            </div>
+                            <div class="mt-2">
+                                <button type="submit" class="btn btn-primary me-3" @click.prevent="submitForm('ruleForm')">تعديل البيانات الشخصية </button>
+                            </div>
+                        </el-form>
+                    </form>
+                </div>
+                <!-- /Account -->
+            </div>
+
+            <!-- Change Password -->
+            <div class="card mb-6">
+                <h5 class="card-header">تغير كلمة المرور</h5>
+                <div class="card-body pt-1">
+                    <form id="formAccountSettings" method="GET" onsubmit="return false">
+                        <el-form label-position="top"
+                                 :model="PasswordruleForm"
+                                 :rules="Passwordrules"
+                                 ref="PasswordruleForm"
+                                 label-width="120px"
+                                 class="demo-ruleForm"
+                                 style="width: 100%;">
+
+                            <div class="row">
+                                <div class="mb-6 col-md-6 form-password-toggle">
+                                    <el-form-item prop="Password" label="  كلمة المرور الجالية    ">
+                                        <div class="input-group input-group-merge">
+                                            <input class="form-control"
+                                                   type="password"
+                                                   v-model="PasswordruleForm.Password"
+                                                   placeholder="************" />
+                                            <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
+                                        </div>
+                                     </el-form-item>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="mb-6 col-md-6 form-password-toggle">
+                                    <el-form-item prop="NewPassword" label="  كلمة المرور الجديدة    ">
+                                        <div class="input-group input-group-merge">
+                                            <input class="form-control"
+                                                   type="password"
+                                                   v-model="PasswordruleForm.NewPassword"
+                                                   placeholder="************" />
+                                            <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
+                                        </div>
+                                    </el-form-item>
+                                </div>
+
+                                <div class="mb-6 col-md-6 form-password-toggle">
+                                    <el-form-item prop="ConfirmPassword" label="  تأكيد كلمة المرور     ">
+                                        <div class="input-group input-group-merge">
+                                            <input class="form-control"
+                                                   type="password"
+                                                    v-model="PasswordruleForm.ConfirmPassword"
+                                                   placeholder="************" />
+                                            <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
+                                        </div>
+                                    </el-form-item>
+                                </div>
+                            </div>
+                            <h6 class="text-body">متطلبات كلمة المرور:</h6>
+                            <ul class="ps-4 mb-0">
+                                <li class="mb-4">كلمة المرور يجب ألا تقل عن 8 خانات - كل ماكنت الخانات أكتر كل ماكنت صعبة الإختراق </li>
+                                <li class="mb-4">يجب أن تحتوي على حروف أجنبية </li>
+                                <li>يجب ان تحتوي على حروف كبيرة وصغيرة , أرقام , رموز </li>
+                            </ul>
+                            <div class="mt-6">
+                                <button type="submit" class="btn btn-primary me-3" @click.prevent="submitForm('PasswordruleForm')">تهيئة كلمة المرور</button>
+                            </div>
+
+                        </el-form>
+                            
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,92 @@
+﻿<div class="container-fluid py-4" dir="rtl" v-if="loginDetails.userType==50">
+    <div class="row">
+        <div class="col-12">
+
+
+            <!--Student Info-->
+            <div class="card" >
+                <div class="card-header pb-0">
+                    <div class="d-lg-flex">
+                        <div>
+                            <h5 class="mb-0">إستلام باقة جديدة   </h5>
+                            <p class="text-sm mb-0" style="margin-top:20px"><span style="color:red">*</span>
+                                قم بإدراج ملف الكروت الذي تم استلامه من الشركة ، كما يرجي التأكد من إدخال الرقم السري الخاص بالملف والمرفق مع البريد الإلكتروني 
+                            </p>
+                            
+                            <p class="text-sm mb-0" style="margin-top:15px"><span style="color:red">*</span>
+                                بعد مطابقة البيانات سيتم تحميل ملف الكروت الجديد وسيتم تحديت حالة الباقة لتصبح صالحة للبيع 
+                            </p>
+                            
+                            <p class="text-sm mb-0" style="margin-top:15px"><span style="color:red">*</span>
+                                في حال كانت الباقة تحتوي على عدد كبير من الكروت قد تستغرق عملية فك التشفير القليل من الوقت 
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                    
+                <div class="card-body px-0 pb-0">
+                    <div class="table-responsive">
+                        <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
+
+
+                            <el-form :model="ruleForm"
+                                     :rules="rules"
+                                     ref="ruleForm"
+                                     class="multisteps-form__form mb-8"
+                                     style="height: auto; padding: 20px">
+
+                                <div class="row mt-3">
+                                    <div class="col-12 col-sm-4">
+                                        <el-form-item label="الرقم التسلسلي للباقة " prop="SerialNumber">
+                                            <input v-model="ruleForm.SerialNumber"
+                                                   class="multisteps-form__input form-control"
+                                                   type="text"
+                                                   placeholder=" الرقم التسلسلي للباقة "
+                                                   onfocus="focused(this)" onfocusout="defocused(this)">
+                                        </el-form-item>
+                                    </div>
+
+                                    <div class="col-12 col-sm-4">
+                                        <el-form-item label="رقم الملف السري  " prop="FileSecretKey">
+                                            <input v-model="ruleForm.FileSecretKey"
+                                                   class="multisteps-form__input form-control"
+                                                   type="password"
+                                                   placeholder=" رقم الملف السري    "
+                                                   onfocus="focused(this)" onfocusout="defocused(this)">
+                                        </el-form-item>
+                                    </div>
+
+
+                                    <div class="col-12 col-sm-4 mt-3 mt-sm-0">
+                                        <el-upload class="upload-demo "
+                                                   action="#"
+                                                   style=" margin-left: 15px; margin-top: 35px; float:left"
+                                                   :on-change="SelectCoverAttachment">
+                                            <el-button size="small" type="primary"
+                                                       class="btn bg-gradient-primary ms-auto mb-0 js-btn-next">إدراج ملف الكــــروت </el-button>
+                                        </el-upload>
+                                    </div>
+                                </div>
+                                <br />
+                                <div class="row mt-3" v-if="AddButton">
+                                    <div class="col-12 col-sm-12">
+                                        <div class="button-row d-flex mt-4">
+                                            <button class="btn bg-gradient-primary ms-auto mb-0 js-btn-next"
+                                                    type="button"
+                                                    style="margin-top:10px"
+                                                    @click.prevent="submitForm('ruleForm')"
+                                                    title="Next">
+                                                إرسال البيانات
+                                            </button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </el-form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

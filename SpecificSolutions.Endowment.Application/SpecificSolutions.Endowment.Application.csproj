@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Resources\**" />
+    <EmbeddedResource Remove="Resources\**" />
+    <None Remove="Resources\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Models\DTOs\AccountDetails\FilterAccountDetailDTO" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Handlers\Requests\Commands\Delete\" />
+    <Folder Include="Handlers\Requests\Commands\Update\" />
+    <Folder Include="Handlers\Requests\Queries\" />
+    <Folder Include="Models\DTOs\AccountDetails\" />
+    <Folder Include="Validators\Banks\" />
+    <Folder Include="Validators\Branchs\" />
+    <Folder Include="Validators\BuildingDetails\" />
+    <Folder Include="Validators\Cities\" />
+    <Folder Include="Validators\Products\" />
+    <Folder Include="Validators\Regions\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="11.11.0" />
+    <PackageReference Include="MediatR" Version="12.4.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
+	<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+    <PackageReference Include="Polly" Version="8.5.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.9.0" />
+
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SpecificSolutions.Endowment.Core\SpecificSolutions.Endowment.Core.csproj" />
+  </ItemGroup>
+
+</Project>

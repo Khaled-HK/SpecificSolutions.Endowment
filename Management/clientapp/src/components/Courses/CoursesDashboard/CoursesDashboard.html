@@ -1,0 +1,459 @@
+﻿<div class="content-wrapper">
+    <!-- Content -->
+
+
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+
+
+
+
+        <!-- Hour chart  -->
+        <div class="card bg-transparent shadow-none my-6 border-0">
+            <div class="card-body row p-0 pb-6 g-6">
+                <div class="col-12 col-lg-12 card-separator">
+                    <div class="d-flex justify-content-between flex-wrap gap-4 me-12">
+                        <div class="d-flex align-items-center gap-4 me-6 me-sm-0">
+                            <div class="avatar avatar-lg">
+                                <div class="avatar-initial bg-label-primary rounded">
+                                    <div>
+                                        <img src="/assets/svg/icons/user-info.svg" alt="paypal" class="img-fluid" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="content-right">
+                                <p class="mb-0 fw-medium">عدد الطلبة المسجلين </p>
+                                <h4 class="text-primary mb-0">{{formatNumber(Info.inrolledCount)}}  </h4>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-4">
+                            <div class="avatar avatar-lg">
+                                <div class="avatar-initial bg-label-info rounded">
+                                    <div>
+                                        <img src="/assets/svg/icons/lightbulb.svg" alt="Lightbulb" class="img-fluid" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="content-right">
+                                <p class="mb-0 fw-medium">قيمة الإشتراكات </p>
+                                <h4 class="text-info mb-0">{{formatNumber(Info.cash)}}</h4>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-4">
+                            <div class="avatar avatar-lg">
+                                <div class="avatar-initial bg-label-warning rounded">
+                                    <div>
+                                        <img src="/assets/svg/icons/Check.svg" alt="Check" class="img-fluid" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="content-right">
+                                <p class="mb-0 fw-medium">عدد المحاضرات </p>
+                                <h4 class="text-warning mb-0">{{Info.lectureCount}}</h4>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-4">
+                            <div class="avatar avatar-lg">
+                                <div class="avatar-initial bg-label-dark rounded">
+                                    <div>
+                                        <img src="/assets/svg/icons/rocket.svg" alt="rocket" class="img-fluid" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="content-right">
+                                <p class="mb-0 fw-medium">الإختبارات </p>
+                                <h4 class="text-dark mb-0">{{Info.examsCount}}</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Hour chart End  -->
+
+
+
+
+        <div class="row mb-6 g-6">
+            <div class="col-xxl-4 col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h5 class="card-title m-0 me-2">الدورات التدريبية الأكتر إشتراكا</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="d-flex mb-6 align-items-center" 
+                                v-for="item in Info.topFiveCourses"
+                                >
+                                <div class="avatar flex-shrink-0 me-4">
+                                    <span class="avatar-initial rounded bg-label-primary">
+                                        <i class="ti ti-video ti-lg"></i>
+                                    </span>
+                                </div>
+                                <div class="row w-100 align-items-center">
+                                    <div class="col-sm-8 mb-1 mb-sm-0 mb-lg-1 mb-xxl-0">
+                                        <h6 class="mb-0">{{item.name}}</h6>
+                                        <span class="mb-0">{{item.academicLevel}}/{{item.academicSpecialization}}</span>
+                                    </div>
+                                    <div class="col-sm-4 d-flex justify-content-sm-end">
+                                        <div class="badge bg-label-secondary">{{formatNumber(item.count)}} إشتراك</div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+            <div class="col-xxl-4 col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h5 class="card-title m-0 me-2">الدورات التدريبية الأكتر ربحا</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="d-flex mb-6 align-items-center"
+                                v-for="item in Info.topFiveCoursesCash">
+                                <div class="avatar flex-shrink-0 me-4">
+                                    <span class="avatar-initial rounded bg-label-info"><i class="ti ti-code ti-lg"></i></span>
+                                </div>
+                                <div class="row w-100 align-items-center">
+                                    <div class="col-sm-8 mb-1 mb-sm-0 mb-lg-1 mb-xxl-0">
+                                        <h6 class="mb-0">{{item.name}}</h6>
+                                        <span class="mb-0">{{item.academicLevel}}/{{item.academicSpecialization}}</span>
+                                    </div>
+                                    <div class="col-sm-4 d-flex justify-content-sm-end">
+                                        <div class="badge bg-label-secondary">{{formatNumber(item.cash)}} د.ل</div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="col-xxl-4 col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h5 class="card-title m-0 me-2">الطلبة الأكتر دفعا </h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="d-flex mb-6 align-items-center"
+                                v-for="item in Info.topStudentsByPayment">
+                                <div class="avatar flex-shrink-0 me-4">
+                                    <img :src="item.image" alt="Avatar" class="rounded-circle" />
+                                </div>
+                                <div class="row w-100 align-items-center">
+                                    <div class="col-sm-8 mb-1 mb-sm-0 mb-lg-1 mb-xxl-0">
+                                        <h6 class="mb-0">{{item.name}}</h6>
+                                        <span class="mb-0">{{item.phone}}</span>
+                                    </div>
+                                    <div class="col-sm-4 d-flex justify-content-sm-end">
+                                        <div class="badge bg-label-secondary">{{formatNumber(item.cash)}} د.ل</div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+        </div>
+
+
+           
+
+
+
+
+
+
+
+
+
+
+
+
+            <!-- Topic and Instructors -->
+            <div class="row mb-6 g-6">
+                <!-- Interested Topics -->
+                <div class="col-xxl-8" v-if="Info.topFiveLectures!=0">
+                    <div class="card h-100">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="card-title m-0 me-2">المحاضرات الأكتر مشاهدة </h5>
+                            <!--<div class="dropdown">
+                            <button class="btn btn-text-secondary rounded-pill text-muted border-0 p-2 me-n1"
+                                    type="button"
+                                    id="topic"
+                                    data-bs-toggle="dropdown"
+                                    aria-haspopup="true"
+                                    aria-expanded="false">
+                                <i class="ti ti-dots-vertical ti-md text-muted"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="topic">
+                                <a class="dropdown-item" href="javascript:void(0);">Highest Views</a>
+                                <a class="dropdown-item" href="javascript:void(0);">See All</a>
+                            </div>
+                        </div>-->
+                        </div>
+                        <div class="card-body row g-6">
+                            <div class="col-xxl-7 col-md-8">
+                                <BarChart :visitorBarChartSeries="Info.topFiveLecturesCount"
+                                          v-if="Info.topFiveLecturesCount!=0" />
+                                <!--<BarChart />-->
+                            </div>
+                            <div class="col-1 d-none d-xxl-block"></div>
+                            <div class="col-md-4 d-flex justify-content-around align-items-center"
+                                 v-if="Info.topFiveLectures">
+                                <div>
+                                    <div class="d-flex align-items-baseline">
+                                        <span class="text-primary me-2"><i class="ti ti-circle-filled ti-12px"></i></span>
+                                        <div>
+                                            <p class="mb-0">{{Info.topFiveLectures[0].name}}</p>
+                                            <h5>{{formatNumber(Info.topFiveLectures[0].count)}}</h5>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-baseline my-12">
+                                        <span class="text-success me-2"><i class="ti ti-circle-filled ti-12px"></i></span>
+                                        <div>
+                                            <p class="mb-0">{{Info.topFiveLectures[1].name}}</p>
+                                            <h5>{{formatNumber(Info.topFiveLectures[1].count)}}</h5>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-baseline">
+                                        <span class="text-danger me-2"><i class="ti ti-circle-filled ti-12px"></i></span>
+                                        <div>
+                                            <p class="mb-0">{{Info.topFiveLectures[2].name}}</p>
+                                            <h5>{{formatNumber(Info.topFiveLectures[2].count)}}</h5>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="d-flex align-items-baseline">
+                                        <span class="text-info me-2"><i class="ti ti-circle-filled ti-12px"></i></span>
+                                        <div>
+                                            <p class="mb-0">{{Info.topFiveLectures[3].name}}</p>
+                                            <h5>{{formatNumber(Info.topFiveLectures[3].count)}}</h5>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-baseline my-12">
+                                        <span class="text-secondary me-2"><i class="ti ti-circle-filled ti-12px"></i></span>
+                                        <div>
+                                            <p class="mb-0">{{Info.topFiveLectures[4].name}}</p>
+                                            <h5>{{formatNumber(Info.topFiveLectures[4].count)}}</h5>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-baseline">
+                                        <span class="text-warning me-2"><i class="ti ti-circle-filled ti-12px"></i></span>
+                                        <div>
+                                            <p class="mb-0">{{Info.topFiveLectures[5].name}}</p>
+                                            <h5>{{formatNumber(Info.topFiveLectures[5].count)}}</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--/ Interested Topics -->
+                <!-- Popular Instructors -->
+                <div class="col-xxl-4 col-lg-6" v-if="Info.topFiveStudents!=0">
+                    <div class="card h-100">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <div class="card-title mb-0">
+                                <h5 class="m-0 me-2">الطلبة الأكتر مشاهدة </h5>
+                            </div>
+                            <!--<div class="dropdown">
+                            <button class="btn btn-text-secondary rounded-pill text-muted border-0 p-2 me-n1"
+                                    type="button"
+                                    id="popularInstructors"
+                                    data-bs-toggle="dropdown"
+                                    aria-haspopup="true"
+                                    aria-expanded="false">
+                                <i class="ti ti-dots-vertical ti-md text-muted"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="popularInstructors">
+                                <a class="dropdown-item" href="javascript:void(0);">Select All</a>
+                                <a class="dropdown-item" href="javascript:void(0);">Refresh</a>
+                                <a class="dropdown-item" href="javascript:void(0);">Share</a>
+                            </div>
+                        </div>-->
+                        </div>
+                        <div class="px-5 py-4 border border-start-0 border-end-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <p class="mb-0 text-uppercase">بيانات الطالب</p>
+                                <p class="mb-0 text-uppercase">عدد المحاضرات </p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-6"
+                                 v-for="item in Info.topFiveStudents">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar avatar me-4">
+                                        <img :src="item.image" alt="Avatar" class="rounded-circle" />
+                                    </div>
+                                    <div>
+                                        <div>
+                                            <h6 class="mb-0 text-truncate">{{item.name}}</h6>
+                                            <small class="text-truncate text-body">رقم الهاتف : {{item.phone}}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <h6 class="mb-0">{{item.count}}</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--  Topic and Instructors  End-->
+
+
+
+
+
+
+            <div class="row mb-6 g-6">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body row widget-separator g-0">
+                            <div class="col-sm-5 border-shift border-end pe-sm-6">
+                                <h3 class="text-primary d-flex align-items-center gap-2 mb-2">
+                                    {{Info.reviewAvg}}
+                                    <i class="ti ti-star-filled ti-32px"></i>
+                                </h3>
+                                <p class="h6 mb-2">Total  {{Info.reviewCount}} reviews</p>
+                                <p class="pe-2 mb-2">All reviews are from genuine customers</p>
+                                <span class="badge bg-label-primary mb-4 mb-sm-0">+{{Info.reviewsAddedThisWeek}} هذا الاسبوع </span>
+                                <hr class="d-sm-none" />
+                            </div>
+
+                            <div class="col-sm-7 gap-2 text-nowrap d-flex flex-column justify-content-between ps-sm-6 pt-2 py-sm-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <small>5 Star</small>
+                                    <div class="progress w-100 bg-label-primary" style="height: 8px">
+                                        <div class="progress-bar bg-primary"
+                                             role="progressbar"
+                                             :style="{ width: `${Info.reviewCountFive}%` }"
+                                             aria-valuenow="10"
+                                             aria-valuemin="0"
+                                             aria-valuemax="100"></div>
+                                    </div>
+                                    <small class="w-px-20 text-end">{{Info.reviewCountFive}}</small>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <small>4 Star</small>
+                                    <div class="progress w-100 bg-label-primary" style="height: 8px">
+                                        <div class="progress-bar bg-primary"
+                                             role="progressbar"
+                                             :style="{ width: `${Info.reviewCountFour}%` }"
+                                             aria-valuenow="24"
+                                             aria-valuemin="0"
+                                             aria-valuemax="100"></div>
+                                    </div>
+                                    <small class="w-px-20 text-end">{{Info.reviewCountFour}}</small>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <small>3 Star</small>
+                                    <div class="progress w-100 bg-label-primary" style="height: 8px">
+                                        <div class="progress-bar bg-primary"
+                                             role="progressbar"
+                                             :style="{ width: `${Info.reviewCountThree}%` }"
+                                             aria-valuenow="12"
+                                             aria-valuemin="0"
+                                             aria-valuemax="100"></div>
+                                    </div>
+                                    <small class="w-px-20 text-end">{{Info.reviewCountThree}}</small>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <small>2 Star</small>
+                                    <div class="progress w-100 bg-label-primary" style="height: 8px">
+                                        <div class="progress-bar bg-primary"
+                                             role="progressbar"
+                                             :style="{ width: `${Info.reviewCountTwo}%` }"
+                                             aria-valuenow="7"
+                                             aria-valuemin="0"
+                                             aria-valuemax="100"></div>
+                                    </div>
+                                    <small class="w-px-20 text-end">{{Info.reviewCountTwo}}</small>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <small>1 Star</small>
+                                    <div class="progress w-100 bg-label-primary" style="height: 8px">
+                                        <div class="progress-bar bg-primary"
+                                             role="progressbar"
+                                             :style="{ width: `${Info.reviewCountOne}%` }"
+                                             aria-valuenow="2"
+                                             aria-valuemin="0"
+                                             aria-valuemax="100"></div>
+                                    </div>
+                                    <small class="w-px-20 text-end">{{Info.reviewCountOne}}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6" >
+                    <div class="card h-100">
+                        <div class="card-body row">
+                            <div class="col-sm-5">
+                                <div class="mb-12">
+                                    <h5 class="mb-2 text-nowrap">عمليات التسجيل الجديدة </h5>
+                                    <p class="mb-0">
+                                        <span class="me-2">{{Info.inrolledCountThisWeek}} عملية تسجيل هذا الاسبوع</span>
+                                    </p>
+                                </div>
+
+                                <!--<div>
+                                <h6 class="mb-2 fw-normal"><span class="text-success me-1">87%</span>Positive reviews</h6>
+                                <small>Weekly Report</small>
+                            </div>-->
+                            </div>
+                            <div class="col-sm-7 d-flex justify-content-sm-end align-items-end" 
+                                 v-if="Info.dailyEnrolledCounts!=0 && Info.dailyEnrolledCounts.length">
+                                <ReviewsChart :visitorBarChartSeries="Info.dailyEnrolledCounts"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- review List Table -->
+
+
+
+
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>

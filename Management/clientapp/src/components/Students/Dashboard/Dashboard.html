@@ -1,0 +1,296 @@
+﻿<div class="content-wrapper">
+    <!-- Content -->
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <div class="row g-6">
+            <!-- Earning Reports -->
+            <div class="col-lg-6 order-md-0 order-lg-0">
+                <div class="card h-100">
+                    <div class="card-header pb-0 d-flex justify-content-between">
+                        <div class="card-title mb-0">
+                            <h5 class="mb-1">تقرير التسجيل  </h5>
+                            <p class="card-subtitle">بيانات الطلبة </p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+
+                        <div class="row align-items-center g-md-8">
+                            <!--<EarningReports :InrolledSeries="Info.dailyEnrolledCounts" 
+                                            :Total="Info.studentCount"
+                                            :ThisWeek="Info.studentCountThisWeek"
+                                          v-if="Info.dailyEnrolledCounts!=0" />-->
+                            
+                            <EarningReports :InrolledSeries="InrolledSeriesInfo" 
+                                            :Total="TotalInfo"
+                                            :ThisWeek="ThisWeekInfo" />
+                        </div>
+                        <div class="border rounded p-5 mt-5">
+                            <div class="row gap-4 gap-sm-0">
+                                <div class="col-12 col-sm-4">
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <div class="badge rounded bg-label-primary p-1">
+                                            <i class="ti ti-wallet ti-sm"></i>
+                                        </div>
+                                        <h6 class="mb-0 fw-normal">المحافظ</h6>
+                                    </div>
+                                    <h4 class="my-2">{{formatNumber(Info.wallet)}} د.ل</h4>
+                                    <div class="progress w-75" style="height: 4px">
+                                        <div class="progress-bar"
+                                             role="progressbar"
+                                             style="width: 65%"
+                                             aria-valuenow="65"
+                                             aria-valuemin="0"
+                                             aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-4">
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <div class="badge rounded bg-label-info p-1"><i class="ti ti-chart-pie-2 ti-sm"></i></div>
+                                        <h6 class="mb-0 fw-normal">الإشتراكات</h6>
+                                    </div>
+                                    <h4 class="my-2">{{formatNumber(Info.pay)}} د.ل</h4>
+                                    <div class="progress w-75" style="height: 4px">
+                                        <div class="progress-bar bg-info"
+                                             role="progressbar"
+                                             style="width: 50%"
+                                             aria-valuenow="50"
+                                             aria-valuemin="0"
+                                             aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-4">
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <div class="badge rounded bg-label-danger p-1">
+                                            <i class="ti ti-brand-paypal ti-sm"></i>
+                                        </div>
+                                        <h6 class="mb-0 fw-normal">  المجاني</h6>
+                                    </div>
+                                    <h4 class="my-2">{{Info.free}}</h4>
+                                    <div class="progress w-75" style="height: 4px">
+                                        <div class="progress-bar bg-danger"
+                                             role="progressbar"
+                                             style="width: 65%"
+                                             aria-valuenow="65"
+                                             aria-valuemin="0"
+                                             aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support Tracker -->
+            <div class="col-md-6 order-md-3 order-lg-0">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between">
+                        <div class="card-title mb-0">
+                            <h5 class="mb-1">تقرير المهام </h5>
+                            <p class="card-subtitle" v-if="DeviceRequest==0">طلبات تغير الأجهزة </p>
+                            <p class="card-subtitle" v-if="DeviceRequest==1">طلبات الإنظمام </p>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-text-secondary rounded-pill text-muted border-0 p-2 me-n1"
+                                    type="button"
+                                    id="supportTrackerMenu"
+                                    data-bs-toggle="dropdown"
+                                    aria-haspopup="true"
+                                    aria-expanded="false">
+                                <i class="ti ti-dots-vertical ti-md text-muted"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="supportTrackerMenu">
+                                <a class="dropdown-item" @click.prevent="DeviceRequest=0">طلبات تغير الأجهزة </a>
+                                <a class="dropdown-item" @click.prevent="DeviceRequest=1">طلبات الإنظمام للدورات التدريبية </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body row">
+                        <div class="col-12 col-sm-4 col-md-12 col-lg-4">
+                            <div class="mt-lg-4 mt-lg-2 mb-lg-6 mb-2">
+                                <h2 class="mb-0" v-if="DeviceRequest==0">{{formatNumber(Info.deviceRequestCount)}}</h2>
+                                <h2 class="mb-0" v-if="DeviceRequest==1">{{formatNumber(Info.coursesRequestsCount)}}</h2>
+                                <p class="mb-0">إجمالي الطلبات </p>
+                            </div>
+                            <ul class="p-0 m-0">
+                                <li class="d-flex gap-4 align-items-center pb-1">
+                                    <div class="badge rounded bg-label-warning p-1_5"><i class="ti ti-clock ti-md"></i></div>
+                                    <div>
+                                        <h6 class="mb-0 text-nowrap">قيد الإنتظار</h6>
+                                        <small class="text-muted" v-if="DeviceRequest==0">{{formatNumber(Info.waitingDeviceReques)}}</small>
+                                        <small class="text-muted" v-if="DeviceRequest==1">{{formatNumber(Info.waitingCoursesRequests)}}</small>
+                                    </div>
+                                </li>
+                                <li class="d-flex gap-4 align-items-center mb-lg-3 pb-1" style="margin-top:15px">
+                                    <div class="badge rounded bg-label-info p-1_5">
+                                        <i class="ti ti-circle-check ti-md"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 text-nowrap">تمت الموافقة </h6>
+                                        <small class="text-muted" v-if="DeviceRequest==0">{{formatNumber(Info.acceptDeviceReques)}}</small>
+                                        <small class="text-muted" v-if="DeviceRequest==1">{{formatNumber(Info.acceptCoursesRequests)}}</small>
+                                    </div>
+                                </li>
+                                <li class="d-flex gap-4 align-items-center mb-lg-3 pb-1">
+                                    <div class="badge rounded bg-label-danger p-1_5"><i class="ti ti-ban ti-md"></i></div>
+                                    <div>
+                                        <h6 class="mb-0 text-nowrap">تم الرفض </h6>
+                                        <small class="text-muted" v-if="DeviceRequest==0">{{formatNumber(Info.rejectDeviceReques)}}</small>
+                                        <small class="text-muted" v-if="DeviceRequest==1">{{formatNumber(Info.rejectCoursesRequests)}}</small>
+                                    </div>
+                                </li>
+
+                            </ul>
+                        </div>
+                        <div class="col-12 col-sm-8 col-md-12 col-lg-8">
+                            <SupportTracker :series="Info.avgDeviceReques*100" v-if="DeviceRequest==0"/>
+                            <SupportTracker :series="Info.avgCoursesRequests*100" v-if="DeviceRequest==1"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+
+        <div class="row mb-6 g-6">
+
+
+
+
+
+            <div class="col-xxl-4 col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h5 class="card-title m-0 me-2">الطلبة الأكتر مشاهدة  </h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="d-flex mb-6 align-items-center"
+                                v-for="item in Info.topFiveStudents">
+                                <div class="avatar flex-shrink-0 me-4">
+                                    <img :src="item.image" alt="Avatar" class="rounded-circle" />
+                                </div>
+                                <div class="row w-100 align-items-center">
+                                    <div class="col-sm-8 mb-1 mb-sm-0 mb-lg-1 mb-xxl-0">
+                                        <h6 class="mb-0">{{item.name}}</h6>
+                                        <span class="mb-0">{{item.phone}}</span>
+                                    </div>
+                                    <div class="col-sm-4 d-flex justify-content-sm-end">
+                                        <div class="badge bg-label-secondary">{{formatNumber(item.cash)}} مشاهدة</div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-xxl-4 col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h5 class="card-title m-0 me-2">الطلبة الأكتر امتحانا   </h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="d-flex mb-6 align-items-center"
+                                v-for="item in Info.topFiveStudentsExam">
+                                <div class="avatar flex-shrink-0 me-4">
+                                    <img :src="item.image" alt="Avatar" class="rounded-circle" />
+                                </div>
+                                <div class="row w-100 align-items-center">
+                                    <div class="col-sm-8 mb-1 mb-sm-0 mb-lg-1 mb-xxl-0">
+                                        <h6 class="mb-0">{{item.name}}</h6>
+                                        <span class="mb-0">{{item.phone}}</span>
+                                    </div>
+                                    <div class="col-sm-4 d-flex justify-content-sm-end">
+                                        <div class="badge bg-label-secondary">{{formatNumber(item.cash)}} اختبار</div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-xxl-4 col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h5 class="card-title m-0 me-2">الطلبة الأكتر دفعا </h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="d-flex mb-6 align-items-center"
+                                v-for="item in Info.topStudentsByPayment">
+                                <div class="avatar flex-shrink-0 me-4">
+                                    <img :src="item.image" alt="Avatar" class="rounded-circle" />
+                                </div>
+                                <div class="row w-100 align-items-center">
+                                    <div class="col-sm-8 mb-1 mb-sm-0 mb-lg-1 mb-xxl-0">
+                                        <h6 class="mb-0">{{item.name}}</h6>
+                                        <span class="mb-0">{{item.phone}}</span>
+                                    </div>
+                                    <div class="col-sm-4 d-flex justify-content-sm-end">
+                                        <div class="badge bg-label-secondary">{{formatNumber(item.cash)}} د.ل</div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+        </div>
+
+
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>

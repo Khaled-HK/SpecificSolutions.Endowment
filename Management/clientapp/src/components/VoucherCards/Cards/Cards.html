@@ -1,0 +1,324 @@
+﻿<div class="content-wrapper">
+    <!-- Content -->
+
+
+
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <div class="row mb-6 g-6">
+            <div class="col-sm-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="content-left">
+                                <h5 class="mb-1">{{formatNumber(Statistics.cardCount)}} </h5>
+                                <small>عدد الكروت </small>
+                            </div>
+                            <span class="badge bg-label-primary rounded-circle p-2">
+                                <i class="ti ti-credit-card-pay ti-lg"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="content-left">
+                                <h5 class="mb-1">{{formatNumber(Statistics.cardValue)}} د.ل</h5>
+                                <small>إجمالي قيمة الكروت </small>
+                            </div>
+                            <span class="badge bg-label-success rounded-circle p-2">
+                                <i class="ti ti-coins ti-lg"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="content-left">
+                                <h5 class="mb-1">{{formatNumber(Statistics.activeCount)}}</h5>
+                                <small>الكروت المعروضة للبيع </small>
+                            </div>
+                            <span class="badge bg-label-primary rounded-circle p-2">
+                                <i class="ti ti-credit-card-pay ti-lg"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="content-left">
+                                <h5 class="mb-1">{{formatNumber(Statistics.activeValue)}} د.ل</h5>
+                                <small>قيمة الكروت المعروضة </small>
+                            </div>
+                            <span class="badge bg-label-info rounded-circle p-2">
+                                <i class="ti ti-coins ti-lg"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-6 g-6">
+            <div class="col-lg-7">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="mb-1">بيانات الكروت </h5>
+                        <p class="mb-6 card-subtitle mt-0">يمكن الوصول لمزبد من المعلومات الخاصة بالكروت عن طريق تتبع الكرت </p>
+                        <div class="d-flex flex-column flex-sm-row justify-content-between text-center gap-6">
+                            <div class="d-flex flex-column align-items-center">
+                                <span class="p-4 border-1 border-primary rounded-circle border-dashed mb-0 w-px-75 h-px-75">
+                                    <img src="/assets/svg/icons/rocket.svg" alt="Rocket" />
+                                </span>
+                                <p class="my-2 w-75">عدد الكروت المشحونة </p>
+                                <h6 class="text-primary mb-0">{{formatNumber(Statistics.chargeCount)}}</h6>
+                            </div>
+                            <div class="d-flex flex-column align-items-center">
+                                <span class="p-4 border-1 border-info rounded-circle border-dashed mb-0 w-px-75 h-px-75">
+                                    <img src="/assets/svg/icons/lightbulb.svg" alt="user-info" />
+                                </span>
+                                <p class="my-2 w-75">قيمة الكروت المشحونة  </p>
+                                <h6 class="text-info mb-0">{{formatNumber(Statistics.chargeValue)}} د.ل</h6>
+                            </div>
+                            <div class="d-flex flex-column align-items-center">
+                                <span class="p-4 border-1 border-primary rounded-circle border-dashed mb-0 w-px-75 h-px-75">
+                                    <img src="/assets/svg/icons/paper.svg" alt="paper" />
+                                </span>
+                                <p class="my-2 w-75">محاولات التعبئة الفاشلة </p>
+                                <h6 class="text-primary mb-0">{{formatNumber(Statistics.chargeFaildCount)}}</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <form class="referral-form" onsubmit="return false">
+                            <div class="mb-6 mt-1">
+
+                                <div class="d-flex justify-content-between flex-xl-row flex-md-column flex-sm-row flex-column">
+
+                                    <div class="mb-xl-0 mb-6 text-heading">
+                                        <h5 class="mb-6">تتبع كرت معين </h5>
+                                    </div>
+                                    <div>
+                                        <button type="button" @click.prevent="Refresh()" class="btn btn-icon me-2 btn-label-secondary">
+                                            <span class="ti ti-refresh ti-md"></span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex gap-4 align-items-end">
+                                    <div class="w-100">
+                                        <label class="form-label mb-1" for="referralEmail">قم بإدخال الرقم التسلسلي الخاص بالكرت </label>
+                                        <input type="number"
+                                               v-model="SerialNumber"
+                                               class="form-control w-100"
+                                               placeholder="الرقم التسلسلي" />
+                                    </div>
+                                    <div>
+                                        <button type="submit" class="btn btn-primary" @click.prevent="GetBySerialNumber()">
+                                            <i class="ti ti-search ti-xs me-2"></i>بحت
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="mb-5">البحت بإستخدام الرقم السري للكرت</h5>
+                                <div class="d-flex gap-4 align-items-end">
+                                    <div class="w-100">
+                                        <label class="form-label mb-1" for="referralLink">البحت بإستخدام الرقم السري للكرت </label>
+                                        <input type="number"
+                                               v-model="VoucherNumber"
+                                               id="referralLink"
+                                               name="referralLink"
+                                               class="form-control w-100 h-px-40"
+                                               placeholder="الرقم السري " />
+                                    </div>
+                                    <div class="d-flex">
+                                        <button type="submit" class="btn btn-primary" @click.prevent="GetByVoucherNumber()">
+                                            <i class="ti ti-search ti-xs me-2"></i>بحت
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Invoice -->
+        <div class="col-xl-12 col-md-8 col-12 mb-md-0 mb-6" v-if="Info!=0">
+            <div class="card invoice-preview-card p-sm-12 p-6">
+
+
+                <div class="table-responsive border border-bottom-0 border-top-0 rounded">
+                    <table class="table m-0">
+                        <thead>
+                            <tr>
+                                <th>رقم الكرت </th>
+                                <th>الرقم التسلسلي</th>
+                                <th>قيمة الكرت</th>
+                                <th>تاريخ إصدار الكرت</th>
+                                <th>حالة الكرت </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-nowrap text-heading">{{Info.voucherNumber}}</td>
+                                <td class="text-nowrap">{{Info.serialNumber}}</td>
+                                <td>{{Info.amount}}</td>
+                                <td>{{moment(Info.createdOn)}}</td>
+                                <td>
+                                    <span v-if="Info.level==1" class="badge bg-label-info me-1"> كرت جديد  </span>
+                                    <span v-if="Info.level==2" class="badge bg-label-info me-1">  تم بيع الكرت للموزع   </span>
+                                    <span v-if="Info.level==22" class="badge bg-label-info me-1">  الكرت معروض للبيع   </span>
+                                    <span v-if="Info.level==3" class="badge bg-label-success me-1"> تم تعبئة الكرت   </span>
+                                    <span v-if="Info.level==4" class="badge bg-label-danger me-1">  تم تجميد الكرت  </span>
+                                    <span v-if="Info.level==5" class="badge bg-label-danger me-1">  كرت منهي الصلاجية  </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <br />
+                <br />
+
+                <div class="table-responsive border border-bottom-0 border-top-0 rounded" v-if="FillInfo">
+                    <table class="table m-0">
+                        <thead>
+                            <tr>
+                                <th>إسم الطالب </th>
+                                <th>رقم الهاتف </th>
+                                <th> القيمة المظافة</th>
+                                <th>تاريخ التعبئة</th>
+                                <th>القناة  </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-nowrap text-heading">{{FillInfo.name}}</td>
+                                <td class="text-nowrap">{{FillInfo.phone}}</td>
+                                <td>{{FillInfo.amount}}</td>
+                                <td>{{moment(FillInfo.createdOn)}}</td>
+                                <td>
+                                    <span v-if="FillInfo.chanel==1" class="badge bg-label-dark me-1"> لوحة التخكم </span>
+                                    <span v-if="FillInfo.chanel==2" class="badge bg-label-dark me-1">  الموقع الإلكتروني </span>
+                                    <span v-if="FillInfo.chanel==3" class="badge bg-label-dark me-1">  التطبيق الإلكتروني </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br />
+                    <br />
+                </div>
+
+
+
+                <div class="card-body invoice-preview-header rounded" style="background-color: rgba(47, 43, 61, .06);">
+                    <div class="d-flex justify-content-between flex-xl-row flex-md-column flex-sm-row flex-column">
+
+                        <div class="mb-xl-0 mb-6 text-heading">
+                            <div class="d-flex svg-illustration mb-6 gap-2 align-items-center">
+                                <div class="d-flex flex-column align-items-center">
+                                    <span class="p-4 border-1 border-primary rounded-circle border-dashed mb-0 w-px-75 h-px-75">
+                                        <img src="/assets/svg/icons/paper.svg" alt="paper" />
+                                    </span>
+                                </div>
+                                <span class="app-brand-text fw-bold fs-4 ms-50"> بيانات الباقة   </span>
+                            </div>
+                            <p class="mb-2">إسم الباقة : {{Info.package.name}}</p>
+                            <p class="mb-2">الرقم التسلسلي :  {{Info.package.serialNumber}}</p>
+                            <p class="mb-0">تاريخ إنشاء الباقة : {{moment(Info.package.createdOn)}}</p>
+                            <p class="mb-0">منفذ العملية  : {{Info.package.createdBy}}</p>
+                        </div>
+                        <div>
+                            <h5 class="mb-6">
+                                <span v-if="Info.package.status==1" class="badge bg-label-info me-1">في انتظار تأكيد عملية البيع </span>
+                                <span v-if="Info.package.status==2" class="badge bg-label-warning me-1"> في انتظار فتح الباقة من الموزع </span>
+                                <span v-if="Info.package.status==3" class="badge bg-label-success me-1"> باقة مفعلة </span>
+                                <span v-if="Info.package.status==4" class="badge bg-label-danger me-1">تم تجميد الباقة   </span>
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body px-0">
+                    <div class="row">
+                        <div class="col-xl-6 col-md-12 col-sm-5 col-12 mb-xl-0 mb-md-6 mb-sm-0 mb-6">
+                            <h6>بيانات أخري :</h6>
+                            <p class="mb-1"> تاريخ بيع الباقة :  {{moment(Info.package.solidOn)}}</p>
+                            <p class="mb-1"> منفذ العملية  :  {{Info.package.solidBy}}</p>
+                            <p class="mb-1"> عدد الكروت في الباقة   :  {{formatNumber(Info.package.cardCount)}}</p>
+                            <p class="mb-1"> عدد الكروت المشحونة    :  {{formatNumber(Info.package.chargeingCount)}}</p>
+                            <p class="mb-1"> عدد الكروت المتبقية    :  {{formatNumber(Info.package.remindCount)}}</p>
+                        </div>
+                        <div class="col-xl-6 col-md-12 col-sm-7 col-12">
+                            <h6>بيانت   الموزرع :</h6>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td class="pe-4">الموزع  :</td>
+                                        <td class="fw-medium">{{Info.package.user}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="pe-4">بيانات التواصل   :</td>
+                                        <td class="fw-medium">{{Info.package.phone}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="pe-4">تاريخ فتح الباقة :</td>
+                                        <td class="fw-medium">{{moment(Info.package.openOn)}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="pe-4">منفذ العملية :</td>
+                                        <td>{{Info.package.openBy}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="pe-4">عدد الباقات:</td>
+                                        <td>{{formatNumber(Info.package.packgeCount)}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="pe-4">عدد الباقات المجمدة:</td>
+                                        <td>{{formatNumber(Info.package.packgeCountFrozen)}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>

@@ -1,0 +1,301 @@
+﻿<div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y" v-if="state==0">
+        <!-- Invoice List Widget -->
+
+
+
+        <div class="row g-6 mb-6" v-if="Statistics!=0">
+            <div class="col-sm-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                                <span class="text-heading">عدد الطلبات </span>
+                                <div class="d-flex align-items-center my-1">
+                                    <h4 class="mb-0 me-2">{{formatNumber(Statistics.count)}}</h4>
+                                    <p class="text-success mb-0">{{ScreenTitleSingle}}</p>
+                                </div>
+                                <small class="mb-0">إجمالي عدد الطلبات</small>
+                            </div>
+                            <div class="avatar">
+                                <span class="avatar-initial rounded bg-label-primary">
+                                    <i class="ti ti-device-laptop ti-26px"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                                <span class="text-heading">تمت الموافقة</span>
+                                <div class="d-flex align-items-center my-1">
+                                    <h4 class="mb-0 me-2">{{Statistics.accept}}</h4>
+                                    <p class="text-success mb-0">{{ScreenTitleSingle}}</p>
+                                </div>
+                                <small class="mb-0">طلبات تم التعامل معها  </small>
+                            </div>
+                            <div class="avatar">
+                                <span class="avatar-initial rounded bg-label-success">
+                                    <i class="ti ti-device-laptop ti-26px"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                                <span class="text-heading">الطلبات المرفوضة</span>
+                                <div class="d-flex align-items-center my-1">
+                                    <h4 class="mb-0 me-2">{{Statistics.reject}}</h4>
+                                    <p class="text-danger mb-0">{{ScreenTitleSingle}}</p>
+                                </div>
+                                <small class="mb-0">طلبات تم رفضها</small>
+                            </div>
+                            <div class="avatar">
+                                <span class="avatar-initial rounded bg-label-danger">
+                                    <i class="ti ti-device-laptop-off ti-26px"></i>
+                                </span>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                                <span class="text-heading">طلبات تم حذفها </span>
+                                <div class="d-flex align-items-center my-1">
+                                    <h4 class="mb-0 me-2">{{Statistics.deleted}}</h4>
+                                    <p class="text-success mb-0">{{ScreenTitleSingle}}</p>
+                                </div>
+                                <small class="mb-0">الطلبات التي تم حذفها  </small>
+                            </div>
+                            <div class="avatar">
+                                <span class="avatar-initial rounded bg-label-warning">
+                                    <i class="ti ti-archive ti-26px"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Invoice List Table -->
+        <div class="card">
+            <div class="card-datatable table-responsive">
+                <div id="DataTables_Table_0_wrapper"
+                     class="dataTables_wrapper dt-bootstrap5 no-footer">
+
+
+                    <div class="card-header border-bottom">
+                        <h5 class="card-title mb-0">{{ScreenTitle}}</h5>
+                        <div class="d-flex justify-content-between align-items-center row pt-4 gap-4 gap-md-0">
+                            <div class="col-md-4 user_role"></div>
+                            <div class="col-md-4 user_plan"></div>
+                            <div class="col-md-4 user_status"></div>
+                        </div>
+                    </div>
+
+                    <div class="card-header py-0 d-flex flex-column flex-md-row align-items-center">
+                        <div>
+                            <div id="DataTables_Table_0_filter"
+                                 class="dataTables_filter ms-n3 mb-0 mb-md-6">
+                                <label>
+                                    <input type="search" class="form-control"
+                                           @input="GetInfo()"
+                                           v-model="Search"
+                                           placeholder="فلترة البيانات "
+                                           aria-controls="DataTables_Table_0">
+                                </label>
+
+                            </div>
+
+                        </div>
+                        <div class="d-flex align-items-center justify-content-md-end gap-2 justify-content-center">
+
+
+                            <div class="dt-action-buttons pt-0">
+                                <div class="dt-buttons btn-group flex-wrap">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-danger"
+                                                @click.prevent="DeleteAll()">
+                                            <span class="d-md-inline-block d-none">حذف جميع الطلبات  </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="dt-action-buttons pt-0">
+                                <div class="dt-buttons btn-group flex-wrap">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-primary"
+                                                @click.prevent="AcceptAll()">
+                                            <span class="d-md-inline-block d-none">الموافقة على جميع الطلبات  </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="dataTables_length ms-n2" id="DataTables_Table_0_length">
+                                <label>
+                                    <select name="DataTables_Table_0_length"
+                                            aria-controls="DataTables_Table_0"
+                                            @change="GetInfo()"
+                                            v-model="pageSize"
+                                            class="form-select">
+                                        <option value="10">10</option>
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                        <option value="400">400</option>
+                                        <option value="1000">1000</option>
+                                    </select>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <table class="invoice-list-table table border-top dataTable no-footer dtr-column"
+                           id="DataTables_Table_0"
+                           aria-describedby="DataTables_Table_0_info"
+                           style="width: 1232px;">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>مقدم الطلب</th>
+                                <th>حالة الطلب</th>
+                                <th> New  </th>
+                                <th> Old  </th>
+                                <th> New Ip </th>
+                                <th>   Old Ip </th>
+                                <th>تاريخ الطلب</th>
+                                <th>منفذ العملية</th>
+                                <th class="cell-fit">الإعدادات</th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+                            <tr class="odd" v-if="Info==0">
+                                <td valign="top" colspan="8" class="dataTables_empty">لا توجد بيانات في الوقت الحالي ......</td>
+                            </tr>
+
+                            <tr class="odd" v-for="item,index in Info" v-if="Info!=0">
+                                <td>{{index+1}}</td>
+                                <td>
+                                    <div class="d-flex justify-content-start align-items-center">
+                                        <div class="avatar-wrapper">
+                                            <div class="avatar avatar-sm me-3">
+                                                <img :src="item.image" alt="Avatar" class="rounded-circle" v-if="item.image">
+                                                <img :src="CoverPath" alt="Avatar" class="rounded-circle" v-if="!item.image">
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <a href="#" class="text-heading text-truncate">
+                                                <span class="fw-medium">{{item.name}}</span>
+                                            </a>
+                                            <small class="text-truncate">{{item.phone}}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td v-if="item.status==1"><span class="badge bg-label-warning me-1">طلب جديد </span></td>
+                                <td v-if="item.status==2"><span class="badge bg-label-success me-1">تمت الموافقة  </span></td>
+                                <td v-if="item.status==3"><span class="badge bg-label-danger me-1">تم  رفض الطلب  </span></td>
+                                <td>
+                                    <el-tooltip placement="top" effect="light">
+                                        <template #content>
+                                            <div>
+                                                {{item.oldMachineName}}
+                                            </div>
+                                        </template>
+                                        <a href="javascript:;"
+                                           class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                           type="button">
+                                            <i class="ti ti-info-circle text-body ti-md"></i>
+                                        </a>
+                                    </el-tooltip>
+                                </td>
+                                <td>
+                                    <el-tooltip placement="top" effect="light">
+                                        <template #content>
+                                            <div>
+                                                {{item.newMachineName}}
+                                            </div>
+                                        </template>
+                                        <a href="javascript:;"
+                                           class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                           type="button">
+                                            <i class="ti ti-info-circle text-body ti-md"></i>
+                                        </a>
+                                    </el-tooltip>
+                                </td>
+                                <td>{{item.oldIpAddress}} </td>
+                                <td>{{item.newIpAddress}} </td>
+                                <td>{{moment(item.createdOn)}} </td>
+                                <td>{{item.prossedBy}} </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+
+                                        <a href="javascript:;" class="dropdown-item"
+                                           @click.prevent="Accept(item.id)" v-if="item.status==1">
+                                            <i class="ti ti-circle-check me-1"></i>
+                                        </a>
+
+                                        <a href="javascript:;" class="dropdown-item"
+                                           @click.prevent="Reject(item.id)" v-if="item.status==1">
+                                            <i class="ti ti-circle-minus me-1"></i>
+                                        </a>
+
+                                        <a href="javascript:;" class="dropdown-item"
+                                           @click.prevent="Delete(item.id)">
+                                            <i class="ti ti-trash me-1"></i>
+                                        </a>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row mx-1">
+                        <div class="col-sm-12 col-md-6">
+                            <div class="dataTables_info" id="DataTables_Table_0_info"
+                                 role="status" aria-live="polite">Showing {{pageSize}} of {{pages}} entries</div>
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            <PaginationHelper :pageNo="pageNo"
+                                              :pageSize="pageSize"
+                                              :totalItems="pages"
+                                              @page-changed="GetInfo" />
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+ 
+
+
+
+
+
+    <div class="content-backdrop fade"></div>
+</div>

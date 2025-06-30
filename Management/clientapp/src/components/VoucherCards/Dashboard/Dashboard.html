@@ -1,0 +1,476 @@
+﻿<div class="content-wrapper">
+    <!-- Content -->
+
+
+
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <div class="row g-6">
+
+
+
+            <!-- Statistics Packge -->
+            <div class="col-lg-2 col-6">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="badge rounded p-2 bg-label-primary mb-2">
+                            <i class="ti ti-briefcase ti-lg"></i>
+                        </div>
+                        <h5 class="card-title mb-1">{{formatNumber(Info.packgeCount)}}</h5>
+                        <p class="mb-0">باقة</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-6">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="badge rounded p-2 bg-label-success mb-2"><i class="ti ti-briefcase ti-lg"></i></div>
+                        <h5 class="card-title mb-1">{{formatNumber(Info.packgeActive)}}</h5>
+                        <p class="mb-0">باقة مفعلة</p>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-lg-8 col-md-12">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between">
+                        <h5 class="card-title mb-0">بيانات الباقات</h5>
+                        <small class="text-muted">Updated Now</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="row gy-3">
+                            <div class="col-md-3 col-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="badge rounded bg-label-primary me-4 p-2">
+                                        <i class="ti ti-chart-pie-2 ti-lg"></i>
+                                    </div>
+                                    <div class="card-info">
+                                        <h5 class="mb-0">{{formatNumber(Info.packgeCardCount)}}</h5>
+                                        <small>عدد الكروت </small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="badge rounded bg-label-info me-4 p-2"><i class="ti ti-chart-arrows-vertical ti-lg"></i></div>
+                                    <div class="card-info">
+                                        <h5 class="mb-0">{{formatNumber(Info.packgeCardAmount)}} د.ل</h5>
+                                        <small>قيمة الكروت </small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="badge rounded bg-label-danger me-4 p-2">
+                                        <i class="ti ti-shopping-cart ti-lg"></i>
+                                    </div>
+                                    <div class="card-info">
+                                        <h5 class="mb-0">{{formatNumber(Info.packgeCardCharge)}}</h5>
+                                        <small>الكروت المشحونة</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="badge rounded bg-label-success me-4 p-2">
+                                        <i class="ti ti-currency-dollar ti-lg"></i>
+                                    </div>
+                                    <div class="card-info">
+                                        <h5 class="mb-0">{{formatNumber(Info.packgeCardRemind)}}</h5>
+                                        <small>الكروت المتبقية</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+            <!-- Statistics Cards -->
+            <div class="col-lg-8 col-md-12">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between">
+                        <h5 class="card-title mb-0">بيانات الكروت </h5>
+                        <small class="text-muted">Updated Now</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="row gy-3">
+                            <div class="col-md-3 col-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="badge rounded bg-label-primary me-4 p-2">
+                                        <i class="ti ti-chart-pie-2 ti-lg"></i>
+                                    </div>
+                                    <div class="card-info">
+                                        <h5 class="mb-0">{{formatNumber(Info.activeCount)}}</h5>
+                                        <small>عدد الكروت</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="badge rounded bg-label-info me-4 p-2"><i class="ti ti-chart-arrows-vertical ti-lg"></i></div>
+                                    <div class="card-info">
+                                        <h5 class="mb-0">{{formatNumber(Info.activeValue)}} د.ل</h5>
+                                        <small>قيمة الكروت </small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="badge rounded bg-label-danger me-4 p-2">
+                                        <i class="ti ti-shopping-cart ti-lg"></i>
+                                    </div>
+                                    <div class="card-info">
+                                        <h5 class="mb-0">{{formatNumber(Info.chargeCount)}}</h5>
+                                        <small>كرت مشحون</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="badge rounded bg-label-success me-4 p-2">
+                                        <i class="ti ti-currency-dollar ti-lg"></i>
+                                    </div>
+                                    <div class="card-info">
+                                        <h5 class="mb-0">{{formatNumber(Info.chargeValue)}}</h5>
+                                        <small> الكروت المشحونة</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-6">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="badge rounded p-2 bg-label-danger mb-2"><i class="ti ti-cards ti-lg"></i></div>
+                        <h5 class="card-title mb-1">{{formatNumber(Info.cardCount)}}</h5>
+                        <p class="mb-0">إدجمالي الكروت</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-6">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="badge rounded p-2 bg-label-success mb-2">
+                            <i class="ti ti-cards ti-lg"></i>
+                        </div>
+                        <h5 class="card-title mb-1">{{formatNumber(Info.cardValue)}} د.ل</h5>
+                        <p class="mb-0">قيمة الكروت</p>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+            <!-- Sales last year -->
+            <div class="col-xxl-2 col-md-4 col-sm-6">
+                <div class="card h-100">
+                    <div class="card-header pb-3">
+                        <h5 class="card-title mb-1">قيمة المبيعات </h5>
+                        <p class="card-subtitle">الاسبوع الماضي </p>
+                    </div>
+                    <div class="card-body">
+                        <div id="ordersLastWeek"></div>
+                        <AnalyticsAverageDailySales :AnalyticsAverageDailySalesSeries="AnalyticsAverageDailySalesSeriesInfo" />
+                        <div class="d-flex justify-content-between align-items-center gap-3">
+                            <h4 class="mb-0">{{formatNumber(Info.chargeValueThisWeek)}} د.ل</h4>
+                            <small class="text-success" v-if="(Info.chargeValueThisWeek - Info.chargeValueThisLastWeek) > 0">
+                                +{{formatNumber(Info.chargeValueThisWeek-Info.chargeValueThisLastWeek)}}
+                            </small>
+                            <small class="text-danger" v-if="(Info.chargeValueThisWeek - Info.chargeValueThisLastWeek) <= 0">
+                                -{{formatNumber(Info.chargeValueThisWeek-Info.chargeValueThisLastWeek)}}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sessions Last month -->
+            <div class="col-xxl-2 col-md-4 col-sm-6">
+                <div class="card h-100">
+                    <div class="card-header pb-0">
+                        <h5 class="card-title mb-1">عدد الكروت</h5>
+                        <p class="card-subtitle">الأسبوع الماضي</p>
+                    </div>
+                    <CrmSalesAreaCharts :CrmSalesAreaChartsSeries="CrmSalesAreaChartsSeriesInfo" />
+                    <div class="card-body pt-0">
+                        <div class="d-flex justify-content-between align-items-center mt-3 gap-3">
+                            <h4 class="mb-0">{{formatNumber(Info.salesThisWeek)}} د.ل</h4>
+                            <small class="text-success" v-if="(Info.chargeValueThisWeek - Info.chargeValueThisLastWeek) > 0">
+                                +{{formatNumber(Info.salesThisWeek-Info.salesThisLastWeek)}}
+                            </small>
+                            <small class="text-danger" v-if="(Info.chargeValueThisWeek - Info.chargeValueThisLastWeek) <= 0">
+                                -{{formatNumber(Info.salesThisWeek-Info.salesThisLastWeek)}}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Profit -->
+            <div class="col-xxl-2 col-md-4 col-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="badge p-2 bg-label-danger mb-3 rounded">
+                            <i class="ti ti-credit-card ti-28px"></i>
+                        </div>
+                        <h5 class="card-title mb-1">قيمة الكورت  </h5>
+                        <p class="card-subtitle">هذه السنة</p>
+                        <br />
+                        <h4 class="mb-0">{{formatNumber(Info.chargeValueThisyear)}} د.ل</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Sales -->
+            <div class="col-xxl-2 col-md-5 col-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="badge p-2 bg-label-success mb-3 rounded">
+                            <i class="ti ti-credit-card ti-28px"></i>
+                        </div>
+                        <h5 class="card-title mb-1">عدد الكروت </h5>
+                        <p class="card-subtitle"> لهذه السنة </p>
+                        <br />
+                        <h4 class="mb-0">{{formatNumber(Info.salesThisyear)}} د.ل</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revenue Growth -->
+            <div class="col-xxl-4 col-md-7">
+                <div class="card h-100">
+                    <div class="card-body d-flex justify-content-between">
+                        <div class="d-flex flex-column me-xl-7">
+                            <div class="card-title mb-auto">
+                                <h5 class="mb-2 text-nowrap">عمليات الشراء  </h5>
+                                <p class="mb-0">التقرير الإسبوعي </p>
+                            </div>
+                            <div class="chart-statistics">
+                                <h3 class="card-title mb-1">{{formatNumber(Info.chargeValueThisWeek)}} د.ل</h3>
+                                <span class="badge bg-label-success" v-if="(Info.chargeValueThisWeek - Info.chargeValueThisLastWeek) > 0">
+                                    +{{formatNumber(Info.chargeValueThisWeek-Info.chargeValueThisLastWeek)}}
+                                </span>
+                                <span class="badge bg-label-danger" v-if="(Info.chargeValueThisWeek - Info.chargeValueThisLastWeek) <= 0">
+                                    -{{formatNumber(Info.chargeValueThisWeek-Info.chargeValueThisLastWeek)}}
+                                </span>
+                            </div>
+                        </div>
+                        <CrmRevenueGrowth :CrmRevenueGrowthSeries="CrmRevenueGrowthSeriesInfo" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Earning Reports Tabs-->
+            <div class="col-xl-8 col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between">
+                        <div class="card-title m-0">
+                            <h5 class="mb-1">عمليات الشراء </h5>
+                            <p class="card-subtitle">التقرير السنوي </p>
+                        </div>
+                    </div>
+                    <div class="card-body" style="padding: 9px;">
+                        <ul class="nav nav-tabs widget-nav-tabs pb-8 gap-4 mx-1 d-flex flex-nowrap" role="tablist">
+                            <li class="nav-item">
+                                <a href="javascript:void(0);"
+                                   class="nav-link btn active d-flex flex-column align-items-center justify-content-center"
+                                   role="tab"
+                                   data-bs-toggle="tab"
+                                   data-bs-target="#navs-orders-id"
+                                   aria-controls="navs-orders-id"
+                                   aria-selected="true">
+                                    <div class="badge bg-label-secondary rounded p-2">
+                                        <i class="ti ti-shopping-cart ti-md"></i>
+                                    </div>
+                                    <h6 class="tab-widget-title mb-0 mt-2">حركة  الكروت </h6>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="javascript:void(0);"
+                                   class="nav-link btn d-flex flex-column align-items-center justify-content-center"
+                                   role="tab"
+                                   data-bs-toggle="tab"
+                                   data-bs-target="#navs-sales-id"
+                                   aria-controls="navs-sales-id"
+                                   aria-selected="false">
+                                    <div class="badge bg-label-secondary rounded p-2">
+                                        <i class="ti ti-chart-bar ti-md"></i>
+                                    </div>
+                                    <h6 class="tab-widget-title mb-0 mt-2">قيمة الكروت </h6>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content p-0 ms-0 ms-sm-2">
+                            <div class="tab-pane fade show active" id="navs-orders-id" role="tabpanel">
+                                <CrmEarningReportsYearlyOverview :CrmEarningReportsYearlyOverviewSeries="CrmEarningReportsYearlyOverviewSeriesInfo" />
+                            </div>
+                            <div class="tab-pane fade" id="navs-sales-id" role="tabpanel">
+                                <CrmEarningReportsYearlyOverview :CrmEarningReportsYearlyOverviewSeries="CrmEarningReportsYearlyOverviewSeriesInfo1" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sales last 6 months -->
+            <div class="col-xl-4 col-md-6">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between pb-4">
+                        <div class="card-title mb-0">
+                            <h5 class="mb-1">المبيعات </h5>
+                            <p class="card-subtitle">أخر 6 اشهر </p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <CrmAnalyticsSales :CrmAnalyticsSalesSeries="CrmAnalyticsSalesSeriesInfo"
+                                           :CrmAnalyticsSalesSeries1="CrmAnalyticsSalesSeriesInfo1" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sales By Country -->
+            <div class="col-xxl-4 col-md-6" v-if="Info.topFiveDistrputedSales!=0">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between">
+                        <div class="card-title mb-0">
+                            <h5 class="mb-1">أكتر المبيعات حسب الموزع </h5>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <ul class="p-0 m-0">
+                            <li class="d-flex align-items-center mb-4"
+                                v-for="item in Info.topFiveDistrputedSales">
+                                <div class="avatar flex-shrink-0 me-4">
+                                    <img :src="item.image" alt="Avatar" class="rounded-circle" />
+                                </div>
+                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                    <div class="me-2">
+                                        <div class="d-flex align-items-center">
+                                            <h6 class="mb-0 me-1">{{item.name}}</h6>
+                                        </div>
+                                        <small class="text-body">{{item.phone}}</small>
+                                    </div>
+                                    <div class="user-progress">
+                                        <p class="text-success fw-medium mb-0 d-flex align-items-center gap-1">
+                                            <i class="ti ti-chevron-up"></i>
+                                            {{item.count}}
+                                        </p>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xxl-4 col-md-6" v-if="Info.topFiveDistrputedCharge!=0">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between">
+                        <div class="card-title mb-0">
+                            <h5 class="mb-1">أكتر الموزعين دخلا للأموال </h5>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <ul class="p-0 m-0">
+                            <li class="d-flex align-items-center mb-4"
+                                v-for="item in Info.topFiveDistrputedCharge">
+                                <div class="avatar flex-shrink-0 me-4">
+                                    <img :src="item.image" alt="Avatar" class="rounded-circle" />
+                                </div>
+                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                    <div class="me-2">
+                                        <div class="d-flex align-items-center">
+                                            <h6 class="mb-0 me-1">{{item.name}}</h6>
+                                        </div>
+                                        <small class="text-body">{{item.phone}}</small>
+                                    </div>
+                                    <div class="user-progress">
+                                        <p class="text-success fw-medium mb-0 d-flex align-items-center gap-1">
+                                            <i class="ti ti-chevron-up"></i>
+                                            {{item.cash}}
+                                        </p>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xxl-4 col-md-6" v-if="Info.topFiveInventory!=0">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between">
+                        <div class="card-title mb-0">
+                            <h5 class="mb-1">أكتر ارصدة للموزعين  </h5>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <ul class="p-0 m-0">
+                            <li class="d-flex align-items-center mb-4"
+                                v-for="item in Info.topFiveInventory">
+                                <div class="avatar flex-shrink-0 me-4">
+                                    <img :src="item.image" alt="Avatar" class="rounded-circle" />
+                                </div>
+                                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                    <div class="me-2">
+                                        <div class="d-flex align-items-center">
+                                            <h6 class="mb-0 me-1">{{item.name}}</h6>
+                                        </div>
+                                        <small class="text-body">{{item.phone}}</small>
+                                    </div>
+                                    <div class="user-progress">
+                                        <p class="text-success fw-medium mb-0 d-flex align-items-center gap-1">
+                                            <i class="ti ti-chevron-up"></i>
+                                            {{item.count}}
+                                        </p>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>

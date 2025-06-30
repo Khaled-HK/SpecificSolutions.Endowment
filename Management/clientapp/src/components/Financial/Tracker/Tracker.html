@@ -1,0 +1,516 @@
+﻿<div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <!-- Invoice List Widget -->
+
+
+        <div class="row g-6 mb-6" v-if="Statistics!=0">
+            <div class="col-sm-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                                <span class="text-heading">عدد الحراكت </span>
+                                <div class="d-flex align-items-center my-1">
+                                    <h4 class="mb-0 me-2">{{formatNumber(Statistics.count)}}</h4>
+                                    <p class="text-primary mb-0">{{ScreenTitleSingle}}</p>
+                                </div>
+                                <small class="mb-0">عملية شحن </small>
+                            </div>
+                            <div class="avatar">
+                                <span class="avatar-initial rounded bg-label-primary">
+                                    <i class="ti ti-cpu ti-26px"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                                <span class="text-heading">قيمة الشحن </span>
+                                <div class="d-flex align-items-center my-1">
+                                    <h4 class="mb-0 me-2">{{formatNumber(Statistics.value)}} د.ل</h4>
+                                    <p class="text-success mb-0">{{ScreenTitleSingle}}</p>
+                                </div>
+                                <small class="mb-0">إجمالي قيمة الشحن  </small>
+                            </div>
+                            <div class="avatar">
+                                <span class="avatar-initial rounded bg-label-success">
+                                    <i class="ti ti-currency-dollar ti-26px"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                                <span class="text-heading">شحن بقيمة أكبر من 50 </span>
+                                <div class="d-flex align-items-center my-1">
+                                    <h4 class="mb-0 me-2">{{formatNumber(Statistics.moreThan50)}} </h4>
+                                    <p class="text-danger mb-0">{{ScreenTitleSingle}}</p>
+                                </div>
+                                <small class="mb-0">عملية شحن بقيمة تفوق 50</small>
+                            </div>
+                            <div class="avatar">
+                                <span class="avatar-initial rounded bg-label-danger">
+                                    <i class="ti ti-user-plus ti-26px"></i>
+                                </span>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                                <span class="text-heading">شحن بقيمة أكبر من 100</span>
+                                <div class="d-flex align-items-center my-1">
+                                    <h4 class="mb-0 me-2">{{Statistics.moreThan100}}</h4>
+                                    <p class="text-warning mb-0">{{ScreenTitleSingle}}</p>
+                                </div>
+                                <small class="mb-0">عملية شحن بقيمة تفوق 100</small>
+                            </div>
+                            <div class="avatar">
+                                <span class="avatar-initial rounded bg-label-warning">
+                                    <i class="ti ti-alert-triangle ti-26px"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoice List Table -->
+        <div class="card">
+            <div class="card-datatable table-responsive">
+                <div id="DataTables_Table_0_wrapper"
+                     class="dataTables_wrapper dt-bootstrap5 no-footer">
+
+
+                    <div class="card-header border-bottom">
+                        <h5 class="card-title mb-0">{{ScreenTitle}}</h5>
+                        <div class="d-flex justify-content-between align-items-center row pt-4 gap-4 gap-md-0">
+                            <div class="col-md-4 user_role"></div>
+                            <div class="col-md-4 user_plan"></div>
+                            <div class="col-md-4 user_status"></div>
+                        </div>
+                    </div>
+
+                    <div class="card-header py-0 d-flex flex-column flex-md-row align-items-center">
+                        <div>
+                            <div id="DataTables_Table_0_filter"
+                                 class="dataTables_filter ms-n3 mb-0 mb-md-6">
+                                <!--<label>
+                                    <input type="search" class="form-control"
+                                           @input="GetInfo()"
+                                           v-model="Search"
+                                           placeholder="فلترة البيانات "
+                                           aria-controls="DataTables_Table_0">
+                                </label>-->
+
+                                <div class="dropdown">
+                                    <a href="javascript:;"
+                                       class="btn dropdown-toggle hide-arrow btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill p-0"
+                                       data-bs-toggle="dropdown">
+                                        <i class="ti ti-dots-vertical ti-md"></i>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-end">
+                                        <a href="#" class="dropdown-item" @click.prevent="ChangeFilter(1)">نوع العملية </a>
+                                        <a href="#" class="dropdown-item" @click.prevent="ChangeFilter(2)">قناة العملية  </a>
+                                    </div>
+                                </div>
+                                <div class="invoice_status mb-6 mb-md-0" v-if="FilterBy==1">
+                                    <select id="UserRole" class="form-select"
+                                            @change="GetInfo()"
+                                            v-model="ProcessType">
+                                        <option value=1> Pay</option>
+                                        <option value=2> Retrun Value</option>
+                                        <option value=3> Charge</option>
+                                    </select>
+                                </div>
+                                <div class="invoice_status mb-6 mb-md-0" v-if="FilterBy==2">
+                                    <select id="UserRole" class="form-select"
+                                            @change="GetInfo()"
+                                            v-model="Channel">
+                                        <option value=1> Control Panel</option>
+                                        <option value=2>  Web Potal</option>
+                                        <option value=3> Mobile App</option>
+                                    </select>
+                                </div>
+                               
+                                <div class="invoice_status mb-6 mb-md-0">
+                                    <el-date-picker v-model="From"
+                                                    type="date"
+                                                    style="width:100%"
+                                                    @change="GetInfo()"
+                                                    placeholder="الفلترة بالتاريخ : من ">
+                                    </el-date-picker>
+                                </div>
+
+                                <div class="invoice_status mb-6 mb-md-0">
+
+                                    <el-date-picker v-model="To"
+                                                    class="invoice_status mb-6 mb-md-0"
+                                                    type="date"
+                                                    @change="GetInfo()"
+                                                    placeholder="الفلترة بالتاريخ : إلي ">
+                                    </el-date-picker>
+                                </div>
+
+
+
+
+
+                                <!--<div class="dropdown">
+        <a href="javascript:;"
+           class="btn dropdown-toggle hide-arrow btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill p-0"
+           data-bs-toggle="dropdown">
+            <i class="ti ti-dots-vertical ti-md"></i>
+        </a>
+        <div class="dropdown-menu dropdown-menu-end">
+            <a href="#" class="dropdown-item">حالة العرض</a>
+            <a href="#" class="dropdown-item">تاريخ الاضافة </a>
+            <a href="#" class="dropdown-item">مجاني</a>
+        </div>
+    </div>
+    <div class="invoice_status mb-6 mb-md-0">
+        <select id="UserRole" class="form-select">
+            <option value=""> Invoice Status </option>
+            <option value="Downloaded" class="text-capitalize">Downloaded</option>
+            <option value="Draft" class="text-capitalize">Draft</option>
+            <option value="Paid" class="text-capitalize">Paid</option>
+            <option value="Partial Payment" class="text-capitalize">Partial Payment</option>
+            <option value="Past Due" class="text-capitalize">Past Due</option>
+            <option value="Sent" class="text-capitalize">Sent</option>
+        </select>
+    </div>-->
+                            </div>
+
+                            </div>
+                        <div class="d-flex align-items-center justify-content-md-end gap-2 justify-content-center">
+
+                            <button type="button" @click.prevent="Refresh()" class="btn btn-icon me-2 btn-label-secondary">
+                                <span class="ti ti-refresh ti-md"></span>
+                            </button>
+
+                            <div class="dataTables_length ms-n2" id="DataTables_Table_0_length">
+                                <label>
+                                    <select name="DataTables_Table_0_length"
+                                            aria-controls="DataTables_Table_0"
+                                            @change="GetInfo()"
+                                            v-model="pageSize"
+                                            class="form-select">
+                                        <option value="10">10</option>
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                        <option value="400">400</option>
+                                        <option value="1000">1000</option>
+                                    </select>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <table class="invoice-list-table table border-top dataTable no-footer dtr-column"
+                           id="DataTables_Table_0"
+                           aria-describedby="DataTables_Table_0_info"
+                           style="width: 1232px;">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>الطالب</th>
+                                <th> نوع العملية  </th>
+                                <th> قناة  العملية  </th>
+                                <th> القيمة  </th>
+                                <th> قبل   </th>
+                                <th> بعد </th>
+                                <th>تاريخ العملية </th>
+                                <th>منفذ العملية</th>
+                                <th>أخري</th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+                            <tr class="odd" v-if="Info==0">
+                                <td valign="top" colspan="8" class="dataTables_empty">لا توجد بيانات في الوقت الحالي ......</td>
+                            </tr>
+
+                            <tr class="odd" v-for="item,index in Info" v-if="Info!=0">
+                                <td>{{index+1}}</td>
+                                <td>
+                                    <div class="d-flex justify-content-start align-items-center">
+                                        <div class="avatar-wrapper">
+                                            <div class="avatar avatar-sm me-3">
+                                                <img :src="item.student.image" alt="Avatar" class="rounded-circle" v-if="item.student.image">
+                                                <img :src="CoverPath" alt="Avatar" class="rounded-circle" v-if="!item.student.image">
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <a href="#" class="text-heading text-truncate">
+                                                <span class="fw-medium">{{item.student.name}}</span>
+                                                <br />
+                                                <span class="fw-medium">{{item.student.phone}}</span>
+                                            </a>
+                                            <!--<small class="text-truncate">المرحلة التعليمية </small>-->
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span v-if="item.processType==1" class="badge bg-label-dark me-1">Pay</span>
+                                    <span v-if="item.processType==2" class="badge bg-label-danger me-1">Retrun Value</span>
+                                    <span v-if="item.processType==3" class="badge bg-label-success me-1">Charge</span>
+                                </td>
+                                <td>
+                                    <span v-if="item.channel==1" class="badge bg-label-dark me-1"> Control Panel</span>
+                                    <span v-if="item.crocessType==2" class="badge bg-label-danger me-1">Web Potal</span>
+                                    <span v-if="item.crocessType==3" class="badge bg-label-success me-1">Mobile App</span>
+                                </td>
+                                <td>{{formatNumber(item.value)}} </td>
+                                <td>{{formatNumber(item.befroe)}} </td>
+                                <td>{{formatNumber(item.after)}} </td>
+                                <td>{{item.createdOn | moment}}</td>
+                                <td>{{item.createdBy}} </td>
+                                <td>
+                                    <el-tooltip placement="top" effect="light">
+                                        <template #content>
+                                            <div>
+                                                {{ item.descriptions }}
+                                            </div>
+                                        </template>
+                                        <a href="javascript:;"
+                                           class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                           type="button">
+                                            <i class="ti ti-info-circle text-body ti-md"></i>
+                                        </a>
+                                    </el-tooltip>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row mx-1">
+                        <div class="col-sm-12 col-md-6">
+                            <div class="dataTables_info" id="DataTables_Table_0_info"
+                                 role="status" aria-live="polite">Showing {{pageSize}} of {{pages}} entries</div>
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            <PaginationHelper :pageNo="pageNo"
+                                              :pageSize="pageSize"
+                                              :totalItems="pages"
+                                              @page-changed="GetInfo" />
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- / Content -->
+    <!--Add-->
+    <div class="modal fade"
+         id="AddDialog"
+         tabindex="-1"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered1 modal-simple modal-add-new-cc">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="text-center mb-6">
+                        <h4 class="mb-2"> {{ScreenTitle}} </h4>
+                        <p>إضافة {{ScreenTitleSingle}} جديدة</p>
+                    </div>
+                    <el-form label-position="top"
+                             :model="ruleForm"
+                             :rules="rules"
+                             ref="ruleForm"
+                             label-width="120px"
+                             class="demo-ruleForm"
+                             style="width: 100%;">
+                        <form id="addNewCCForm" class="row g-6" onsubmit="return false">
+                            <div class="col-12">
+                                <el-form-item prop="Name" :label="`اسم ${ScreenTitleSingleAl}`">
+                                    <div class="input-group input-group-merge">
+                                        <input type="text" id="modalAddCardName"
+                                               class="form-control"
+                                               v-model="ruleForm.Name"
+                                               :placeholder="`إسم ${ScreenTitleSingleAl}`" />
+                                    </div>
+                                </el-form-item>
+                            </div>
+
+                            <div class="col-12">
+                                <el-form-item :label="`وصف  عن  ${ScreenTitleSingleAl}`">
+                                    <div class="input-group input-group-merge">
+                                        <span id="basic-icon-default-message2" class="input-group-text">
+                                            <i class="ti ti-info-circle"></i>
+                                        </span>
+                                        <textarea id="basic-icon-default-message"
+                                                  v-model="ruleForm.Descriptions"
+                                                  class="form-control"
+                                                  :placeholder="`وضف توضيحي عن  ${ScreenTitleSingleAl}`"
+                                                  aria-label="Hi, Do you have a moment to talk Joe?"
+                                                  aria-describedby="basic-icon-default-message2">
+
+                                        </textarea>
+                                    </div>
+                                </el-form-item>
+                            </div>
+                            <div class="col-12">
+                                <el-form-item :label="`صورة الغلاف  ${ScreenTitleSingleAl}`">
+                                    <div class="input-group input-group-merge">
+                                        <input class="form-control" v-on:change="SelectImage($event.target.files[0])"
+                                               type="file" id="formFile" />
+                                    </div>
+                                </el-form-item>
+                            </div>
+
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-primary me-3"
+                                        @click.prevent="submitForm('ruleForm')">
+                                    إضافة بيانات {{ScreenTitleSingleAl}}
+                                </button>
+                                <button type="reset"
+                                        id="Close"
+                                        class="btn btn-label-secondary btn-reset"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Close">
+                                    إلغاء
+                                </button>
+                            </div>
+                        </form>
+                    </el-form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Add-->
+
+
+
+
+
+    <!--Edit-->
+    <div class="modal fade"
+         id="EditDialog"
+         tabindex="-1"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-simple modal-upgrade-plan">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="text-center mb-6">
+                        <h4 class="mb-2"> {{ScreenTitle}} </h4>
+                        <p>التعديل في بيانات  {{ScreenTitleSingle}} </p>
+                    </div>
+                    <el-form label-position="top"
+                             :model="ruleForm"
+                             :rules="rules"
+                             ref="ruleForm"
+                             label-width="120px"
+                             class="demo-ruleForm"
+                             style="width: 100%;">
+                        <div id="wizard-create-app" class="bs-stepper vertical mt-2 shadow-none">
+
+
+
+
+                            <div class="bs-stepper-header border-0 p-1">
+                                <form id="addNewCCForm" class="row g-6" onsubmit="return false">
+                                    <div class="col-12">
+                                        <el-form-item prop="Name" :label="`اسم ${ScreenTitleSingleAl}`">
+                                            <div class="input-group input-group-merge">
+                                                <input type="text" id="modalAddCardName"
+                                                       class="form-control"
+                                                       v-model="ruleForm.Name"
+                                                       :placeholder="`إسم ${ScreenTitleSingleAl}`" />
+                                            </div>
+                                        </el-form-item>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <el-form-item :label="`وصف  عن  ${ScreenTitleSingleAl}`">
+                                            <div class="input-group input-group-merge">
+                                                <span id="basic-icon-default-message2" class="input-group-text">
+                                                    <i class="ti ti-info-circle"></i>
+                                                </span>
+                                                <textarea id="basic-icon-default-message"
+                                                          v-model="ruleForm.Descriptions"
+                                                          class="form-control"
+                                                          :placeholder="`وضف توضيحي عن  ${ScreenTitleSingleAl}`"
+                                                          aria-label="Hi, Do you have a moment to talk Joe?"
+                                                          aria-describedby="basic-icon-default-message2">
+
+                </textarea>
+                                            </div>
+                                        </el-form-item>
+                                    </div>
+                                    <div class="col-12">
+                                        <el-form-item :label="`صورة الغلاف  ${ScreenTitleSingleAl}`">
+                                            <div class="input-group input-group-merge">
+                                                <input class="form-control" v-on:change="SelectImage($event.target.files[0])"
+                                                       type="file" id="formFile" />
+                                            </div>
+                                        </el-form-item>
+                                    </div>
+                                </form>
+                            </div>
+
+
+
+
+                            <div class="bs-stepper-content p-1" style="text-align: center;">
+                                <h5 class="mb-1">صورة الغلاف  </h5>
+                                <p class="small">{{ScreenTitleSingleAl}}</p>
+                                <!-- image -->
+                                <img :src="SelectedItem.image"
+                                     class="img-fluid"
+                                     alt="Create App img"
+                                     width="175" />
+                            </div>
+                        </div>
+
+
+                        <div class="col-12 text-center">
+                            <button type="submit" class="btn btn-primary me-3"
+                                    @click.prevent="submitEditForm('ruleForm')">
+                                تعديل بيانات {{ScreenTitleSingleAl}}
+                            </button>
+                            <button type="reset"
+                                    id="Close"
+                                    class="btn btn-label-secondary btn-reset"
+                                    data-bs-dismiss="modal"
+                                    aria-label="Close">
+                                إلغاء
+                            </button>
+                        </div>
+
+                    </el-form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Edit-->
+
+
+
+
+
+
+    <div class="content-backdrop fade"></div>
+</div>
