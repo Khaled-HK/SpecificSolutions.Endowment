@@ -1,0 +1,1 @@
+import{aG as u,aH as i,R as f}from"./index-gvY-qnCL.js";const m=(e,t,s,o,r=!1)=>{const a=u(),{global:n}=i();return f(()=>n.name.value==="light"?a.skin==="bordered"&&r?s:e:n.name.value==="dark"?a.skin==="bordered"&&r?o:t:e)};export{m as u};
