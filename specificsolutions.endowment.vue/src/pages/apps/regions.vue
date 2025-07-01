@@ -27,8 +27,8 @@ const editRegion = ref({
 })
 
 const headers = [
-  { title: 'ID', key: 'id' },
-  { title: 'Name', key: 'name' },
+  { title: 'ID', key: 'key' },
+  { title: 'Name', key: 'value' },
   { title: 'Description', key: 'description' },
   { title: 'Actions', key: 'actions', sortable: false },
 ]
@@ -36,8 +36,8 @@ const headers = [
 const loadRegions = async () => {
   loading.value = true
   try {
-    const response = await $api('/Regions')
-    regions.value = response
+    const response = await $api('/Region/GetRegions')
+    regions.value = response.data
   } catch (error) {
     console.error('Error loading regions:', error)
   } finally {
