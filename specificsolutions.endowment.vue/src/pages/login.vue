@@ -11,7 +11,7 @@ import authV2MaskLight from '@images/pages/misc-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useAbility } from '@/plugins/casl/composables/useAbility'
 
 const authThemeImg = useGenerateImageVariant(authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
@@ -56,14 +56,25 @@ const login = async () => {
       },
     })
 
-    const { token, user } = res
-
-    // Store authentication data
-    useCookie('accessToken').value = token
+    const user = res.data
+    useCookie('accessToken').value = user.Token
     useCookie('userData').value = user
-    
+
+    if (!user.permissions) {
+      console.error('User object does not have permissions:', user)
+      errors.value = { general: 'Login failed: No permissions found.' }
+      return
+    }
+
+    const rules = user.permissions.map(permission => {
+      return { action: 'manage', subject: 'all' }
+    })
+    ability.update(rules)
+
+    const target = route.query.to ? String(route.query.to) : '/dashboard'
+    console.log('Navigating to:', target)
     await nextTick(() => {
-      router.replace(route.query.to ? String(route.query.to) : '/dashboard')
+      router.replace(target)
     })
   } catch (err) {
     console.error('Login error:', err)

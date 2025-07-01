@@ -1,5 +1,6 @@
 <script setup>
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
+import { useAbility } from '@/plugins/casl/composables/useAbility'
 
 const router = useRouter()
 const ability = useAbility()
