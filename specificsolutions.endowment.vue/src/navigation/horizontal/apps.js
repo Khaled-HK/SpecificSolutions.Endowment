@@ -4,6 +4,32 @@ export default [
     icon: { icon: 'tabler-layout-grid-add' },
     children: [
       {
+        title: 'Endowment Management',
+        icon: { icon: 'tabler-building-mosque' },
+        children: [
+          {
+            title: 'Buildings',
+            to: 'apps-buildings',
+            icon: { icon: 'tabler-building' },
+          },
+          {
+            title: 'Mosques',
+            to: 'apps-mosques',
+            icon: { icon: 'tabler-building-mosque' },
+          },
+          {
+            title: 'Cities',
+            to: 'apps-cities',
+            icon: { icon: 'tabler-map-pin' },
+          },
+          {
+            title: 'Regions',
+            to: 'apps-regions',
+            icon: { icon: 'tabler-map' },
+          },
+        ],
+      },
+      {
         title: 'Ecommerce',
         icon: { icon: 'tabler-shopping-cart-plus' },
         children: [
@@ -113,3 +139,4 @@ export default [
     ],
   },
 ]
+

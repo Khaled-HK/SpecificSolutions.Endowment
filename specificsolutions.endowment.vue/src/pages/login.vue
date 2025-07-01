@@ -10,9 +10,8 @@ import authV2MaskDark from '@images/pages/misc-mask-dark.png'
 import authV2MaskLight from '@images/pages/misc-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
-import axios from 'axios';
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const authThemeImg = useGenerateImageVariant(authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
@@ -45,28 +44,29 @@ const rememberMe = ref(false)
 
 const login = async () => {
   try {
-    const res = await $api('/auth/login', {
+    const res = await $api('/Auth/login', {
       method: 'POST',
       body: {
         email: credentials.value.email,
         password: credentials.value.password,
       },
       onResponseError({ response }) {
-        errors.value = response._data.errors
+        errors.value = response._data.errors || { general: 'Login failed. Please check your credentials.' }
       },
     })
 
-    const { accessToken, userData, userAbilityRules } = res
+    const { token, user } = res
 
-    useCookie('userAbilityRules').value = userAbilityRules
-    ability.update(userAbilityRules)
-    useCookie('userData').value = userData
-    useCookie('accessToken').value = accessToken
+    // Store authentication data
+    useCookie('accessToken').value = token
+    useCookie('userData').value = user
+    
     await nextTick(() => {
-      router.replace(route.query.to ? String(route.query.to) : '/')
+      router.replace(route.query.to ? String(route.query.to) : '/dashboard')
     })
   } catch (err) {
-    console.error(err)
+    console.error('Login error:', err)
+    errors.value = { general: 'Login failed. Please try again.' }
   }
 }
 
@@ -76,28 +76,6 @@ const onSubmit = () => {
       login()
   })
 }
-
-const form = ref({
-  email: '',
-  password: '',
-});
-
-const handleLogin = async () => {
-  try {
-    const response = await axios.post('http://localhost:5295/api/Auth/login', {
-      email: form.value.email,
-      password: form.value.password,
-    });
-
-    // Handle successful login
-    console.log('Login successful:', response.data);
-    localStorage.setItem('token', response.data.token); // Save token to localStorage
-    router.push('/dashboard'); // Redirect to the dashboard
-  } catch (error) {
-    console.error('Login failed:', error.response?.data?.message || error.message);
-    alert('Login failed: ' + (error.response?.data?.message || 'Please try again.'));
-  }
-};
 </script>
 
 <template>
