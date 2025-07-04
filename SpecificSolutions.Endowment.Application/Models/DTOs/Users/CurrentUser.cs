@@ -22,6 +22,7 @@ public class CurrentUser : ICurrentUser
     {
         Id = user.Id;
         UserName = user.Name;
+        //Permission = user.Permissions
     }
 
     public virtual async Task<bool> HasPermissionAsync(Permission permission)

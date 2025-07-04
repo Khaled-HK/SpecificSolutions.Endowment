@@ -93,9 +93,12 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
             //        AllowRefresh = true
             //    });
 
-            // Get permissions from user roles
-            var roles = await _userManager.GetRolesAsync(user);
-            user.AddPermissions(roles.ToList());
+            // Get permissions from user roles using Identity APIs
+            var permissions = await GetUserPermissionsAsync(user);
+            //var permissions1 = await GetUserPermissionsAsync1(user);
+            
+            // Clear any existing permissions to avoid duplicates from previous sessions
+            user.AddPermissions(permissions);
 
             await _sessionService.CreateSessionAsync(user);
 
@@ -182,13 +185,94 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
             var roles = await _userManager.GetRolesAsync(user);
             return roles.ToList();
         }
-
-        public async Task<List<string>> GetUserPermissionsAsync(string userId)
+        /// <summary>
+        /// Gets all permissions for a user based on their role groups (Admin, Customer, etc.)
+        /// 
+        /// Role Groups Concept:
+        /// - Admin = مدراء (Managers Group)
+        /// - Customer = مبيعات (Sales Group)  
+        /// - Employee = موظفين (Staff Group)
+        /// 
+        /// The actual permissions are stored in ApplicationUserRole.Permissions
+        /// </summary>
+        /// <param name="user">The user to get permissions for</param>
+        /// <returns>List of permission strings</returns>
+        public async Task<List<string>> GetUserPermissionsAsync(ApplicationUser user)
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            var claims = await _userManager.GetClaimsAsync(user);
-            return claims.Select(q => q.Value).ToList();
+            try
+            {
+                var permissions = new List<string>();
+
+                // Get actual permissions from ApplicationUserRole entities
+                var userPermissions = await GetUserRolePermissionsAsync(user.Id);
+                permissions.AddRange(userPermissions);
+
+                // Remove duplicates and return clean permissions
+                return permissions.Distinct().ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to get permissions for user {user.Id}", ex);
+            }
         }
+
+        /// <summary>
+        /// Gets specific permissions from ApplicationUserRole entities
+        /// 
+        /// Each role group has specific permissions:
+        /// - Admin Group: AccountView, AccountAdd, UserView, UserAdd, etc.
+        /// - Customer Group: AccountView, RequestView, RequestAdd, etc.
+        /// - Employee Group: RequestView, OfficeView, etc.
+        /// </summary>
+        /// <param name="userId">The user ID</param>
+        /// <returns>List of specific permission strings from Permission objects</returns>
+        private async Task<List<string>> GetUserRolePermissionsAsync(string userId)
+        {
+            try
+            {
+                var permissions = new List<string>();
+
+                // Load user with UserRoles and their specific permissions
+                var userWithRoles = await _userManager.Users
+                    .Where(u => u.Id == userId)
+                    .Include(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role)
+                    .Select(u => new
+                    {
+                        UserRoles = u.UserRoles.Select(ur => new
+                        {
+                            ur.Permissions,
+                            RoleName = ur.Role.Name, // Group name: "Admin", "Customer", etc.
+                            RoleId = ur.Role.Id
+                        })
+                    })
+                    .FirstOrDefaultAsync();
+
+                // Extract specific permissions from each role group
+                if (userWithRoles?.UserRoles != null)
+                {
+                    foreach (var userRole in userWithRoles.UserRoles)
+                    {
+                        if (userRole.Permissions != null)
+                        {
+                            // Get detailed permissions for this role group
+                            var permissionList = userRole.Permissions.ToPermissionList();
+
+                            // Add permissions without context for general use
+                            permissions.AddRange(permissionList);
+                        }
+                    }
+                }
+
+                return permissions;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to get role permissions for user {userId}", ex);
+            }
+        }
+
+
 
         public async Task<bool> IsUserInRoleAsync(string roleName)
         {
@@ -208,6 +292,12 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
         {
             await _signInManager.SignOutAsync();
             await _sessionService.EndSessionAsync();
+        }
+
+        public async Task<IUserLogin> RefreshTokenAsync(string refreshToken)
+        {
+            // Implementation of RefreshTokenAsync method
+            throw new NotImplementedException();
         }
     }
 }

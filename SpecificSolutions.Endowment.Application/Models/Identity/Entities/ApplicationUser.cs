@@ -131,7 +131,9 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity.Entities
 
         public void AddPermissions(List<string> permissions)
         {
-            Permissions.AddRange(permissions);
+            // Clear existing permissions and add new ones to avoid duplicates
+            Permissions.Clear();
+            Permissions.AddRange(permissions.Distinct());
         }
     }
 }

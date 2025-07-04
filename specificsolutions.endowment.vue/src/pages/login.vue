@@ -65,10 +65,31 @@ const login = async () => {
       errors.value = { general: 'Login failed: No permissions found.' }
       return
     }
+    
+    const rules = []
 
-    const rules = user.permissions.map(permission => {
-      return { action: 'manage', subject: 'all' }
+    // Add general permissions for Auth subject (required for page access)
+    rules.push(
+      { action: 'read', subject: 'Auth' },
+      { action: 'write', subject: 'Auth' },
+      { action: 'delete', subject: 'Auth' },
+      { action: 'manage', subject: 'all' }
+    )
+
+    // Convert specific permissions from backend
+    user.permissions.forEach(permission => {
+      // Handle general permissions (e.g., "Account_View", "Account_Add", "User_View")
+      rules.push({ 
+        action: mapPermissionToAction(permission), 
+        subject: mapPermissionToSubject(permission) 
+      })
     })
+
+    console.log('CASL Rules المحدثة:', rules)
+    console.log('User permissions من Backend:', user.permissions)
+
+    // حفظ قواعد الصلاحيات في الكوكيز لاستعادتها بعد إعادة التحميل
+    useCookie('userAbilityRules').value = rules
     ability.update(rules)
 
     const target = route.query.to ? String(route.query.to) : '/dashboard'
@@ -87,6 +108,29 @@ const onSubmit = () => {
     if (isValid)
       login()
   })
+}
+
+// Helper functions to map backend permissions to CASL actions/subjects
+function mapPermissionToAction(permission) {
+  if (permission.endsWith('_View')) return 'View'
+  if (permission.endsWith('_Add')) return 'Add'
+  if (permission.endsWith('_Edit')) return 'Edit'
+  if (permission.endsWith('_Delete')) return 'Delete'
+  return 'manage' // Default for unknown permissions
+}
+
+function mapPermissionToSubject(permission) {
+  if (permission.startsWith('Account_')) return 'Account'
+  if (permission.startsWith('User_')) return 'User'
+  if (permission.startsWith('Role_')) return 'Role'
+  if (permission.startsWith('Decision_')) return 'Decision'
+  if (permission.startsWith('Request_')) return 'Request'
+  if (permission.startsWith('Office_')) return 'Office'
+  if (permission.startsWith('Endowment_')) return 'Endowment'
+  if (permission.startsWith('City_')) return 'City'
+  if (permission.startsWith('Region_')) return 'Region'
+  if (permission.startsWith('Building_')) return 'Building'
+  return 'Auth' // Default subject
 }
 </script>
 

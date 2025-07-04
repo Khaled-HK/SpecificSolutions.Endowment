@@ -3,8 +3,8 @@ import { ref, onMounted } from 'vue'
 
 definePage({
   meta: {
-    action: 'read',
-    subject: 'Auth',
+    action: 'View',
+    subject: 'Mosque',
   },
 })
 

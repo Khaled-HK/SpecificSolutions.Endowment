@@ -27,12 +27,12 @@ namespace SpecificSolutions.Endowment.Api.Controllers.Authentications
         {
             var command = new LoginCommand
             {
-                Email = "1",
-                Password = "1"
+                Email = "A@gmail.com",
+                Password = "12345678"
             };
-            
+
             var userLogin = await _mediator.Send(command, cancellationToken);
-                return userLogin;
+            return userLogin;
         }
 
         [HttpPost("logout")]

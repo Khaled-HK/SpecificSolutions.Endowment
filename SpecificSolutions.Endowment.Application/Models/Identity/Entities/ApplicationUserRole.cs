@@ -8,7 +8,7 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity.Entities
 
         public virtual ApplicationRole Role { get; set; }
 
-        public Permission Permissions { get; private set; }
+        public Permission Permissions { get; set; }
 
         public ApplicationUserRole() { }
 
