@@ -8,8 +8,16 @@ const options = computed(() => {
   const currentTheme = ref(vuetifyTheme.current.value.colors)
   const variableTheme = ref(vuetifyTheme.current.value.variables)
 
-  const disabledColor = `rgba(${hexToRgb(currentTheme.value['on-surface'])},${variableTheme.value['disabled-opacity']})`
-  const borderColor = `rgba(${hexToRgb(String(variableTheme.value['border-color']))},${variableTheme.value['border-opacity']})`
+  // Add fallback values for colors
+  const surfaceColor = currentTheme.value.surface || '#FFFFFF'
+  const trackBgColor = currentTheme.value['track-bg'] || '#f5f5f5'
+  const onSurfaceColor = currentTheme.value['on-surface'] || '#000000'
+  const disabledOpacity = variableTheme.value['disabled-opacity'] || 0.38
+  const borderColorValue = String(variableTheme.value['border-color'] || '#e0e0e0')
+  const borderOpacity = variableTheme.value['border-opacity'] || 0.12
+
+  const disabledColor = `rgba(${hexToRgb(onSurfaceColor)},${disabledOpacity})`
+  const borderColor = `rgba(${hexToRgb(borderColorValue)},${borderOpacity})`
 
   return {
     chart: {
@@ -27,7 +35,7 @@ const options = computed(() => {
     },
     stroke: {
       width: 2,
-      colors: [currentTheme.value.surface],
+      colors: [surfaceColor],
     },
     legend: { show: false },
     grid: {
@@ -37,12 +45,12 @@ const options = computed(() => {
     },
     dataLabels: { enabled: false },
     colors: [
-      currentTheme.value['track-bg'],
-      currentTheme.value['track-bg'],
-      currentTheme.value['track-bg'],
+      trackBgColor,
+      trackBgColor,
+      trackBgColor,
       'rgba(var(--v-theme-primary),1)',
-      currentTheme.value['track-bg'],
-      currentTheme.value['track-bg'],
+      trackBgColor,
+      trackBgColor,
     ],
     states: {
       hover: { filter: { type: 'none' } },

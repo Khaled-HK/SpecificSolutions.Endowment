@@ -222,7 +222,7 @@ public sealed class Seeder
                         officeView: true, officeAdd: false, officeEdit: false, officeDelete: false,
                         endowmentView: true, endowmentAdd: false, endowmentEdit: false, endowmentDelete: false,
                         cityView: true, cityAdd: false, cityEdit: false, cityDelete: false,
-                        regionView: true, regionAdd: false, regionEdit: false, regionDelete: false,
+                        regionView: false, regionAdd: false, regionEdit: false, regionDelete: false,
                         buildingView: true, buildingAdd: false, buildingEdit: false, buildingDelete: false
                     ))
             };

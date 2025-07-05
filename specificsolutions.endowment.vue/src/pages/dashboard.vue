@@ -1,4 +1,11 @@
 <script setup lang="ts">
+definePage({
+  meta: {
+    action: 'View',
+    subject: 'Dashboard',
+  },
+})
+
 import AnalyticsAward from '@/views/dashboard/AnalyticsAward.vue'
 import AnalyticsBarCharts from '@/views/dashboard/AnalyticsBarCharts.vue'
 import AnalyticsDepositWithdraw from '@/views/dashboard/AnalyticsDepositWithdraw.vue'

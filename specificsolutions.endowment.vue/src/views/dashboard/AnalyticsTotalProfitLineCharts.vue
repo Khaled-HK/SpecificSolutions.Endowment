@@ -14,6 +14,12 @@ const chartOptions = computed(() => {
   const currentTheme = vuetifyTheme.current.value.colors
   const variableTheme = vuetifyTheme.current.value.variables
 
+  // Add fallback values for colors
+  const primaryColor = currentTheme.primary || '#7C3AED'
+  const surfaceColor = currentTheme.surface || '#FFFFFF'
+  const borderColorValue = String(variableTheme['border-color'] || '#e0e0e0')
+  const borderOpacity = variableTheme['border-opacity'] || 0.12
+
   return {
     chart: {
       parentHeightOffset: 0,
@@ -21,7 +27,7 @@ const chartOptions = computed(() => {
     },
     tooltip: { enabled: false },
     grid: {
-      borderColor: `rgba(${hexToRgb(String(variableTheme['border-color']))},${variableTheme['border-opacity']})`,
+      borderColor: `rgba(${hexToRgb(borderColorValue)},${borderOpacity})`,
       strokeDashArray: 6,
       xaxis: {
         lines: { show: true },
@@ -41,7 +47,7 @@ const chartOptions = computed(() => {
       lineCap: 'butt',
       curve: 'straight',
     },
-    colors: [currentTheme.primary],
+    colors: [primaryColor],
     markers: {
       size: 6,
       offsetY: 4,
@@ -53,8 +59,8 @@ const chartOptions = computed(() => {
         {
           size: 5.5,
           seriesIndex: 0,
-          strokeColor: currentTheme.primary,
-          fillColor: currentTheme.surface,
+          strokeColor: primaryColor,
+          fillColor: surfaceColor,
           dataPointIndex: series[0].data.length - 1,
         },
       ],

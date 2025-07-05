@@ -73,16 +73,18 @@ const login = async () => {
       { action: 'read', subject: 'Auth' },
       { action: 'write', subject: 'Auth' },
       { action: 'delete', subject: 'Auth' },
-      { action: 'manage', subject: 'all' }
+      { action: 'View', subject: 'Dashboard' } // Allow all users to access dashboard
     )
 
     // Convert specific permissions from backend
     user.permissions.forEach(permission => {
-      // Handle general permissions (e.g., "Account_View", "Account_Add", "User_View")
-      rules.push({ 
-        action: mapPermissionToAction(permission), 
-        subject: mapPermissionToSubject(permission) 
-      })
+      // Handle camelCase permissions from backend (e.g., "cityView", "accountAdd")
+      const action = mapPermissionToAction(permission)
+      const subject = mapPermissionToSubject(permission)
+      
+      if (action && subject) {
+        rules.push({ action, subject })
+      }
     })
 
     console.log('CASL Rules المحدثة:', rules)
@@ -112,14 +114,16 @@ const onSubmit = () => {
 
 // Helper functions to map backend permissions to CASL actions/subjects
 function mapPermissionToAction(permission) {
+  // Handle underscore format from backend (e.g., "City_View", "Account_Add")
   if (permission.endsWith('_View')) return 'View'
   if (permission.endsWith('_Add')) return 'Add'
   if (permission.endsWith('_Edit')) return 'Edit'
   if (permission.endsWith('_Delete')) return 'Delete'
-  return 'manage' // Default for unknown permissions
+  return null // Return null for unknown permissions
 }
 
 function mapPermissionToSubject(permission) {
+  // Handle underscore format from backend (e.g., "City_View", "Account_Add")
   if (permission.startsWith('Account_')) return 'Account'
   if (permission.startsWith('User_')) return 'User'
   if (permission.startsWith('Role_')) return 'Role'
@@ -130,7 +134,7 @@ function mapPermissionToSubject(permission) {
   if (permission.startsWith('City_')) return 'City'
   if (permission.startsWith('Region_')) return 'Region'
   if (permission.startsWith('Building_')) return 'Building'
-  return 'Auth' // Default subject
+  return null // Return null for unknown permissions
 }
 </script>
 

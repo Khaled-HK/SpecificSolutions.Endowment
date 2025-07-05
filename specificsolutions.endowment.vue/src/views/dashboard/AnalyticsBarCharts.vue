@@ -13,7 +13,9 @@ const series = [
 ]
 
 const chartOptions = computed(() => {
-  const backgroundColor = currentTheme.value['track-bg']
+  const backgroundColor = currentTheme.value['track-bg'] || '#f5f5f5'
+  const errorColor = currentTheme.value.error || '#FF5722'
+  const primaryColor = currentTheme.value.primary || '#7C3AED'
 
   return {
     chart: {
@@ -34,7 +36,7 @@ const chartOptions = computed(() => {
         bottom: -5,
       },
     },
-    colors: [currentTheme.value.error, currentTheme.value.primary, currentTheme.value.error, currentTheme.value.primary, currentTheme.value.primary],
+    colors: [errorColor, primaryColor, errorColor, primaryColor, primaryColor],
     plotOptions: {
       bar: {
         horizontal: false,
