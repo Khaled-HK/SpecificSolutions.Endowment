@@ -1,4 +1,12 @@
 <script setup>
+// Define page metadata for permissions
+definePage({
+  meta: {
+    action: 'View',
+    subject: 'Dashboard',
+  },
+})
+
 import DealDetails from '@/views/wizard-examples/create-deal/DealDetails.vue'
 import DealReviewComplete from '@/views/wizard-examples/create-deal/DealReviewComplete.vue'
 import CreateDealType from '@/views/wizard-examples/create-deal/DealType.vue'

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// Define page metadata for permissions
 definePage({
   meta: {
     action: 'View',

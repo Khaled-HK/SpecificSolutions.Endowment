@@ -1,4 +1,11 @@
 <script setup>
+definePage({
+  meta: {
+    action: 'View',
+    subject: 'Dashboard',
+  },
+})
+
 const isCardAddDialogVisible = ref(false)
 const isPricingPlanDialogVisible = ref(false)
 const isEditAddressDialogVisible = ref(false)

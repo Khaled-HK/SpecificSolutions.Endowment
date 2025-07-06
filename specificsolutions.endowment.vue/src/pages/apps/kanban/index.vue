@@ -1,6 +1,14 @@
 <script setup>
 import KanbanBoardComp from '@/views/apps/kanban/KanbanBoard.vue'
 
+// Define page metadata for permissions
+definePage({
+  meta: {
+    action: 'View',
+    subject: 'Dashboard',
+  },
+})
+
 // 👉 initial kanban data fetch
 const {
   data: kanban,

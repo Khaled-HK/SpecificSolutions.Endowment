@@ -1,4 +1,13 @@
 <script setup>
+// Define page metadata for permissions
+definePage({
+  meta: {
+    action: 'View',
+    subject: 'Dashboard',
+    navActiveLink: 'pages-account-settings-tab',
+  },
+})
+
 import AccountSettingsAccount from '@/views/pages/account-settings/AccountSettingsAccount.vue'
 import AccountSettingsBillingAndPlans from '@/views/pages/account-settings/AccountSettingsBillingAndPlans.vue'
 import AccountSettingsConnections from '@/views/pages/account-settings/AccountSettingsConnections.vue'
@@ -40,8 +49,6 @@ const tabs = [
     tab: 'connection',
   },
 ]
-
-definePage({ meta: { navActiveLink: 'pages-account-settings-tab' } })
 </script>
 
 <template>

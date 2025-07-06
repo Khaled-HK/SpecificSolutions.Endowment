@@ -1,4 +1,12 @@
 <script setup>
+// Define page metadata for permissions
+definePage({
+  meta: {
+    action: 'View',
+    subject: 'Dashboard',
+  },
+})
+
 import UserBioPanel from '@/views/apps/user/view/UserBioPanel.vue'
 import UserTabAccount from '@/views/apps/user/view/UserTabAccount.vue'
 import UserTabBillingsPlans from '@/views/apps/user/view/UserTabBillingsPlans.vue'

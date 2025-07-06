@@ -1,4 +1,12 @@
 <script setup>
+// Define page metadata for permissions
+definePage({
+  meta: {
+    action: 'View',
+    subject: 'Dashboard',
+  },
+})
+
 import PersonalDetails from '@/views/wizard-examples/property-listing/PersonalDetails.vue'
 import PriceDetails from '@/views/wizard-examples/property-listing/PriceDetails.vue'
 import PropertyArea from '@/views/wizard-examples/property-listing/PropertyArea.vue'

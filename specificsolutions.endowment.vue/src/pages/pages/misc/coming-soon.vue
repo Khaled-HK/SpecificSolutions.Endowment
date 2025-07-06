@@ -4,10 +4,12 @@ import miscComingSoon from '@images/pages/misc-coming-soon.png'
 import miscMaskDark from '@images/pages/misc-mask-dark.png'
 import miscMaskLight from '@images/pages/misc-mask-light.png'
 
+// Define page metadata for permissions
 definePage({
   meta: {
     layout: 'blank',
-    public: true,
+    action: 'View',
+    subject: 'Dashboard',
   },
 })
 

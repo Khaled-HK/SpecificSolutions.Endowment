@@ -5,7 +5,13 @@ import EmailLeftSidebarContent from '@/views/apps/email/EmailLeftSidebarContent.
 import EmailView from '@/views/apps/email/EmailView.vue'
 import { useEmail } from '@/views/apps/email/useEmail'
 
-definePage({ meta: { layoutWrapperClasses: 'layout-content-height-fixed' } })
+definePage({ 
+  meta: { 
+    layoutWrapperClasses: 'layout-content-height-fixed',
+    action: 'View',
+    subject: 'Dashboard',
+  } 
+})
 
 const { isLeftSidebarOpen } = useResponsiveLeftSidebar()
 

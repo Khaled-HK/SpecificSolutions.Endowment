@@ -6,6 +6,14 @@ import LogisticsOrderByCountries from '@/views/apps/logistics/LogisticsOrderByCo
 import LogisticsOverviewTable from '@/views/apps/logistics/LogisticsOverviewTable.vue'
 import LogisticsShipmentStatistics from '@/views/apps/logistics/LogisticsShipmentStatistics.vue'
 import LogisticsVehicleOverview from '@/views/apps/logistics/LogisticsVehicleOverview.vue'
+
+// Define page metadata for permissions
+definePage({
+  meta: {
+    action: 'View',
+    subject: 'Dashboard',
+  },
+})
 </script>
 
 <template>

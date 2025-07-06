@@ -5,10 +5,11 @@ import UserProfile from '@/views/pages/user-profile/profile/index.vue'
 import UserProjects from '@/views/pages/user-profile/projects/index.vue'
 import UserTeam from '@/views/pages/user-profile/team/index.vue'
 
+// Define page metadata for permissions
 definePage({
   meta: {
-    navActiveLink: 'pages-user-profile-tab',
-    key: 'tab',
+    action: 'View',
+    subject: 'Dashboard',
   },
 })
 

@@ -1,4 +1,12 @@
 <script setup>
+// Define page metadata for permissions
+definePage({
+  meta: {
+    action: 'View',
+    subject: 'Dashboard',
+  },
+})
+
 import AddressContent from '@/views/wizard-examples/checkout/Address.vue'
 import CartContent from '@/views/wizard-examples/checkout/Cart.vue'
 import ConfirmationContent from '@/views/wizard-examples/checkout/Confirmation.vue'

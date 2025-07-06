@@ -9,6 +9,14 @@ import customCheck from '@images/svg/Check.svg'
 import customLaptop from '@images/svg/laptop.svg'
 import customLightbulb from '@images/svg/lightbulb.svg'
 
+// Define page metadata for permissions
+definePage({
+  meta: {
+    action: 'View',
+    subject: 'Dashboard',
+  },
+})
+
 const donutChartColors = {
   donut: {
     series1: '#22A95E',

@@ -1,7 +1,6 @@
 {
   "globals": {
     "$api": true,
-    "COOKIE_MAX_AGE_1_YEAR": true,
     "Component": true,
     "ComponentPublicInstance": true,
     "ComputedRef": true,
@@ -22,7 +21,6 @@
     "alphaValidator": true,
     "asyncComputed": true,
     "autoResetRef": true,
-    "avatarText": true,
     "betweenValidator": true,
     "computed": true,
     "computedAsync": true,
@@ -163,7 +161,6 @@
     "unrefElement": true,
     "until": true,
     "urlValidator": true,
-    "useAbility": true,
     "useAbs": true,
     "useActiveElement": true,
     "useAnimate": true,

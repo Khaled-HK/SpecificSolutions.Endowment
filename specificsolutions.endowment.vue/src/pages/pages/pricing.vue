@@ -1,3 +1,12 @@
+<script setup>
+definePage({
+  meta: {
+    action: 'View',
+    subject: 'Dashboard',
+  },
+})
+</script>
+
 <template>
   <VCard>
     <VCardText class="py-16">

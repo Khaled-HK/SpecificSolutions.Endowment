@@ -12,7 +12,13 @@ import ChatUserProfileSidebarContent from '@/views/apps/chat/ChatUserProfileSide
 import { useChat } from '@/views/apps/chat/useChat'
 import { useChatStore } from '@/views/apps/chat/useChatStore'
 
-definePage({ meta: { layoutWrapperClasses: 'layout-content-height-fixed' } })
+definePage({ 
+  meta: { 
+    layoutWrapperClasses: 'layout-content-height-fixed',
+    action: 'View',
+    subject: 'Dashboard',
+  } 
+})
 
 // composables
 const vuetifyDisplays = useDisplay()

@@ -9,6 +9,14 @@ import { useCalendarStore } from '@/views/apps/calendar/useCalendarStore'
 // Components
 import CalendarEventHandler from '@/views/apps/calendar/CalendarEventHandler.vue'
 
+// Define page metadata for permissions
+definePage({
+  meta: {
+    action: 'View',
+    subject: 'Dashboard',
+  },
+})
+
 // 👉 Store
 const store = useCalendarStore()
 

@@ -1,4 +1,12 @@
 <script setup>
+// Define page metadata for permissions
+definePage({
+  meta: {
+    action: 'View',
+    subject: 'Dashboard',
+  },
+})
+
 import sittingGirlWithLaptop from '@images/illustrations/sitting-girl-with-laptop.png'
 
 const faqSearchQuery = ref('')

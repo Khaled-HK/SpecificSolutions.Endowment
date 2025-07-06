@@ -1,4 +1,13 @@
 <script setup>
+
+// Define page metadata for permissions
+definePage({
+  meta: {
+    action: 'View',
+    subject: 'Dashboard',
+  },
+})
+
 const searchQuery = ref('')
 const selectedStatus = ref(null)
 const selectedRows = ref([])

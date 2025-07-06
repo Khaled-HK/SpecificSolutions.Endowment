@@ -4,14 +4,16 @@ import miscMaskDark from '@images/pages/misc-mask-dark.png'
 import miscMaskLight from '@images/pages/misc-mask-light.png'
 import miscUnderMaintenance from '@images/pages/misc-under-maintenance.png'
 
-const authThemeMask = useGenerateImageVariant(miscMaskLight, miscMaskDark)
-
+// Define page metadata for permissions
 definePage({
   meta: {
     layout: 'blank',
-    public: true,
+    action: 'View',
+    subject: 'Dashboard',
   },
 })
+
+const authThemeMask = useGenerateImageVariant(miscMaskLight, miscMaskDark)
 </script>
 
 <template>

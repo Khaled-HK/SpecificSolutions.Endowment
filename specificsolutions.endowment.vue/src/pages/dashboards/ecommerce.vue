@@ -10,6 +10,14 @@ import EcommerceRevenueReport from '@/views/dashboards/ecommerce/EcommerceRevenu
 import EcommerceStatistics from '@/views/dashboards/ecommerce/EcommerceStatistics.vue'
 import EcommerceTotalProfitLineCharts from '@/views/dashboards/ecommerce/EcommerceTotalProfitLineCharts.vue'
 import EcommerceTransactions from '@/views/dashboards/ecommerce/EcommerceTransactions.vue'
+
+// Define page metadata for permissions
+definePage({
+  meta: {
+    action: 'View',
+    subject: 'Dashboard',
+  },
+})
 </script>
 
 <template>

@@ -2,6 +2,14 @@
 import InvoiceEditable from '@/views/apps/invoice/InvoiceEditable.vue'
 import InvoiceSendInvoiceDrawer from '@/views/apps/invoice/InvoiceSendInvoiceDrawer.vue'
 
+// Define page metadata for permissions
+definePage({
+  meta: {
+    action: 'View',
+    subject: 'Dashboard',
+  },
+})
+
 // 👉 Default Blank Data
 const invoiceData = ref({
   invoice: {

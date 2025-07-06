@@ -4,6 +4,7 @@ import miscMaskDark from '@images/pages/misc-mask-dark.png'
 import miscMaskLight from '@images/pages/misc-mask-light.png'
 import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
 
+// Define page metadata for permissions
 definePage({
   alias: '/pages/misc/not-authorized',
   meta: {
@@ -20,7 +21,7 @@ const authThemeMask = useGenerateImageVariant(miscMaskLight, miscMaskDark)
     <ErrorHeader
       status-code="401"
       title="You are not authorized! 🔐"
-      description="You don’t have permission to access this page. Go Home!."
+      description="You don't have permission to access this page. Go Home!."
     />
 
     <VBtn
