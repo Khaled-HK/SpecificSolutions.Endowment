@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataTables Extensions - إضافات الجداول</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.7.0/css/select.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/scroller/2.2.0/css/scroller.bootstrap5.min.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .extension-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 30px;
+        }
+        .extension-card:hover {
+            transform: translateY(-5px);
+        }
+        .extension-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            padding: 20px;
+        }
+        .extension-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .demo-table {
+            font-size: 0.9rem;
+        }
+        .badge-feature {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin: 5px;
+            display: inline-block;
+        }
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+        .nav-tabs .nav-link {
+            border-radius: 10px 10px 0 0;
+            margin-right: 5px;
+        }
+        .nav-tabs .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <h1 class="display-4 fw-bold mb-4">
+                <i class="fas fa-table me-3"></i>
+                إضافات DataTables المتقدمة
+            </h1>
+            <p class="lead mb-4">
+                اكتشف جميع الإضافات القوية التي تجعل جداولك أكثر تفاعلية وفعالية
+            </p>
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="d-flex flex-wrap justify-content-center">
+                        <span class="badge-feature">أعمدة ثابتة</span>
+                        <span class="badge-feature">عناوين ثابتة</span>
+                        <span class="badge-feature">تمرير متقدم</span>
+                        <span class="badge-feature">تحديد متعدد</span>
+                        <span class="badge-feature">تصفية ذكية</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5">
+        
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs mb-4" id="extensionTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="scrollable-tab" data-bs-toggle="tab" data-bs-target="#scrollable" type="button" role="tab">
+                    <i class="fas fa-arrows-alt me-2"></i>
+                    التمرير المتقدم
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="fixed-header-tab" data-bs-toggle="tab" data-bs-target="#fixed-header" type="button" role="tab">
+                    <i class="fas fa-thumbtack me-2"></i>
+                    العنوان الثابت
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="fixed-columns-tab" data-bs-toggle="tab" data-bs-target="#fixed-columns" type="button" role="tab">
+                    <i class="fas fa-columns me-2"></i>
+                    الأعمدة الثابتة
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="row-selection-tab" data-bs-toggle="tab" data-bs-target="#row-selection" type="button" role="tab">
+                    <i class="fas fa-check-square me-2"></i>
+                    تحديد الصفوف
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="extensionTabsContent">
+            
+            <!-- Scrollable Tables -->
+            <div class="tab-pane fade show active" id="scrollable" role="tabpanel">
+                <div class="extension-card">
+                    <div class="extension-header">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-arrows-alt extension-icon me-3"></i>
+                            <div>
+                                <h3 class="mb-2">التمرير المتقدم (Scrollable Tables)</h3>
+                                <p class="mb-0">تحكم كامل في التمرير الأفقي والعمودي للجداول الكبيرة</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="alert alert-info">
+                                    <h6><i class="fas fa-info-circle me-2"></i>الميزات:</h6>
+                                    <ul class="mb-0">
+                                        <li>تمرير عمودي بارتفاع محدد</li>
+                                        <li>تمرير أفقي للجداول العريضة</li>
+                                        <li>تحسين الأداء للبيانات الكبيرة</li>
+                                        <li>تحكم في سرعة التمرير</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="alert alert-success">
+                                    <h6><i class="fas fa-code me-2"></i>كود التطبيق:</h6>
+                                    <pre class="mb-0"><code>$('#example').DataTable({
+    scrollY: '400px',
+    scrollX: true,
+    scrollCollapse: true,
+    paging: false
+});</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table id="scrollableTable" class="table table-striped demo-table">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>الاسم</th>
+                                        <th>البريد الإلكتروني</th>
+                                        <th>المدينة</th>
+                                        <th>تاريخ البداية</th>
+                                        <th>الراتب</th>
+                                        <th>العمر</th>
+                                        <th>الخبرة</th>
+                                        <th>الحالة</th>
+                                        <th>ملاحظات طويلة جداً</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>أحمد محمد</td>
+                                        <td>ahmed@example.com</td>
+                                        <td>الرياض</td>
+                                        <td>2023-01-15</td>
+                                        <td>15000</td>
+                                        <td>28</td>
+                                        <td>3 سنوات</td>
+                                        <td><span class="badge bg-success">نشط</span></td>
+                                        <td>هذا نص طويل جداً لاختبار التمرير الأفقي في الجدول</td>
+                                    </tr>
+                                    <tr>
+                                        <td>فاطمة أحمد</td>
+                                        <td>fatima@example.com</td>
+                                        <td>جدة</td>
+                                        <td>2023-02-20</td>
+                                        <td>12000</td>
+                                        <td>25</td>
+                                        <td>2 سنة</td>
+                                        <td><span class="badge bg-warning">قيد المراجعة</span></td>
+                                        <td>نص آخر طويل لاختبار عرض الجدول</td>
+                                    </tr>
+                                    <tr>
+                                        <td>محمد علي</td>
+                                        <td>mohammed@example.com</td>
+                                        <td>الدمام</td>
+                                        <td>2023-03-10</td>
+                                        <td>18000</td>
+                                        <td>32</td>
+                                        <td>5 سنوات</td>
+                                        <td><span class="badge bg-success">نشط</span></td>
+                                        <td>المزيد من النصوص الطويلة لاختبار التمرير</td>
+                                    </tr>
+                                    <tr>
+                                        <td>سارة خالد</td>
+                                        <td>sara@example.com</td>
+                                        <td>مكة</td>
+                                        <td>2023-04-05</td>
+                                        <td>14000</td>
+                                        <td>27</td>
+                                        <td>3 سنوات</td>
+                                        <td><span class="badge bg-danger">معطل</span></td>
+                                        <td>نص تجريبي إضافي للاختبار</td>
+                                    </tr>
+                                    <tr>
+                                        <td>عبدالله سالم</td>
+                                        <td>abdullah@example.com</td>
+                                        <td>المدينة</td>
+                                        <td>2023-05-12</td>
+                                        <td>16000</td>
+                                        <td>30</td>
+                                        <td>4 سنوات</td>
+                                        <td><span class="badge bg-success">نشط</span></td>
+                                        <td>نص آخر طويل جداً لاختبار الخاصية</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fixed Header -->
+            <div class="tab-pane fade" id="fixed-header" role="tabpanel">
+                <div class="extension-card">
+                    <div class="extension-header">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-thumbtack extension-icon me-3"></i>
+                            <div>
+                                <h3 class="mb-2">العنوان الثابت (Fixed Header)</h3>
+                                <p class="mb-0">عنوان الجدول يبقى ثابتاً أثناء التمرير العمودي</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="alert alert-info">
+                                    <h6><i class="fas fa-info-circle me-2"></i>الميزات:</h6>
+                                    <ul class="mb-0">
+                                        <li>عنوان ثابت أثناء التمرير</li>
+                                        <li>تحسين تجربة المستخدم</li>
+                                        <li>سهولة القراءة</li>
+                                        <li>تحكم في موضع العنوان</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="alert alert-success">
+                                    <h6><i class="fas fa-code me-2"></i>كود التطبيق:</h6>
+                                    <pre class="mb-0"><code>$('#example').DataTable({
+    fixedHeader: true,
+    scrollY: '400px',
+    scrollCollapse: true
+});</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table id="fixedHeaderTable" class="table table-striped demo-table">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>الرقم</th>
+                                        <th>الاسم الكامل</th>
+                                        <th>المنصب</th>
+                                        <th>القسم</th>
+                                        <th>الراتب</th>
+                                        <th>تاريخ التوظيف</th>
+                                        <th>الحالة</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>1</td><td>أحمد محمد الأحمد</td><td>مطور واجهات</td><td>تقنية المعلومات</td><td>15000</td><td>2023-01-15</td><td><span class="badge bg-success">نشط</span></td></tr>
+                                    <tr><td>2</td><td>فاطمة علي السالم</td><td>مصممة جرافيك</td><td>التسويق</td><td>12000</td><td>2023-02-20</td><td><span class="badge bg-success">نشط</span></td></tr>
+                                    <tr><td>3</td><td>محمد سعد الغامدي</td><td>محلل بيانات</td><td>الإحصاء</td><td>18000</td><td>2023-03-10</td><td><span class="badge bg-warning">قيد المراجعة</span></td></tr>
+                                    <tr><td>4</td><td>سارة خالد القحطاني</td><td>مديرة مشروع</td><td>الإدارة</td><td>22000</td><td>2023-04-05</td><td><span class="badge bg-success">نشط</span></td></tr>
+                                    <tr><td>5</td><td>عبدالله يوسف الحربي</td><td>مطور خلفي</td><td>تقنية المعلومات</td><td>17000</td><td>2023-05-12</td><td><span class="badge bg-success">نشط</span></td></tr>
+                                    <tr><td>6</td><td>نورا عبدالرحمن العتيبي</td><td>محاسبة</td><td>المالية</td><td>13000</td><td>2023-06-08</td><td><span class="badge bg-danger">معطل</span></td></tr>
+                                    <tr><td>7</td><td>عمر أحمد الزهراني</td><td>مهندس شبكات</td><td>تقنية المعلومات</td><td>19000</td><td>2023-07-14</td><td><span class="badge bg-success">نشط</span></td></tr>
+                                    <tr><td>8</td><td>هند محمد الدوسري</td><td>أخصائية موارد بشرية</td><td>الموارد البشرية</td><td>14000</td><td>2023-08-20</td><td><span class="badge bg-success">نشط</span></td></tr>
+                                    <tr><td>9</td><td>خالد عبدالعزيز الشمري</td><td>مدير تسويق</td><td>التسويق</td><td>25000</td><td>2023-09-15</td><td><span class="badge bg-success">نشط</span></td></tr>
+                                    <tr><td>10</td><td>ريم سعود العنزي</td><td>محامية</td><td>القانوني</td><td>21000</td><td>2023-10-10</td><td><span class="badge bg-success">نشط</span></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fixed Columns -->
+            <div class="tab-pane fade" id="fixed-columns" role="tabpanel">
+                <div class="extension-card">
+                    <div class="extension-header">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-columns extension-icon me-3"></i>
+                            <div>
+                                <h3 class="mb-2">الأعمدة الثابتة (Fixed Columns)</h3>
+                                <p class="mb-0">تثبيت أعمدة معينة أثناء التمرير الأفقي</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="alert alert-info">
+                                    <h6><i class="fas fa-info-circle me-2"></i>الميزات:</h6>
+                                    <ul class="mb-0">
+                                        <li>تثبيت أعمدة من اليسار أو اليمين</li>
+                                        <li>سهولة المقارنة</li>
+                                        <li>تحسين الملاحة</li>
+                                        <li>مرونة في التحكم</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="alert alert-success">
+                                    <h6><i class="fas fa-code me-2"></i>كود التطبيق:</h6>
+                                    <pre class="mb-0"><code>$('#example').DataTable({
+    fixedColumns: {
+        leftColumns: 2,
+        rightColumns: 1
+    },
+    scrollX: true
+});</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table id="fixedColumnsTable" class="table table-striped demo-table">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>الرقم</th>
+                                        <th>الاسم</th>
+                                        <th>البريد الإلكتروني</th>
+                                        <th>رقم الهاتف</th>
+                                        <th>المدينة</th>
+                                        <th>العنوان الكامل</th>
+                                        <th>الوظيفة</th>
+                                        <th>القسم</th>
+                                        <th>الراتب</th>
+                                        <th>تاريخ التوظيف</th>
+                                        <th>سنوات الخبرة</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>001</td>
+                                        <td>أحمد محمد</td>
+                                        <td>ahmed@company.com</td>
+                                        <td>+966501234567</td>
+                                        <td>الرياض</td>
+                                        <td>شارع الملك فهد، حي العليا، الرياض</td>
+                                        <td>مطور واجهات</td>
+                                        <td>تقنية المعلومات</td>
+                                        <td>15000</td>
+                                        <td>2023-01-15</td>
+                                        <td>3</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary">تعديل</button>
+                                            <button class="btn btn-sm btn-danger">حذف</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>002</td>
+                                        <td>فاطمة علي</td>
+                                        <td>fatima@company.com</td>
+                                        <td>+966507654321</td>
+                                        <td>جدة</td>
+                                        <td>شارع الأمير سلطان، حي الروضة، جدة</td>
+                                        <td>مصممة جرافيك</td>
+                                        <td>التسويق</td>
+                                        <td>12000</td>
+                                        <td>2023-02-20</td>
+                                        <td>2</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary">تعديل</button>
+                                            <button class="btn btn-sm btn-danger">حذف</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>003</td>
+                                        <td>محمد سعد</td>
+                                        <td>mohammed@company.com</td>
+                                        <td>+966512345678</td>
+                                        <td>الدمام</td>
+                                        <td>شارع الملك عبدالعزيز، حي الفيصلية، الدمام</td>
+                                        <td>محلل بيانات</td>
+                                        <td>الإحصاء</td>
+                                        <td>18000</td>
+                                        <td>2023-03-10</td>
+                                        <td>4</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary">تعديل</button>
+                                            <button class="btn btn-sm btn-danger">حذف</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row Selection -->
+            <div class="tab-pane fade" id="row-selection" role="tabpanel">
+                <div class="extension-card">
+                    <div class="extension-header">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-check-square extension-icon me-3"></i>
+                            <div>
+                                <h3 class="mb-2">تحديد الصفوف (Row Selection)</h3>
+                                <p class="mb-0">تحديد متعدد للصفوف مع عمليات جماعية</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="alert alert-info">
+                                    <h6><i class="fas fa-info-circle me-2"></i>الميزات:</h6>
+                                    <ul class="mb-0">
+                                        <li>تحديد فردي أو متعدد</li>
+                                        <li>تحديد الكل مع خانة واحدة</li>
+                                        <li>عمليات جماعية</li>
+                                        <li>تتبع الصفوف المحددة</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="alert alert-success">
+                                    <h6><i class="fas fa-code me-2"></i>كود التطبيق:</h6>
+                                    <pre class="mb-0"><code>$('#example').DataTable({
+    select: {
+        style: 'multi',
+        selector: 'td:first-child'
+    },
+    columnDefs: [{
+        targets: 0,
+        checkboxes: {
+            selectRow: true
+        }
+    }]
+});</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <button class="btn btn-success me-2" onclick="getSelectedRows()">
+                                <i class="fas fa-check me-1"></i>
+                                عرض المحدد
+                            </button>
+                            <button class="btn btn-warning me-2" onclick="selectAll()">
+                                <i class="fas fa-check-double me-1"></i>
+                                تحديد الكل
+                            </button>
+                            <button class="btn btn-secondary" onclick="deselectAll()">
+                                <i class="fas fa-times me-1"></i>
+                                إلغاء التحديد
+                            </button>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table id="rowSelectionTable" class="table table-striped demo-table">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" id="selectAllCheckbox" class="form-check-input">
+                                        </th>
+                                        <th>الرقم</th>
+                                        <th>الاسم</th>
+                                        <th>البريد الإلكتروني</th>
+                                        <th>المدينة</th>
+                                        <th>الراتب</th>
+                                        <th>الحالة</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="checkbox" class="form-check-input row-checkbox"></td>
+                                        <td>1</td>
+                                        <td>أحمد محمد</td>
+                                        <td>ahmed@example.com</td>
+                                        <td>الرياض</td>
+                                        <td>15000</td>
+                                        <td><span class="badge bg-success">نشط</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" class="form-check-input row-checkbox"></td>
+                                        <td>2</td>
+                                        <td>فاطمة علي</td>
+                                        <td>fatima@example.com</td>
+                                        <td>جدة</td>
+                                        <td>12000</td>
+                                        <td><span class="badge bg-warning">قيد المراجعة</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" class="form-check-input row-checkbox"></td>
+                                        <td>3</td>
+                                        <td>محمد سعد</td>
+                                        <td>mohammed@example.com</td>
+                                        <td>الدمام</td>
+                                        <td>18000</td>
+                                        <td><span class="badge bg-success">نشط</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" class="form-check-input row-checkbox"></td>
+                                        <td>4</td>
+                                        <td>سارة خالد</td>
+                                        <td>sara@example.com</td>
+                                        <td>مكة</td>
+                                        <td>14000</td>
+                                        <td><span class="badge bg-danger">معطل</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" class="form-check-input row-checkbox"></td>
+                                        <td>5</td>
+                                        <td>عبدالله سالم</td>
+                                        <td>abdullah@example.com</td>
+                                        <td>المدينة</td>
+                                        <td>16000</td>
+                                        <td><span class="badge bg-success">نشط</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="alert alert-info mt-3">
+                            <h6><i class="fas fa-info-circle me-2"></i>معلومات التحديد:</h6>
+                            <p class="mb-0">عدد الصفوف المحددة: <span id="selectedCount">0</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Implementation Guide -->
+        <div class="extension-card mt-5">
+            <div class="extension-header">
+                <h3><i class="fas fa-book me-3"></i>دليل التطبيق في Vue.js</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-vue me-2"></i>تطبيق في Vue مع Vuetify</h5>
+                        <pre class="bg-light p-3 rounded"><code>&lt;VDataTable
+  :headers="headers"
+  :items="items"
+  fixed-header
+  height="400"
+  show-select
+  class="text-no-wrap"
+&gt;
+  &lt;template #item.actions="{ item }"&gt;
+    &lt;!-- أزرار الإجراءات --&gt;
+  &lt;/template&gt;
+&lt;/VDataTable&gt;</code></pre>
+                    </div>
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-cogs me-2"></i>تخصيص الأعمدة الثابتة</h5>
+                        <pre class="bg-light p-3 rounded"><code>const headers = [
+  { 
+    title: 'الرقم', 
+    key: 'id', 
+    sticky: true,
+    width: 100
+  },
+  { 
+    title: 'الاسم', 
+    key: 'name', 
+    sticky: true,
+    width: 200
+  },
+  // ... باقي الأعمدة
+]</code></pre>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning mt-4">
+                    <h6><i class="fas fa-exclamation-triangle me-2"></i>نصائح مهمة:</h6>
+                    <ul class="mb-0">
+                        <li>استخدم <code>sticky: true</code> للأعمدة الثابتة</li>
+                        <li>حدد عرض ثابت للأعمدة المثبتة</li>
+                        <li>استخدم <code>fixed-header</code> للعنوان الثابت</li>
+                        <li>أضف <code>height</code> لتفعيل التمرير العمودي</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
+    <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
+    <script src="https://cdn.datatables.net/select/1.7.0/js/dataTables.select.min.js"></script>
+    <script src="https://cdn.datatables.net/scroller/2.2.0/js/dataTables.scroller.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Scrollable Table
+            $('#scrollableTable').DataTable({
+                scrollY: '300px',
+                scrollX: true,
+                scrollCollapse: true,
+                paging: false,
+                info: false,
+                language: {
+                    search: "البحث:",
+                    emptyTable: "لا توجد بيانات متاحة في الجدول",
+                    info: "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+                    infoEmpty: "إظهار 0 إلى 0 من أصل 0 مدخل",
+                    lengthMenu: "إظهار _MENU_ مدخل",
+                    loadingRecords: "جاري التحميل...",
+                    processing: "جاري المعالجة...",
+                    zeroRecords: "لم يتم العثور على أي سجلات مطابقة"
+                }
+            });
+
+            // Fixed Header Table
+            $('#fixedHeaderTable').DataTable({
+                fixedHeader: true,
+                scrollY: '300px',
+                scrollCollapse: true,
+                language: {
+                    search: "البحث:",
+                    paginate: {
+                        next: "التالي",
+                        previous: "السابق"
+                    },
+                    lengthMenu: "إظهار _MENU_ مدخل",
+                    info: "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل"
+                }
+            });
+
+            // Fixed Columns Table
+            $('#fixedColumnsTable').DataTable({
+                fixedColumns: {
+                    leftColumns: 2,
+                    rightColumns: 1
+                },
+                scrollX: true,
+                scrollY: '300px',
+                scrollCollapse: true,
+                language: {
+                    search: "البحث:",
+                    paginate: {
+                        next: "التالي",
+                        previous: "السابق"
+                    },
+                    lengthMenu: "إظهار _MENU_ مدخل"
+                }
+            });
+
+            // Row Selection Table
+            $('#rowSelectionTable').DataTable({
+                columnDefs: [{
+                    targets: 0,
+                    orderable: false,
+                    className: 'select-checkbox'
+                }],
+                select: {
+                    style: 'multi',
+                    selector: 'td:first-child'
+                },
+                language: {
+                    search: "البحث:",
+                    paginate: {
+                        next: "التالي",
+                        previous: "السابق"
+                    },
+                    lengthMenu: "إظهار _MENU_ مدخل"
+                }
+            });
+
+            // Handle select all checkbox
+            $('#selectAllCheckbox').on('change', function() {
+                const isChecked = $(this).prop('checked');
+                $('.row-checkbox').prop('checked', isChecked);
+                updateSelectedCount();
+            });
+
+            // Handle individual row checkboxes
+            $(document).on('change', '.row-checkbox', function() {
+                updateSelectedCount();
+                const totalCheckboxes = $('.row-checkbox').length;
+                const checkedCheckboxes = $('.row-checkbox:checked').length;
+                
+                $('#selectAllCheckbox').prop('checked', totalCheckboxes === checkedCheckboxes);
+            });
+
+            function updateSelectedCount() {
+                const count = $('.row-checkbox:checked').length;
+                $('#selectedCount').text(count);
+            }
+        });
+
+        // Row Selection Functions
+        function getSelectedRows() {
+            const selected = [];
+            $('.row-checkbox:checked').each(function() {
+                const row = $(this).closest('tr');
+                const name = row.find('td:nth-child(3)').text();
+                selected.push(name);
+            });
+            
+            if (selected.length > 0) {
+                alert('الصفوف المحددة:\n' + selected.join('\n'));
+            } else {
+                alert('لم يتم تحديد أي صفوف');
+            }
+        }
+
+        function selectAll() {
+            $('.row-checkbox').prop('checked', true);
+            $('#selectAllCheckbox').prop('checked', true);
+            updateSelectedCount();
+        }
+
+        function deselectAll() {
+            $('.row-checkbox').prop('checked', false);
+            $('#selectAllCheckbox').prop('checked', false);
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            const count = $('.row-checkbox:checked').length;
+            $('#selectedCount').text(count);
+        }
+    </script>
+</body>
+</html> 

@@ -1,5 +1,8 @@
 <script setup>
 import BillingHistoryTable from './BillingHistoryTable.vue'
+import CardAddEditDialog from '@/components/dialogs/CardAddEditDialog.vue'
+import ConfirmDialog from '@/components/dialogs/ConfirmDialog.vue'
+import PricingPlanDialog from '@/components/dialogs/PricingPlanDialog.vue'
 import mastercard from '@images/icons/payments/mastercard.png'
 import visa from '@images/icons/payments/visa.png'
 

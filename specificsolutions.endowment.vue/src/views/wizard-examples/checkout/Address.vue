@@ -1,4 +1,6 @@
 <script setup>
+import AddEditAddressDialog from '@/components/dialogs/AddEditAddressDialog.vue'
+
 const props = defineProps({
   currentStep: {
     type: Number,

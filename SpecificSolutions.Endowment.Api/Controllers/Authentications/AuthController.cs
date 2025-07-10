@@ -27,8 +27,8 @@ namespace SpecificSolutions.Endowment.Api.Controllers.Authentications
         {
             var command = new LoginCommand
             {
-                //Email = "A@gmail.com",
-                Email = "employee@gmail.com",
+                Email = "A@gmail.com",
+                // Email = "employee@gmail.com",
                 Password = "12345678"
             };
 

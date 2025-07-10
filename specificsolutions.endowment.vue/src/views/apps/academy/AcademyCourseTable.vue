@@ -43,8 +43,8 @@ const { data: courseData } = await useApi(createUrl('/apps/academy/courses', {
   },
 }))
 
-const courses = computed(() => courseData.value.courses)
-const totalCourse = computed(() => courseData.value.total)
+const courses = computed(() => courseData.value?.courses || [])
+const totalCourse = computed(() => courseData.value?.total || 0)
 </script>
 
 <template>

@@ -1,4 +1,5 @@
 <script setup>
+import ConfirmDialog from '@/components/dialogs/ConfirmDialog.vue'
 import avatar1 from '@images/avatars/avatar-1.png'
 
 const accountData = {

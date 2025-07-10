@@ -48,7 +48,6 @@ namespace SpecificSolutions.Endowment.Api.Controllers.Regions
             return Ok(response);
         }
 
-
         // get regions key value pairs for dropdown by filter by name   
         [HttpGet("dropdown")]
         public async Task<IActionResult> GetRegionsDropdown([FromQuery] FilterRegionQuery query)
@@ -58,7 +57,7 @@ namespace SpecificSolutions.Endowment.Api.Controllers.Regions
         }
 
         [HttpGet("GetRegions")]
-        public async Task<EndowmentResponse> FilterRegions([FromQuery] GetRegionsQuery query, CancellationToken cancellationToken)
+        public async Task<EndowmentResponse<IEnumerable<KeyValuPair>>> FilterRegions([FromQuery] GetRegionsQuery query, CancellationToken cancellationToken)
             => await _mediator.Send(query, cancellationToken);
     }
 }

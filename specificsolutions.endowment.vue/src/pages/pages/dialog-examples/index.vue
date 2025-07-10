@@ -1,4 +1,15 @@
 <script setup>
+import AddEditAddressDialog from '@/components/dialogs/AddEditAddressDialog.vue'
+import AddPaymentMethodDialog from '@/components/dialogs/AddPaymentMethodDialog.vue'
+import CardAddEditDialog from '@/components/dialogs/CardAddEditDialog.vue'
+import CreateAppDialog from '@/components/dialogs/CreateAppDialog.vue'
+import PaymentProvidersDialog from '@/components/dialogs/PaymentProvidersDialog.vue'
+import PricingPlanDialog from '@/components/dialogs/PricingPlanDialog.vue'
+import ReferAndEarnDialog from '@/components/dialogs/ReferAndEarnDialog.vue'
+import ShareProjectDialog from '@/components/dialogs/ShareProjectDialog.vue'
+import TwoFactorAuthDialog from '@/components/dialogs/TwoFactorAuthDialog.vue'
+import UserInfoEditDialog from '@/components/dialogs/UserInfoEditDialog.vue'
+
 definePage({
   meta: {
     action: 'View',

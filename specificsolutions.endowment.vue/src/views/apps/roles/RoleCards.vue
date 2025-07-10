@@ -1,4 +1,5 @@
 <script setup>
+import AddEditRoleDialog from '@/components/dialogs/AddEditRoleDialog.vue'
 import avatar1 from '@images/avatars/avatar-1.png'
 import avatar10 from '@images/avatars/avatar-10.png'
 import avatar2 from '@images/avatars/avatar-2.png'

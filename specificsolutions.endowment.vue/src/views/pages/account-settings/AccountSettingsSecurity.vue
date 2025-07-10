@@ -1,4 +1,5 @@
 <script setup>
+import TwoFactorAuthDialog from '@/components/dialogs/TwoFactorAuthDialog.vue'
 import laptopGirl from '@images/illustrations/laptop-girl.png'
 
 const isCurrentPasswordVisible = ref(false)

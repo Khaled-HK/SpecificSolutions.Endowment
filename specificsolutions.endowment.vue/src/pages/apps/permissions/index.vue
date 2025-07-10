@@ -1,4 +1,6 @@
 <script setup>
+import AddEditPermissionDialog from '@/components/dialogs/AddEditPermissionDialog.vue'
+
 // Define page metadata for permissions
 definePage({
   meta: {
