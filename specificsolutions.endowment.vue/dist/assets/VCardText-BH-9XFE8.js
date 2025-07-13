@@ -1,0 +1,1 @@
+import{ak as s,Y as r,a2 as o,b as c,au as n,a4 as m}from"./index-HAXSP913.js";const p=r({opacity:[Number,String],...m(),...n()},"VCardText"),x=s()({name:"VCardText",props:p(),setup(a,e){let{slots:t}=e;return o(()=>c(a.tag,{class:["v-card-text",a.class],style:[{"--v-card-text-opacity":a.opacity},a.style]},t)),{}}});export{x as V};

@@ -8,11 +8,12 @@ interface Region {
   value: string
   name: string
   description: string
+  country?: string
 }
 
 interface NewRegion {
   name: string
-  description: string
+  country: string
 }
 
 // Define header interface for proper typing
@@ -33,7 +34,10 @@ definePage({
 })
 
 const regions = ref<Region[]>([])
+const cities = ref<any[]>([])
+const countries = ref<string[]>([])
 const loading = ref(false)
+const citiesLoading = ref(false)
 const dialog = ref(false)
 const editDialog = ref(false)
 const deleteDialog = ref(false)
@@ -43,7 +47,7 @@ const search = ref('')
 
 const newRegion = ref<NewRegion>({
   name: '',
-  description: '',
+  country: '',
 })
 
 const editRegion = ref<Region>({
@@ -71,7 +75,7 @@ const headers: DataTableHeader[] = [
     width: 250
   },
   { 
-    title: 'Description', 
+    title: 'Country', 
     key: 'description', 
     sortable: true,
     width: 400
@@ -105,11 +109,30 @@ const loadRegions = async () => {
   }
 }
 
+const loadCities = async () => {
+  citiesLoading.value = true
+  try {
+    const response = await $api('/City/filter?PageSize=100')
+    cities.value = response.data.items || []
+    
+    // Extract unique countries from cities for searchable dropdown
+    const uniqueCountries = [...new Set(cities.value.map(city => city.country).filter(Boolean))]
+    countries.value = uniqueCountries.sort()
+  } catch (error) {
+    console.error('Error loading cities:', error)
+  } finally {
+    citiesLoading.value = false
+  }
+}
+
 const addRegion = async () => {
   try {
-    await $api('/Regions', {
+    await $api('/Region', {
       method: 'POST',
-      body: newRegion.value,
+      body: {
+        name: newRegion.value.name,
+        country: newRegion.value.country,
+      },
     })
     dialog.value = false
     resetNewRegion()
@@ -121,9 +144,13 @@ const addRegion = async () => {
 
 const updateRegion = async () => {
   try {
-    await $api(`/Regions/${editRegion.value.id}`, {
+    await $api(`/Region/${editRegion.value.id}`, {
       method: 'PUT',
-      body: editRegion.value,
+      body: {
+        id: editRegion.value.id,
+        name: editRegion.value.name,
+        country: editRegion.value.country || editRegion.value.description,
+      },
     })
     editDialog.value = false
     loadRegions()
@@ -136,7 +163,7 @@ const deleteRegion = async () => {
   if (!selectedRegion.value) return
   
   try {
-    await $api(`/Regions/${selectedRegion.value.id}`, {
+    await $api(`/Region/${selectedRegion.value.id}`, {
       method: 'DELETE',
     })
     deleteDialog.value = false
@@ -151,7 +178,7 @@ const deleteSelectedRows = async () => {
   
   try {
     const deletePromises = selectedRows.value.map(region => 
-      $api(`/Regions/${region.id}`, { method: 'DELETE' })
+      $api(`/Region/${region.id}`, { method: 'DELETE' })
     )
     await Promise.all(deletePromises)
     selectedRows.value = []
@@ -162,7 +189,10 @@ const deleteSelectedRows = async () => {
 }
 
 const openEditDialog = (region: Region) => {
-  editRegion.value = { ...region }
+  editRegion.value = { 
+    ...region, 
+    country: region.country || region.description || '' 
+  }
   editDialog.value = true
 }
 
@@ -174,12 +204,13 @@ const openDeleteDialog = (region: Region) => {
 const resetNewRegion = () => {
   newRegion.value = {
     name: '',
-    description: '',
+    country: '',
   }
 }
 
 onMounted(() => {
   loadRegions()
+  loadCities()
 })
 </script>
 
@@ -219,6 +250,8 @@ onMounted(() => {
             density="compact"
             style="max-width: 300px;"
             hide-details
+            clearable
+            placeholder="ابحث عن منطقة..."
           />
           
           <VChip
@@ -286,29 +319,22 @@ onMounted(() => {
             </div>
           </template>
 
-          <!-- Description with truncation -->
+          <!-- Country with truncation -->
           <template #item.description="{ item }">
             <div class="text-body-2" style="max-width: 350px;">
-              <VTooltip
-                v-if="item.description && item.description.length > 50"
-                location="top"
-                max-width="400"
+              <VChip
+                v-if="item.description"
+                color="secondary"
+                variant="tonal"
+                size="small"
               >
-                <template #activator="{ props }">
-                  <span
-                    v-bind="props"
-                    class="text-truncate d-block"
-                  >
-                    {{ item.description }}
-                  </span>
-                </template>
-                <span>{{ item.description }}</span>
-              </VTooltip>
+                {{ item.description }}
+              </VChip>
               <span 
                 v-else 
                 class="text-medium-emphasis"
               >
-                {{ item.description || 'لا يوجد وصف' }}
+                لا توجد دولة
               </span>
             </div>
           </template>
@@ -388,10 +414,10 @@ onMounted(() => {
             <VIcon>mdi-information</VIcon>
             <div>
               <div class="text-body-2 font-weight-medium">
-                الأعمدة الثابتة (Fixed Columns)
+                الأعمدة الثابتة (Fixed Columns) مع البحث التلقائي
               </div>
               <div class="text-caption">
-                أعمدة الرقم والاسم والإجراءات ثابتة ولا تتحرك عند التمرير الأفقي
+                أعمدة الرقم والاسم والإجراءات ثابتة ولا تتحرك عند التمرير الأفقي. يمكن البحث في الجدول والكتابة في قائمة الدول المنسدلة.
               </div>
             </div>
           </VCardText>
@@ -420,12 +446,19 @@ onMounted(() => {
                 />
               </VCol>
               <VCol cols="12">
-                <VTextarea
-                  v-model="newRegion.description"
-                  label="الوصف"
+                <VAutocomplete
+                  v-model="newRegion.country"
+                  label="الدولة"
                   variant="outlined"
-                  rows="3"
-                  auto-grow
+                  :items="countries"
+                  :loading="citiesLoading"
+                  clearable
+                  no-data-text="لا توجد دول متاحة"
+                  required
+                  :rules="[v => !!v || 'الدولة مطلوبة']"
+                  prepend-inner-icon="mdi-magnify"
+                  placeholder="ابحث عن دولة..."
+                  hide-no-data
                 />
               </VCol>
             </VRow>
@@ -472,12 +505,19 @@ onMounted(() => {
                 />
               </VCol>
               <VCol cols="12">
-                <VTextarea
-                  v-model="editRegion.description"
-                  label="الوصف"
+                <VAutocomplete
+                  v-model="editRegion.country"
+                  label="الدولة"
                   variant="outlined"
-                  rows="3"
-                  auto-grow
+                  :items="countries"
+                  :loading="citiesLoading"
+                  clearable
+                  no-data-text="لا توجد دول متاحة"
+                  required
+                  :rules="[v => !!v || 'الدولة مطلوبة']"
+                  prepend-inner-icon="mdi-magnify"
+                  placeholder="ابحث عن دولة..."
+                  hide-no-data
                 />
               </VCol>
             </VRow>
