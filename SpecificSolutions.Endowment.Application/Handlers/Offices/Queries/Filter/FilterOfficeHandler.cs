@@ -16,7 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Offices.Queries.Filte
 
         public async Task<EndowmentResponse<PagedList<FilterOfficeDTO>>> Handle(FilterOfficeQuery query, CancellationToken cancellationToken)
         {
-            var pagedList = await _unitOfWork.OfficeRepository.GetByFilterAsync(query, cancellationToken);
+            var pagedList = await _unitOfWork.Offices.GetByFilterAsync(query, cancellationToken);
 
             return new EndowmentResponse<PagedList<FilterOfficeDTO>>(pagedList);
         }

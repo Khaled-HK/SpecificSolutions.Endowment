@@ -4,7 +4,7 @@ using SpecificSolutions.Endowment.Application.Models.Global;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.Regions.Queries.Filter
 {
-    public class FilterRegionQuery : IQuery<PagedList<RegionDTO>>
+    public class FilterRegionQuery : IQuery<PagedList<FilterRegionDTO>>
     {
         public string SearchTerm { get; set; }
         public int PageNumber { get; set; } = 1;

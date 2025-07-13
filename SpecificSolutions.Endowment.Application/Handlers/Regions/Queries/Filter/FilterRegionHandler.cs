@@ -5,7 +5,7 @@ using SpecificSolutions.Endowment.Application.Models.Global;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.Regions.Queries.Filter
 {
-    public class FilterRegionHandler : IQueryHandler<FilterRegionQuery, PagedList<RegionDTO>>
+    public class FilterRegionHandler : IQueryHandler<FilterRegionQuery, PagedList<FilterRegionDTO>>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -14,17 +14,17 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Regions.Queries.Filte
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<EndowmentResponse<PagedList<RegionDTO>>> Handle(FilterRegionQuery query, CancellationToken cancellationToken)
+        public async Task<EndowmentResponse<PagedList<FilterRegionDTO>>> Handle(FilterRegionQuery query, CancellationToken cancellationToken)
         {
             var requests = await _unitOfWork.Regions.GetByFilterAsync(query, cancellationToken);
 
             if (!requests.Items.Any())
             {
-                return new EndowmentResponse<PagedList<RegionDTO>>(
-                    PagedList<RegionDTO>.Empty());
+                return new EndowmentResponse<PagedList<FilterRegionDTO>>(
+                    PagedList<FilterRegionDTO>.Empty());
             }
 
-            return new EndowmentResponse<PagedList<RegionDTO>>(requests);
+            return new EndowmentResponse<PagedList<FilterRegionDTO>>(requests);
         }
     }
 }

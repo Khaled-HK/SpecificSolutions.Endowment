@@ -23,13 +23,13 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Cre
             }
 
             // Check if ReferenceNumber exists
-            if (await _unitOfWork.RequestRepository.ReferenceNumberExists(command.ReferenceNumber))
+            if (await _unitOfWork.Requests.ReferenceNumberExists(command.ReferenceNumber))
             {
                 return Response.FailureResponse("ReferenceNumber", $"Request with ReferenceNumber `{command.ReferenceNumber}` already exists.");
             }
             //Get the decisionId from the decision table    
             // Get the decisionId from the decision table
-            var decision = await _unitOfWork.DecisionRepository.GetByIdAsync(command.DecisionId);
+            var decision = await _unitOfWork.Decisions.GetByIdAsync(command.DecisionId);
             if (decision == null)
             {
                 return Response.FailureResponse("DecisionId", "Invalid DecisionId.");
@@ -40,7 +40,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Cre
             var request = new Request(command.Title, command.Description, command.ReferenceNumber, decisionId: decisionId);
 
             // Add the request to the repository
-            await _unitOfWork.RequestRepository.AddAsync(request);
+            await _unitOfWork.Requests.AddAsync(request);
 
             // Commit the transaction
             await _unitOfWork.CompleteAsync(cancellationToken);

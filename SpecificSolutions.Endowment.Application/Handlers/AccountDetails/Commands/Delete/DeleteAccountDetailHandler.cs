@@ -15,13 +15,13 @@ namespace SpecificSolutions.Endowment.Application.Handlers.AccountDetails.Comman
 
         public async Task<EndowmentResponse> Handle(DeleteAccountDetailCommand command, CancellationToken cancellationToken)
         {
-            var accountDetail = await _unitOfWork.AccountDetailRepository.GetByIdAsync(command.Id);
+            var accountDetail = await _unitOfWork.AccountDetails.GetByIdAsync(command.Id);
             if (accountDetail == null)
             {
                 return Response.FailureResponse("Id", "AccountDetail not found.");
             }
 
-            await _unitOfWork.AccountDetailRepository.RemoveAsync(accountDetail);
+            await _unitOfWork.AccountDetails.RemoveAsync(accountDetail);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Deleted();

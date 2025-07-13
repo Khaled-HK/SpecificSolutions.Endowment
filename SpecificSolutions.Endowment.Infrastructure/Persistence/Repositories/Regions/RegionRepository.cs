@@ -16,39 +16,39 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Re
             _context = context;
         }
 
-        public async Task<Region> GetByIdAsync(Guid id)
+        public async Task<Region?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return await _context.Regions.FindAsync(id);
+            return await _context.Regions.FindAsync(id, cancellationToken);
         }
 
-        public async Task<IEnumerable<Region>> GetAllAsync()
+        public async Task<IEnumerable<Region>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return await _context.Regions.ToListAsync();
+            return await _context.Regions.ToListAsync(cancellationToken);
         }
 
-        public async Task AddAsync(Region region)
+        public async Task AddAsync(Region region, CancellationToken cancellationToken)
         {
-            await _context.Regions.AddAsync(region);
-            await _context.SaveChangesAsync();
+            await _context.Regions.AddAsync(region, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task UpdateAsync(Region region)
+        public async Task UpdateAsync(Region region, CancellationToken cancellationToken)
         {
             _context.Regions.Update(region);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
         {
-            var region = await _context.Regions.FindAsync(id);
+            var region = await _context.Regions.FindAsync(id, cancellationToken);
             if (region != null)
             {
                 _context.Regions.Remove(region);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cancellationToken);
             }
         }
 
-        public async Task<PagedList<RegionDTO>> GetByFilterAsync(FilterRegionQuery query, CancellationToken cancellationToken)
+        public async Task<PagedList<FilterRegionDTO>> GetByFilterAsync(FilterRegionQuery query, CancellationToken cancellationToken)
         {
             var regionsQuery = _context.Regions.AsQueryable();
 
@@ -59,14 +59,14 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Re
                     r.Country.Contains(query.SearchTerm));
             }
 
-            var dtos = regionsQuery.Select(r => new RegionDTO
+            var dtos = regionsQuery.Select(r => new FilterRegionDTO
             {
                 Id = r.Id,
                 Name = r.Name,
                 Country = r.Country
             });
 
-            return await PagedList<RegionDTO>.CreateAsync(dtos, query.PageNumber, query.PageSize, cancellationToken);
+            return await PagedList<FilterRegionDTO>.CreateAsync(dtos, query.PageNumber, query.PageSize, cancellationToken);
         }
 
         public async Task<IEnumerable<KeyValuPair>> GetRegionsAsync(GetRegionsQuery query, CancellationToken cancellationToken)

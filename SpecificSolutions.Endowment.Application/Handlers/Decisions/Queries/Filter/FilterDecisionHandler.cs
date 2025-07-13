@@ -16,7 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Decisions.Queries.Fil
 
         public async Task<EndowmentResponse<PagedList<FilterDecisionDTO>>> Handle(FilterDecisionQuery query, CancellationToken cancellationToken)
         {
-            var pagedList = await _unitOfWork.DecisionRepository.GetByFilterAsync(query, cancellationToken);
+            var pagedList = await _unitOfWork.Decisions.GetByFilterAsync(query, cancellationToken);
 
             return new EndowmentResponse<PagedList<FilterDecisionDTO>>(pagedList);
         }

@@ -16,7 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.AccountDetails.Comman
 
         public async Task<EndowmentResponse> Handle(CreateAccountDetailCommand command, CancellationToken cancellationToken)
         {
-            var account = await _unitOfWork.AccountRepository.GetByIdAsync(command.Id);
+            var account = await _unitOfWork.Accounts.GetByIdAsync(command.Id, cancellationToken);
             if (account == null)
             {
                 return Response.FailureResponse("The specified account could not be located. Please verify the account ID and try again.");
@@ -24,7 +24,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.AccountDetails.Comman
 
             var accountDetail = new AccountDetail(command);
 
-            await _unitOfWork.AccountDetailRepository.AddAsync(accountDetail);
+            await _unitOfWork.AccountDetails.AddAsync(accountDetail);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Added();

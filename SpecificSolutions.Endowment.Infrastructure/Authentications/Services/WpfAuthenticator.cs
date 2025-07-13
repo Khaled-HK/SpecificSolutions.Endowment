@@ -70,7 +70,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
 
         public async Task<IUserLogin> LoginAsync(LoginCommand command)
         {
-            var user = await _unitOfWork.LoginRepository.LoginAsync(command);
+            var user = await _unitOfWork.Logins.LoginAsync(command);
             if (user == null)
             {
                 throw new Exception("User not found.");

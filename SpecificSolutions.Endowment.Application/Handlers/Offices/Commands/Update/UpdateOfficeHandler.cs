@@ -15,14 +15,14 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Offices.Commands.Upda
 
         public async Task<EndowmentResponse> Handle(UpdateOfficeCommand request, CancellationToken cancellationToken)
         {
-            var office = await _unitOfWork.OfficeRepository.GetByIdAsync(request.Id);
+            var office = await _unitOfWork.Offices.GetByIdAsync(request.Id);
             if (office == null)
             {
                 throw new OfficeNotFoundException(request.Id);
             }
 
             office.Update(request.Name, request.Location, request.PhoneNumber);
-            await _unitOfWork.OfficeRepository.UpdateAsync(office);
+            await _unitOfWork.Offices.UpdateAsync(office);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Updated();

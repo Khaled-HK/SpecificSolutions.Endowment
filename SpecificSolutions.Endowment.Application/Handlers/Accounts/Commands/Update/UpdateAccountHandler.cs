@@ -15,7 +15,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Accounts.Commands.Upd
 
         public async Task<EndowmentResponse> Handle(UpdateAccountCommand command, CancellationToken cancellationToken)
         {
-            var account = await _unitOfWork.AccountRepository.GetByIdAsync(command.Id);
+            var account = await _unitOfWork.Accounts.GetByIdAsync(command.Id, cancellationToken);
             if (account == null)
             {
                 return Response.FailureResponse("Id", "Account not found.");

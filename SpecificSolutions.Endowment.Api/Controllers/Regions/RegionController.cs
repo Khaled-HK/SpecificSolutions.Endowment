@@ -3,7 +3,9 @@ using SpecificSolutions.Endowment.Application.Handlers.Regions.Commands.Create;
 using SpecificSolutions.Endowment.Application.Handlers.Regions.Commands.Delete;
 using SpecificSolutions.Endowment.Application.Handlers.Regions.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.Regions.Queries.Filter;
+using SpecificSolutions.Endowment.Application.Handlers.Regions.Queries.GetRegion;
 using SpecificSolutions.Endowment.Application.Handlers.Regions.Queries.GetRegions;
+using SpecificSolutions.Endowment.Application.Models.DTOs.Regions;
 using SpecificSolutions.Endowment.Application.Models.Global;
 
 namespace SpecificSolutions.Endowment.Api.Controllers.Regions
@@ -20,41 +22,24 @@ namespace SpecificSolutions.Endowment.Api.Controllers.Regions
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateRegionCommand command)
-        {
-            var response = await _mediator.Send(command);
-            return Ok(response);
-        }
+        public async Task<EndowmentResponse> Create(CreateRegionCommand command, CancellationToken cancellationToken)
+            => await _mediator.Send(command, cancellationToken);
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, UpdateRegionCommand command)
-        {
-            if (id != command.Id) return BadRequest();
-            var response = await _mediator.Send(command);
-            return Ok(response);
-        }
+        public async Task<EndowmentResponse> Update(Guid id, UpdateRegionCommand command, CancellationToken cancellationToken)
+            => await _mediator.Send(command, cancellationToken);
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            var response = await _mediator.Send(new DeleteRegionCommand { Id = id });
-            return Ok(response);
-        }
+        public async Task<EndowmentResponse> Delete(Guid id, CancellationToken cancellationToken)
+            => await _mediator.Send(new DeleteRegionCommand { Id = id }, cancellationToken);
+
+        [HttpGet("{id}")]
+        public async Task<EndowmentResponse> GetRegionById(Guid id, CancellationToken cancellationToken)
+            => await _mediator.Send(new GetRegionQuery(id), cancellationToken);
 
         [HttpGet("filter")]
-        public async Task<IActionResult> Filter([FromQuery] FilterRegionQuery query)
-        {
-            var response = await _mediator.Send(query);
-            return Ok(response);
-        }
-
-        // get regions key value pairs for dropdown by filter by name   
-        [HttpGet("dropdown")]
-        public async Task<IActionResult> GetRegionsDropdown([FromQuery] FilterRegionQuery query)
-        {
-            var response = await _mediator.Send(query);
-            return Ok(response);
-        }
+        public async Task<EndowmentResponse<PagedList<FilterRegionDTO>>> Filter([FromQuery] FilterRegionQuery query, CancellationToken cancellationToken)
+             => await _mediator.Send(query, cancellationToken);
 
         [HttpGet("GetRegions")]
         public async Task<EndowmentResponse<IEnumerable<KeyValuPair>>> FilterRegions([FromQuery] GetRegionsQuery query, CancellationToken cancellationToken)

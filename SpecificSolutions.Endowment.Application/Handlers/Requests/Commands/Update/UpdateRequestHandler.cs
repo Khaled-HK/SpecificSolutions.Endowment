@@ -16,13 +16,13 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Upd
 
         public async Task<EndowmentResponse> Handle(UpdateRequestCommand command, CancellationToken cancellationToken)
         {
-            var request = await _unitOfWork.RequestRepository.GetByIdAsync(command.Id);
+            var request = await _unitOfWork.Requests.GetByIdAsync(command.Id);
             if (request == null)
             {
                 throw new EntityNotFoundException(command.Id);
             }
 
-            var decision = await _unitOfWork.DecisionRepository.GetByIdAsync(command.DecisionId);
+            var decision = await _unitOfWork.Decisions.GetByIdAsync(command.DecisionId);
             if (decision == null)
             {
                 throw new EntityNotFoundException(command.DecisionId);
@@ -30,7 +30,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Upd
 
             request.UpdateRequest(command.Title, command.Description, command.ReferenceNumber, decisionId: decision.Id);
 
-            _unitOfWork.RequestRepository.Update(request);
+            _unitOfWork.Requests.Update(request);
 
             await _unitOfWork.CompleteAsync(cancellationToken);
 

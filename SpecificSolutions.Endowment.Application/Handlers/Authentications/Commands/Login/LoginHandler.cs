@@ -33,7 +33,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Authentications.Comma
 
             var refreshToken = Models.Identity.Entities.RefreshToken.Create(user.Id, user.RefreshToken, DateTime.Now.AddHours(1));
 
-            await _unitOfWork.RefreshTokenRepository.AddAsync(refreshToken);
+            await _unitOfWork.RefreshTokens.AddAsync(refreshToken);
 
             await _unitOfWork.CompleteAsync(cancellationToken);
 

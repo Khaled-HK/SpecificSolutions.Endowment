@@ -15,11 +15,11 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Regions.Commands.Dele
 
         public async Task<EndowmentResponse> Handle(DeleteRegionCommand request, CancellationToken cancellationToken)
         {
-            var region = await _unitOfWork.Regions.GetByIdAsync(request.Id);
+            var region = await _unitOfWork.Regions.GetByIdAsync(request.Id, cancellationToken);
             if (region == null)
                 return Response.FailureResponse("Region not found.");
 
-            await _unitOfWork.Regions.DeleteAsync(request.Id);
+            await _unitOfWork.Regions.DeleteAsync(request.Id, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Deleted();

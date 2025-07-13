@@ -4,17 +4,17 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
 {
     public interface IUnitOfWork : IDisposable
     {
-        IRequestRepository RequestRepository { get; }
-        IDecisionRepository DecisionRepository { get; }
-        IAccountRepository AccountRepository { get; }
-        IAccountDetailRepository AccountDetailRepository { get; }
-        IOfficeRepository OfficeRepository { get; }
-        ILoginRepository LoginRepository { get; }
-        IRefreshTokenRepository RefreshTokenRepository { get; }
-        IAuditLogsRepository AuditLogsRepository { get; }
-        IApplicationRoleRepository ApplicationRoleRepository { get; }
-        IApplicationUserRepository ApplicationUserRepository { get; }
-        IApplicationUserRolesRepository ApplicationUserRolesRepository { get; }
+        IRequestRepository Requests { get; }
+        IDecisionRepository Decisions { get; }
+        IAccountRepository Accounts { get; }
+        IAccountDetailRepository AccountDetails { get; }
+        IOfficeRepository Offices { get; }
+        ILoginRepository Logins { get; }
+        IRefreshTokenRepository RefreshTokens { get; }
+        IAuditLogsRepository AuditLogs { get; }
+        IApplicationRoleRepository ApplicationRoles { get; }
+        IApplicationUserRepository ApplicationUsers { get; }
+        IApplicationUserRolesRepository ApplicationUserRoles { get; }
         IMosqueRepository Mosques { get; }
         IConstructionRequestRepository ConstructionRequests { get; }
         IMaintenanceRequestRepository MaintenanceRequests { get; }
@@ -33,7 +33,7 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
         IBranchRepository Branches { get; } // Add Branches repository
         IProductRepository Products { get; } // Add Products repository
         IRegionRepository Regions { get; } // Add Regions repository
-                IBuildingDetailRequestRepository BuildingDetailRequests { get; }
+        IBuildingDetailRequestRepository BuildingDetailRequests { get; }
 
         Task<int> CompleteAsync(CancellationToken cancellationToken = default);
     }

@@ -8,6 +8,6 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
     public interface IAccountRepository : IRepository<Account>
     {
         Task<PagedList<FilterAccountDTO>> GetByFilterAsync(FilterAccountQuery query, CancellationToken cancellationToken);
-        Task<Account?> GetByIdAsync(Guid id);
+        Task<Account?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
     }
 }

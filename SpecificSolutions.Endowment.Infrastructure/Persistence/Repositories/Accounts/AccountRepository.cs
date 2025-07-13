@@ -15,9 +15,9 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Ac
             _context = context;
         }
 
-        public async Task<Account?> GetByIdAsync(Guid id)
+        public async Task<Account?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return await _context.Accounts.FindAsync(id);
+            return await _context.Accounts.FindAsync(id, cancellationToken);
         }
 
         public async Task<PagedList<FilterAccountDTO>> GetByFilterAsync(FilterAccountQuery query, CancellationToken cancellationToken)

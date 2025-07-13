@@ -8,12 +8,12 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
 {
     public interface IRegionRepository : IRepository<Region>
     {
-        Task<Region> GetByIdAsync(Guid id);
-        Task<IEnumerable<Region>> GetAllAsync();
-        Task AddAsync(Region region);
-        Task UpdateAsync(Region region);
-        Task DeleteAsync(Guid id);
-        Task<PagedList<RegionDTO>> GetByFilterAsync(FilterRegionQuery query, CancellationToken cancellationToken);
+        Task<Region> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+        Task<IEnumerable<Region>> GetAllAsync(CancellationToken cancellationToken);
+        Task AddAsync(Region region, CancellationToken cancellationToken);
+        Task UpdateAsync(Region region, CancellationToken cancellationToken);
+        Task DeleteAsync(Guid id, CancellationToken cancellationToken);
+        Task<PagedList<FilterRegionDTO>> GetByFilterAsync(FilterRegionQuery query, CancellationToken cancellationToken);
         Task<IEnumerable<KeyValuPair>> GetRegionsAsync(GetRegionsQuery query, CancellationToken cancellationToken);
     }
 }

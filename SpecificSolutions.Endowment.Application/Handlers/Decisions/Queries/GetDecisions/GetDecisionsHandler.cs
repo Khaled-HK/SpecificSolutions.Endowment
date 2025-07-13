@@ -15,7 +15,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Decisions.Queries.Get
 
         public async Task<EndowmentResponse<IEnumerable<KeyValuPair>>> Handle(GetDecisionsQuery query, CancellationToken cancellationToken)
         {
-            var Decisions = await _unitOfWork.DecisionRepository.GetDecisionsAsync(query, cancellationToken);
+            var Decisions = await _unitOfWork.Decisions.GetDecisionsAsync(query, cancellationToken);
             return new EndowmentResponse<IEnumerable<KeyValuPair>>(Decisions);
         }
     }

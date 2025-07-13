@@ -15,13 +15,13 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.De
 
         public async Task<EndowmentResponse> Handle(DeleteDecisionCommand command, CancellationToken cancellationToken)
         {
-            var decision = await _unitOfWork.DecisionRepository.GetByIdAsync(command.Id);
+            var decision = await _unitOfWork.Decisions.GetByIdAsync(command.Id);
             if (decision == null)
             {
                 return Response.FailureResponse("Id", "Decision not found.");
             }
 
-            await _unitOfWork.DecisionRepository.RemoveAsync(decision);
+            await _unitOfWork.Decisions.RemoveAsync(decision);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Deleted();

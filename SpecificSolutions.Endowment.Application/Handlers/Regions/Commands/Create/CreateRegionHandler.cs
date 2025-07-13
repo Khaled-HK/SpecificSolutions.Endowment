@@ -16,7 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Regions.Commands.Crea
 
         public async Task<EndowmentResponse> Handle(CreateRegionCommand request, CancellationToken cancellationToken)
         {
-            var region = Region.Create(request.Name, request.Country);
+            var region = Region.Create(request.Name, request.Country, request.CityId);
 
             await _unitOfWork.Regions.AddAsync(region);
             await _unitOfWork.CompleteAsync(cancellationToken);

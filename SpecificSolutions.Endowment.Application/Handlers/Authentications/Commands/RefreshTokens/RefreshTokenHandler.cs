@@ -48,7 +48,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Authentications.Comma
 
             if (refreshToken.ExpiryDate < DateTime.Now)
             {
-                await _unitOfWork.RefreshTokenRepository.RemoveByUserIdAsync(new Guid(refreshToken.UserId).ToString());
+                await _unitOfWork.RefreshTokens.RemoveByUserIdAsync(new Guid(refreshToken.UserId).ToString());
                 return Response.FailureResponse<RefreshTokenResponse>("Invalid refresh token");
             }
 

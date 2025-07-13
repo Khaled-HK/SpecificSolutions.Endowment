@@ -7,16 +7,16 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Accounts.Queries.GetA
 {
     public class GetAccountHandler : IRequestHandler<GetAccountQuery, EndowmentResponse<FilterAccountDTO>>
     {
-        private readonly IAccountRepository _accountRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public GetAccountHandler(IAccountRepository accountRepository)
+        public GetAccountHandler(IUnitOfWork unitOfWork)
         {
-            _accountRepository = accountRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<EndowmentResponse<FilterAccountDTO>> Handle(GetAccountQuery request, CancellationToken cancellationToken)
         {
-            var account = await _accountRepository.GetByIdAsync(request.Id);
+            var account = await _unitOfWork.Accounts.GetByIdAsync(request.Id, cancellationToken);
             if (account == null)
             {
                 return Response.FailureResponse<FilterAccountDTO>("The specified account could not be located. Please verify the account ID and try again.");
@@ -45,7 +45,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Accounts.Queries.GetA
                 Balance = account.Balance
             };
 
-            return new(data: accountDTO );
+            return new(data: accountDTO);
         }
     }
 }

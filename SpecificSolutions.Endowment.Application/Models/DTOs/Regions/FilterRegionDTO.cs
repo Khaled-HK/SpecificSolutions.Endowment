@@ -1,6 +1,6 @@
 namespace SpecificSolutions.Endowment.Application.Models.DTOs.Regions
 {
-    public class RegionDTO
+    public class FilterRegionDTO
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

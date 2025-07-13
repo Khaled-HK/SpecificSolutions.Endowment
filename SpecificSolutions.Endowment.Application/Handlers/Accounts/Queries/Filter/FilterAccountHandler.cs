@@ -17,7 +17,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Accounts.Queries.Filt
 
         public async Task<EndowmentResponse<PagedList<FilterAccountDTO>>> Handle(FilterAccountQuery query, CancellationToken cancellationToken)
         {
-            PagedList<FilterAccountDTO> requests = await _unitOfWork.AccountRepository.GetByFilterAsync(query, cancellationToken);
+            PagedList<FilterAccountDTO> requests = await _unitOfWork.Accounts.GetByFilterAsync(query, cancellationToken);
 
             if (!requests.Items.Any())
             {

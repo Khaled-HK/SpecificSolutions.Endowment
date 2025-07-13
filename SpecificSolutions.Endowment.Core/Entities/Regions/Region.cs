@@ -25,12 +25,13 @@ namespace SpecificSolutions.Endowment.Core.Entities.Regions
         private Region() { }
 
         // Factory method for creating a new Region
-        public static Region Create(string name, string country)
+        public static Region Create(string name, string country, Guid cityId)
         {
             return new Region
             {
                 Name = name,
-                Country = country
+                Country = country,
+                CityId = cityId,
             };
         }
         // Seed method to create a new Region

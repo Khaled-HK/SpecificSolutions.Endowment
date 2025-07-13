@@ -15,7 +15,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Offices.Queries.GetOf
 
         public async Task<EndowmentResponse<IEnumerable<KeyValuPair>>> Handle(GetOfficesQuery query, CancellationToken cancellationToken)
         {
-            var offices = await _unitOfWork.OfficeRepository.GetOfficesAsync(query, cancellationToken);
+            var offices = await _unitOfWork.Offices.GetOfficesAsync(query, cancellationToken);
             if (!offices.Any())
                 return Response.FilterResponse<IEnumerable<KeyValuPair>>(new List<KeyValuPair>());
 
