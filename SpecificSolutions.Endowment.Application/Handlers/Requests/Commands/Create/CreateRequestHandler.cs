@@ -29,7 +29,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Cre
             }
             //Get the decisionId from the decision table    
             // Get the decisionId from the decision table
-            var decision = await _unitOfWork.Decisions.GetByIdAsync(command.DecisionId);
+            var decision = await _unitOfWork.Decisions.GetByIdAsync(command.DecisionId, cancellationToken);
             if (decision == null)
             {
                 return Response.FailureResponse("DecisionId", "Invalid DecisionId.");
@@ -40,7 +40,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Cre
             var request = new Request(command.Title, command.Description, command.ReferenceNumber, decisionId: decisionId);
 
             // Add the request to the repository
-            await _unitOfWork.Requests.AddAsync(request);
+            await _unitOfWork.Requests.AddAsync(request, cancellationToken);
 
             // Commit the transaction
             await _unitOfWork.CompleteAsync(cancellationToken);

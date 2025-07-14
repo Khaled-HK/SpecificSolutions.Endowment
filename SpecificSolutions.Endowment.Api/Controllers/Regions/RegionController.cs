@@ -10,9 +10,7 @@ using SpecificSolutions.Endowment.Application.Models.Global;
 
 namespace SpecificSolutions.Endowment.Api.Controllers.Regions
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class RegionController : ControllerBase
+    public class RegionController : ApiController
     {
         private readonly IMediator _mediator;
 
@@ -42,7 +40,7 @@ namespace SpecificSolutions.Endowment.Api.Controllers.Regions
              => await _mediator.Send(query, cancellationToken);
 
         [HttpGet("GetRegions")]
-        public async Task<EndowmentResponse<IEnumerable<KeyValuPair>>> FilterRegions([FromQuery] GetRegionsQuery query, CancellationToken cancellationToken)
+        public async Task<EndowmentResponse<IEnumerable<KeyValuPair>>> GetRegions([FromQuery] GetRegionsQuery query, CancellationToken cancellationToken)
             => await _mediator.Send(query, cancellationToken);
     }
 }

@@ -15,11 +15,11 @@ namespace SpecificSolutions.Endowment.Application.Handlers.FacilityDetails.Comma
 
         public async Task<EndowmentResponse> Handle(UpdateFacilityDetailCommand request, CancellationToken cancellationToken)
         {
-            var FacilityDetail = await _unitOfWork.FacilityDetails.GetByIdAsync(request.Id);
-            if (FacilityDetail == null)
+            var facilityDetail = await _unitOfWork.FacilityDetails.GetByIdAsync(request.Id, cancellationToken);
+            if (facilityDetail == null)
                 return Response.FailureResponse("FacilityDetail not found.");
 
-            await _unitOfWork.FacilityDetails.UpdateAsync(FacilityDetail);
+            await _unitOfWork.FacilityDetails.UpdateAsync(facilityDetail);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Updated();

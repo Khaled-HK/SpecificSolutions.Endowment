@@ -18,7 +18,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Products.Commands.Cre
         {
             var product = Product.Create(request);
 
-            await _unitOfWork.Products.AddAsync(product);
+            await _unitOfWork.Products.AddAsync(product, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Added();

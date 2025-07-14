@@ -3,14 +3,14 @@ using SpecificSolutions.Endowment.Application.Handlers.EndowmentExpenditureChang
 using SpecificSolutions.Endowment.Application.Handlers.EndowmentExpenditureChangeRequests.Commands.Delete;
 using SpecificSolutions.Endowment.Application.Handlers.EndowmentExpenditureChangeRequests.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.EndowmentExpenditureChangeRequests.Queries.Filter;
+using SpecificSolutions.Endowment.Application.Handlers.EndowmentExpenditureChangeRequests.Queries.GetById;
+using SpecificSolutions.Endowment.Application.Handlers.EndowmentExpenditureChangeRequests.Queries.GetExpenditureChangeRequests;
 using SpecificSolutions.Endowment.Application.Models.Global;
 
 namespace SpecificSolutions.Endowment.Api.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
     [ApiExplorerSettings(IgnoreApi = true)]
-    public class ExpenditureChangeRequestController : ControllerBase
+    public class ExpenditureChangeRequestController : ApiController
     {
         private readonly IMediator _mediator;
 
@@ -20,37 +20,27 @@ namespace SpecificSolutions.Endowment.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<EndowmentResponse> Create(CreateExpenditureChangeRequestCommand command)
-        {
-            return await _mediator.Send(command);
-        }
+        public async Task<EndowmentResponse> Create(CreateExpenditureChangeRequestCommand command, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(command, cancellationToken);
 
-        //[HttpGet("{id}")]
-        //public async Task<IActionResult> GetById(Guid id)
-        //{
-        //    var endowmentExpenditureChangeRequest = await _mediator.Send(new GetEndowmentExpenditureChangeRequestByIdQuery { EndowmentExpenditureChangeRequestID = id });
-        //    if (endowmentExpenditureChangeRequest == null) return NotFound();
-        //    return Ok(endowmentExpenditureChangeRequest);
-        //}
+        [HttpGet("{id}")]
+        public async Task<EndowmentResponse> GetById(Guid id, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(new GetByIdQuery(id), cancellationToken);
 
         [HttpPut("{id}")]
-        public async Task<EndowmentResponse> Update(Guid Id, UpdateExpenditureChangeRequestCommand command)
-        {
-            return await _mediator.Send(command);
-        }
+        public async Task<EndowmentResponse> Update(Guid id, UpdateExpenditureChangeRequestCommand command, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(command, cancellationToken);
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            await _mediator.Send(new DeleteExpenditureChangeRequestCommand { EndowmentExpenditureChangeRequestID = id });
-            return NoContent();
-        }
+        public async Task<EndowmentResponse> Delete(Guid id, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(new DeleteExpenditureChangeRequestCommand { EndowmentExpenditureChangeRequestID = id }, cancellationToken);
 
         [HttpGet("filter")]
-        public async Task<IActionResult> Filter([FromQuery] string searchTerm)
-        {
-            var endowmentExpenditureChangeRequests = await _mediator.Send(new FilterExpenditureChangeRequestQuery { SearchTerm = searchTerm });
-            return Ok(endowmentExpenditureChangeRequests);
-        }
+        public async Task<EndowmentResponse> Filter([FromQuery] string searchTerm, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(new FilterExpenditureChangeRequestQuery { SearchTerm = searchTerm }, cancellationToken);
+
+        [HttpGet("GetExpenditureChangeRequests")]
+        public async Task<EndowmentResponse> GetExpenditureChangeRequests(CancellationToken cancellationToken = default) =>
+            await _mediator.Send(new GetExpenditureChangeRequestsQuery(), cancellationToken);
     }
 }

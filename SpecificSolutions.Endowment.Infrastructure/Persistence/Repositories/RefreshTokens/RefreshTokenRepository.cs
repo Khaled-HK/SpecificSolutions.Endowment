@@ -16,9 +16,10 @@ public class RefreshTokenRepository : Repository<RefreshToken>, IRefreshTokenRep
     }
 
     // Other methods
-    public async Task AddAsync(RefreshToken refreshToken)
+    public async Task AddAsync(RefreshToken refreshToken, CancellationToken cancellationToken)
     {
-        await _context.IdentityUserToken.AddAsync(refreshToken);
+        await _context.IdentityUserToken.AddAsync(refreshToken, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task UpdateAsync(RefreshToken refreshToken)

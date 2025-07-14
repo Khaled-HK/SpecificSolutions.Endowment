@@ -16,7 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Offices.Commands.Dele
 
         public async Task<EndowmentResponse> Handle(DeleteOfficeCommand request, CancellationToken cancellationToken)
         {
-            var office = await _officeRepository.GetByIdAsync(request.Id);
+            var office = await _officeRepository.GetByIdAsync(request.Id, cancellationToken);
             if (office == null)
             {
                 throw new OfficeNotFoundException(request.Id);

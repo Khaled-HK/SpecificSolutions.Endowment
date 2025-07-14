@@ -19,8 +19,8 @@ public class FilterBuildingDetailHandler : IQueryHandler<FilterBuildingDetailQue
         var requests = await _unitOfWork.BuildingDetails.GetByFilterAsync(query, cancellationToken);
 
         if (!requests.Items.Any())
-            return Response.FilterResponse(PagedList<BuildingDetailDTO>.Empty());
+            return Response.FilterResponse<PagedList<BuildingDetailDTO>>(PagedList<BuildingDetailDTO>.Empty());
 
-        return Response.FilterResponse(requests);
+        return Response.FilterResponse<PagedList<BuildingDetailDTO>>(requests);
     }
 }

@@ -15,7 +15,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Banks.Commands.Update
 
         public async Task<EndowmentResponse> Handle(UpdateBankCommand request, CancellationToken cancellationToken)
         {
-            var bank = await _unitOfWork.Banks.GetByIdAsync(request.Id);
+            var bank = await _unitOfWork.Banks.GetByIdAsync(request.Id, cancellationToken);
             if (bank == null)
                 return Response.FailureResponse("Bank not found.");
 

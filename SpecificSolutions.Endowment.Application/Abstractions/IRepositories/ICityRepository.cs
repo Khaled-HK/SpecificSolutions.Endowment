@@ -7,9 +7,9 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
 {
     public interface ICityRepository : IRepository<City>
     {
-        Task<City> GetByIdAsync(Guid Id);
-        Task<IEnumerable<City>> GetAllAsync();
-        Task AddAsync(City city);
+        Task<City> GetByIdAsync(Guid Id, CancellationToken cancellationToken);
+        Task<IEnumerable<City>> GetAllAsync(CancellationToken cancellationToken);
+        Task AddAsync(City city, CancellationToken cancellationToken);
         Task UpdateAsync(City city);
         Task DeleteAsync(Guid Id);
         Task<PagedList<CityDTO>> GetByFilterAsync(FilterCityQuery query, CancellationToken cancellationToken);

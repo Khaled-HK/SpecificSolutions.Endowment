@@ -20,7 +20,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.QuranicSchools.Comman
             var building = Building.Create(request);
 
             var quranicSchool = QuranicSchool.Create(building);
-            await _unitOfWork.QuranicSchools.AddAsync(quranicSchool);
+            await _unitOfWork.QuranicSchools.AddAsync(quranicSchool, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Added();

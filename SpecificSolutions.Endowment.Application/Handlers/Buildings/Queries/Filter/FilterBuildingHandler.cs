@@ -16,7 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Buildings.Queries.Fil
 
         public async Task<EndowmentResponse<PagedList<BuildingDTO>>> Handle(FilterBuildingQuery request, CancellationToken cancellationToken)
         {
-            var buildingDetails = await _unitOfWork.Buildings.GetAllAsync();
+            var buildingDetails = await _unitOfWork.Buildings.GetAllAsync(cancellationToken);
             var filteredDetails = buildingDetails
                 .Where(bd => bd.Name.Contains(request.SearchTerm))
                 .Select(bd => new BuildingDTO

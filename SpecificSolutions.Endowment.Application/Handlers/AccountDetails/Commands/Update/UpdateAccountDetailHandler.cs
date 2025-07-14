@@ -15,7 +15,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.AccountDetails.Comman
 
         public async Task<EndowmentResponse> Handle(UpdateAccountDetailCommand command, CancellationToken cancellationToken)
         {
-            var accountDetail = await _unitOfWork.AccountDetails.GetByIdAsync(command.Id);
+            var accountDetail = await _unitOfWork.AccountDetails.GetByIdAsync(command.Id, cancellationToken);
             if (accountDetail == null)
             {
                 return Response.FailureResponse("Id", "AccountDetail not found.");

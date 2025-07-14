@@ -19,8 +19,8 @@ public class FilterMosqueHandler : IQueryHandler<FilterMosqueQuery, PagedList<Mo
         var accountDetails = await _unitOfWork.Mosques.GetByFilterAsync(query, cancellationToken);
 
         if (!accountDetails.Items.Any())
-            return Response.FilterResponse(PagedList<MosqueDTO>.Empty());
+            return Response.FilterResponse<PagedList<MosqueDTO>>(PagedList<MosqueDTO>.Empty());
 
-        return Response.FilterResponse(accountDetails);
+        return Response.FilterResponse<PagedList<MosqueDTO>>(accountDetails);
     }
 }

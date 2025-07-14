@@ -18,7 +18,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.BuildingDetailRequest
         {
             var buildingDetailRequest = BuildingDetailRequest.Create(request.RequestDetails, request.RequestDate, request.Id);
 
-            await _unitOfWork.BuildingDetailRequests.AddAsync(buildingDetailRequest);
+            await _unitOfWork.BuildingDetailRequests.AddAsync(buildingDetailRequest, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Added();

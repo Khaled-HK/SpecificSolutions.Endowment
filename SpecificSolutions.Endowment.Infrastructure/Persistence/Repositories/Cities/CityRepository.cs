@@ -15,20 +15,20 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Ci
             _context = context;
         }
 
-        public async Task<City> GetByIdAsync(Guid id)
+        public async Task<City> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return await _context.Cities.FindAsync(id);
+            return await _context.Cities.FindAsync(id, cancellationToken);
         }
 
-        public async Task<IEnumerable<City>> GetAllAsync()
+        public async Task<IEnumerable<City>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return await _context.Cities.ToListAsync();
+            return await _context.Cities.ToListAsync(cancellationToken);
         }
 
-        public async Task AddAsync(City city)
+        public async Task AddAsync(City city, CancellationToken cancellationToken)
         {
-            await _context.Cities.AddAsync(city);
-            await _context.SaveChangesAsync();
+            await _context.Cities.AddAsync(city, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task UpdateAsync(City city)

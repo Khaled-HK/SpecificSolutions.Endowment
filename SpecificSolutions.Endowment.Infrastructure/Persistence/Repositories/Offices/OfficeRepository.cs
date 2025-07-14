@@ -17,14 +17,15 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Of
             _context = context;
         }
 
-        public async Task<Office> GetByIdAsync(Guid id)
+        public async Task<Office> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return await _context.Offices.FindAsync(id);
+            return await _context.Offices.FindAsync(id, cancellationToken);
         }
 
-        public async Task AddAsync(Office office)
+        public async Task AddAsync(Office office, CancellationToken cancellationToken)
         {
-            await _context.Offices.AddAsync(office);
+            await _context.Offices.AddAsync(office, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task UpdateAsync(Office office)

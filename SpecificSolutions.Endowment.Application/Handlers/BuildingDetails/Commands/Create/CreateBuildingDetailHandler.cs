@@ -18,7 +18,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.BuildingDetails.Comma
         {
             var buildingDetail = BuildingDetail.Create(request);
 
-            await _unitOfWork.BuildingDetails.AddAsync(buildingDetail);
+            await _unitOfWork.BuildingDetails.AddAsync(buildingDetail, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Added();

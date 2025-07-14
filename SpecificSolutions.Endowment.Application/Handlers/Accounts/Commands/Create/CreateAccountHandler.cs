@@ -40,8 +40,8 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Accounts.Commands.Cre
             var auditLog = AuditLog.Create(_currentUser.Id, EntityContext.Account, Helper.Serialize(command));
 
             // Add the account to the repository
-            await _unitOfWork.Accounts.AddAsync(account);
-            await _unitOfWork.AuditLogs.AddAsync(auditLog);
+            await _unitOfWork.Accounts.AddAsync(account, cancellationToken);
+            await _unitOfWork.AuditLogs.AddAsync(auditLog, cancellationToken);
 
             await _unitOfWork.CompleteAsync(cancellationToken);
 

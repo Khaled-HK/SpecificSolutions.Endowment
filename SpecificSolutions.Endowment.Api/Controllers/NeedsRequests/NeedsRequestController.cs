@@ -3,14 +3,13 @@ using SpecificSolutions.Endowment.Application.Handlers.NeedsRequests.Commands.Cr
 using SpecificSolutions.Endowment.Application.Handlers.NeedsRequests.Commands.Delete;
 using SpecificSolutions.Endowment.Application.Handlers.NeedsRequests.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.NeedsRequests.Queries.Filter;
+using SpecificSolutions.Endowment.Application.Handlers.NeedsRequests.Queries.GetById;
+using SpecificSolutions.Endowment.Application.Handlers.NeedsRequests.Queries.GetEntities;
 using SpecificSolutions.Endowment.Application.Models.Global;
 
 namespace SpecificSolutions.Endowment.Api.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    [ApiExplorerSettings(IgnoreApi = true)]
-    public class NeedsRequestController : ControllerBase
+    public class NeedsRequestController : ApiController
     {
         private readonly IMediator _mediator;
 
@@ -20,30 +19,27 @@ namespace SpecificSolutions.Endowment.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<EndowmentResponse> Create(CreateNeedsRequestCommand command)
-        {
-            return await _mediator.Send(command);
-        }
+        public async Task<EndowmentResponse> Create(CreateNeedsRequestCommand command, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(command, cancellationToken);
 
+        [HttpGet("{id}")]
+        public async Task<EndowmentResponse> GetById(Guid id, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(new GetNeedsRequestByIdQuery(id), cancellationToken);
 
         [HttpPut("{id}")]
-        public async Task<EndowmentResponse> Update(Guid Id, UpdateNeedsRequestCommand command)
-        {
-            return await _mediator.Send(command);
-        }
+        public async Task<EndowmentResponse> Update(Guid id, UpdateNeedsRequestCommand command, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(command, cancellationToken);
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            await _mediator.Send(new DeleteNeedsRequestCommand { NeedsRequestID = id });
-            return NoContent();
-        }
+        public async Task<EndowmentResponse> Delete(Guid id, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(new DeleteNeedsRequestCommand { NeedsRequestID = id }, cancellationToken);
 
         [HttpGet("filter")]
-        public async Task<IActionResult> Filter([FromQuery] string searchTerm)
-        {
-            var needsRequests = await _mediator.Send(new FilterNeedsRequestQuery { SearchTerm = searchTerm });
-            return Ok(needsRequests);
-        }
+        public async Task<EndowmentResponse> Filter([FromQuery] string searchTerm, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(new FilterNeedsRequestQuery { SearchTerm = searchTerm }, cancellationToken);
+
+        [HttpGet("needs-requests")]
+        public async Task<EndowmentResponse> GetNeedsRequests(CancellationToken cancellationToken = default) =>
+            await _mediator.Send(new GetNeedsRequestEntitiesQuery(), cancellationToken);
     }
 }

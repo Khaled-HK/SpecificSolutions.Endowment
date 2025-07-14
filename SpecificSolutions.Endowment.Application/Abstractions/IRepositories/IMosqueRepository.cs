@@ -8,9 +8,9 @@ namespace SpecificSolutions.Endowment.Application.Contracts.IRepositories
 {
     public interface IMosqueRepository : IRepository<Mosque>
     {
-        Task<Mosque> GetByIdAsync(Guid id);
-        Task<IEnumerable<Mosque>> GetAllAsync();
-        Task AddAsync(Mosque mosque);
+        Task<Mosque> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+        Task<IEnumerable<Mosque>> GetAllAsync(CancellationToken cancellationToken);
+        Task AddAsync(Mosque mosque, CancellationToken cancellationToken);
         Task UpdateAsync(Mosque mosque);
         Task DeleteAsync(Guid id);
         Task<PagedList<MosqueDTO>> GetByFilterAsync(FilterMosqueQuery query, CancellationToken cancellationToken);

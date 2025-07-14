@@ -24,7 +24,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Facilities.Commands.C
                 request.Status
             );
 
-            await _unitOfWork.Facilities.AddAsync(facility);
+            await _unitOfWork.Facilities.AddAsync(facility, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Added();

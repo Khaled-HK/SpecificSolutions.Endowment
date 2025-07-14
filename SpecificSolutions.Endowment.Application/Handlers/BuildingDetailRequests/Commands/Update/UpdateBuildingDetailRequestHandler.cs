@@ -15,7 +15,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.BuildingDetailRequest
 
         public async Task<EndowmentResponse> Handle(UpdateBuildingDetailRequestCommand request, CancellationToken cancellationToken)
         {
-            var buildingDetailRequest = await _unitOfWork.BuildingDetailRequests.GetByIdAsync(request.Id);
+            var buildingDetailRequest = await _unitOfWork.BuildingDetailRequests.GetByIdAsync(request.Id, cancellationToken);
             if (buildingDetailRequest == null)
                 return Response.FailureResponse("BuildingDetailRequest not found.");
 

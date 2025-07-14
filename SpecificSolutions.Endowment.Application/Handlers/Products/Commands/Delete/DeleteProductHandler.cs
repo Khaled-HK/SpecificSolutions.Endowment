@@ -15,7 +15,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Products.Commands.Del
 
         public async Task<EndowmentResponse> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            var product = await _unitOfWork.Products.GetByIdAsync(request.Id);
+            var product = await _unitOfWork.Products.GetByIdAsync(request.Id, cancellationToken);
             if (product == null)
                 return Response.FailureResponse("Product not found.");
 

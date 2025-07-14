@@ -17,15 +17,15 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.En
             return await _context.ExpenditureChangeRequests.FindAsync(id);
         }
 
-        public async Task<IEnumerable<ExpenditureChangeRequest>> GetAllAsync()
+        public async Task<IEnumerable<ExpenditureChangeRequest>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return await _context.ExpenditureChangeRequests.ToListAsync();
+            return await _context.ExpenditureChangeRequests.ToListAsync(cancellationToken);
         }
 
-        public async Task AddAsync(ExpenditureChangeRequest endowmentExpenditureChangeRequest)
+        public async Task AddAsync(ExpenditureChangeRequest endowmentExpenditureChangeRequest, CancellationToken cancellationToken)
         {
-            await _context.ExpenditureChangeRequests.AddAsync(endowmentExpenditureChangeRequest);
-            await _context.SaveChangesAsync();
+            await _context.ExpenditureChangeRequests.AddAsync(endowmentExpenditureChangeRequest, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task UpdateAsync(ExpenditureChangeRequest endowmentExpenditureChangeRequest)

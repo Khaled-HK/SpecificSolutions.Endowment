@@ -3,7 +3,8 @@ using SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Create;
 using SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Delete;
 using SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.Requests.Queries.Filter;
-using SpecificSolutions.Endowment.Application.Models.DTOs.Requests;
+using SpecificSolutions.Endowment.Application.Handlers.Requests.Queries.GetById;
+using SpecificSolutions.Endowment.Application.Handlers.Requests.Queries.GetEntities;
 using SpecificSolutions.Endowment.Application.Models.Global;
 
 namespace SpecificSolutions.Endowment.Api.Controllers.Requests;
@@ -19,55 +20,26 @@ public class RequestController : ApiController
     }
 
     [HttpPost]
-    public async Task<ActionResult<EndowmentResponse>> CreateRequest([FromBody] CreateRequestCommand command)
-    {
-        if (command == null)
-        {
-            return BadRequest("Invalid request data.");
-        }
+    public async Task<EndowmentResponse> Create(CreateRequestCommand command, CancellationToken cancellationToken = default) =>
+        await _mediator.Send(command, cancellationToken);
 
-        var requestId = await _mediator.Send(command);
-
-        return CreatedAtAction(nameof(CreateRequest), new { id = requestId }, command);
-    }
+    [HttpGet("{id}")]
+    public async Task<EndowmentResponse> GetById(Guid id, CancellationToken cancellationToken = default) =>
+        await _mediator.Send(new GetRequestByIdQuery(id), cancellationToken);
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<EndowmentResponse>> UpdateRequest(Guid id, [FromBody] UpdateRequestCommand command)
-    {
-        if (command == null || id != command.Id)
-        {
-            return BadRequest("Invalid request data.");
-        }
-
-        var result = await _mediator.Send(command);
-
-        if (!result.IsSuccess)
-        {
-            return NotFound("Request not found.");
-        }
-
-        return NoContent();
-    }
+    public async Task<EndowmentResponse> Update(Guid id, UpdateRequestCommand command, CancellationToken cancellationToken = default) =>
+        await _mediator.Send(command, cancellationToken);
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult<EndowmentResponse>> DeleteRequest(Guid id)
-    {
-        var command = new DeleteRequestCommand(id);
-        var result = await _mediator.Send(command);
-
-        if (!result.IsSuccess)
-        {
-            return NotFound("Request not found.");
-        }
-
-        return NoContent();
-    }
+    public async Task<EndowmentResponse> Delete(Guid id, CancellationToken cancellationToken = default) =>
+        await _mediator.Send(new DeleteRequestCommand(id), cancellationToken);
 
     [HttpGet("filter")]
-    public async Task<ActionResult<EndowmentResponse<PagedList<FilterRequestDTO>>>> FilterRequests([FromQuery] FilterRequestQuery query)
-    {
-        var requests = await _mediator.Send(query);
+    public async Task<EndowmentResponse> Filter([FromQuery] string searchTerm, CancellationToken cancellationToken = default) =>
+        await _mediator.Send(new FilterRequestQuery { Title = searchTerm }, cancellationToken);
 
-        return requests;
-    }
+    [HttpGet("requests")]
+    public async Task<EndowmentResponse> GetRequests(CancellationToken cancellationToken = default) =>
+        await _mediator.Send(new GetRequestEntitiesQuery(), cancellationToken);
 }

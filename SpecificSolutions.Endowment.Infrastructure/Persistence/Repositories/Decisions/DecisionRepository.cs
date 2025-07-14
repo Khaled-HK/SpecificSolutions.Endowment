@@ -16,19 +16,20 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.De
             _context = context;
         }
 
-        public async Task<Decision> GetByIdAsync(Guid id)
+        public async Task<Decision> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return await _context.Decisions.FindAsync(id);
+            return await _context.Decisions.FindAsync(id, cancellationToken);
         }
 
-        public async Task<IEnumerable<Decision>> GetAllAsync()
+        public async Task<IEnumerable<Decision>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return await _context.Decisions.ToListAsync();
+            return await _context.Decisions.ToListAsync(cancellationToken);
         }
 
-        public async Task AddAsync(Decision decision)
+        public async Task AddAsync(Decision decision, CancellationToken cancellationToken)
         {
-            await _context.Decisions.AddAsync(decision);
+            await _context.Decisions.AddAsync(decision, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public void Update(Decision decision)

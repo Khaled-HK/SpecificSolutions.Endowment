@@ -16,7 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.QuranicSchools.Querie
 
         public async Task<EndowmentResponse<PagedList<QuranicSchoolDTO>>> Handle(FilterQuranicSchoolQuery request, CancellationToken cancellationToken)
         {
-            var quranicSchools = await _unitOfWork.QuranicSchools.GetAllAsync();
+            var quranicSchools = await _unitOfWork.QuranicSchools.GetAllAsync(cancellationToken);
 
             var filteredQuranicSchools = quranicSchools
                 .Where(q => q.Building.Name.Contains(request.SearchTerm))

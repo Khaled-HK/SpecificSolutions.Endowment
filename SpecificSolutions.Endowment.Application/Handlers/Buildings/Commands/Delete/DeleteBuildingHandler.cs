@@ -15,7 +15,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Buildings.Commands.De
 
         public async Task<EndowmentResponse> Handle(DeleteBuildingCommand request, CancellationToken cancellationToken)
         {
-            var building = await _unitOfWork.Buildings.FindAsync(request.Id);
+            var building = await _unitOfWork.Buildings.FindAsync(request.Id, cancellationToken);
             if (building == null)
                 return Response.FailureResponse("Id", "BuildingDetail not found.");
 

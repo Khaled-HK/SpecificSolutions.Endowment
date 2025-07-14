@@ -7,8 +7,8 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
 {
     public interface IAccountDetailRepository : IRepository<AccountDetail>
     {
-        Task<AccountDetail> GetByIdAsync(Guid id);
-        Task AddAsync(AccountDetail accountDetail);
+        Task<AccountDetail> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+        Task AddAsync(AccountDetail accountDetail, CancellationToken cancellationToken);
         Task UpdateAsync(AccountDetail accountDetail);
         Task RemoveAsync(AccountDetail accountDetail);
         Task<bool> ExistsAsync(Guid id);

@@ -17,7 +17,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Mosques.Commands.Crea
         public async Task<EndowmentResponse> Handle(CreateMosqueCommand request, CancellationToken cancellationToken)
         {
             var mosque = Mosque.Create(request);
-            await _unitOfWork.Mosques.AddAsync(mosque);
+            await _unitOfWork.Mosques.AddAsync(mosque, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Added();

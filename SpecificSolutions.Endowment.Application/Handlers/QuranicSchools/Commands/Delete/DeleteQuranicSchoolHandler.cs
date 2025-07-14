@@ -16,7 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.QuranicSchools.Comman
 
         public async Task<EndowmentResponse> Handle(DeleteQuranicSchoolCommand request, CancellationToken cancellationToken)
         {
-            var quranicSchool = await _unitOfWork.QuranicSchools.GetByIdAsync(request.Id);
+            var quranicSchool = await _unitOfWork.QuranicSchools.GetByIdAsync(request.Id, cancellationToken);
             if (quranicSchool == null) throw new QuranicSchoolNotFoundException();
 
             await _unitOfWork.QuranicSchools.RemoveAsync(quranicSchool);

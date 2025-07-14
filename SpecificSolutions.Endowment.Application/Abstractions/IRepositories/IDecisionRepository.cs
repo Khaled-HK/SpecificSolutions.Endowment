@@ -8,9 +8,9 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
 {
     public interface IDecisionRepository : IRepository<Decision>
     {
-        Task<Decision> GetByIdAsync(Guid id);
-        Task<IEnumerable<Decision>> GetAllAsync();
-        Task AddAsync(Decision decision);
+        Task<Decision> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+        Task<IEnumerable<Decision>> GetAllAsync(CancellationToken cancellationToken);
+        Task AddAsync(Decision decision, CancellationToken cancellationToken);
         void Update(Decision decision);
         void Delete(Decision decision);
         Task<PagedList<FilterDecisionDTO>> GetByFilterAsync(FilterDecisionQuery query, CancellationToken cancellationToken);

@@ -9,8 +9,8 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
 {
     public interface IOfficeRepository : IRepository<Office>
     {
-        Task<Office> GetByIdAsync(Guid id);
-        Task AddAsync(Office office);
+        Task<Office> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+        Task AddAsync(Office office, CancellationToken cancellationToken);
         Task UpdateAsync(Office office);
         Task RemoveAsync(Office office);
         Task<bool> ExistsAsync(Guid id);

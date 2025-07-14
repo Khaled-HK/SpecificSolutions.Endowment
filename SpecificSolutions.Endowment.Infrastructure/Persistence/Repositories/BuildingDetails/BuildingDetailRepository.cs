@@ -15,20 +15,20 @@ public class BuildingDetailRepository : Repository<BuildingDetail>, IBuildingDet
         _context = context;
     }
 
-    public async Task<BuildingDetail> GetByIdAsync(Guid id)
+    public async Task<BuildingDetail> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return await _context.BuildingDetails.FindAsync(id);
+        return await _context.BuildingDetails.FindAsync(id, cancellationToken);
     }
 
-    public async Task<IEnumerable<BuildingDetail>> GetAllAsync()
+    public async Task<IEnumerable<BuildingDetail>> GetAllAsync(CancellationToken cancellationToken)
     {
-        return await _context.BuildingDetails.ToListAsync();
+        return await _context.BuildingDetails.ToListAsync(cancellationToken);
     }
 
-    public async Task AddAsync(BuildingDetail buildingDetail)
+    public async Task AddAsync(BuildingDetail buildingDetail, CancellationToken cancellationToken)
     {
-        await _context.BuildingDetails.AddAsync(buildingDetail);
-        await _context.SaveChangesAsync();
+        await _context.BuildingDetails.AddAsync(buildingDetail, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task UpdateAsync(BuildingDetail buildingDetail)

@@ -15,20 +15,20 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Qu
             _context = context;
         }
 
-        public async Task<QuranicSchool> GetByIdAsync(Guid id)
+        public async Task<QuranicSchool> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return await _context.QuranicSchools.FindAsync(id);
+            return await _context.QuranicSchools.FindAsync(id, cancellationToken);
         }
 
-        public async Task<IEnumerable<QuranicSchool>> GetAllAsync()
+        public async Task<IEnumerable<QuranicSchool>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return await _context.QuranicSchools.ToListAsync();
+            return await _context.QuranicSchools.ToListAsync(cancellationToken);
         }
 
-        public async Task AddAsync(QuranicSchool quranicSchool)
+        public async Task AddAsync(QuranicSchool quranicSchool, CancellationToken cancellationToken)
         {
-            await _context.QuranicSchools.AddAsync(quranicSchool);
-            await _context.SaveChangesAsync();
+            await _context.QuranicSchools.AddAsync(quranicSchool, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task UpdateAsync(QuranicSchool quranicSchool)

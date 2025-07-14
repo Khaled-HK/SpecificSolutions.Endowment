@@ -18,7 +18,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Regions.Commands.Crea
         {
             var region = Region.Create(request.Name, request.Country, request.CityId);
 
-            await _unitOfWork.Regions.AddAsync(region);
+            await _unitOfWork.Regions.AddAsync(region, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Added();

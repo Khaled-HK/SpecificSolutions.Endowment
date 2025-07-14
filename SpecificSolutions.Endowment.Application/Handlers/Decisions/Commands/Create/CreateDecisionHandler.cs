@@ -18,7 +18,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Cr
         {
             var decision = new Decision(command);
 
-            await _unitOfWork.Decisions.AddAsync(decision);
+            await _unitOfWork.Decisions.AddAsync(decision, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Added();

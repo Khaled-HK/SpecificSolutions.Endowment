@@ -19,7 +19,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Offices.Queries.GetOf
             if (!offices.Any())
                 return Response.FilterResponse<IEnumerable<KeyValuPair>>(new List<KeyValuPair>());
 
-            return Response.FilterResponse(offices);
+            return Response.FilterResponse<IEnumerable<KeyValuPair>>(offices);
         }
     }
 }

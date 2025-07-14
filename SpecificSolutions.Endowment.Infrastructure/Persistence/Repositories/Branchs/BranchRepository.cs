@@ -15,20 +15,20 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Br
             _context = context;
         }
 
-        public async Task<Branch> GetByIdAsync(Guid id)
+        public async Task<Branch> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return await _context.Branches.FindAsync(id);
+            return await _context.Branches.FindAsync(id, cancellationToken);
         }
 
-        public async Task<IEnumerable<Branch>> GetAllAsync()
+        public async Task<IEnumerable<Branch>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return await _context.Branches.ToListAsync();
+            return await _context.Branches.ToListAsync(cancellationToken);
         }
 
-        public async Task AddAsync(Branch branch)
+        public async Task AddAsync(Branch branch, CancellationToken cancellationToken)
         {
-            await _context.Branches.AddAsync(branch);
-            await _context.SaveChangesAsync();
+            await _context.Branches.AddAsync(branch, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task UpdateAsync(Branch branch)

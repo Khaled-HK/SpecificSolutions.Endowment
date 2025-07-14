@@ -18,7 +18,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Banks.Commands.Create
         {
             var bank = Bank.Create(request.Name, request.Address, request.ContactNumber);
 
-            await _unitOfWork.Banks.AddAsync(bank);
+            await _unitOfWork.Banks.AddAsync(bank, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Added();

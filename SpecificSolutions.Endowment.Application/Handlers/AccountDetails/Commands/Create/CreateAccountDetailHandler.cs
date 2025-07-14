@@ -24,7 +24,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.AccountDetails.Comman
 
             var accountDetail = new AccountDetail(command);
 
-            await _unitOfWork.AccountDetails.AddAsync(accountDetail);
+            await _unitOfWork.AccountDetails.AddAsync(accountDetail, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Added();

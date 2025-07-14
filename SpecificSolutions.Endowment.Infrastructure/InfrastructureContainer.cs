@@ -64,7 +64,6 @@ public static class InfrastructureContainer
         //{
         //    options.User.RequireUniqueEmail = true;
         //    options.User.RequireUniqueEmail = true;       // Treat email as username
-
         //    options.User.AllowedUserNameCharacters = null; // Allow emails as usernames
         //});
 
@@ -91,8 +90,11 @@ public static class InfrastructureContainer
 
         // Register Office Repository
         services.AddScoped<IOfficeRepository, OfficeRepository>();
+
         services.AddScoped<ITokenService, TokenService>();
+
         services.AddScoped<ISessionService, SessionService>();
+
         services.AddScoped<IMosqueRepository, MosqueRepository>();
 
         services.AddScoped<IConstructionRequestRepository, ConstructionRequestRepository>();
@@ -137,7 +139,6 @@ public class DatabaseBuilder : IHostedService
 
         // Optionally, seed the database
         await Seeder.SeedAsync(appDbContext, _passwordHasher);
-
     }
 
     public Task StopAsync(CancellationToken cancellationToken)

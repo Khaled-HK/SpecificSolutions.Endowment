@@ -18,7 +18,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Cities.Commands.Creat
         {
             var city = City.Create(request.Name, request.Country);
 
-            await _unitOfWork.Cities.AddAsync(city);
+            await _unitOfWork.Cities.AddAsync(city, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Added();

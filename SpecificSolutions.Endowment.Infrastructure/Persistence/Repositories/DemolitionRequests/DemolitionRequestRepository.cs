@@ -17,15 +17,15 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.De
             return await _context.DemolitionRequests.FindAsync(id);
         }
 
-        public async Task<IEnumerable<DemolitionRequest>> GetAllAsync()
+        public async Task<IEnumerable<DemolitionRequest>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return await _context.DemolitionRequests.ToListAsync();
+            return await _context.DemolitionRequests.ToListAsync(cancellationToken);
         }
 
-        public async Task AddAsync(DemolitionRequest DemolitionRequest)
+        public async Task AddAsync(DemolitionRequest DemolitionRequest, CancellationToken cancellationToken)
         {
-            await _context.DemolitionRequests.AddAsync(DemolitionRequest);
-            await _context.SaveChangesAsync();
+            await _context.DemolitionRequests.AddAsync(DemolitionRequest, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task UpdateAsync(DemolitionRequest DemolitionRequest)

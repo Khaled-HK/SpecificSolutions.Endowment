@@ -16,7 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.ConstructionRequests.
 
         public async Task<EndowmentResponse<PagedList<ConstructionRequestDTO>>> Handle(FilterConstructionRequestQuery request, CancellationToken cancellationToken)
         {
-            var constructionRequests = await _unitOfWork.ConstructionRequests.GetAllAsync();
+            var constructionRequests = await _unitOfWork.ConstructionRequests.GetAllAsync(cancellationToken);
             var filteredRequests = constructionRequests
                 .Where(cr => cr.ProposedLocation.Contains(request.SearchTerm))
                 .Select(cr => new ConstructionRequestDTO

@@ -17,15 +17,15 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Ma
             return await _context.MaintenanceRequests.FindAsync(id);
         }
 
-        public async Task<IEnumerable<MaintenanceRequest>> GetAllAsync()
+        public async Task<IEnumerable<MaintenanceRequest>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return await _context.MaintenanceRequests.ToListAsync();
+            return await _context.MaintenanceRequests.ToListAsync(cancellationToken);
         }
 
-        public async Task AddAsync(MaintenanceRequest maintenanceRequest)
+        public async Task AddAsync(MaintenanceRequest maintenanceRequest, CancellationToken cancellationToken)
         {
-            await _context.MaintenanceRequests.AddAsync(maintenanceRequest);
-            await _context.SaveChangesAsync();
+            await _context.MaintenanceRequests.AddAsync(maintenanceRequest, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task UpdateAsync(MaintenanceRequest maintenanceRequest)

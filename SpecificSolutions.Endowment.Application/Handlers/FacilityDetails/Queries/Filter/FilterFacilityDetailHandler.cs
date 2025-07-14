@@ -16,7 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.FacilityDetails.Queri
 
         public async Task<EndowmentResponse<PagedList<FacilityDetailDTO>>> Handle(FilterFacilityDetailQuery request, CancellationToken cancellationToken)
         {
-            var FacilityDetails = await _unitOfWork.FacilityDetails.GetAllAsync();
+            var FacilityDetails = await _unitOfWork.FacilityDetails.GetAllAsync(cancellationToken);
             var filteredDetails = FacilityDetails
                 .Where(md => md.Product.Name.Contains(request.SearchTerm))
                 .Select(md => new FacilityDetailDTO

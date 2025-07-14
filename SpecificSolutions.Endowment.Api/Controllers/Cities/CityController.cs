@@ -3,12 +3,14 @@ using SpecificSolutions.Endowment.Application.Handlers.Cities.Commands.Create;
 using SpecificSolutions.Endowment.Application.Handlers.Cities.Commands.Delete;
 using SpecificSolutions.Endowment.Application.Handlers.Cities.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.Cities.Queries.Filter;
+using SpecificSolutions.Endowment.Application.Handlers.Cities.Queries.GetCities;
+using SpecificSolutions.Endowment.Application.Handlers.Cities.Queries.GetCity;
+using SpecificSolutions.Endowment.Application.Models.DTOs.Cities;
+using SpecificSolutions.Endowment.Application.Models.Global;
 
 namespace SpecificSolutions.Endowment.Api.Controllers.Cities
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class CityController : ControllerBase
+    public class CityController : ApiController
     {
         private readonly IMediator _mediator;
 
@@ -18,32 +20,27 @@ namespace SpecificSolutions.Endowment.Api.Controllers.Cities
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateCityCommand command)
-        {
-            var response = await _mediator.Send(command);
-            return Ok(response);
-        }
+        public async Task<EndowmentResponse> Create(CreateCityCommand command, CancellationToken cancellationToken)
+            => await _mediator.Send(command, cancellationToken);
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, UpdateCityCommand command)
-        {
-            if (id != command.Id) return BadRequest();
-            var response = await _mediator.Send(command);
-            return Ok(response);
-        }
+        public async Task<EndowmentResponse> Update(Guid id, UpdateCityCommand command, CancellationToken cancellationToken)
+            => await _mediator.Send(command, cancellationToken);
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            var response = await _mediator.Send(new DeleteCityCommand { Id = id });
-            return Ok(response);
-        }
+        public async Task<EndowmentResponse> Delete(Guid id, CancellationToken cancellationToken)
+            => await _mediator.Send(new DeleteCityCommand { Id = id }, cancellationToken);
+
+        [HttpGet("{id}")]
+        public async Task<EndowmentResponse> GetCityById(Guid id, CancellationToken cancellationToken)
+            => await _mediator.Send(new GetCityQuery(id), cancellationToken);
 
         [HttpGet("filter")]
-        public async Task<IActionResult> Filter([FromQuery] FilterCityQuery query)
-        {
-            var response = await _mediator.Send(query);
-            return Ok(response);
-        }
+        public async Task<EndowmentResponse<PagedList<CityDTO>>> Filter([FromQuery] FilterCityQuery query, CancellationToken cancellationToken)
+            => await _mediator.Send(query, cancellationToken);
+
+        [HttpGet("GetCities")]
+        public async Task<EndowmentResponse<IEnumerable<KeyValuPair>>> GetCities([FromQuery] GetCitiesQuery query, CancellationToken cancellationToken)
+            => await _mediator.Send(query, cancellationToken);
     }
 }

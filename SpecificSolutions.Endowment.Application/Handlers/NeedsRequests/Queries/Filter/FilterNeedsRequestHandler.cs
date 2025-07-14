@@ -16,7 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.NeedsRequests.Queries
 
         public async Task<EndowmentResponse<PagedList<FilterNeedsRequestDTO>>> Handle(FilterNeedsRequestQuery request, CancellationToken cancellationToken)
         {
-            var needsRequests = await _unitOfWork.NeedsRequests.GetAllAsync();
+            var needsRequests = await _unitOfWork.NeedsRequests.GetAllAsync(cancellationToken);
             var filteredRequests = needsRequests
                 .Where(nr => nr.NeedsType.Contains(request.SearchTerm))
                 .Select(nr => new FilterNeedsRequestDTO

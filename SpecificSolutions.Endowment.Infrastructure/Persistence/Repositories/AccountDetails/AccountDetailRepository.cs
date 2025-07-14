@@ -15,14 +15,15 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Ac
             _context = context;
         }
 
-        public async Task<AccountDetail> GetByIdAsync(Guid id)
+        public async Task<AccountDetail> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return await _context.AccountDetails.FindAsync(id);
+            return await _context.AccountDetails.FindAsync(id, cancellationToken);
         }
 
-        public async Task AddAsync(AccountDetail accountDetail)
+        public async Task AddAsync(AccountDetail accountDetail, CancellationToken cancellationToken)
         {
-            await _context.AccountDetails.AddAsync(accountDetail);
+            await _context.AccountDetails.AddAsync(accountDetail, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task UpdateAsync(AccountDetail accountDetail)

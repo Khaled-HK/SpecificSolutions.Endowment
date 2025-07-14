@@ -20,7 +20,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Regions.Queries.GetRe
             if (!regions.Any())
                 return Response.FilterResponse<IEnumerable<KeyValuPair>>(new List<KeyValuPair>());
 
-            return Response.FilterResponse(regions);
+            return Response.FilterResponse<IEnumerable<KeyValuPair>>(regions);
         }
     }
 }

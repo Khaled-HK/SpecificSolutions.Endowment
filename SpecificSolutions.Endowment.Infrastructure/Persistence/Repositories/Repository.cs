@@ -12,41 +12,39 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories
             _context = context;
         }
 
-        public virtual async Task AddAsync(TDomain entity)
+        public virtual async Task AddAsync(TDomain entity, CancellationToken cancellationToken)
         {
-            await _context.Set<TDomain>().AddAsync(entity);
+            await _context.Set<TDomain>().AddAsync(entity, cancellationToken);
         }
 
-        public virtual async Task AddRangeAsync(IList<TDomain> entities)
+        public virtual async Task AddRangeAsync(IList<TDomain> entities, CancellationToken cancellationToken)
         {
-            await _context.Set<TDomain>().AddRangeAsync(entities);
+            await _context.Set<TDomain>().AddRangeAsync(entities, cancellationToken);
         }
 
-        public virtual async Task<TDomain?> FindAsync(Guid id, bool includeRelated = false)
+        public virtual async Task<TDomain?> FindAsync(Guid id, CancellationToken cancellationToken, bool includeRelated = false)
         {
-            return await _context.Set<TDomain>().FindAsync(id);
+            return await _context.Set<TDomain>().FindAsync(id, cancellationToken);
         }
 
-        public virtual async Task<IEnumerable<TDomain>> GetAllAsync()
+        public virtual async Task<IEnumerable<TDomain>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return await _context.Set<TDomain>().ToListAsync();
+            return await _context.Set<TDomain>().ToListAsync(cancellationToken);
         }
 
-        public virtual async Task<List<TResult>> GetAllAsync<TResult>(Expression<Func<TDomain, TResult>> target)
+        public virtual async Task<List<TResult>> GetAllAsync<TResult>(Expression<Func<TDomain, TResult>> target, CancellationToken cancellationToken)
         {
-            return await _context.Set<TDomain>().Select(target).ToListAsync();
+            return await _context.Set<TDomain>().Select(target).ToListAsync(cancellationToken);
         }
 
         public virtual async Task RemoveAsync(TDomain entity)
         {
             _context.Set<TDomain>().Remove(entity);
-            await _context.SaveChangesAsync(); // Ensure changes are saved
         }
 
         public virtual async Task RemoveRangeAsync(IList<TDomain> entities)
         {
             _context.Set<TDomain>().RemoveRange(entities);
-            await _context.SaveChangesAsync(); // Ensure changes are saved
         }
     }
 }

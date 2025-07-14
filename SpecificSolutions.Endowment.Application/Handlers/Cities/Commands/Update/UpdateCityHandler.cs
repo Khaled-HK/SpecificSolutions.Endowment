@@ -15,7 +15,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Cities.Commands.Updat
 
         public async Task<EndowmentResponse> Handle(UpdateCityCommand request, CancellationToken cancellationToken)
         {
-            var city = await _unitOfWork.Cities.GetByIdAsync(request.Id);
+            var city = await _unitOfWork.Cities.GetByIdAsync(request.Id, cancellationToken);
             if (city == null)
                 return Response.FailureResponse("City not found.");
 

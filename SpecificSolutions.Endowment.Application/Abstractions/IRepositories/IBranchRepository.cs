@@ -7,9 +7,9 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
 {
     public interface IBranchRepository : IRepository<Branch>
     {
-        Task<Branch> GetByIdAsync(Guid Id);
-        Task<IEnumerable<Branch>> GetAllAsync();
-        Task AddAsync(Branch branch);
+        Task<Branch> GetByIdAsync(Guid Id, CancellationToken cancellationToken);
+        Task<IEnumerable<Branch>> GetAllAsync(CancellationToken cancellationToken);
+        Task AddAsync(Branch branch, CancellationToken cancellationToken);
         Task UpdateAsync(Branch branch);
         Task DeleteAsync(Guid Id);
         Task<PagedList<BranchDTO>> GetByFilterAsync(FilterBranchQuery query, CancellationToken cancellationToken);

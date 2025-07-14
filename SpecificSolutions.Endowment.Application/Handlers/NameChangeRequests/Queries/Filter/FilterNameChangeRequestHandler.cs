@@ -16,7 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.NameChangeRequests.Qu
 
         public async Task<EndowmentResponse<PagedList<NameChangeRequestDTO>>> Handle(FilterNameChangeRequestQuery request, CancellationToken cancellationToken)
         {
-            var nameChangeRequests = await _unitOfWork.NameChangeRequests.GetAllAsync();
+            var nameChangeRequests = await _unitOfWork.NameChangeRequests.GetAllAsync(cancellationToken);
             var filteredRequests = nameChangeRequests
                  .Where(ncr => ncr.CurrentName.Contains(request.SearchTerm) || ncr.NewName.Contains(request.SearchTerm))
                  .Select(ncr => new NameChangeRequestDTO

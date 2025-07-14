@@ -18,7 +18,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Branches.Commands.Cre
         {
             var branch = Branch.Create(request.Name, request.Address, request.ContactNumber, request.Id);
 
-            await _unitOfWork.Branches.AddAsync(branch);
+            await _unitOfWork.Branches.AddAsync(branch, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Added();

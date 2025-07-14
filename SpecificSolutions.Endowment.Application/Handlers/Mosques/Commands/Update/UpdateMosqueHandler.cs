@@ -16,7 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Mosques.Commands.Upda
 
         public async Task<EndowmentResponse> Handle(UpdateMosqueCommand request, CancellationToken cancellationToken)
         {
-            var mosque = await _unitOfWork.Mosques.GetByIdAsync(request.Id);
+            var mosque = await _unitOfWork.Mosques.GetByIdAsync(request.Id, cancellationToken);
             if (mosque == null) throw new MosqueNotFoundException();
 
             mosque.Update(request);

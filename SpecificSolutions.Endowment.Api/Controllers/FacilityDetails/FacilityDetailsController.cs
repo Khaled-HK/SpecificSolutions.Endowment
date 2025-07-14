@@ -3,13 +3,14 @@ using SpecificSolutions.Endowment.Application.Handlers.FacilityDetails.Commands.
 using SpecificSolutions.Endowment.Application.Handlers.FacilityDetails.Commands.Delete;
 using SpecificSolutions.Endowment.Application.Handlers.FacilityDetails.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.FacilityDetails.Queries.Filter;
+using SpecificSolutions.Endowment.Application.Handlers.FacilityDetails.Queries.GetById;
+using SpecificSolutions.Endowment.Application.Handlers.FacilityDetails.Queries.GetEntities;
+using SpecificSolutions.Endowment.Application.Models.Global;
 
-namespace SpecificSolutions.Endowment.Api.Controllers.FacilityDetails
+namespace SpecificSolutions.Endowment.Api.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
     [ApiExplorerSettings(IgnoreApi = true)]
-    public class FacilityDetailController : ControllerBase
+    public class FacilityDetailController : ApiController
     {
         private readonly IMediator _mediator;
 
@@ -19,32 +20,27 @@ namespace SpecificSolutions.Endowment.Api.Controllers.FacilityDetails
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateFacilityDetailCommand command)
-        {
-            var response = await _mediator.Send(command);
-            return Ok(response);
-        }
+        public async Task<EndowmentResponse> Create(CreateFacilityDetailCommand command, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(command, cancellationToken);
+
+        [HttpGet("{id}")]
+        public async Task<EndowmentResponse> GetById(Guid id, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(new GetFacilityDetailByIdQuery(id), cancellationToken);
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, UpdateFacilityDetailCommand command)
-        {
-            if (id != command.Id) return BadRequest();
-            var response = await _mediator.Send(command);
-            return Ok(response);
-        }
+        public async Task<EndowmentResponse> Update(Guid id, UpdateFacilityDetailCommand command, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(command, cancellationToken);
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            var response = await _mediator.Send(new DeleteFacilityDetailCommand { Id = id });
-            return Ok(response);
-        }
+        public async Task<EndowmentResponse> Delete(Guid id, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(new DeleteFacilityDetailCommand { Id = id }, cancellationToken);
 
         [HttpGet("filter")]
-        public async Task<IActionResult> Filter([FromQuery] FilterFacilityDetailQuery query)
-        {
-            var response = await _mediator.Send(query);
-            return Ok(response);
-        }
+        public async Task<EndowmentResponse> Filter([FromQuery] string searchTerm, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(new FilterFacilityDetailQuery { SearchTerm = searchTerm }, cancellationToken);
+
+        [HttpGet("entities")]
+        public async Task<EndowmentResponse> GetEntities(CancellationToken cancellationToken = default) =>
+            await _mediator.Send(new GetFacilityDetailEntitiesQuery(), cancellationToken);
     }
 }

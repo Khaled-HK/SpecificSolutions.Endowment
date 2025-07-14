@@ -7,9 +7,9 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
 {
     public interface IQuranicSchoolRepository : IRepository<QuranicSchool>
     {
-        Task<QuranicSchool> GetByIdAsync(Guid id);
-        Task<IEnumerable<QuranicSchool>> GetAllAsync();
-        Task AddAsync(QuranicSchool product);
+        Task<QuranicSchool> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+        Task<IEnumerable<QuranicSchool>> GetAllAsync(CancellationToken cancellationToken);
+        Task AddAsync(QuranicSchool product, CancellationToken cancellationToken);
         Task UpdateAsync(QuranicSchool product);
         Task DeleteAsync(Guid id);
         Task<PagedList<QuranicSchoolDTO>> GetByFilterAsync(FilterQuranicSchoolQuery query, CancellationToken cancellationToken);

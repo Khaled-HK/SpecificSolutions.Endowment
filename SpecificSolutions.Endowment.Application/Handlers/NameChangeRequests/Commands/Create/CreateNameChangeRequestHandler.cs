@@ -20,7 +20,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.NameChangeRequests.Co
             var nameChangeRequest = NameChangeRequest.Create(request.CurrentName, request.NewName, request.Reason, request.Id);
 
             // add the new NameChangeRequest to the repository
-            await _unitOfWork.NameChangeRequests.AddAsync(nameChangeRequest);
+            await _unitOfWork.NameChangeRequests.AddAsync(nameChangeRequest, cancellationToken);
 
             // save changes
             await _unitOfWork.CompleteAsync(cancellationToken);

@@ -15,20 +15,20 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Ba
             _context = context;
         }
 
-        public async Task<Bank> GetByIdAsync(Guid id)
+        public async Task<Bank> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            return await _context.Banks.FindAsync(id);
+            return await _context.Banks.FindAsync(id, cancellationToken);
         }
 
-        public async Task<IEnumerable<Bank>> GetAllAsync()
+        public async Task<IEnumerable<Bank>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            return await _context.Banks.ToListAsync();
+            return await _context.Banks.ToListAsync(cancellationToken);
         }
 
-        public async Task AddAsync(Bank bank)
+        public async Task AddAsync(Bank bank, CancellationToken cancellationToken)
         {
-            await _context.Banks.AddAsync(bank);
-            await _context.SaveChangesAsync();
+            await _context.Banks.AddAsync(bank, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task UpdateAsync(Bank bank)

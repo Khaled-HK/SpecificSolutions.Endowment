@@ -22,7 +22,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Upd
                 throw new EntityNotFoundException(command.Id);
             }
 
-            var decision = await _unitOfWork.Decisions.GetByIdAsync(command.DecisionId);
+            var decision = await _unitOfWork.Decisions.GetByIdAsync(command.DecisionId, cancellationToken);
             if (decision == null)
             {
                 throw new EntityNotFoundException(command.DecisionId);

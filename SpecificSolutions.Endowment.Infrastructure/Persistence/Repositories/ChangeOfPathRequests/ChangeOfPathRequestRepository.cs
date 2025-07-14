@@ -17,15 +17,15 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Ch
             return await _context.ChangeOfPathRequests.FindAsync(id);
         }
 
-        public async Task<IEnumerable<ChangeOfPathRequest>> GetAllAsync()
+        public async Task<IEnumerable<ChangeOfPathRequest>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return await _context.ChangeOfPathRequests.ToListAsync();
+            return await _context.ChangeOfPathRequests.ToListAsync(cancellationToken);
         }
 
-        public async Task AddAsync(ChangeOfPathRequest changeOfPathRequest)
+        public async Task AddAsync(ChangeOfPathRequest changeOfPathRequest, CancellationToken cancellationToken)
         {
-            await _context.ChangeOfPathRequests.AddAsync(changeOfPathRequest);
-            await _context.SaveChangesAsync();
+            await _context.ChangeOfPathRequests.AddAsync(changeOfPathRequest, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task UpdateAsync(ChangeOfPathRequest changeOfPathRequest)

@@ -15,7 +15,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Facilities.Commands.D
 
         public async Task<EndowmentResponse> Handle(DeleteFacilityCommand request, CancellationToken cancellationToken)
         {
-            var facility = await _unitOfWork.Facilities.GetByIdAsync(request.Id);
+            var facility = await _unitOfWork.Facilities.GetByIdAsync(request.Id, cancellationToken);
             if (facility == null)
                 return Response.FailureResponse("Facility not found.");
 

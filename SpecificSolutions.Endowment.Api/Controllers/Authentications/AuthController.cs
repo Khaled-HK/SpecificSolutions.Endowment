@@ -8,7 +8,7 @@ using SpecificSolutions.Endowment.Application.Models.DTOs.Users;
 using SpecificSolutions.Endowment.Application.Models.Global;
 using SpecificSolutions.Endowment.Application.Models.Identity;
 
-namespace SpecificSolutions.Endowment.Api.Controllers.Authentications
+namespace SpecificSolutions.Endowment.Api.Controllers
 {
     [AllowAnonymous]
     public class AuthController : ApiController
@@ -23,49 +23,22 @@ namespace SpecificSolutions.Endowment.Api.Controllers.Authentications
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<EndowmentResponse<IUserLogin>>> Login([FromBody] LoginCommand command1, CancellationToken cancellationToken)
-        {
-            var command = new LoginCommand
-            {
-                Email = "A@gmail.com",
-                // Email = "employee@gmail.com",
-                Password = "12345678"
-            };
-
-            var userLogin = await _mediator.Send(command, cancellationToken);
-            return userLogin;
-        }
+        public async Task<EndowmentResponse<IUserLogin>> Login(LoginCommand command, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(command, cancellationToken);
 
         [HttpPost("logout")]
-        public async Task<IActionResult> Logout()
+        public async void Logout(CancellationToken cancellationToken = default)
         {
             await _authenticator.LogoutAsync();
-            return NoContent();
         }
-
-        //[HttpPost("register")]
-        //public async Task<ActionResult<RegistrationResponse>> Login(RegistrationRequest request)
-        //{
-        //    return Ok(await _authenticator.Register(request));
-        //}
 
         [HttpPost("register")]
-        public async Task<EndowmentResponse> Login(RegisterCommand command, CancellationToken cancellationToken)
-        {
-            var response = await _mediator.Send(command, cancellationToken);
+        public async Task<EndowmentResponse> Register(RegisterCommand command, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(command, cancellationToken);
 
-            return response;
-        }
-
-        //Add refresh token endpoint
         [HttpPost("refresh-token")]
-        public async Task<EndowmentResponse<RefreshTokenResponse>> RefreshToken(RefreshTokenCommand command, CancellationToken cancellationToken)
-        {
-            var response = await _mediator.Send(command, cancellationToken);
-
-            return response;
-        }
-
+        public async Task<EndowmentResponse<RefreshTokenResponse>> RefreshToken(RefreshTokenCommand command, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(command, cancellationToken);
 
         // [HttpPost("forgot-password")]
         // public async Task<ActionResult<ForgotPasswordResponse>> ForgotPassword(ForgotPasswordRequest request)

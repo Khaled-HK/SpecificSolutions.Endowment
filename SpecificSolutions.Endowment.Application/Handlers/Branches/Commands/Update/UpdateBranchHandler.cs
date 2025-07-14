@@ -15,7 +15,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Branches.Commands.Upd
 
         public async Task<EndowmentResponse> Handle(UpdateBranchCommand request, CancellationToken cancellationToken)
         {
-            var branch = await _unitOfWork.Branches.GetByIdAsync(request.Id);
+            var branch = await _unitOfWork.Branches.GetByIdAsync(request.Id, cancellationToken);
             if (branch == null)
                 return Response.FailureResponse("Branch not found.");
 

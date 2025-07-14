@@ -3,14 +3,15 @@ using SpecificSolutions.Endowment.Application.Handlers.DemolitionRequests.Comman
 using SpecificSolutions.Endowment.Application.Handlers.DemolitionRequests.Commands.Delete;
 using SpecificSolutions.Endowment.Application.Handlers.DemolitionRequests.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.DemolitionRequests.Queries.Filter;
+using SpecificSolutions.Endowment.Application.Handlers.DemolitionRequests.Queries.GetDemolitionRequest;
+using SpecificSolutions.Endowment.Application.Handlers.DemolitionRequests.Queries.GetDemolitionRequests;
+using SpecificSolutions.Endowment.Application.Models.DTOs.DemolitionRequests;
 using SpecificSolutions.Endowment.Application.Models.Global;
 
-namespace SpecificSolutions.Endowment.Api.Controllers
+namespace SpecificSolutions.Endowment.Api.Controllers.DemolitionRequests
 {
-    [ApiController]
-    [Route("api/[controller]")]
     [ApiExplorerSettings(IgnoreApi = true)]
-    public class DemolitionRequestController : ControllerBase
+    public class DemolitionRequestController : ApiController
     {
         private readonly IMediator _mediator;
 
@@ -20,37 +21,27 @@ namespace SpecificSolutions.Endowment.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<EndowmentResponse> Create(CreateDemolitionRequestCommand command)
-        {
-            return await _mediator.Send(command);
-        }
-
-        //[HttpGet("{id}")]
-        //public async Task<EndowmentResponse> GetById(Guid id)
-        //{
-        //    var DemolitionRequest = await _mediator.Send(new GetDemolitionRequestByIdQuery { DemolitionRequestID = id });
-        //    if (DemolitionRequest == null) return NotFound();
-        //    return Ok(DemolitionRequest);
-        //}
+        public async Task<EndowmentResponse> Create(CreateDemolitionRequestCommand command, CancellationToken cancellationToken)
+            => await _mediator.Send(command, cancellationToken);
 
         [HttpPut("{id}")]
-        public async Task<EndowmentResponse> Update(Guid Id, UpdateDemolitionRequestCommand command)
-        {
-            return await _mediator.Send(command);
-        }
+        public async Task<EndowmentResponse> Update(Guid id, UpdateDemolitionRequestCommand command, CancellationToken cancellationToken)
+            => await _mediator.Send(command, cancellationToken);
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            await _mediator.Send(new DeleteDemolitionRequestCommand { DemolitionRequestID = id });
-            return NoContent();
-        }
+        public async Task<EndowmentResponse> Delete(Guid id, CancellationToken cancellationToken)
+            => await _mediator.Send(new DeleteDemolitionRequestCommand { DemolitionRequestID = id }, cancellationToken);
+
+        [HttpGet("{id}")]
+        public async Task<EndowmentResponse> GetDemolitionRequestById(Guid id, CancellationToken cancellationToken)
+            => await _mediator.Send(new GetDemolitionRequestQuery(id), cancellationToken);
 
         [HttpGet("filter")]
-        public async Task<IActionResult> Filter([FromQuery] string searchTerm)
-        {
-            var DemolitionRequests = await _mediator.Send(new FilterDemolitionRequestQuery { SearchTerm = searchTerm });
-            return Ok(DemolitionRequests);
-        }
+        public async Task<EndowmentResponse<PagedList<FilterDemolitionRequestDTO>>> Filter([FromQuery] FilterDemolitionRequestQuery query, CancellationToken cancellationToken)
+            => await _mediator.Send(query, cancellationToken);
+
+        [HttpGet("GetDemolitionRequests")]
+        public async Task<EndowmentResponse<IEnumerable<KeyValuPair>>> GetDemolitionRequests([FromQuery] GetDemolitionRequestsQuery query, CancellationToken cancellationToken)
+            => await _mediator.Send(query, cancellationToken);
     }
 }

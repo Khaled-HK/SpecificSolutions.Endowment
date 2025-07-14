@@ -16,7 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.MaintenanceRequests.Q
 
         public async Task<EndowmentResponse<PagedList<MaintenanceRequestDTO>>> Handle(FilterMaintenanceRequestQuery request, CancellationToken cancellationToken)
         {
-            var maintenanceRequests = await _unitOfWork.MaintenanceRequests.GetAllAsync();
+            var maintenanceRequests = await _unitOfWork.MaintenanceRequests.GetAllAsync(cancellationToken);
             var filteredRequests = maintenanceRequests
                    .Where(mr => mr.Location.Contains(request.SearchTerm))
                    .Select(mr => new MaintenanceRequestDTO

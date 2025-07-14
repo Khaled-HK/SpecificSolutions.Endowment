@@ -3,14 +3,15 @@ using SpecificSolutions.Endowment.Application.Handlers.ChangeOfPathRequests.Comm
 using SpecificSolutions.Endowment.Application.Handlers.ChangeOfPathRequests.Commands.Delete;
 using SpecificSolutions.Endowment.Application.Handlers.ChangeOfPathRequests.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.ChangeOfPathRequests.Queries.Filter;
+using SpecificSolutions.Endowment.Application.Handlers.ChangeOfPathRequests.Queries.GetChangeOfPathRequest;
+using SpecificSolutions.Endowment.Application.Handlers.ChangeOfPathRequests.Queries.GetChangeOfPathRequests;
+using SpecificSolutions.Endowment.Application.Models.DTOs.ChangeOfPathRequests;
 using SpecificSolutions.Endowment.Application.Models.Global;
 
-namespace SpecificSolutions.Endowment.Api.Controllers
+namespace SpecificSolutions.Endowment.Api.Controllers.ChangeOfPathRequests
 {
-    [ApiController]
-    [Route("api/[controller]")]
     [ApiExplorerSettings(IgnoreApi = true)]
-    public class ChangeOfPathRequestController : ControllerBase
+    public class ChangeOfPathRequestController : ApiController
     {
         private readonly IMediator _mediator;
 
@@ -20,39 +21,27 @@ namespace SpecificSolutions.Endowment.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<EndowmentResponse> Create(CreateChangeOfPathRequestCommand command)
-        {
-            return await _mediator.Send(command);
-            //return CreatedAtAction(nameof(GetById), new { id = changeOfPathRequestId }, command);
-        }
-
-        //[HttpGet("{id}")]
-        //public async Task<IActionResult> GetById(Guid id)
-        //{
-        //    var changeOfPathRequest = await _mediator.Send(new GetChangeOfPathRequestByIdQuery { ChangeOfPathRequestID = id });
-        //    if (changeOfPathRequest == null) return NotFound();
-        //    return Ok(changeOfPathRequest);
-        //}
+        public async Task<EndowmentResponse> Create(CreateChangeOfPathRequestCommand command, CancellationToken cancellationToken)
+            => await _mediator.Send(command, cancellationToken);
 
         [HttpPut("{id}")]
-        public async Task<EndowmentResponse> Update(Guid Id, UpdateChangeOfPathRequestCommand command)
-        {
-
-            return await _mediator.Send(command);
-        }
+        public async Task<EndowmentResponse> Update(Guid id, UpdateChangeOfPathRequestCommand command, CancellationToken cancellationToken)
+            => await _mediator.Send(command, cancellationToken);
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            await _mediator.Send(new DeleteChangeOfPathRequestCommand { ChangeOfPathRequestID = id });
-            return NoContent();
-        }
+        public async Task<EndowmentResponse> Delete(Guid id, CancellationToken cancellationToken)
+            => await _mediator.Send(new DeleteChangeOfPathRequestCommand { ChangeOfPathRequestID = id }, cancellationToken);
+
+        [HttpGet("{id}")]
+        public async Task<EndowmentResponse> GetChangeOfPathRequestById(Guid id, CancellationToken cancellationToken)
+            => await _mediator.Send(new GetChangeOfPathRequestQuery(id), cancellationToken);
 
         [HttpGet("filter")]
-        public async Task<IActionResult> Filter([FromQuery] string searchTerm)
-        {
-            var changeOfPathRequests = await _mediator.Send(new FilterChangeOfPathRequestQuery { SearchTerm = searchTerm });
-            return Ok(changeOfPathRequests);
-        }
+        public async Task<EndowmentResponse<PagedList<ChangeOfPathRequestDTO>>> Filter([FromQuery] FilterChangeOfPathRequestQuery query, CancellationToken cancellationToken)
+            => await _mediator.Send(query, cancellationToken);
+
+        [HttpGet("GetChangeOfPathRequests")]
+        public async Task<EndowmentResponse<IEnumerable<KeyValuPair>>> GetChangeOfPathRequests([FromQuery] GetChangeOfPathRequestsQuery query, CancellationToken cancellationToken)
+            => await _mediator.Send(query, cancellationToken);
     }
 }

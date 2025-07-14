@@ -7,9 +7,9 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
 {
     public interface IBankRepository
     {
-        Task<Bank> GetByIdAsync(Guid Id);
-        Task<IEnumerable<Bank>> GetAllAsync();
-        Task AddAsync(Bank bank);
+        Task<Bank> GetByIdAsync(Guid Id, CancellationToken cancellationToken = default);
+        Task<IEnumerable<Bank>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task AddAsync(Bank bank, CancellationToken cancellationToken);
         Task UpdateAsync(Bank bank);
         Task DeleteAsync(Guid Id);
         Task<PagedList<BankDTO>> GetByFilterAsync(FilterBankQuery query, CancellationToken cancellationToken);

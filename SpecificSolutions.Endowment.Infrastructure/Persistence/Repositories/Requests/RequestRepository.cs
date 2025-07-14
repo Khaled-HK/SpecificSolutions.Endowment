@@ -14,9 +14,9 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Re
             _context = context;
         }
 
-        public async Task<Request> GetByIdAsync(Guid id)
+        public async Task<Request> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            return await _context.Requests.FindAsync(id);
+            return await _context.Requests.FindAsync(id, cancellationToken);
         }
 
         public async Task<bool> ReferenceNumberExists(string referenceNumber)
@@ -29,9 +29,10 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Re
             _context.Requests.Update(request);
         }
 
-        public async Task AddAsync(Request request)
+        public async Task AddAsync(Request request, CancellationToken cancellationToken)
         {
-            await _context.Requests.AddAsync(request);
+            await _context.Requests.AddAsync(request, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task<PagedList<FilterRequestDTO>> GetByFilterAsync(FilterRequestQuery query, CancellationToken cancellationToken)

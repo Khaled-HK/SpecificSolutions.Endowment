@@ -16,7 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.EndowmentExpenditureC
 
         public async Task<EndowmentResponse<PagedList<ExpenditureChangeRequestDTO>>> Handle(FilterExpenditureChangeRequestQuery request, CancellationToken cancellationToken)
         {
-            var expenditureChangeRequests = await _unitOfWork.ExpenditureChangeRequests.GetAllAsync();
+            var expenditureChangeRequests = await _unitOfWork.ExpenditureChangeRequests.GetAllAsync(cancellationToken);
             var filteredRequests = expenditureChangeRequests
                 .Where(ecr => ecr.Reason.Contains(request.SearchTerm))
                 .Select(ecr => new ExpenditureChangeRequestDTO

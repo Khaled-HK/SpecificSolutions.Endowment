@@ -15,7 +15,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Buildings.Commands.Up
 
         public async Task<EndowmentResponse> Handle(UpdateBuildingCommand request, CancellationToken cancellationToken)
         {
-            var building = await _unitOfWork.Buildings.FindAsync(request.Id);
+            var building = await _unitOfWork.Buildings.FindAsync(request.Id, cancellationToken);
 
             if (building == null)
                 return Response.FailureResponse("Id", "Building not found.");

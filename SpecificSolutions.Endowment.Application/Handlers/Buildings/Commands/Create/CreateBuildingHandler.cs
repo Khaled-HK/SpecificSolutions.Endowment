@@ -18,7 +18,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Buildings.Commands.Cr
         {
             var building = Building.Create(request);
 
-            await _unitOfWork.Buildings.AddAsync(building);
+            await _unitOfWork.Buildings.AddAsync(building, cancellationToken);
 
             await _unitOfWork.CompleteAsync(cancellationToken);
 

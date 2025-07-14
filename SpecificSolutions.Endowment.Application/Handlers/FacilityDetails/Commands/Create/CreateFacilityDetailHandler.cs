@@ -18,7 +18,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.FacilityDetails.Comma
         {
             var facilityDetail = FacilityDetail.Create(request);
 
-            await _unitOfWork.FacilityDetails.AddAsync(facilityDetail);
+            await _unitOfWork.FacilityDetails.AddAsync(facilityDetail, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Added();

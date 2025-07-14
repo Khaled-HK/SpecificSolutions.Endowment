@@ -7,9 +7,9 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
 {
     public interface IFacilityDetailRepository : IRepository<FacilityDetail>
     {
-        Task<FacilityDetail> GetByIdAsync(Guid id);
-        Task<IEnumerable<FacilityDetail>> GetAllAsync();
-        Task AddAsync(FacilityDetail FacilityDetail);
+        Task<FacilityDetail> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+        Task<IEnumerable<FacilityDetail>> GetAllAsync(CancellationToken cancellationToken);
+        Task AddAsync(FacilityDetail FacilityDetail, CancellationToken cancellationToken);
         Task UpdateAsync(FacilityDetail FacilityDetail);
         Task DeleteAsync(Guid id);
         Task<PagedList<FacilityDetailDTO>> GetByFilterAsync(FilterFacilityDetailQuery query, CancellationToken cancellationToken);

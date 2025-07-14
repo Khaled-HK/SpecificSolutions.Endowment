@@ -15,7 +15,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Up
 
         public async Task<EndowmentResponse> Handle(UpdateDecisionCommand command, CancellationToken cancellationToken)
         {
-            var decision = await _unitOfWork.Decisions.GetByIdAsync(command.Id);
+            var decision = await _unitOfWork.Decisions.GetByIdAsync(command.Id, cancellationToken);
             if (decision == null)
             {
                 return Response.FailureResponse("Id", "Decision not found.");

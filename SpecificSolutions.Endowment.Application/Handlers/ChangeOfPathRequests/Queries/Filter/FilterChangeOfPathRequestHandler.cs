@@ -16,7 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.ChangeOfPathRequests.
 
         public async Task<EndowmentResponse<PagedList<ChangeOfPathRequestDTO>>> Handle(FilterChangeOfPathRequestQuery request, CancellationToken cancellationToken)
         {
-            var changeOfPathRequests = await _unitOfWork.ChangeOfPathRequests.GetAllAsync();
+            var changeOfPathRequests = await _unitOfWork.ChangeOfPathRequests.GetAllAsync(cancellationToken);
             var filteredRequests = changeOfPathRequests
                 .Where(cpr => cpr.CurrentType.Contains(request.SearchTerm) || cpr.NewType.Contains(request.SearchTerm))
                 .Select(cpr => new ChangeOfPathRequestDTO

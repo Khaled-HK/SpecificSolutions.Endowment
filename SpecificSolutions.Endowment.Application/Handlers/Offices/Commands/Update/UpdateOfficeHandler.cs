@@ -15,7 +15,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Offices.Commands.Upda
 
         public async Task<EndowmentResponse> Handle(UpdateOfficeCommand request, CancellationToken cancellationToken)
         {
-            var office = await _unitOfWork.Offices.GetByIdAsync(request.Id);
+            var office = await _unitOfWork.Offices.GetByIdAsync(request.Id, cancellationToken);
             if (office == null)
             {
                 throw new OfficeNotFoundException(request.Id);

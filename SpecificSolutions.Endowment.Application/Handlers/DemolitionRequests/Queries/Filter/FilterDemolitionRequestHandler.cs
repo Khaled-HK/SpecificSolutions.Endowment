@@ -16,7 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.DemolitionRequests.Qu
 
         public async Task<EndowmentResponse<PagedList<FilterDemolitionRequestDTO>>> Handle(FilterDemolitionRequestQuery request, CancellationToken cancellationToken)
         {
-            var DemolitionRequests = await _unitOfWork.DemolitionRequests.GetAllAsync();
+            var DemolitionRequests = await _unitOfWork.DemolitionRequests.GetAllAsync(cancellationToken);
             var filteDemolitionRequests = DemolitionRequests
                 .Where(drr => drr.ContractorName.Contains(request.SearchTerm))
                 .Select(drr => new FilterDemolitionRequestDTO

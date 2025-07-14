@@ -53,20 +53,20 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Mo
             return await PagedList<MosqueDTO>.CreateAsync(accountDTOs, query.PageNumber, query.PageSize, cancellationToken);
         }
 
-        public async Task<Mosque> GetByIdAsync(Guid id)
+        public async Task<Mosque> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return await _context.Mosques.FindAsync(id);
+            return await _context.Mosques.FindAsync(id, cancellationToken);
         }
 
-        public async Task<IEnumerable<Mosque>> GetAllAsync()
+        public async Task<IEnumerable<Mosque>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return await _context.Mosques.ToListAsync();
+            return await _context.Mosques.ToListAsync(cancellationToken);
         }
 
-        public async Task AddAsync(Mosque mosque)
+        public async Task AddAsync(Mosque mosque, CancellationToken cancellationToken)
         {
-            await _context.Mosques.AddAsync(mosque);
-            await _context.SaveChangesAsync();
+            await _context.Mosques.AddAsync(mosque, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task UpdateAsync(Mosque mosque)

@@ -3,7 +3,8 @@ using SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Create
 using SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Delete;
 using SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.Decisions.Queries.Filter;
-using SpecificSolutions.Endowment.Application.Models.DTOs.Decisions;
+using SpecificSolutions.Endowment.Application.Handlers.Decisions.Queries.GetById;
+using SpecificSolutions.Endowment.Application.Handlers.Decisions.Queries.GetDecisions;
 using SpecificSolutions.Endowment.Application.Models.Global;
 
 namespace SpecificSolutions.Endowment.Api.Controllers.Decisions
@@ -19,52 +20,27 @@ namespace SpecificSolutions.Endowment.Api.Controllers.Decisions
         }
 
         [HttpPost]
-        public async Task<ActionResult<EndowmentResponse>> CreateDecision([FromBody] CreateDecisionCommand command)
-        {
-            if (command == null)
-            {
-                return BadRequest("Invalid request data.");
-            }
+        public async Task<EndowmentResponse> Create(CreateDecisionCommand command, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(command, cancellationToken);
 
-            var response = await _mediator.Send(command);
-            return CreatedAtAction(nameof(CreateDecision), response);
-        }
+        [HttpGet("{id}")]
+        public async Task<EndowmentResponse> GetById(Guid id, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(new GetDecisionByIdQuery(id), cancellationToken);
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<EndowmentResponse>> UpdateDecision(Guid id, [FromBody] UpdateDecisionCommand command)
-        {
-            if (command == null || id != command.Id)
-            {
-                return BadRequest("Invalid request data.");
-            }
-
-            var response = await _mediator.Send(command);
-            if (!response.IsSuccess)
-            {
-                return NotFound("Decision not found.");
-            }
-
-            return NoContent();
-        }
+        public async Task<EndowmentResponse> Update(Guid id, UpdateDecisionCommand command, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(command, cancellationToken);
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<EndowmentResponse>> DeleteDecision(Guid id)
-        {
-            var command = new DeleteDecisionCommand(id);
-            var response = await _mediator.Send(command);
-            if (!response.IsSuccess)
-            {
-                return NotFound("Decision not found.");
-            }
-
-            return NoContent();
-        }
+        public async Task<EndowmentResponse> Delete(Guid id, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(new DeleteDecisionCommand(id), cancellationToken);
 
         [HttpGet("filter")]
-        public async Task<ActionResult<EndowmentResponse<PagedList<FilterDecisionDTO>>>> FilterDecisions([FromQuery] FilterDecisionQuery query)
-        {
-            var response = await _mediator.Send(query);
-            return Ok(response);
-        }
+        public async Task<EndowmentResponse> Filter([FromQuery] string searchTerm, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(new FilterDecisionQuery { Title = searchTerm }, cancellationToken);
+
+        [HttpGet("entities")]
+        public async Task<EndowmentResponse> GetEntities(CancellationToken cancellationToken = default) =>
+            await _mediator.Send(new GetDecisionsQuery(), cancellationToken);
     }
 }

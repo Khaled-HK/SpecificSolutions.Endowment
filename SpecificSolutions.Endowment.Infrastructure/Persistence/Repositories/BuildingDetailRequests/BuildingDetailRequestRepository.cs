@@ -15,20 +15,20 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Bu
             _context = context;
         }
 
-        public async Task<BuildingDetailRequest> GetByIdAsync(Guid id)
+        public async Task<BuildingDetailRequest> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return await _context.BuildingDetailRequests.FindAsync(id);
+            return await _context.BuildingDetailRequests.FindAsync(id, cancellationToken);
         }
 
-        public async Task<IEnumerable<BuildingDetailRequest>> GetAllAsync()
+        public async Task<IEnumerable<BuildingDetailRequest>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            return await _context.BuildingDetailRequests.ToListAsync();
+            return await _context.BuildingDetailRequests.ToListAsync(cancellationToken);
         }
 
-        public async Task AddAsync(BuildingDetailRequest request)
+        public async Task AddAsync(BuildingDetailRequest request, CancellationToken cancellationToken)
         {
-            await _context.BuildingDetailRequests.AddAsync(request);
-            await _context.SaveChangesAsync();
+            await _context.BuildingDetailRequests.AddAsync(request, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task UpdateAsync(BuildingDetailRequest request)

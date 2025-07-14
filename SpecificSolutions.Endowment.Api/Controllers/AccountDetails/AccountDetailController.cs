@@ -1,7 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using SpecificSolutions.Endowment.Application.Handlers.AccountDetails.Commands.Create;
 using SpecificSolutions.Endowment.Application.Handlers.AccountDetails.Commands.Delete;
 using SpecificSolutions.Endowment.Application.Handlers.AccountDetails.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.AccountDetails.Queries.Filter;
+using SpecificSolutions.Endowment.Application.Handlers.AccountDetails.Queries.GetAccountDetail;
+using SpecificSolutions.Endowment.Application.Handlers.AccountDetails.Queries.GetAccountDetails;
+using SpecificSolutions.Endowment.Application.Models.DTOs.AccountDetails;
+using SpecificSolutions.Endowment.Application.Models.Global;
 
 namespace SpecificSolutions.Endowment.Api.Controllers.AccountDetails
 {
@@ -15,66 +20,28 @@ namespace SpecificSolutions.Endowment.Api.Controllers.AccountDetails
             _mediator = mediator;
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> CreateAccountDetail([FromBody] CreateAccountDetailCommand command)
-        //{
-        //    var response = await _mediator.Send(command);
-        //    if (response.IsSuccess)
-        //    {
-        //        return CreatedAtAction(nameof(GetAccountDetailById), new { id = response.IsSuccess }, response);
-        //    }
-        //    return BadRequest(response);
-        //}
+        [HttpPost]
+        public async Task<EndowmentResponse> Create(CreateAccountDetailCommand command, CancellationToken cancellationToken)
+            => await _mediator.Send(command, cancellationToken);
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAccountDetail(Guid id, [FromBody] UpdateAccountDetailCommand command)
-        {
-            if (id != command.Id)
-            {
-                return BadRequest("ID mismatch");
-            }
-
-            var response = await _mediator.Send(command);
-            if (response.IsSuccess)
-            {
-                return NoContent();
-            }
-            return BadRequest(response);
-        }
-
-        //[HttpGet("{id}")]
-        //public async Task<IActionResult> GetAccountDetailById(Guid id)
-        //{
-        //    var query = new GetAccountDetailQuery { Id = id };
-        //    var response = await _mediator.Send(query);
-        //    if (response.IsSuccess)
-        //    {
-        //        return Ok(response.Data);
-        //    }
-        //    return NotFound();
-        //}
-
-        [HttpGet]
-        public async Task<IActionResult> FilterAccountDetails([FromQuery] FilterAccountDetailQuery query)
-        {
-            var response = await _mediator.Send(query);
-            if (response.IsSuccess)
-            {
-                return Ok(response.Data);
-            }
-            return BadRequest(response);
-        }
+        public async Task<EndowmentResponse> Update(Guid id, UpdateAccountDetailCommand command, CancellationToken cancellationToken)
+            => await _mediator.Send(command, cancellationToken);
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAccountDetail(Guid id)
-        {
-            var command = new DeleteAccountDetailCommand(id);
-            var response = await _mediator.Send(command);
-            if (response.IsSuccess)
-            {
-                return NoContent();
-            }
-            return NotFound();
-        }
+        public async Task<EndowmentResponse> Delete(Guid id, CancellationToken cancellationToken)
+            => await _mediator.Send(new DeleteAccountDetailCommand(id), cancellationToken);
+
+        [HttpGet("{id}")]
+        public async Task<EndowmentResponse> GetAccountDetailById(Guid id, CancellationToken cancellationToken)
+            => await _mediator.Send(new GetAccountDetailQuery(id), cancellationToken);
+
+        [HttpGet("filter")]
+        public async Task<EndowmentResponse<PagedList<FilterAccountDetailDTO>>> Filter([FromQuery] FilterAccountDetailQuery query, CancellationToken cancellationToken)
+            => await _mediator.Send(query, cancellationToken);
+
+        [HttpGet("GetAccountDetails")]
+        public async Task<EndowmentResponse<IEnumerable<KeyValuPair>>> GetAccountDetails([FromQuery] GetAccountDetailsQuery query, CancellationToken cancellationToken)
+            => await _mediator.Send(query, cancellationToken);
     }
 }

@@ -17,15 +17,15 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Ne
             return await _context.NeedsRequests.FindAsync(id);
         }
 
-        public async Task<IEnumerable<NeedsRequest>> GetAllAsync()
+        public async Task<IEnumerable<NeedsRequest>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return await _context.NeedsRequests.ToListAsync();
+            return await _context.NeedsRequests.ToListAsync(cancellationToken);
         }
 
-        public async Task AddAsync(NeedsRequest needsRequest)
+        public async Task AddAsync(NeedsRequest needsRequest, CancellationToken cancellationToken)
         {
-            await _context.NeedsRequests.AddAsync(needsRequest);
-            await _context.SaveChangesAsync();
+            await _context.NeedsRequests.AddAsync(needsRequest, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task UpdateAsync(NeedsRequest needsRequest)

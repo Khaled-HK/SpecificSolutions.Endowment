@@ -15,20 +15,20 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Fa
             _context = context;
         }
 
-        public async Task<FacilityDetail> GetByIdAsync(Guid id)
+        public async Task<FacilityDetail> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return await _context.FacilityDetails.FindAsync(id);
+            return await _context.FacilityDetails.FindAsync(id, cancellationToken);
         }
 
-        public async Task<IEnumerable<FacilityDetail>> GetAllAsync()
+        public async Task<IEnumerable<FacilityDetail>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return await _context.FacilityDetails.ToListAsync();
+            return await _context.FacilityDetails.ToListAsync(cancellationToken);
         }
 
-        public async Task AddAsync(FacilityDetail FacilityDetail)
+        public async Task AddAsync(FacilityDetail FacilityDetail, CancellationToken cancellationToken)
         {
-            await _context.FacilityDetails.AddAsync(FacilityDetail);
-            await _context.SaveChangesAsync();
+            await _context.FacilityDetails.AddAsync(FacilityDetail, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task UpdateAsync(FacilityDetail FacilityDetail)
@@ -61,7 +61,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Fa
             var dtos = citiesQuery.Select(c => new FacilityDetailDTO
             {
                 Id = c.Id,
-                Name = c.Name,
+                //Name = c.Name,
             });
 
             return await PagedList<FacilityDetailDTO>.CreateAsync(dtos, query.PageNumber, query.PageSize, cancellationToken);

@@ -15,7 +15,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Banks.Commands.Delete
 
         public async Task<EndowmentResponse> Handle(DeleteBankCommand request, CancellationToken cancellationToken)
         {
-            var bank = await _unitOfWork.Banks.GetByIdAsync(request.Id);
+            var bank = await _unitOfWork.Banks.GetByIdAsync(request.Id, cancellationToken);
             if (bank == null)
                 return Response.FailureResponse("Bank not found.");
 

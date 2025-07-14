@@ -3,14 +3,14 @@ using SpecificSolutions.Endowment.Application.Handlers.MaintenanceRequests.Comma
 using SpecificSolutions.Endowment.Application.Handlers.MaintenanceRequests.Commands.Delete;
 using SpecificSolutions.Endowment.Application.Handlers.MaintenanceRequests.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.MaintenanceRequests.Queries.Filter;
+using SpecificSolutions.Endowment.Application.Handlers.MaintenanceRequests.Queries.GetMaintenanceRequest;
+using SpecificSolutions.Endowment.Application.Handlers.MaintenanceRequests.Queries.GetMaintenanceRequests;
+using SpecificSolutions.Endowment.Application.Models.DTOs.MaintenanceRequests;
 using SpecificSolutions.Endowment.Application.Models.Global;
 
-namespace SpecificSolutions.Endowment.Api.Controllers
+namespace SpecificSolutions.Endowment.Api.Controllers.MaintenanceRequests
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    [ApiExplorerSettings(IgnoreApi = true)]
-    public class MaintenanceRequestController : ControllerBase
+    public class MaintenanceRequestController : ApiController
     {
         private readonly IMediator _mediator;
 
@@ -20,37 +20,27 @@ namespace SpecificSolutions.Endowment.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<EndowmentResponse> Create(CreateMaintenanceRequestCommand command)
-        {
-            return await _mediator.Send(command);
-        }
-
-        //[HttpGet("{id}")]
-        //public async Task<IActionResult> GetById(Guid id)
-        //{
-        //    var maintenanceRequest = await _mediator.Send(new GetMaintenanceRequestByIdQuery { MaintenanceRequestID = id });
-        //    if (maintenanceRequest == null) return NotFound();
-        //    return Ok(maintenanceRequest);
-        //}
+        public async Task<EndowmentResponse> Create(CreateMaintenanceRequestCommand command, CancellationToken cancellationToken)
+            => await _mediator.Send(command, cancellationToken);
 
         [HttpPut("{id}")]
-        public async Task<EndowmentResponse> Update(Guid Id, UpdateMaintenanceRequestCommand command)
-        {
-            return await _mediator.Send(command);
-        }
+        public async Task<EndowmentResponse> Update(Guid id, UpdateMaintenanceRequestCommand command, CancellationToken cancellationToken)
+            => await _mediator.Send(command, cancellationToken);
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            await _mediator.Send(new DeleteMaintenanceRequestCommand { MaintenanceRequestID = id });
-            return NoContent();
-        }
+        public async Task<EndowmentResponse> Delete(Guid id, CancellationToken cancellationToken)
+            => await _mediator.Send(new DeleteMaintenanceRequestCommand { MaintenanceRequestID = id }, cancellationToken);
+
+        [HttpGet("{id}")]
+        public async Task<EndowmentResponse> GetMaintenanceRequestById(Guid id, CancellationToken cancellationToken)
+            => await _mediator.Send(new GetMaintenanceRequestQuery(id), cancellationToken);
 
         [HttpGet("filter")]
-        public async Task<IActionResult> Filter([FromQuery] string searchTerm)
-        {
-            var maintenanceRequests = await _mediator.Send(new FilterMaintenanceRequestQuery { SearchTerm = searchTerm });
-            return Ok(maintenanceRequests);
-        }
+        public async Task<EndowmentResponse<PagedList<MaintenanceRequestDTO>>> Filter([FromQuery] FilterMaintenanceRequestQuery query, CancellationToken cancellationToken)
+            => await _mediator.Send(query, cancellationToken);
+
+        [HttpGet("GetMaintenanceRequests")]
+        public async Task<EndowmentResponse<IEnumerable<KeyValuPair>>> GetMaintenanceRequests([FromQuery] GetMaintenanceRequestsQuery query, CancellationToken cancellationToken)
+            => await _mediator.Send(query, cancellationToken);
     }
 }

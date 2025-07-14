@@ -4,6 +4,8 @@ using SpecificSolutions.Endowment.Application.Handlers.Accounts.Commands.Delete;
 using SpecificSolutions.Endowment.Application.Handlers.Accounts.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.Accounts.Queries.Filter;
 using SpecificSolutions.Endowment.Application.Handlers.Accounts.Queries.GetAccount;
+using SpecificSolutions.Endowment.Application.Handlers.Accounts.Queries.GetAccounts;
+using SpecificSolutions.Endowment.Application.Models.DTOs.Accounts;
 using SpecificSolutions.Endowment.Application.Models.Global;
 
 namespace SpecificSolutions.Endowment.Api.Controllers.Accounts
@@ -19,60 +21,27 @@ namespace SpecificSolutions.Endowment.Api.Controllers.Accounts
         }
 
         [HttpPost]
-        public async Task<EndowmentResponse> CreateAccount([FromBody] CreateAccountCommand command)
-        {
-            return await _mediator.Send(command);
-        }
+        public async Task<EndowmentResponse> Create(CreateAccountCommand command, CancellationToken cancellationToken)
+            => await _mediator.Send(command, cancellationToken);
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAccount(Guid id, [FromBody] UpdateAccountCommand command)
-        {
-            if (command == null || id != command.Id)
-            {
-                return BadRequest("Invalid request data.");
-            }
-
-            var response = await _mediator.Send(command);
-            if (response.IsSuccess)
-            {
-                return NoContent();
-            }
-            return BadRequest(response);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetAccountById(Guid id)
-        {
-            var query = new GetAccountQuery(id);
-            var response = await _mediator.Send(query);
-            if (response.IsSuccess)
-            {
-                return Ok(response.Data);
-            }
-            return NotFound();
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> FilterAccounts([FromQuery] FilterAccountQuery query)
-        {
-            var response = await _mediator.Send(query);
-
-            if (response.IsSuccess)
-                return Ok(response.Data);
-
-            return BadRequest(response);
-        }
+        public async Task<EndowmentResponse> Update(Guid id, UpdateAccountCommand command, CancellationToken cancellationToken)
+            => await _mediator.Send(command, cancellationToken);
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAccount(Guid id)
-        {
-            var command = new DeleteAccountCommand(id);
-            var response = await _mediator.Send(command);
-            if (response.IsSuccess)
-            {
-                return NoContent();
-            }
-            return NotFound();
-        }
+        public async Task<EndowmentResponse> Delete(Guid id, CancellationToken cancellationToken)
+            => await _mediator.Send(new DeleteAccountCommand(id), cancellationToken);
+
+        [HttpGet("{id}")]
+        public async Task<EndowmentResponse> GetAccountById(Guid id, CancellationToken cancellationToken)
+            => await _mediator.Send(new GetAccountQuery(id), cancellationToken);
+
+        [HttpGet("filter")]
+        public async Task<EndowmentResponse<PagedList<FilterAccountDTO>>> Filter([FromQuery] FilterAccountQuery query, CancellationToken cancellationToken)
+            => await _mediator.Send(query, cancellationToken);
+
+        [HttpGet("GetAccounts")]
+        public async Task<EndowmentResponse<IEnumerable<KeyValuPair>>> GetAccounts([FromQuery] GetAccountsQuery query, CancellationToken cancellationToken)
+            => await _mediator.Send(query, cancellationToken);
     }
 }
