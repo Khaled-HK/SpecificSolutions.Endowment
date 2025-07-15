@@ -6,7 +6,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Products.Queries.Filt
 {
     public class FilterProductQuery : IQuery<PagedList<ProductDTO>>
     {
-        public string SearchTerm { get; set; }
+        public string? SearchTerm { get; set; }
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 10;
     }

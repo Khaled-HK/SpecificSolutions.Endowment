@@ -6,7 +6,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.QuranicSchools.Querie
 {
     public class FilterQuranicSchoolQuery : IQuery<PagedList<QuranicSchoolDTO>>
     {
-        public string SearchTerm { get; set; }
+        public string? SearchTerm { get; set; }
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
     }

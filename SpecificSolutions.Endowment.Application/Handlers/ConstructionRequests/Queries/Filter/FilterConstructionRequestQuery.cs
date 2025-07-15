@@ -6,7 +6,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.ConstructionRequests.
 {
     public class FilterConstructionRequestQuery : IQuery<PagedList<ConstructionRequestDTO>>
     {
-        public string SearchTerm { get; set; }
+        public string? SearchTerm { get; set; }
 
         public int PageNumber { get; set; }
         public int PageSize { get; set; }

@@ -6,7 +6,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.MaintenanceRequests.Q
 {
     public class FilterMaintenanceRequestQuery : IQuery<PagedList<MaintenanceRequestDTO>>
     {
-        public string SearchTerm { get; set; }
+        public string? SearchTerm { get; set; }
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
     }

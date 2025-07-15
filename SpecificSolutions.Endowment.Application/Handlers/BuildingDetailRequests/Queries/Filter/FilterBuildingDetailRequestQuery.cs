@@ -6,7 +6,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.BuildingDetailRequest
 {
     public class FilterBuildingDetailRequestQuery : IQuery<PagedList<BuildingDetailRequestDTO>>
     {
-        public string SearchTerm { get; set; }
+        public string? SearchTerm { get; set; }
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 10;
     }

@@ -6,7 +6,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.EndowmentExpenditureC
 {
     public class FilterExpenditureChangeRequestQuery : IQuery<PagedList<ExpenditureChangeRequestDTO>>
     {
-        public string SearchTerm { get; set; }
+        public string? SearchTerm { get; set; }
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
     }

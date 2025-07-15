@@ -6,7 +6,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Branches.Queries.Filt
 {
     public class FilterBranchQuery : IQuery<PagedList<BranchDTO>>
     {
-        public string SearchTerm { get; set; }
+        public string? SearchTerm { get; set; }
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 10;
     }

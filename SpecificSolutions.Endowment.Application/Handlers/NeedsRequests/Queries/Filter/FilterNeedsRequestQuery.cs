@@ -6,7 +6,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.NeedsRequests.Queries
 {
     public class FilterNeedsRequestQuery : IQuery<PagedList<FilterNeedsRequestDTO>>
     {
-        public string SearchTerm { get; set; }
+        public string? SearchTerm { get; set; }
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
     }

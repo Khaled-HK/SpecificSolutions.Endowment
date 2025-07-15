@@ -6,7 +6,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.FacilityDetails.Queri
 {
     public class FilterFacilityDetailQuery : IQuery<PagedList<FacilityDetailDTO>>
     {
-        public string SearchTerm { get; set; }
+        public string? SearchTerm { get; set; }
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 10;
     }

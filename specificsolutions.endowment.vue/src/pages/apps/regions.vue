@@ -61,22 +61,15 @@ const editRegion = ref<Region>({
 // Headers with sticky columns configuration - properly typed
 const headers: DataTableHeader[] = [
   { 
-    title: 'ID', 
-    key: 'key', 
-    sortable: true,
-    sticky: true,
-    width: 100
-  },
-  { 
     title: 'Name', 
-    key: 'value', 
+    key: 'name', 
     sortable: true,
     sticky: true,
     width: 250
   },
   { 
     title: 'Country', 
-    key: 'description', 
+    key: 'country', 
     sortable: true,
     width: 400
   },
@@ -94,14 +87,14 @@ const headers: DataTableHeader[] = [
 const tableOptions = ref({
   page: 1,
   itemsPerPage: 10,
-  sortBy: [{ key: 'key', order: 'asc' as const }],
+  sortBy: [{ key: 'name', order: 'asc' as const }],
 })
 
 const loadRegions = async () => {
   loading.value = true
   try {
     const response = await $api('/Region/filter')
-    regions.value = response.data
+    regions.value = response.data.items || []
   } catch (error) {
     console.error('Error loading regions:', error)
   } finally {
@@ -285,20 +278,10 @@ onMounted(() => {
           hover
           density="compact"
         >
-          <!-- Custom ID column with badge -->
-          <template #item.key="{ item }">
-            <VChip
-              color="primary"
-              variant="tonal"
-              size="small"
-              class="font-weight-bold"
-            >
-              #{{ item.key }}
-            </VChip>
-          </template>
+
 
           <!-- Enhanced Name column -->
-          <template #item.value="{ item }">
+          <template #item.name="{ item }">
             <div class="d-flex align-center">
               <VAvatar
                 color="primary"
@@ -306,29 +289,26 @@ onMounted(() => {
                 size="32"
                 class="me-3"
               >
-                {{ item.value.charAt(0).toUpperCase() }}
+                {{ item.name.charAt(0).toUpperCase() }}
               </VAvatar>
               <div>
                 <div class="text-body-1 font-weight-medium">
-                  {{ item.value }}
-                </div>
-                <div class="text-caption text-medium-emphasis">
-                  الرقم: {{ item.key }}
+                  {{ item.name }}
                 </div>
               </div>
             </div>
           </template>
 
           <!-- Country with truncation -->
-          <template #item.description="{ item }">
+          <template #item.country="{ item }">
             <div class="text-body-2" style="max-width: 350px;">
               <VChip
-                v-if="item.description"
+                v-if="item.country"
                 color="secondary"
                 variant="tonal"
                 size="small"
               >
-                {{ item.description }}
+                {{ item.country }}
               </VChip>
               <span 
                 v-else 

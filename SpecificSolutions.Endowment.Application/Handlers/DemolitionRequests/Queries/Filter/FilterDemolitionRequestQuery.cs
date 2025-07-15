@@ -6,7 +6,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.DemolitionRequests.Qu
 {
     public class FilterDemolitionRequestQuery : IQuery<PagedList<FilterDemolitionRequestDTO>>
     {
-        public string SearchTerm { get; set; }
+        public string? SearchTerm { get; set; }
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
 
