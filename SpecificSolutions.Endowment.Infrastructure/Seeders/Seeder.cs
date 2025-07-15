@@ -96,18 +96,18 @@ public sealed class Seeder
             await _context.SaveChangesAsync();
         }
 
-        if (!await _context.Users.AnyAsync(c => c.Email == "A@gmail.com"))
+        if (!await _context.Users.AnyAsync(c => c.Email == "admin@demo.com"))
         {
             var users = new[]
             {
                 ApplicationUser.Seed(
                     id: new Guid("a3d890d8-01d1-444b-9f62-6336b937e5fc").ToString(),
-                    email: "A@gmail.com",
+                    email: "admin@demo.com",
                     firstName: "Ragid",
                     lastName: "Dev",
                     officeId: new Guid("DDEC6E9E-7628-4623-9A94-4E4EFC02187C"),
-                    userName: "A@gmail.com",
-                    passwordHash: hasher.HashPassword(null, "12345678"),
+                    userName: "admin@demo.com",
+                    passwordHash: hasher.HashPassword(null, "admin"),
                     emailConfirmed: true)
 
             };
@@ -197,16 +197,16 @@ public sealed class Seeder
                     userId: new Guid("a3d890d8-01d1-444b-9f62-6336b937e5fc").ToString(),
                     roleId: new Guid("6cda4a3e-7a57-4b0e-87fe-48ee9c1d3ebb").ToString(),
                     permissions: Permission.Create(
-                        accountView: true, accountAdd: false, accountEdit: false, accountDelete: false,
-                        userView: false, userAdd: false, userEdit: false, userDelete: false,
-                        roleView: false, roleAdd: false, roleEdit: false, roleDelete: false,
-                        decisionView: false, decisionAdd: false, decisionEdit: false, decisionDelete: false,
-                        requestView: true, requestAdd: true, requestEdit: true, requestDelete: false,
-                        officeView: true, officeAdd: false, officeEdit: false, officeDelete: false,
-                        endowmentView: true, endowmentAdd: false, endowmentEdit: false, endowmentDelete: false,
-                        cityView: false, cityAdd: false, cityEdit: false, cityDelete: false,
-                        regionView: true, regionAdd: false, regionEdit: false, regionDelete: false,
-                        buildingView: true, buildingAdd: false, buildingEdit: false, buildingDelete: false
+                        accountView: true, accountAdd: true, accountEdit: true, accountDelete: true,
+                        userView: true, userAdd: true, userEdit: true, userDelete: true,
+                        roleView: true, roleAdd: true, roleEdit: true, roleDelete: true,
+                        decisionView: true, decisionAdd: true, decisionEdit: true, decisionDelete: true,
+                        requestView: true, requestAdd: true, requestEdit: true, requestDelete: true,
+                        officeView: true, officeAdd: true, officeEdit: true, officeDelete: true,
+                        endowmentView: true, endowmentAdd: true, endowmentEdit: true, endowmentDelete: true,
+                        cityView: true, cityAdd: true, cityEdit: true, cityDelete: true,
+                        regionView: true, regionAdd: true, regionEdit: true, regionDelete: true,
+                        buildingView: true, buildingAdd: true, buildingEdit: true, buildingDelete: true
                     )),
                     
                 // Employee Group - Basic permissions (استخدام المستخدم الثالث الموجود)
@@ -214,16 +214,16 @@ public sealed class Seeder
                     userId: new Guid("c2d890d8-01d1-494b-9f62-6336b937e6fe").ToString(),
                     roleId: new Guid("7cda4a3e-7a57-4b0e-87fe-48ee9c1d3ccc").ToString(),
                     permissions: Permission.Create(
-                        accountView: true, accountAdd: false, accountEdit: false, accountDelete: false,
-                        userView: false, userAdd: false, userEdit: false, userDelete: false,
-                        roleView: false, roleAdd: false, roleEdit: false, roleDelete: false,
-                        decisionView: false, decisionAdd: false, decisionEdit: false, decisionDelete: false,
-                        requestView: true, requestAdd: false, requestEdit: false, requestDelete: false,
-                        officeView: true, officeAdd: false, officeEdit: false, officeDelete: false,
-                        endowmentView: true, endowmentAdd: false, endowmentEdit: false, endowmentDelete: false,
-                        cityView: true, cityAdd: false, cityEdit: false, cityDelete: false,
-                        regionView: false, regionAdd: false, regionEdit: false, regionDelete: false,
-                        buildingView: true, buildingAdd: false, buildingEdit: false, buildingDelete: false
+                        accountView: true, accountAdd: true, accountEdit: true, accountDelete: true,
+                        userView: true, userAdd: true, userEdit: true, userDelete: true,
+                        roleView: true, roleAdd: true, roleEdit: true, roleDelete: true,
+                        decisionView: true, decisionAdd: true, decisionEdit: true, decisionDelete: true,
+                        requestView: true, requestAdd: true, requestEdit: true, requestDelete: true,
+                        officeView: true, officeAdd: true, officeEdit: true, officeDelete: true,
+                        endowmentView: true, endowmentAdd: true, endowmentEdit: true, endowmentDelete: true,
+                        cityView: true, cityAdd: true, cityEdit: true, cityDelete: true,
+                        regionView: true, regionAdd: true, regionEdit: true, regionDelete: true,
+                        buildingView: true, buildingAdd: true, buildingEdit: true, buildingDelete: true
                     ))
             };
             await _context.ApplicationUserRole.AddRangeAsync(userRoles);
