@@ -20,11 +20,10 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Branches.Queries.Filt
 
             if (!requests.Items.Any())
             {
-                return new EndowmentResponse<PagedList<BranchDTO>>(
-                    PagedList<BranchDTO>.Empty());
+                return Response.FilterResponse(PagedList<BranchDTO>.Empty());
             }
 
-            return new EndowmentResponse<PagedList<BranchDTO>>(requests);
+            return Response.FilterResponse(requests);
         }
     }
 }

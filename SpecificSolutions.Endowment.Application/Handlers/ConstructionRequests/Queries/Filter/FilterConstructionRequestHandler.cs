@@ -30,7 +30,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.ConstructionRequests.
 
             var pagedList = await PagedList<ConstructionRequestDTO>.CreateAsync(filteredRequests.AsQueryable(), request.PageNumber, request.PageSize, cancellationToken);
 
-            return new EndowmentResponse<PagedList<ConstructionRequestDTO>>(pagedList);
+            return Response.FilterResponse(pagedList);
         }
     }
 }

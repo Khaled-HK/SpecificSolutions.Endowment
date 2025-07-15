@@ -16,9 +16,13 @@ namespace SpecificSolutions.Endowment.Application.Handlers.AccountDetails.Querie
 
         public async Task<EndowmentResponse<PagedList<FilterAccountDetailDTO>>> Handle(FilterAccountDetailQuery query, CancellationToken cancellationToken)
         {
-            var accountDetails = await _accountDetailRepository.GetByFilterAsync(query, cancellationToken);
+            var requests = await _accountDetailRepository.GetByFilterAsync(query, cancellationToken);
 
-            return new EndowmentResponse<PagedList<FilterAccountDetailDTO>>(accountDetails);
+            if (!requests.Items.Any())
+            {
+                return Response.FilterResponse(PagedList<FilterAccountDetailDTO>.Empty());
+            }
+            return Response.FilterResponse(requests);
         }
     }
 }

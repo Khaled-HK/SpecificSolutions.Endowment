@@ -18,7 +18,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Offices.Queries.Filte
         {
             var pagedList = await _unitOfWork.Offices.GetByFilterAsync(query, cancellationToken);
 
-            return new EndowmentResponse<PagedList<FilterOfficeDTO>>(pagedList);
+            return Response.FilterResponse(pagedList);
         }
     }
 }

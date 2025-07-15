@@ -20,11 +20,10 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Regions.Queries.Filte
 
             if (!requests.Items.Any())
             {
-                return new EndowmentResponse<PagedList<FilterRegionDTO>>(
-                    PagedList<FilterRegionDTO>.Empty());
+                return Response.FilterResponse(PagedList<FilterRegionDTO>.Empty());
             }
 
-            return new EndowmentResponse<PagedList<FilterRegionDTO>>(requests);
+            return Response.FilterResponse(requests);
         }
     }
 }

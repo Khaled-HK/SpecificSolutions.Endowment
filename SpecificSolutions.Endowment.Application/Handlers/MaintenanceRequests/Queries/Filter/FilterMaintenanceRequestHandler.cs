@@ -31,7 +31,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.MaintenanceRequests.Q
 
             var pagedList = await PagedList<MaintenanceRequestDTO>.CreateAsync(filteredRequests.AsQueryable(), request.PageNumber, request.PageSize, cancellationToken);
 
-            return new EndowmentResponse<PagedList<MaintenanceRequestDTO>>(data: pagedList);
+            return Response.FilterResponse(pagedList);
 
         }
     }

@@ -21,11 +21,10 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Accounts.Queries.Filt
 
             if (!requests.Items.Any())
             {
-                return new EndowmentResponse<PagedList<FilterAccountDTO>>(
-                     PagedList<FilterAccountDTO>.Empty());
+                return Response.FilterResponse(PagedList<FilterAccountDTO>.Empty());
             }
 
-            return new EndowmentResponse<PagedList<FilterAccountDTO>>(data: requests);
+            return Response.FilterResponse(requests);
         }
     }
 }

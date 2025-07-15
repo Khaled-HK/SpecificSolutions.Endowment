@@ -31,7 +31,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Facilities.Queries.Fi
 
             var pagedList = await PagedList<FacilityDTO>.CreateAsync(filteredFacilities.AsQueryable(), request.PageNumber, request.PageSize, cancellationToken);
 
-            return new EndowmentResponse<PagedList<FacilityDTO>>(pagedList);
+            return Response.FilterResponse(pagedList);
         }
     }
 }

@@ -10,7 +10,6 @@ using SpecificSolutions.Endowment.Application.Models.Global;
 
 namespace SpecificSolutions.Endowment.Api.Controllers.Accounts
 {
-    [ApiExplorerSettings(IgnoreApi = true)]
     public class AccountController : ApiController
     {
         private readonly IMediator _mediator;

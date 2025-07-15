@@ -29,7 +29,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.NameChangeRequests.Qu
 
             var pagedList = await PagedList<NameChangeRequestDTO>.CreateAsync(filteredRequests.AsQueryable(), request.PageNumber, request.PageSize, cancellationToken);
 
-            return new EndowmentResponse<PagedList<NameChangeRequestDTO>>(pagedList);
+            return Response.FilterResponse(pagedList);
         }
     }
 }

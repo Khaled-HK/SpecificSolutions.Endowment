@@ -25,7 +25,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.NeedsRequests.Queries
                 });
 
             var pagedList = await PagedList<FilterNeedsRequestDTO>.CreateAsync(filteredRequests.AsQueryable(), request.PageNumber, request.PageSize, cancellationToken);
-            return new EndowmentResponse<PagedList<FilterNeedsRequestDTO>>(pagedList);
+            return Response.FilterResponse(pagedList);
         }
     }
 }

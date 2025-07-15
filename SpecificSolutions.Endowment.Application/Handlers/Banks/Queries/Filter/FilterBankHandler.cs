@@ -20,11 +20,10 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Banks.Queries.Filter
 
             if (!requests.Items.Any())
             {
-                return new EndowmentResponse<PagedList<BankDTO>>(
-                    PagedList<BankDTO>.Empty());
+                return Response.FilterResponse(PagedList<BankDTO>.Empty());
             }
 
-            return new EndowmentResponse<PagedList<BankDTO>>(requests);
+            return Response.FilterResponse(requests);
         }
     }
 }

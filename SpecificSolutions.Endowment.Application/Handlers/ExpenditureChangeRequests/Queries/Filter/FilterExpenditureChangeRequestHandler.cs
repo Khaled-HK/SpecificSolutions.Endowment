@@ -27,7 +27,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.EndowmentExpenditureC
 
             var pagedList = await PagedList<ExpenditureChangeRequestDTO>.CreateAsync(filteredRequests.AsQueryable(), request.PageNumber, request.PageSize, cancellationToken);
 
-            return new EndowmentResponse<PagedList<ExpenditureChangeRequestDTO>>(pagedList);
+            return Response.FilterResponse(pagedList);
         }
     }
 }

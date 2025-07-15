@@ -27,7 +27,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.DemolitionRequests.Qu
 
             var pagedList = await PagedList<FilterDemolitionRequestDTO>.CreateAsync(filteDemolitionRequests.AsQueryable(), request.PageNumber, request.PageSize, cancellationToken);
 
-            return new EndowmentResponse<PagedList<FilterDemolitionRequestDTO>>(pagedList);
+            return Response.FilterResponse(pagedList);
         }
     }
 }

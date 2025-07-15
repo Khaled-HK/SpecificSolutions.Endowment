@@ -20,11 +20,10 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Products.Queries.Filt
 
             if (!requests.Items.Any())
             {
-                return new EndowmentResponse<PagedList<ProductDTO>>(
-                    PagedList<ProductDTO>.Empty());
+                return Response.FilterResponse(PagedList<ProductDTO>.Empty());
             }
 
-            return new EndowmentResponse<PagedList<ProductDTO>>(requests);
+            return Response.FilterResponse(requests);
         }
     }
 }

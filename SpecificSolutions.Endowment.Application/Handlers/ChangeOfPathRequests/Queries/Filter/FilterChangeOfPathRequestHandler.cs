@@ -29,7 +29,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.ChangeOfPathRequests.
 
             var pagedList = await PagedList<ChangeOfPathRequestDTO>.CreateAsync(filteredRequests.AsQueryable(), request.PageNumber, request.PageSize, cancellationToken);
 
-            return new EndowmentResponse<PagedList<ChangeOfPathRequestDTO>>(pagedList);
+            return Response.FilterResponse(pagedList);
         }
     }
 }

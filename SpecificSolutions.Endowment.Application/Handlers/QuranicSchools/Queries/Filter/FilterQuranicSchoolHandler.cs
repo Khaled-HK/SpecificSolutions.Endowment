@@ -28,7 +28,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.QuranicSchools.Querie
 
             var pagedList = await PagedList<QuranicSchoolDTO>.CreateAsync(filteredQuranicSchools.AsQueryable(), request.PageNumber, request.PageSize, cancellationToken);
 
-            return new EndowmentResponse<PagedList<QuranicSchoolDTO>>(pagedList);
+            return Response.FilterResponse(pagedList);
 
         }
     }

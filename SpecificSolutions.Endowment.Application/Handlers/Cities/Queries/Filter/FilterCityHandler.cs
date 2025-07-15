@@ -20,11 +20,10 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Cities.Queries.Filter
 
             if (!requests.Items.Any())
             {
-                return new EndowmentResponse<PagedList<CityDTO>>(
-                    PagedList<CityDTO>.Empty());
+                return Response.FilterResponse(PagedList<CityDTO>.Empty());
             }
 
-            return new EndowmentResponse<PagedList<CityDTO>>(requests);
+            return Response.FilterResponse(requests);
         }
     }
 }

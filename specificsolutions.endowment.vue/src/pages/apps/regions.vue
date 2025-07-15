@@ -100,7 +100,7 @@ const tableOptions = ref({
 const loadRegions = async () => {
   loading.value = true
   try {
-    const response = await $api('/Region/GetRegions')
+    const response = await $api('/Region/filter')
     regions.value = response.data
   } catch (error) {
     console.error('Error loading regions:', error)

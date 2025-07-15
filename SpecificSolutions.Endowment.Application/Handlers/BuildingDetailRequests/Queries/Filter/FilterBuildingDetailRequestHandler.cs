@@ -20,11 +20,10 @@ namespace SpecificSolutions.Endowment.Application.Handlers.BuildingDetailRequest
 
             if (!requests.Items.Any())
             {
-                return new EndowmentResponse<PagedList<BuildingDetailRequestDTO>>(
-                    PagedList<BuildingDetailRequestDTO>.Empty());
+                return Response.FilterResponse(PagedList<BuildingDetailRequestDTO>.Empty());
             }
 
-            return new EndowmentResponse<PagedList<BuildingDetailRequestDTO>>(requests);
+            return Response.FilterResponse(requests);
         }
     }
 }
