@@ -7,5 +7,6 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Regions.Commands.Upda
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Country { get; set; }
+        public Guid CityId { get; set; }
     }
 }

@@ -9,11 +9,13 @@ interface Region {
   name: string
   description: string
   country?: string
+  cityId?: string
 }
 
 interface NewRegion {
   name: string
   country: string
+  cityId: string
 }
 
 // Define header interface for proper typing
@@ -48,6 +50,7 @@ const search = ref('')
 const newRegion = ref<NewRegion>({
   name: '',
   country: '',
+  cityId: '',
 })
 
 const editRegion = ref<Region>({
@@ -56,6 +59,7 @@ const editRegion = ref<Region>({
   value: '',
   name: '',
   description: '',
+  cityId: '',
 })
 
 // Headers with sticky columns configuration - properly typed
@@ -125,6 +129,7 @@ const addRegion = async () => {
       body: {
         name: newRegion.value.name,
         country: newRegion.value.country,
+        cityId: newRegion.value.cityId,
       },
     })
     dialog.value = false
@@ -143,6 +148,7 @@ const updateRegion = async () => {
         id: editRegion.value.id,
         name: editRegion.value.name,
         country: editRegion.value.country || editRegion.value.description,
+        cityId: editRegion.value.cityId,
       },
     })
     editDialog.value = false
@@ -198,6 +204,7 @@ const resetNewRegion = () => {
   newRegion.value = {
     name: '',
     country: '',
+    cityId: '',
   }
 }
 
@@ -427,6 +434,24 @@ onMounted(() => {
               </VCol>
               <VCol cols="12">
                 <VAutocomplete
+                  v-model="newRegion.cityId"
+                  label="المدينة"
+                  variant="outlined"
+                  :items="cities"
+                  item-title="name"
+                  item-value="id"
+                  :loading="citiesLoading"
+                  clearable
+                  no-data-text="لا توجد مدن متاحة"
+                  required
+                  :rules="[v => !!v || 'المدينة مطلوبة']"
+                  prepend-inner-icon="mdi-city"
+                  placeholder="اختر المدينة..."
+                  hide-no-data
+                />
+              </VCol>
+              <VCol cols="12">
+                <VAutocomplete
                   v-model="newRegion.country"
                   label="الدولة"
                   variant="outlined"
@@ -482,6 +507,24 @@ onMounted(() => {
                   variant="outlined"
                   required
                   :rules="[v => !!v || 'اسم المنطقة مطلوب']"
+                />
+              </VCol>
+              <VCol cols="12">
+                <VAutocomplete
+                  v-model="editRegion.cityId"
+                  label="المدينة"
+                  variant="outlined"
+                  :items="cities"
+                  item-title="name"
+                  item-value="id"
+                  :loading="citiesLoading"
+                  clearable
+                  no-data-text="لا توجد مدن متاحة"
+                  required
+                  :rules="[v => !!v || 'المدينة مطلوبة']"
+                  prepend-inner-icon="mdi-city"
+                  placeholder="اختر المدينة..."
+                  hide-no-data
                 />
               </VCol>
               <VCol cols="12">

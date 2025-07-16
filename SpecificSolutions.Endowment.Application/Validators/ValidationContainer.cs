@@ -7,6 +7,7 @@ using SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Update
 using SpecificSolutions.Endowment.Application.Handlers.Offices.Commands.Create;
 using SpecificSolutions.Endowment.Application.Handlers.Offices.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.Regions.Commands.Create;
+using SpecificSolutions.Endowment.Application.Handlers.Regions.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Create;
 using SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Update;
 using SpecificSolutions.Endowment.Application.Validators.Authentications;
@@ -29,6 +30,7 @@ namespace SpecificSolutions.Endowment.Application.Validators
             services.AddTransient<IValidator<CreateDecisionCommand>, CreateDecisionCommandValidator>();
             services.AddTransient<IValidator<UpdateDecisionCommand>, UpdateDecisionCommandValidator>();
             services.AddTransient<IValidator<CreateRegionCommand>, CreateRegionCommandValidator>();
+            services.AddTransient<IValidator<UpdateRegionCommand>, UpdateRegionCommandValidator>();
             services.AddTransient<IValidator<CreateRequestCommand>, CreateRequestCommandValidator>();
             services.AddTransient<IValidator<UpdateRequestCommand>, UpdateRequestCommandValidator>();
 

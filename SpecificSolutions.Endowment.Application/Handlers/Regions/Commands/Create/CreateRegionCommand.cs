@@ -6,6 +6,6 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Regions.Commands.Crea
     {
         public string Name { get; set; }
         public string Country { get; set; }
-        public Guid CityId { get; internal set; }
+        public Guid CityId { get; set; }
     }
 }
