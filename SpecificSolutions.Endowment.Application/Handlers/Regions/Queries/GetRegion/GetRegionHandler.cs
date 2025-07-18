@@ -28,6 +28,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Regions.Queries.GetRe
                 Id = region.Id,
                 Name = region.Name,
                 Country = region.Country,
+                CityId = region.CityId,
             };
 
             return new(data: regionDTO);

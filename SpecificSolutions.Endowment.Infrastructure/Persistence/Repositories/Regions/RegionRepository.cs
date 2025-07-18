@@ -63,7 +63,8 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Re
             {
                 Id = r.Id,
                 Name = r.Name,
-                Country = r.Country
+                Country = r.Country,
+                CityId = r.CityId
             });
 
             return await PagedList<FilterRegionDTO>.CreateAsync(dtos, query.PageNumber, query.PageSize, cancellationToken);
