@@ -13,5 +13,6 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
         Task UpdateAsync(City city);
         Task DeleteAsync(Guid Id);
         Task<PagedList<CityDTO>> GetByFilterAsync(FilterCityQuery query, CancellationToken cancellationToken);
+        Task<bool> GetRelatedDataAsync(Guid cityId);
     }
 }

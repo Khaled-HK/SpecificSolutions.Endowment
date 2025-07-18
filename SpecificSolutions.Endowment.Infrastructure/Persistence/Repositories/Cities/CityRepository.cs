@@ -67,5 +67,14 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Ci
 
             return await PagedList<CityDTO>.CreateAsync(dtos, query.PageNumber, query.PageSize, cancellationToken);
         }
+
+        public async Task<bool> GetRelatedDataAsync(Guid cityId)
+        {
+            // Check for Regions related to this city
+            var hasRelatedData = await _context.Regions
+                .AnyAsync(r => r.CityId == cityId);
+
+            return hasRelatedData;
+        }
     }
 }
