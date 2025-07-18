@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 
 // Define interfaces for better type safety
 interface Region {
@@ -18,16 +18,6 @@ interface NewRegion {
   cityId: string
 }
 
-// Define header interface for proper typing
-interface DataTableHeader {
-  title: string
-  key: string
-  sortable: boolean
-  sticky?: boolean
-  width?: number
-  align?: 'start' | 'center' | 'end'
-}
-
 definePage({
   meta: {
     action: 'View',
@@ -41,7 +31,7 @@ const countries = ref<string[]>([])
 const loading = ref(false)
 const citiesLoading = ref(false)
 const totalItems = ref(0)
-const totalPages = ref(0)
+
 const dialog = ref(false)
 const editDialog = ref(false)
 const deleteDialog = ref(false)
@@ -64,68 +54,58 @@ const editRegion = ref<Region>({
   cityId: '',
 })
 
-// Headers with sticky columns configuration - properly typed
-const headers: DataTableHeader[] = [
-  { 
-    title: 'Name', 
-    key: 'name', 
-    sortable: true,
-    sticky: true,
-    width: 250
-  },
-  { 
-    title: 'Country', 
-    key: 'country', 
-    sortable: true,
-    width: 400
-  },
-  { 
-    title: 'Actions', 
-    key: 'actions', 
-    sortable: false,
-    sticky: true,
-    width: 120,
-    align: 'center' as const
-  },
-]
-
-// Table options for enhanced functionality (Fixed TypeScript error)
-const tableOptions = ref({
+// Using the ready-made template structure
+const options = ref({
   page: 1,
   itemsPerPage: 10,
-  sortBy: [{ key: 'name', order: 'asc' as const }],
+  sortBy: [''],
+  sortDesc: [false],
 })
+
+// Headers using the ready-made template structure
+const headers = [
+  {
+    title: 'المنطقة',
+    key: 'name',
+  },
+  {
+    title: 'الدولة',
+    key: 'country',
+  },
+  {
+    title: 'الإجراءات',
+    key: 'actions',
+    sortable: false,
+  },
+]
 
 const loadRegions = async () => {
   loading.value = true
   try {
     const params = new URLSearchParams({
-      PageNumber: tableOptions.value.page.toString(),
-      PageSize: tableOptions.value.itemsPerPage.toString(),
+      PageNumber: options.value.page.toString(),
+      PageSize: options.value.itemsPerPage.toString(),
       SearchTerm: search.value || ''
     })
     
     const response = await $api(`/Region/filter?${params}`)
-    
     regions.value = response.data.items || []
     
-    // Update pagination info
+    // Update total count for pagination
     if (response.data) {
       totalItems.value = response.data.totalCount || 0
-      totalPages.value = response.data.totalPages || 0
       
       // Ensure page number is valid
-      if (tableOptions.value.page > totalPages.value && totalPages.value > 0) {
-        tableOptions.value.page = totalPages.value
+      const totalPages = Math.ceil(totalItems.value / options.value.itemsPerPage)
+      if (options.value.page > totalPages && totalPages > 0) {
+        options.value.page = totalPages
         await loadRegions() // Reload with correct page
       }
     }
   } catch (error) {
     console.error('Error loading regions:', error)
-    // Reset to safe values on error
     regions.value = []
     totalItems.value = 0
-    totalPages.value = 0
   } finally {
     loading.value = false
   }
@@ -233,38 +213,15 @@ const resetNewRegion = () => {
   }
 }
 
-// Watch for pagination changes
-watch([() => tableOptions.value.page, () => tableOptions.value.itemsPerPage], () => {
+// Watch for search changes
+watch(search, () => {
+  options.value.page = 1 // Reset to first page when searching
   loadRegions()
 }, { immediate: false })
 
-// Computed properties for pagination
-const paginationInfo = computed(() => {
-  const start = (tableOptions.value.page - 1) * tableOptions.value.itemsPerPage + 1
-  const end = Math.min(tableOptions.value.page * tableOptions.value.itemsPerPage, totalItems.value)
-  return {
-    start,
-    end,
-    total: totalItems.value,
-    currentPage: tableOptions.value.page,
-    totalPages: totalPages.value
-  }
-})
-
-// Watch for search changes with debounce
-let searchTimeout: NodeJS.Timeout | null = null
-watch(search, () => {
-  tableOptions.value.page = 1 // Reset to first page when searching
-  
-  // Clear previous timeout
-  if (searchTimeout) {
-    clearTimeout(searchTimeout)
-  }
-  
-  // Add debounce to avoid too many API calls
-  searchTimeout = setTimeout(() => {
-    loadRegions()
-  }, 500)
+// Watch for pagination changes
+watch([() => options.value.page, () => options.value.itemsPerPage], () => {
+  loadRegions()
 }, { immediate: false })
 
 onMounted(() => {
@@ -277,7 +234,7 @@ onMounted(() => {
   <div>
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center pa-6">
-        <span class="text-h5">إدارة المناطق - جدول بأعمدة ثابتة</span>
+        <span class="text-h5">إدارة المناطق</span>
         <div class="d-flex gap-2">
           <VBtn
             v-if="selectedRows.length > 0"
@@ -299,131 +256,102 @@ onMounted(() => {
       <VDivider />
 
       <VCardText>
-        <!-- Search Bar -->
-        <div class="d-flex justify-space-between align-center mb-4">
-          <VTextField
-            v-model="search"
-            prepend-inner-icon="mdi-magnify"
-            label="البحث في المناطق..."
-            variant="outlined"
-            density="compact"
-            style="max-width: 300px;"
-            hide-details
-            clearable
-            placeholder="ابحث عن منطقة..."
-          />
-          
-          <VChip
-            color="success"
-            variant="tonal"
-            prepend-icon="mdi-table-column"
+        <!-- Search Bar and Pagination Info using ready-made template -->
+        <VRow class="mb-4">
+          <VCol
+            cols="12"
+            md="8"
           >
-            الأعمدة الثابتة نشطة ✓
-          </VChip>
-          
-          <div class="d-flex align-center gap-4">
-            <VChip
-              color="info"
-              variant="tonal"
-              size="small"
-            >
-              المجموع: {{ totalItems }} منطقة
-            </VChip>
-            <VChip
-              color="primary"
-              variant="tonal"
-              size="small"
-            >
-              الصفحة {{ tableOptions.page }} من {{ totalPages }}
-            </VChip>
-            <VChip
-              color="success"
-              variant="tonal"
-              size="small"
-            >
-              عرض {{ paginationInfo.start }}-{{ paginationInfo.end }} من {{ paginationInfo.total }}
-            </VChip>
-          </div>
-        </div>
+            <div class="d-flex align-center gap-4">
+              <VChip
+                color="info"
+                variant="tonal"
+                size="small"
+              >
+                المجموع: {{ totalItems }} منطقة
+              </VChip>
+              <VChip
+                color="primary"
+                variant="tonal"
+                size="small"
+              >
+                الصفحة {{ options.page }} من {{ Math.ceil(totalItems / options.itemsPerPage) }}
+              </VChip>
+              <VChip
+                color="success"
+                variant="tonal"
+                size="small"
+              >
+                عرض {{ regions.length }} عنصر
+              </VChip>
+            </div>
+          </VCol>
+          <VCol
+            cols="12"
+            md="4"
+          >
+            <VTextField
+              v-model="search"
+              placeholder="البحث في المناطق..."
+              prepend-inner-icon="mdi-magnify"
+              single-line
+              hide-details
+              dense
+              outlined
+            />
+          </VCol>
+        </VRow>
 
-        <!-- Enhanced Data Table with Fixed Columns -->
+        <!-- Data Table using ready-made template -->
         <VDataTable
-          v-model="selectedRows"
-          v-model:page="tableOptions.page"
-          v-model:items-per-page="tableOptions.itemsPerPage"
-          v-model:sort-by="tableOptions.sortBy"
           :headers="headers"
           :items="regions"
           :loading="loading"
-          class="elevation-1 text-no-wrap fixed-columns-table"
-          item-value="id"
+          :items-per-page="options.itemsPerPage"
+          :page="options.page"
+          :options="options"
+          class="text-no-wrap"
           show-select
-          fixed-header
-          height="600"
-          hover
-          density="compact"
-          :items-per-page-options="[5, 10, 25, 50, 100]"
-          show-current-page
-          show-items-per-page
-          :items-length="totalItems"
-          :server-items-length="totalItems"
-          :footer-props="{
-            'items-per-page-options': [5, 10, 25, 50, 100],
-            'items-per-page-text': 'عناصر في الصفحة:',
-            'page-text': '{0}-{1} من {2}',
-            'first-icon': 'mdi-page-first',
-            'last-icon': 'mdi-page-last',
-            'prev-icon': 'mdi-chevron-left',
-            'next-icon': 'mdi-chevron-right'
-          }"
-          :loading-text="'جاري التحميل...'"
-          :no-data-text="'لا توجد بيانات'"
-          :no-results-text="'لا توجد نتائج للبحث'"
+          v-model="selectedRows"
         >
-
-
-          <!-- Enhanced Name column -->
+          <!-- Region name using ready-made template -->
           <template #item.name="{ item }">
             <div class="d-flex align-center">
               <VAvatar
+                size="32"
                 color="primary"
                 variant="tonal"
-                size="32"
-                class="me-3"
               >
                 {{ item.name.charAt(0).toUpperCase() }}
               </VAvatar>
-              <div>
-                <div class="text-body-1 font-weight-medium">
-                  {{ item.name }}
-                </div>
+              <div class="d-flex flex-column ms-3">
+                <span class="d-block font-weight-medium text-truncate text-high-emphasis">{{ item.name }}</span>
+                <small class="text-medium-emphasis">{{ item.description || 'لا يوجد وصف' }}</small>
               </div>
             </div>
           </template>
 
-          <!-- Country with truncation -->
+          <!-- Country using ready-made template -->
           <template #item.country="{ item }">
-            <div class="text-body-2" style="max-width: 350px;">
-              <VChip
-                v-if="item.country"
-                color="secondary"
-                variant="tonal"
-                size="small"
-              >
-                {{ item.country }}
-              </VChip>
-              <span 
-                v-else 
-                class="text-medium-emphasis"
-              >
-                لا توجد دولة
-              </span>
-            </div>
+            <VChip
+              v-if="item.country"
+              color="secondary"
+              variant="tonal"
+              size="small"
+            >
+              {{ item.country }}
+            </VChip>
+            <span 
+              v-else 
+              class="text-medium-emphasis"
+            >
+              لا توجد دولة
+            </span>
           </template>
 
-          <!-- Enhanced Actions column -->
+          <!-- Actions using ready-made template -->
           <template #item.actions="{ item }">
-            <div class="d-flex gap-1 justify-center">
+            <div class="d-flex gap-1">
               <VBtn
                 icon="mdi-pencil"
                 size="small"
@@ -431,7 +359,6 @@ onMounted(() => {
                 variant="text"
                 @click="openEditDialog(item)"
               >
-                <VIcon>mdi-pencil</VIcon>
                 <VTooltip
                   activator="parent"
                   location="top"
@@ -446,7 +373,6 @@ onMounted(() => {
                 variant="text"
                 @click="openDeleteDialog(item)"
               >
-                <VIcon>mdi-delete</VIcon>
                 <VTooltip
                   activator="parent"
                   location="top"
@@ -457,61 +383,27 @@ onMounted(() => {
             </div>
           </template>
 
-          <!-- Custom loading state -->
-          <template #loading>
-            <VSkeletonLoader
-              class="mx-auto"
-              max-width="100%"
-              type="table-row@10"
-            />
-          </template>
+          <!-- External pagination using ready-made template -->
+          <template #bottom>
+            <VCardText class="pt-2">
+              <div class="d-flex flex-wrap justify-center justify-sm-space-between gap-y-2 mt-2">
+                <VSelect
+                  v-model="options.itemsPerPage"
+                  :items="[5, 10, 25, 50, 100]"
+                  label="عناصر في الصفحة:"
+                  variant="underlined"
+                  style="max-inline-size: 8rem;min-inline-size: 5rem;"
+                />
 
-          <!-- Empty state -->
-          <template #no-data>
-            <div class="text-center py-8">
-              <VIcon
-                size="64"
-                color="grey-lighten-2"
-                class="mb-4"
-              >
-                mdi-table-search
-              </VIcon>
-              <div class="text-h6 text-medium-emphasis">
-                لا توجد مناطق
+                                 <VPagination
+                   v-model="options.page"
+                   :total-visible="$vuetify.display.smAndDown ? 3 : 5"
+                   :length="Math.ceil(totalItems / options.itemsPerPage)"
+                 />
               </div>
-              <div class="text-body-2 text-medium-emphasis">
-                جرب تعديل البحث أو إضافة منطقة جديدة
-              </div>
-            </div>
+            </VCardText>
           </template>
-
-          <!-- Custom footer prepend -->
-          <template #footer.prepend>
-            <div class="d-flex align-center gap-2">
-              <span class="text-caption">عناصر في الصفحة:</span>
-            </div>
-          </template>
-
         </VDataTable>
-         
-        <!-- Info Card for Fixed Columns -->
-        <VCard
-          class="mt-4"
-          color="info"
-          variant="tonal"
-        >
-          <VCardText class="d-flex align-center gap-3">
-            <VIcon>mdi-information</VIcon>
-            <div>
-              <div class="text-body-2 font-weight-medium">
-                الأعمدة الثابتة (Fixed Columns) مع البحث التلقائي
-              </div>
-              <div class="text-caption">
-                أعمدة الرقم والاسم والإجراءات ثابتة ولا تتحرك عند التمرير الأفقي. يمكن البحث في الجدول والكتابة في قائمة الدول المنسدلة.
-              </div>
-            </div>
-          </VCardText>
-        </VCard>
       </VCardText>
     </VCard>
 
