@@ -256,38 +256,11 @@ onMounted(() => {
       <VDivider />
 
       <VCardText>
-        <!-- Search Bar and Pagination Info using ready-made template -->
-        <VRow class="mb-4">
+        <!-- Search Bar using ready-made template -->
+        <VRow>
           <VCol
             cols="12"
-            md="8"
-          >
-            <div class="d-flex align-center gap-4">
-              <VChip
-                color="info"
-                variant="tonal"
-                size="small"
-              >
-                المجموع: {{ totalItems }} منطقة
-              </VChip>
-              <VChip
-                color="primary"
-                variant="tonal"
-                size="small"
-              >
-                الصفحة {{ options.page }} من {{ Math.ceil(totalItems / options.itemsPerPage) }}
-              </VChip>
-              <VChip
-                color="success"
-                variant="tonal"
-                size="small"
-              >
-                عرض {{ regions.length }} عنصر
-              </VChip>
-            </div>
-          </VCol>
-          <VCol
-            cols="12"
+            offset-md="8"
             md="4"
           >
             <VTextField
