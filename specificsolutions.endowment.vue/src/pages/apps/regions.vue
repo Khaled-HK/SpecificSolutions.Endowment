@@ -322,37 +322,15 @@ onMounted(() => {
             </span>
           </template>
 
-          <!-- Actions using ready-made template -->
+          <!-- Actions using template icons -->
           <template #item.actions="{ item }">
             <div class="d-flex gap-1">
-              <VBtn
-                icon="mdi-pencil"
-                size="small"
-                color="primary"
-                variant="text"
-                @click="openEditDialog(item)"
-              >
-                <VTooltip
-                  activator="parent"
-                  location="top"
-                >
-                  تعديل
-                </VTooltip>
-              </VBtn>
-              <VBtn
-                icon="mdi-delete"
-                size="small"
-                color="error"
-                variant="text"
-                @click="openDeleteDialog(item)"
-              >
-                <VTooltip
-                  activator="parent"
-                  location="top"
-                >
-                  حذف
-                </VTooltip>
-              </VBtn>
+              <IconBtn @click="openEditDialog(item)">
+                <VIcon icon="tabler-edit" />
+              </IconBtn>
+              <IconBtn @click="openDeleteDialog(item)">
+                <VIcon icon="tabler-trash" />
+              </IconBtn>
             </div>
           </template>
 
@@ -569,58 +547,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.fixed-columns-table {
-  /* Enhanced styling for fixed columns */
-  overflow-x: auto;
-}
-
-.fixed-columns-table :deep(.v-data-table__th--sticky) {
-  background-color: rgb(var(--v-theme-surface));
-  z-index: 2;
-  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
-}
-
-.fixed-columns-table :deep(.v-data-table__td--sticky) {
-  background-color: rgb(var(--v-theme-surface));
-  z-index: 1;
-  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
-}
-
-/* RTL support for Arabic text */
-.v-application--is-rtl .fixed-columns-table :deep(.v-data-table__th--sticky),
-.v-application--is-rtl .fixed-columns-table :deep(.v-data-table__td--sticky) {
-  box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Enhanced pagination styling */
-.fixed-columns-table :deep(.v-data-table-footer) {
-  background-color: rgb(var(--v-theme-surface));
-  border-top: 1px solid rgb(var(--v-border-color));
-}
-
-.fixed-columns-table :deep(.v-data-table-footer__items-per-page) {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.fixed-columns-table :deep(.v-data-table-footer__info) {
-  font-size: 0.875rem;
-  color: rgb(var(--v-theme-on-surface-variant));
-}
-
-.fixed-columns-table :deep(.v-pagination) {
-  gap: 4px;
-}
-
-.fixed-columns-table :deep(.v-pagination__item) {
-  min-width: 32px;
-  height: 32px;
-}
-
-/* RTL pagination support */
-.v-application--is-rtl .fixed-columns-table :deep(.v-pagination__list) {
-  flex-direction: row-reverse;
-}
+/* Using template styling */
 </style>
 
