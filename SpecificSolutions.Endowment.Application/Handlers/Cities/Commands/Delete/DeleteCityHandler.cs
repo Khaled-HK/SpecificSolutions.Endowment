@@ -24,7 +24,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Cities.Commands.Delet
             if (hasRelatedData)
             {
                 var errorMessage = $"Cannot delete city '{city.Name}' because it has related regions. Please delete the related regions first.";
-                return Response.FailureResponse(errorMessage);
+                return Response.FailureResponse(errorMessage: errorMessage);
             }
 
             await _unitOfWork.Cities.DeleteAsync(request.Id);

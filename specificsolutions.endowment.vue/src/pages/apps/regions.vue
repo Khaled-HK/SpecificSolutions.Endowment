@@ -32,6 +32,11 @@ const loading = ref(false)
 const citiesLoading = ref(false)
 const totalItems = ref(0)
 
+// Simple alert state
+const showAlert = ref(false)
+const alertMessage = ref('')
+const alertType = ref('success')
+
 const dialog = ref(false)
 const editDialog = ref(false)
 const deleteDialog = ref(false)
@@ -104,6 +109,9 @@ const loadRegions = async () => {
     }
   } catch (error) {
     console.error('Error loading regions:', error)
+    alertMessage.value = 'حدث خطأ أثناء تحميل المناطق'
+    alertType.value = 'error'
+    showAlert.value = true
     regions.value = []
     totalItems.value = 0
   } finally {
@@ -122,6 +130,9 @@ const loadCities = async () => {
     countries.value = uniqueCountries.sort()
   } catch (error) {
     console.error('Error loading cities:', error)
+    alertMessage.value = 'حدث خطأ أثناء تحميل المدن'
+    alertType.value = 'error'
+    showAlert.value = true
   } finally {
     citiesLoading.value = false
   }
@@ -129,7 +140,7 @@ const loadCities = async () => {
 
 const addRegion = async () => {
   try {
-    await $api('/Region', {
+    const response = await $api('/Region', {
       method: 'POST',
       body: {
         name: newRegion.value.name,
@@ -137,17 +148,33 @@ const addRegion = async () => {
         cityId: newRegion.value.cityId,
       },
     })
+    
+    // Check if the response indicates success - response comes directly
+    if (response && response.isSuccess === false) {
+      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء إضافة المنطقة'
+      alertMessage.value = errorMsg
+      alertType.value = 'error'
+      showAlert.value = true
+      return
+    }
+    
     dialog.value = false
     resetNewRegion()
     loadRegions()
+    alertMessage.value = 'تم إضافة المنطقة بنجاح'
+    alertType.value = 'success'
+    showAlert.value = true
   } catch (error) {
     console.error('Error adding region:', error)
+    alertMessage.value = 'حدث خطأ أثناء إضافة المنطقة'
+    alertType.value = 'error'
+    showAlert.value = true
   }
 }
 
 const updateRegion = async () => {
   try {
-    await $api(`/Region/${editRegion.value.id}`, {
+    const response = await $api(`/Region/${editRegion.value.id}`, {
       method: 'PUT',
       body: {
         id: editRegion.value.id,
@@ -156,10 +183,26 @@ const updateRegion = async () => {
         cityId: editRegion.value.cityId,
       },
     })
+    
+    // Check if the response indicates success - response comes directly
+    if (response && response.isSuccess === false) {
+      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء تحديث المنطقة'
+      alertMessage.value = errorMsg
+      alertType.value = 'error'
+      showAlert.value = true
+      return
+    }
+    
     editDialog.value = false
     loadRegions()
+    alertMessage.value = 'تم تحديث المنطقة بنجاح'
+    alertType.value = 'success'
+    showAlert.value = true
   } catch (error) {
     console.error('Error updating region:', error)
+    alertMessage.value = 'حدث خطأ أثناء تحديث المنطقة'
+    alertType.value = 'error'
+    showAlert.value = true
   }
 }
 
@@ -167,13 +210,39 @@ const deleteRegion = async () => {
   if (!selectedRegion.value) return
   
   try {
-    await $api(`/Region/${selectedRegion.value.id}`, {
+    console.log('Attempting to delete region:', selectedRegion.value.id)
+    const response = await $api(`/Region/${selectedRegion.value.id}`, {
       method: 'DELETE',
     })
+    
+    console.log('Delete response:', response)
+    console.log('Response data:', response.data)
+    
+    // Check if the response indicates success - response comes directly
+    if (response && response.isSuccess === false) {
+      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء حذف المنطقة'
+      console.log('API returned error:', errorMsg)
+      alertMessage.value = errorMsg
+      alertType.value = 'error'
+      showAlert.value = true
+      deleteDialog.value = false
+      return
+    }
+    
+    // If we reach here, the deletion was successful
+    console.log('Region deleted successfully')
     deleteDialog.value = false
     loadRegions()
+    alertMessage.value = 'تم حذف المنطقة بنجاح'
+    alertType.value = 'success'
+    showAlert.value = true
   } catch (error) {
     console.error('Error deleting region:', error)
+    // ofetch doesn't throw for HTTP errors, so this is likely a network error
+    alertMessage.value = 'حدث خطأ في الاتصال بالخادم'
+    alertType.value = 'error'
+    showAlert.value = true
+    deleteDialog.value = false
   }
 }
 
@@ -184,11 +253,36 @@ const deleteSelectedRows = async () => {
     const deletePromises = selectedRows.value.map(region => 
       $api(`/Region/${region.id}`, { method: 'DELETE' })
     )
-    await Promise.all(deletePromises)
+    const responses = await Promise.all(deletePromises)
+    
+    // Check if any operation failed - response comes directly
+    const failedOperations = responses.filter((response) => 
+      response && response.isSuccess === false
+    )
+    
+    if (failedOperations.length > 0) {
+      const errorMessages = failedOperations.map((response) => 
+        response?.message || response?.errors?.[0]?.errorMessage || 'حدث خطأ أثناء العملية'
+      )
+      const errorMsg = `فشل في حذف ${failedOperations.length} عنصر: ${errorMessages.join(', ')}`
+      alertMessage.value = errorMsg
+      alertType.value = 'error'
+      showAlert.value = true
+      return
+    }
+    
+    // If we reach here, all deletions were successful
     selectedRows.value = []
     loadRegions()
+    alertMessage.value = 'تم حذف المناطق المحددة بنجاح'
+    alertType.value = 'success'
+    showAlert.value = true
   } catch (error) {
     console.error('Error deleting selected regions:', error)
+    // ofetch doesn't throw for HTTP errors, so this is likely a network error
+    alertMessage.value = 'حدث خطأ في الاتصال بالخادم'
+    alertType.value = 'error'
+    showAlert.value = true
   }
 }
 
@@ -232,6 +326,17 @@ onMounted(() => {
 
 <template>
   <div>
+    <!-- Simple VAlert - just like template examples -->
+    <VAlert
+      v-model="showAlert"
+      :type="alertType"
+      variant="tonal"
+      closable
+      class="mb-4"
+    >
+      {{ alertMessage }}
+    </VAlert>
+
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center pa-6">
         <span class="text-h5">إدارة المناطق</span>
@@ -346,11 +451,11 @@ onMounted(() => {
                   style="max-inline-size: 8rem;min-inline-size: 5rem;"
                 />
 
-                                 <VPagination
-                   v-model="options.page"
-                   :total-visible="$vuetify.display.smAndDown ? 3 : 5"
-                   :length="Math.ceil(totalItems / options.itemsPerPage)"
-                 />
+                <VPagination
+                  v-model="options.page"
+                  :total-visible="$vuetify.display.smAndDown ? 3 : 5"
+                  :length="Math.ceil(totalItems / options.itemsPerPage)"
+                />
               </div>
             </VCardText>
           </template>

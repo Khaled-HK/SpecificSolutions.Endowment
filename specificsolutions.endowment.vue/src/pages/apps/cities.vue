@@ -30,6 +30,11 @@ const loading = ref(false)
 const regionsLoading = ref(false)
 const totalItems = ref(0)
 
+// Simple alert state
+const showAlert = ref(false)
+const alertMessage = ref('')
+const alertType = ref('success')
+
 const dialog = ref(false)
 const editDialog = ref(false)
 const deleteDialog = ref(false)
@@ -104,6 +109,9 @@ const loadCities = async () => {
     }
   } catch (error) {
     console.error('Error loading cities:', error)
+    alertMessage.value = 'حدث خطأ أثناء تحميل المدن'
+    alertType.value = 'error'
+    showAlert.value = true
     cities.value = []
     totalItems.value = 0
   } finally {
@@ -118,6 +126,9 @@ const loadRegions = async () => {
     regions.value = response.data.items || []
   } catch (error) {
     console.error('Error loading regions:', error)
+    alertMessage.value = 'حدث خطأ أثناء تحميل المناطق'
+    alertType.value = 'error'
+    showAlert.value = true
   } finally {
     regionsLoading.value = false
   }
@@ -125,7 +136,7 @@ const loadRegions = async () => {
 
 const addCity = async () => {
   try {
-    await $api('/City', {
+    const response = await $api('/City', {
       method: 'POST',
       body: {
         name: newCity.value.name,
@@ -133,17 +144,33 @@ const addCity = async () => {
         description: newCity.value.description,
       },
     })
+    
+    // Check if the response indicates success - response comes directly
+    if (response && response.isSuccess === false) {
+      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء إضافة المدينة'
+      alertMessage.value = errorMsg
+      alertType.value = 'error'
+      showAlert.value = true
+      return
+    }
+    
     dialog.value = false
     resetNewCity()
     loadCities()
+    alertMessage.value = 'تم إضافة المدينة بنجاح'
+    alertType.value = 'success'
+    showAlert.value = true
   } catch (error) {
     console.error('Error adding city:', error)
+    alertMessage.value = 'حدث خطأ أثناء إضافة المدينة'
+    alertType.value = 'error'
+    showAlert.value = true
   }
 }
 
 const updateCity = async () => {
   try {
-    await $api(`/City/${editCity.value.id}`, {
+    const response = await $api(`/City/${editCity.value.id}`, {
       method: 'PUT',
       body: {
         id: editCity.value.id,
@@ -152,10 +179,26 @@ const updateCity = async () => {
         description: editCity.value.description,
       },
     })
+    
+    // Check if the response indicates success - response comes directly
+    if (response && response.isSuccess === false) {
+      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء تحديث المدينة'
+      alertMessage.value = errorMsg
+      alertType.value = 'error'
+      showAlert.value = true
+      return
+    }
+    
     editDialog.value = false
     loadCities()
+    alertMessage.value = 'تم تحديث المدينة بنجاح'
+    alertType.value = 'success'
+    showAlert.value = true
   } catch (error) {
     console.error('Error updating city:', error)
+    alertMessage.value = 'حدث خطأ أثناء تحديث المدينة'
+    alertType.value = 'error'
+    showAlert.value = true
   }
 }
 
@@ -163,13 +206,39 @@ const deleteCity = async () => {
   if (!selectedCity.value) return
   
   try {
-    await $api(`/City/${selectedCity.value.id}`, {
+    console.log('Attempting to delete city:', selectedCity.value.id)
+    const response = await $api(`/City/${selectedCity.value.id}`, {
       method: 'DELETE',
     })
+    
+    console.log('Delete response:', response)
+    console.log('Response data:', response.data)
+    
+    // Check if the response indicates success - response comes directly, not in response.data
+    if (response && response.isSuccess === false) {
+      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء حذف المدينة'
+      console.log('API returned error:', errorMsg)
+      alertMessage.value = errorMsg
+      alertType.value = 'error'
+      showAlert.value = true
+      deleteDialog.value = false
+      return
+    }
+    
+    // If we reach here, the deletion was successful
+    console.log('City deleted successfully')
     deleteDialog.value = false
     loadCities()
+    alertMessage.value = 'تم حذف المدينة بنجاح'
+    alertType.value = 'success'
+    showAlert.value = true
   } catch (error) {
     console.error('Error deleting city:', error)
+    // ofetch doesn't throw for HTTP errors, so this is likely a network error
+    alertMessage.value = 'حدث خطأ في الاتصال بالخادم'
+    alertType.value = 'error'
+    showAlert.value = true
+    deleteDialog.value = false
   }
 }
 
@@ -180,11 +249,36 @@ const deleteSelectedRows = async () => {
     const deletePromises = selectedRows.value.map(city => 
       $api(`/City/${city.id}`, { method: 'DELETE' })
     )
-    await Promise.all(deletePromises)
+    const responses = await Promise.all(deletePromises)
+    
+    // Check if any operation failed - response comes directly
+    const failedOperations = responses.filter((response) => 
+      response && response.isSuccess === false
+    )
+    
+    if (failedOperations.length > 0) {
+      const errorMessages = failedOperations.map((response) => 
+        response?.message || response?.errors?.[0]?.errorMessage || 'حدث خطأ أثناء العملية'
+      )
+      const errorMsg = `فشل في حذف ${failedOperations.length} عنصر: ${errorMessages.join(', ')}`
+      alertMessage.value = errorMsg
+      alertType.value = 'error'
+      showAlert.value = true
+      return
+    }
+    
+    // If we reach here, all deletions were successful
     selectedRows.value = []
     loadCities()
+    alertMessage.value = 'تم حذف المدن المحددة بنجاح'
+    alertType.value = 'success'
+    showAlert.value = true
   } catch (error) {
     console.error('Error deleting selected cities:', error)
+    // ofetch doesn't throw for HTTP errors, so this is likely a network error
+    alertMessage.value = 'حدث خطأ في الاتصال بالخادم'
+    alertType.value = 'error'
+    showAlert.value = true
   }
 }
 
@@ -225,6 +319,17 @@ onMounted(() => {
 
 <template>
   <div>
+    <!-- Simple VAlert - just like template examples -->
+    <VAlert
+      v-model="showAlert"
+      :type="alertType"
+      variant="tonal"
+      closable
+      class="mb-4"
+    >
+      {{ alertMessage }}
+    </VAlert>
+
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center pa-6">
         <span class="text-h5">إدارة المدن</span>
