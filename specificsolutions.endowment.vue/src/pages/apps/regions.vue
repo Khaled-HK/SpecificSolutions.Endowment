@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 
 // Define interfaces for better type safety
 interface Region {
@@ -40,6 +40,8 @@ const cities = ref<any[]>([])
 const countries = ref<string[]>([])
 const loading = ref(false)
 const citiesLoading = ref(false)
+const totalItems = ref(0)
+const totalPages = ref(0)
 const dialog = ref(false)
 const editDialog = ref(false)
 const deleteDialog = ref(false)
@@ -97,10 +99,33 @@ const tableOptions = ref({
 const loadRegions = async () => {
   loading.value = true
   try {
-    const response = await $api('/Region/filter')
+    const params = new URLSearchParams({
+      PageNumber: tableOptions.value.page.toString(),
+      PageSize: tableOptions.value.itemsPerPage.toString(),
+      SearchTerm: search.value || ''
+    })
+    
+    const response = await $api(`/Region/filter?${params}`)
+    
     regions.value = response.data.items || []
+    
+    // Update pagination info
+    if (response.data) {
+      totalItems.value = response.data.totalCount || 0
+      totalPages.value = response.data.totalPages || 0
+      
+      // Ensure page number is valid
+      if (tableOptions.value.page > totalPages.value && totalPages.value > 0) {
+        tableOptions.value.page = totalPages.value
+        await loadRegions() // Reload with correct page
+      }
+    }
   } catch (error) {
     console.error('Error loading regions:', error)
+    // Reset to safe values on error
+    regions.value = []
+    totalItems.value = 0
+    totalPages.value = 0
   } finally {
     loading.value = false
   }
@@ -208,6 +233,40 @@ const resetNewRegion = () => {
   }
 }
 
+// Watch for pagination changes
+watch([() => tableOptions.value.page, () => tableOptions.value.itemsPerPage], () => {
+  loadRegions()
+}, { immediate: false })
+
+// Computed properties for pagination
+const paginationInfo = computed(() => {
+  const start = (tableOptions.value.page - 1) * tableOptions.value.itemsPerPage + 1
+  const end = Math.min(tableOptions.value.page * tableOptions.value.itemsPerPage, totalItems.value)
+  return {
+    start,
+    end,
+    total: totalItems.value,
+    currentPage: tableOptions.value.page,
+    totalPages: totalPages.value
+  }
+})
+
+// Watch for search changes with debounce
+let searchTimeout: NodeJS.Timeout | null = null
+watch(search, () => {
+  tableOptions.value.page = 1 // Reset to first page when searching
+  
+  // Clear previous timeout
+  if (searchTimeout) {
+    clearTimeout(searchTimeout)
+  }
+  
+  // Add debounce to avoid too many API calls
+  searchTimeout = setTimeout(() => {
+    loadRegions()
+  }, 500)
+}, { immediate: false })
+
 onMounted(() => {
   loadRegions()
   loadCities()
@@ -262,8 +321,28 @@ onMounted(() => {
             الأعمدة الثابتة نشطة ✓
           </VChip>
           
-          <div class="text-caption text-medium-emphasis">
-            المجموع: {{ regions.length }} منطقة
+          <div class="d-flex align-center gap-4">
+            <VChip
+              color="info"
+              variant="tonal"
+              size="small"
+            >
+              المجموع: {{ totalItems }} منطقة
+            </VChip>
+            <VChip
+              color="primary"
+              variant="tonal"
+              size="small"
+            >
+              الصفحة {{ tableOptions.page }} من {{ totalPages }}
+            </VChip>
+            <VChip
+              color="success"
+              variant="tonal"
+              size="small"
+            >
+              عرض {{ paginationInfo.start }}-{{ paginationInfo.end }} من {{ paginationInfo.total }}
+            </VChip>
           </div>
         </div>
 
@@ -276,7 +355,6 @@ onMounted(() => {
           :headers="headers"
           :items="regions"
           :loading="loading"
-          :search="search"
           class="elevation-1 text-no-wrap fixed-columns-table"
           item-value="id"
           show-select
@@ -284,6 +362,23 @@ onMounted(() => {
           height="600"
           hover
           density="compact"
+          :items-per-page-options="[5, 10, 25, 50, 100]"
+          show-current-page
+          show-items-per-page
+          :items-length="totalItems"
+          :server-items-length="totalItems"
+          :footer-props="{
+            'items-per-page-options': [5, 10, 25, 50, 100],
+            'items-per-page-text': 'عناصر في الصفحة:',
+            'page-text': '{0}-{1} من {2}',
+            'first-icon': 'mdi-page-first',
+            'last-icon': 'mdi-page-last',
+            'prev-icon': 'mdi-chevron-left',
+            'next-icon': 'mdi-chevron-right'
+          }"
+          :loading-text="'جاري التحميل...'"
+          :no-data-text="'لا توجد بيانات'"
+          :no-results-text="'لا توجد نتائج للبحث'"
         >
 
 
@@ -389,8 +484,16 @@ onMounted(() => {
               </div>
             </div>
           </template>
-        </VDataTable>
 
+          <!-- Custom footer prepend -->
+          <template #footer.prepend>
+            <div class="d-flex align-center gap-2">
+              <span class="text-caption">عناصر في الصفحة:</span>
+            </div>
+          </template>
+
+        </VDataTable>
+         
         <!-- Info Card for Fixed Columns -->
         <VCard
           class="mt-4"
@@ -622,6 +725,37 @@ onMounted(() => {
 .v-application--is-rtl .fixed-columns-table :deep(.v-data-table__th--sticky),
 .v-application--is-rtl .fixed-columns-table :deep(.v-data-table__td--sticky) {
   box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced pagination styling */
+.fixed-columns-table :deep(.v-data-table-footer) {
+  background-color: rgb(var(--v-theme-surface));
+  border-top: 1px solid rgb(var(--v-border-color));
+}
+
+.fixed-columns-table :deep(.v-data-table-footer__items-per-page) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fixed-columns-table :deep(.v-data-table-footer__info) {
+  font-size: 0.875rem;
+  color: rgb(var(--v-theme-on-surface-variant));
+}
+
+.fixed-columns-table :deep(.v-pagination) {
+  gap: 4px;
+}
+
+.fixed-columns-table :deep(.v-pagination__item) {
+  min-width: 32px;
+  height: 32px;
+}
+
+/* RTL pagination support */
+.v-application--is-rtl .fixed-columns-table :deep(.v-pagination__list) {
+  flex-direction: row-reverse;
 }
 </style>
 

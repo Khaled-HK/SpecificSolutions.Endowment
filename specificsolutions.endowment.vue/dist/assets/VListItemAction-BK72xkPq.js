@@ -1,0 +1,1 @@
+import{ak as a,Y as o,a2 as n,b as i,au as m,a4 as c}from"./index-CZFANRWF.js";const r=o({start:Boolean,end:Boolean,...c(),...m()},"VListItemAction"),V=a()({name:"VListItemAction",props:r(),setup(t,e){let{slots:s}=e;return n(()=>i(t.tag,{class:["v-list-item-action",{"v-list-item-action--start":t.start,"v-list-item-action--end":t.end},t.class],style:t.style},s)),{}}});export{V};
