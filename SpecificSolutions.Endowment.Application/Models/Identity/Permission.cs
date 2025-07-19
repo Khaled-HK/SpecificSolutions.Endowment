@@ -57,6 +57,12 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
         public bool BuildingEdit { get; set; }
         public bool BuildingDelete { get; set; }
 
+        //Mosque Permissions
+        public bool MosqueView { get; set; }
+        public bool MosqueAdd { get; set; }
+        public bool MosqueEdit { get; set; }
+        public bool MosqueDelete { get; set; }
+
         // Public parameterless constructor for JSON deserialization
         public Permission() { }
 
@@ -72,7 +78,8 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
             bool endowmentView, bool endowmentAdd, bool endowmentEdit, bool endowmentDelete,
             bool cityView, bool cityAdd, bool cityEdit, bool cityDelete,
             bool regionView, bool regionAdd, bool regionEdit, bool regionDelete,
-            bool buildingView, bool buildingAdd, bool buildingEdit, bool buildingDelete
+            bool buildingView, bool buildingAdd, bool buildingEdit, bool buildingDelete,
+            bool mosqueView, bool mosqueAdd, bool mosqueEdit, bool mosqueDelete
             )
         {
             AccountView = accountView;
@@ -124,6 +131,11 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
             BuildingAdd = buildingAdd;
             BuildingEdit = buildingEdit;
             BuildingDelete = buildingDelete;
+
+            MosqueView = mosqueView;
+            MosqueAdd = mosqueAdd;
+            MosqueEdit = mosqueEdit;
+            MosqueDelete = mosqueDelete;
         }
 
         public static Permission Create(
@@ -136,7 +148,8 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
             bool endowmentView, bool endowmentAdd, bool endowmentEdit, bool endowmentDelete,
             bool cityView, bool cityAdd, bool cityEdit, bool cityDelete,
             bool regionView, bool regionAdd, bool regionEdit, bool regionDelete,
-            bool buildingView, bool buildingAdd, bool buildingEdit, bool buildingDelete)
+            bool buildingView, bool buildingAdd, bool buildingEdit, bool buildingDelete,
+            bool mosqueView, bool mosqueAdd, bool mosqueEdit, bool mosqueDelete)
         {
             return new Permission(
                 accountView, accountAdd, accountEdit, accountDelete,
@@ -148,7 +161,8 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
                 endowmentView, endowmentAdd, endowmentEdit, endowmentDelete,
                 cityView, cityAdd, cityEdit, cityDelete,
                 regionView, regionAdd, regionEdit, regionDelete,
-                buildingView, buildingAdd, buildingEdit, buildingDelete);
+                buildingView, buildingAdd, buildingEdit, buildingDelete,
+                mosqueView, mosqueAdd, mosqueEdit, mosqueDelete);
         }
 
         public static Permission Seed()
@@ -163,7 +177,8 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
                 endowmentView: true, endowmentAdd: true, endowmentEdit: true, endowmentDelete: true,
                 cityView: true, cityAdd: true, cityEdit: true, cityDelete: true,
                 regionView: true, regionAdd: true, regionEdit: true, regionDelete: true,
-                buildingView: true, buildingAdd: true, buildingEdit: true, buildingDelete: true);
+                buildingView: true, buildingAdd: true, buildingEdit: true, buildingDelete: true,
+                mosqueView: true, mosqueAdd: true, mosqueEdit: true, mosqueDelete: true);
         }
 
         public List<string> ToPermissionList()
@@ -219,8 +234,14 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
             if (BuildingAdd) permissions.Add("Building_Add");
             if (BuildingEdit) permissions.Add("Building_Edit");
             if (BuildingDelete) permissions.Add("Building_Delete");
+
+            if (MosqueView) permissions.Add("Mosque_View");
+            if (MosqueAdd) permissions.Add("Mosque_Add");
+            if (MosqueEdit) permissions.Add("Mosque_Edit");
+            if (MosqueDelete) permissions.Add("Mosque_Delete");
             
             return permissions;
         }
     }
 }
+
