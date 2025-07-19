@@ -101,10 +101,6 @@ const loadOffices = async () => {
     })
     
     const response = await $api(`/Office/filter?${params}`)
-    console.log('API Response:', response)
-    console.log('Offices data:', response.data)
-    console.log('Offices items:', response.data.items)
-    
     offices.value = response.data.items || []
     
     // Update total count for pagination
@@ -218,18 +214,13 @@ const deleteOffice = async () => {
   if (!selectedOffice.value) return
   
   try {
-    console.log('Attempting to delete office:', selectedOffice.value.id)
     const response = await $api(`/Office/${selectedOffice.value.id}`, {
       method: 'DELETE',
     })
     
-    console.log('Delete response:', response)
-    console.log('Response data:', response.data)
-    
     // Check if the response indicates success - response comes directly
     if (response && response.isSuccess === false) {
       const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء حذف المكتب'
-      console.log('API returned error:', errorMsg)
       alertMessage.value = errorMsg
       alertType.value = 'error'
       showAlert.value = true
@@ -238,7 +229,6 @@ const deleteOffice = async () => {
     }
     
     // If we reach here, the deletion was successful
-    console.log('Office deleted successfully')
     deleteDialog.value = false
     loadOffices()
     alertMessage.value = 'تم حذف المكتب بنجاح'
@@ -295,14 +285,12 @@ const deleteSelectedRows = async () => {
 }
 
 const openEditDialog = (office: Office) => {
-  console.log('Opening edit dialog for office:', office)
   editOffice.value = { 
     ...office,
-    location: office.location || office.Location || '', // Handle both cases
-    phoneNumber: office.phoneNumber || office.PhoneNumber || '',
-    name: office.name || office.Name || ''
+    location: office.location || '',
+    phoneNumber: office.phoneNumber || '',
+    name: office.name || ''
   }
-  console.log('Edit office data:', editOffice.value)
   editDialog.value = true
 }
 
