@@ -56,7 +56,6 @@ const editOffice = ref<Office>({
   key: '',
   value: '',
   name: '',
-  location: '',
   phoneNumber: '',
   regionId: '',
 })
@@ -76,12 +75,12 @@ const headers = [
     key: 'name',
   },
   {
-    title: 'رقم الهاتف',
-    key: 'phoneNumber',
-  },
-  {
     title: 'المنطقة',
     key: 'regionName',
+  },
+  {
+    title: 'رقم الهاتف',
+    key: 'phoneNumber',
   },
   {
     title: 'الإجراءات',
@@ -182,7 +181,6 @@ const updateOffice = async () => {
       body: {
         id: editOffice.value.id,
         name: editOffice.value.name,
-        location: editOffice.value.location,
         phoneNumber: editOffice.value.phoneNumber,
       },
     })
@@ -405,9 +403,26 @@ onMounted(() => {
               </VAvatar>
               <div class="d-flex flex-column ms-3">
                 <span class="d-block font-weight-medium text-truncate text-high-emphasis">{{ item.name }}</span>
-                <small class="text-medium-emphasis">{{ item.regionName || 'لا توجد منطقة' }}</small>
               </div>
             </div>
+          </template>
+
+          <!-- Region using ready-made template -->
+          <template #item.regionName="{ item }">
+            <VChip
+              v-if="item.regionName"
+              color="secondary"
+              variant="tonal"
+              size="small"
+            >
+              {{ item.regionName }}
+            </VChip>
+            <span 
+              v-else 
+              class="text-medium-emphasis"
+            >
+              لا توجد منطقة
+            </span>
           </template>
 
           <!-- Phone Number using ready-made template -->
@@ -425,24 +440,6 @@ onMounted(() => {
               class="text-medium-emphasis"
             >
               لا يوجد رقم هاتف
-            </span>
-          </template>
-
-          <!-- Region using ready-made template -->
-          <template #item.regionName="{ item }">
-            <VChip
-              v-if="item.regionName"
-              color="info"
-              variant="tonal"
-              size="small"
-            >
-              {{ item.regionName }}
-            </VChip>
-            <span 
-              v-else 
-              class="text-medium-emphasis"
-            >
-              لا توجد منطقة
             </span>
           </template>
 
@@ -579,15 +576,6 @@ onMounted(() => {
                   variant="outlined"
                   required
                   :rules="[v => !!v || 'اسم المكتب مطلوب']"
-                />
-              </VCol>
-              <VCol cols="12">
-                <VTextField
-                  v-model="editOffice.location"
-                  label="الموقع"
-                  variant="outlined"
-                  required
-                  :rules="[v => !!v || 'الموقع مطلوب']"
                 />
               </VCol>
               <VCol cols="12">
