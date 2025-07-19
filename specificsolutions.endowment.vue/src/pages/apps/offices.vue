@@ -514,7 +514,12 @@ onMounted(() => {
                   label="رقم الهاتف"
                   variant="outlined"
                   required
-                  :rules="[v => !!v || 'رقم الهاتف مطلوب']"
+                  placeholder="091-1234567 أو 021-1234567"
+                  :rules="[
+                    v => !!v || 'رقم الهاتف مطلوب',
+                    v => /^(09[1-5]|02[1-9])-?\d{7}$/.test(v) || 'يجب أن يكون رقم الهاتف بتنسيق ليبي صحيح (مثال: 091-1234567)'
+                  ]"
+                  prepend-inner-icon="mdi-phone"
                 />
               </VCol>
               <VCol cols="12">
@@ -584,7 +589,12 @@ onMounted(() => {
                   label="رقم الهاتف"
                   variant="outlined"
                   required
-                  :rules="[v => !!v || 'رقم الهاتف مطلوب']"
+                  placeholder="091-1234567 أو 021-1234567"
+                  :rules="[
+                    v => !!v || 'رقم الهاتف مطلوب',
+                    v => /^(09[1-5]|02[1-9])-?\d{7}$/.test(v) || 'يجب أن يكون رقم الهاتف بتنسيق ليبي صحيح (مثال: 091-1234567)'
+                  ]"
+                  prepend-inner-icon="mdi-phone"
                 />
               </VCol>
             </VRow>

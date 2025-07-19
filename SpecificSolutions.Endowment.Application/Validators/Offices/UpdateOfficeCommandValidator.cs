@@ -20,7 +20,7 @@ namespace SpecificSolutions.Endowment.Application.Validators.Offices
 
             RuleFor(x => x.PhoneNumber)
                 .NotEmpty().WithMessage("Phone number is required.")
-                .Matches(@"^\+?[1-9]\d{1,14}$").WithMessage("Phone number must be a valid format.");
+                .Matches(@"^(09[1-5]|02[1-9])-?\d{7}$").WithMessage("Phone number must be a valid Libyan format (e.g., 091-1234567, 021-1234567).");
         }
     }
 }
