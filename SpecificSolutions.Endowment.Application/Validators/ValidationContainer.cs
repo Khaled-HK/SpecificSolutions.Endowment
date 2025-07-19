@@ -4,6 +4,8 @@ using SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.
 using SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.Register;
 using SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Create;
 using SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Update;
+using SpecificSolutions.Endowment.Application.Handlers.Mosques.Commands.Create;
+using SpecificSolutions.Endowment.Application.Handlers.Mosques.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.Offices.Commands.Create;
 using SpecificSolutions.Endowment.Application.Handlers.Offices.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.Regions.Commands.Create;
@@ -11,6 +13,7 @@ using SpecificSolutions.Endowment.Application.Handlers.Regions.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Create;
 using SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Update;
 using SpecificSolutions.Endowment.Application.Validators.Authentications;
+using SpecificSolutions.Endowment.Application.Validators.Mosques;
 using SpecificSolutions.Endowment.Application.Validators.Offices;
 using SpecificSolutions.Endowment.Application.Validators.Regions;
 using SpecificSolutions.Endowment.Application.Validators.Requests;
@@ -33,6 +36,10 @@ namespace SpecificSolutions.Endowment.Application.Validators
             services.AddTransient<IValidator<UpdateRegionCommand>, UpdateRegionCommandValidator>();
             services.AddTransient<IValidator<CreateRequestCommand>, CreateRequestCommandValidator>();
             services.AddTransient<IValidator<UpdateRequestCommand>, UpdateRequestCommandValidator>();
+            
+            // Mosque Validators
+            services.AddTransient<IValidator<CreateMosqueCommand>, CreateMosqueCommandValidator>();
+            services.AddTransient<IValidator<UpdateMosqueCommand>, UpdateMosqueCommandValidator>();
 
             return services;
         }

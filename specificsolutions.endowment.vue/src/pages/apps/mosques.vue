@@ -3,26 +3,55 @@ import { ref, onMounted, watch } from 'vue'
 
 // Define interfaces for better type safety
 interface Mosque {
-  id: number
-  name: string
-  address: string
-  cityId?: string
-  cityName?: string
-  regionId?: string
-  regionName?: string
-  imamName?: string
-  capacity?: number
-  description?: string
+  mosqueID: string
+  mosqueName: string
+  fileNumber: string
+  mosqueDefinition: string
+  mosqueClassification: string
+  office: string
+  unit: string
+  region: string
+  nearestLandmark: string
+  constructionDate: string
+  openingDate: string
+  mapLocation: string
+  totalLandArea: number
+  totalCoveredArea: number
+  numberOfFloors: number
+  electricityMeter: string
+  alternativeEnergySource: string
+  waterSource: string
+  sanitation: string
+  briefDescription: string
 }
 
 interface NewMosque {
   name: string
-  address: string
-  cityId: string
   regionId: string
-  imamName: string
-  capacity: number
-  description: string
+  officeId: string
+  fileNumber: string
+  definition: string
+  classification: string
+  unit: string
+  nearestLandmark: string
+  mapLocation: string
+  sanitation: string
+  electricityMeter: string
+  alternativeEnergySource: string
+  waterSource: string
+  briefDescription: string
+  totalCoveredArea: number
+  totalLandArea: number
+  numberOfFloors: number
+  openingDate: string
+  constructionDate: string
+  mosqueDefinition: number
+  mosqueClassification: number
+  landDonorName: string
+  prayerCapacity: string
+  sourceFunds: number
+  servicesSpecialNeeds: boolean
+  specialEntranceWomen: boolean
 }
 
 definePage({
@@ -33,17 +62,37 @@ definePage({
 })
 
 const mosques = ref<Mosque[]>([])
-const cities = ref<any[]>([])
 const regions = ref<any[]>([])
+const offices = ref<any[]>([])
 const loading = ref(false)
-const citiesLoading = ref(false)
 const regionsLoading = ref(false)
+const officesLoading = ref(false)
 const totalItems = ref(0)
+
+// Enum options
+const mosqueDefinitions = [
+  { value: 0, label: 'لا شيء' },
+  { value: 1, label: 'جمعة' },
+  { value: 2, label: 'أوقات' },
+  { value: 3, label: 'مسجد مركزي' },
+  { value: 4, label: 'قاعة صلاة عامة' },
+]
+
+const mosqueClassifications = [
+  { value: 0, label: 'لا شيء' },
+  { value: 1, label: 'عام' },
+  { value: 2, label: 'وطني' },
+]
+
+const sourceFundsOptions = [
+  { value: 0, label: 'منظمة' },
+  { value: 1, label: 'محسنين' },
+]
 
 // Simple alert state
 const showAlert = ref(false)
 const alertMessage = ref('')
-const alertType = ref<'success' | 'error' | 'warning' | 'info'>('success')
+const alertType = ref('success')
 
 const dialog = ref(false)
 const editDialog = ref(false)
@@ -52,29 +101,62 @@ const selectedMosque = ref<Mosque | null>(null)
 const selectedRows = ref<Mosque[]>([])
 const search = ref('')
 
-// Expansion panel state for add/edit forms
-const addPanel = ref(0)
-const editPanel = ref(0)
-
 const newMosque = ref<NewMosque>({
   name: '',
-  address: '',
-  cityId: '',
   regionId: '',
-  imamName: '',
-  capacity: 0,
-  description: '',
+  officeId: '',
+  fileNumber: '',
+  definition: '',
+  classification: '',
+  unit: '',
+  nearestLandmark: '',
+  mapLocation: '',
+  sanitation: '',
+  electricityMeter: '',
+  alternativeEnergySource: '',
+  waterSource: '',
+  briefDescription: '',
+  totalCoveredArea: 0,
+  totalLandArea: 0,
+  numberOfFloors: 1,
+  openingDate: '',
+  constructionDate: '',
+  mosqueDefinition: 1,
+  mosqueClassification: 1,
+  landDonorName: '',
+  prayerCapacity: '',
+  sourceFunds: 1,
+  servicesSpecialNeeds: false,
+  specialEntranceWomen: false,
 })
 
-const editMosque = ref<Mosque>({
-  id: 0,
+const editMosque = ref<NewMosque>({
   name: '',
-  address: '',
-  cityId: '',
   regionId: '',
-  imamName: '',
-  capacity: 0,
-  description: '',
+  officeId: '',
+  fileNumber: '',
+  definition: '',
+  classification: '',
+  unit: '',
+  nearestLandmark: '',
+  mapLocation: '',
+  sanitation: '',
+  electricityMeter: '',
+  alternativeEnergySource: '',
+  waterSource: '',
+  briefDescription: '',
+  totalCoveredArea: 0,
+  totalLandArea: 0,
+  numberOfFloors: 1,
+  openingDate: '',
+  constructionDate: '',
+  mosqueDefinition: 1,
+  mosqueClassification: 1,
+  landDonorName: '',
+  prayerCapacity: '',
+  sourceFunds: 1,
+  servicesSpecialNeeds: false,
+  specialEntranceWomen: false,
 })
 
 // Using the ready-made template structure
@@ -88,28 +170,20 @@ const options = ref({
 // Headers using the ready-made template structure
 const headers = [
   {
-    title: 'المسجد',
-    key: 'name',
+    title: 'اسم المسجد',
+    key: 'mosqueName',
   },
   {
-    title: 'العنوان',
-    key: 'address',
-  },
-  {
-    title: 'المدينة',
-    key: 'cityName',
+    title: 'رقم الملف',
+    key: 'fileNumber',
   },
   {
     title: 'المنطقة',
-    key: 'regionName',
+    key: 'region',
   },
   {
-    title: 'الإمام',
-    key: 'imamName',
-  },
-  {
-    title: 'السعة',
-    key: 'capacity',
+    title: 'المكتب',
+    key: 'office',
   },
   {
     title: 'الإجراءات',
@@ -153,21 +227,6 @@ const loadMosques = async () => {
   }
 }
 
-const loadCities = async () => {
-  citiesLoading.value = true
-  try {
-    const response = await $api('/City/filter?PageSize=100')
-    cities.value = response.data.items || []
-  } catch (error) {
-    console.error('Error loading cities:', error)
-    alertMessage.value = 'حدث خطأ أثناء تحميل المدن'
-    alertType.value = 'error'
-    showAlert.value = true
-  } finally {
-    citiesLoading.value = false
-  }
-}
-
 const loadRegions = async () => {
   regionsLoading.value = true
   try {
@@ -183,18 +242,52 @@ const loadRegions = async () => {
   }
 }
 
+const loadOffices = async () => {
+  officesLoading.value = true
+  try {
+    const response = await $api('/Office/filter?PageSize=100')
+    offices.value = response.data.items || []
+  } catch (error) {
+    console.error('Error loading offices:', error)
+    alertMessage.value = 'حدث خطأ أثناء تحميل المكاتب'
+    alertType.value = 'error'
+    showAlert.value = true
+  } finally {
+    officesLoading.value = false
+  }
+}
+
 const addMosque = async () => {
   try {
     const response = await $api('/Mosque', {
       method: 'POST',
       body: {
         name: newMosque.value.name,
-        address: newMosque.value.address,
-        cityId: newMosque.value.cityId,
         regionId: newMosque.value.regionId,
-        imamName: newMosque.value.imamName,
-        capacity: newMosque.value.capacity,
-        description: newMosque.value.description,
+        officeId: newMosque.value.officeId,
+        fileNumber: newMosque.value.fileNumber,
+        definition: newMosque.value.definition,
+        classification: newMosque.value.classification,
+        unit: newMosque.value.unit,
+        nearestLandmark: newMosque.value.nearestLandmark,
+        mapLocation: newMosque.value.mapLocation,
+        sanitation: newMosque.value.sanitation,
+        electricityMeter: newMosque.value.electricityMeter,
+        alternativeEnergySource: newMosque.value.alternativeEnergySource,
+        waterSource: newMosque.value.waterSource,
+        briefDescription: newMosque.value.briefDescription,
+        totalCoveredArea: newMosque.value.totalCoveredArea,
+        totalLandArea: newMosque.value.totalLandArea,
+        numberOfFloors: newMosque.value.numberOfFloors,
+        openingDate: newMosque.value.openingDate,
+        constructionDate: newMosque.value.constructionDate,
+        mosqueDefinition: newMosque.value.mosqueDefinition,
+        mosqueClassification: newMosque.value.mosqueClassification,
+        landDonorName: newMosque.value.landDonorName,
+        prayerCapacity: newMosque.value.prayerCapacity,
+        sourceFunds: newMosque.value.sourceFunds,
+        servicesSpecialNeeds: newMosque.value.servicesSpecialNeeds,
+        specialEntranceWomen: newMosque.value.specialEntranceWomen,
       },
     })
     
@@ -223,17 +316,36 @@ const addMosque = async () => {
 
 const updateMosque = async () => {
   try {
-    const response = await $api(`/Mosque/${editMosque.value.id}`, {
+    const response = await $api(`/Mosque/${selectedMosque.value?.mosqueID}`, {
       method: 'PUT',
       body: {
-        id: editMosque.value.id,
+        id: selectedMosque.value?.mosqueID,
         name: editMosque.value.name,
-        address: editMosque.value.address,
-        cityId: editMosque.value.cityId,
         regionId: editMosque.value.regionId,
-        imamName: editMosque.value.imamName,
-        capacity: editMosque.value.capacity,
-        description: editMosque.value.description,
+        officeId: editMosque.value.officeId,
+        fileNumber: editMosque.value.fileNumber,
+        definition: editMosque.value.definition,
+        classification: editMosque.value.classification,
+        unit: editMosque.value.unit,
+        nearestLandmark: editMosque.value.nearestLandmark,
+        mapLocation: editMosque.value.mapLocation,
+        sanitation: editMosque.value.sanitation,
+        electricityMeter: editMosque.value.electricityMeter,
+        alternativeEnergySource: editMosque.value.alternativeEnergySource,
+        waterSource: editMosque.value.waterSource,
+        briefDescription: editMosque.value.briefDescription,
+        totalCoveredArea: editMosque.value.totalCoveredArea,
+        totalLandArea: editMosque.value.totalLandArea,
+        numberOfFloors: editMosque.value.numberOfFloors,
+        openingDate: editMosque.value.openingDate,
+        constructionDate: editMosque.value.constructionDate,
+        mosqueDefinition: editMosque.value.mosqueDefinition,
+        mosqueClassification: editMosque.value.mosqueClassification,
+        landDonorName: editMosque.value.landDonorName,
+        prayerCapacity: editMosque.value.prayerCapacity,
+        sourceFunds: editMosque.value.sourceFunds,
+        servicesSpecialNeeds: editMosque.value.servicesSpecialNeeds,
+        specialEntranceWomen: editMosque.value.specialEntranceWomen,
       },
     })
     
@@ -263,13 +375,18 @@ const deleteMosque = async () => {
   if (!selectedMosque.value) return
   
   try {
-    const response = await $api(`/Mosque/${selectedMosque.value.id}`, {
+    console.log('Attempting to delete mosque:', selectedMosque.value.mosqueID)
+    const response = await $api(`/Mosque/${selectedMosque.value.mosqueID}`, {
       method: 'DELETE',
     })
+    
+    console.log('Delete response:', response)
+    console.log('Response data:', response.data)
     
     // Check if the response indicates success - response comes directly
     if (response && response.isSuccess === false) {
       const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء حذف المسجد'
+      console.log('API returned error:', errorMsg)
       alertMessage.value = errorMsg
       alertType.value = 'error'
       showAlert.value = true
@@ -278,6 +395,7 @@ const deleteMosque = async () => {
     }
     
     // If we reach here, the deletion was successful
+    console.log('Mosque deleted successfully')
     deleteDialog.value = false
     loadMosques()
     alertMessage.value = 'تم حذف المسجد بنجاح'
@@ -298,17 +416,17 @@ const deleteSelectedRows = async () => {
   
   try {
     const deletePromises = selectedRows.value.map(mosque => 
-      $api(`/Mosque/${mosque.id}`, { method: 'DELETE' })
+      $api(`/Mosque/${mosque.mosqueID}`, { method: 'DELETE' })
     )
     const responses = await Promise.all(deletePromises)
     
     // Check if any operation failed - response comes directly
-    const failedOperations = responses.filter((response: any) => 
+    const failedOperations = responses.filter((response) => 
       response && response.isSuccess === false
     )
     
     if (failedOperations.length > 0) {
-      const errorMessages = failedOperations.map((response: any) => 
+      const errorMessages = failedOperations.map((response) => 
         response?.message || response?.errors?.[0]?.errorMessage || 'حدث خطأ أثناء العملية'
       )
       const errorMsg = `فشل في حذف ${failedOperations.length} عنصر: ${errorMessages.join(', ')}`
@@ -334,7 +452,35 @@ const deleteSelectedRows = async () => {
 }
 
 const openEditDialog = (mosque: Mosque) => {
-  editMosque.value = { ...mosque }
+  editMosque.value = {
+    name: mosque.mosqueName,
+    regionId: '',
+    officeId: '',
+    fileNumber: mosque.fileNumber,
+    definition: '',
+    classification: '',
+    unit: mosque.unit,
+    nearestLandmark: mosque.nearestLandmark,
+    mapLocation: mosque.mapLocation,
+    sanitation: mosque.sanitation,
+    electricityMeter: mosque.electricityMeter,
+    alternativeEnergySource: mosque.alternativeEnergySource,
+    waterSource: mosque.waterSource,
+    briefDescription: mosque.briefDescription,
+    totalCoveredArea: mosque.totalCoveredArea,
+    totalLandArea: mosque.totalLandArea,
+    numberOfFloors: mosque.numberOfFloors,
+    openingDate: mosque.openingDate,
+    constructionDate: mosque.constructionDate,
+    mosqueDefinition: 1,
+    mosqueClassification: 1,
+    landDonorName: '',
+    prayerCapacity: '',
+    sourceFunds: 1,
+    servicesSpecialNeeds: false,
+    specialEntranceWomen: false,
+  }
+  selectedMosque.value = mosque
   editDialog.value = true
 }
 
@@ -346,12 +492,31 @@ const openDeleteDialog = (mosque: Mosque) => {
 const resetNewMosque = () => {
   newMosque.value = {
     name: '',
-    address: '',
-    cityId: '',
     regionId: '',
-    imamName: '',
-    capacity: 0,
-    description: '',
+    officeId: '',
+    fileNumber: '',
+    definition: '',
+    classification: '',
+    unit: '',
+    nearestLandmark: '',
+    mapLocation: '',
+    sanitation: '',
+    electricityMeter: '',
+    alternativeEnergySource: '',
+    waterSource: '',
+    briefDescription: '',
+    totalCoveredArea: 0,
+    totalLandArea: 0,
+    numberOfFloors: 1,
+    openingDate: '',
+    constructionDate: '',
+    mosqueDefinition: 1,
+    mosqueClassification: 1,
+    landDonorName: '',
+    prayerCapacity: '',
+    sourceFunds: 1,
+    servicesSpecialNeeds: false,
+    specialEntranceWomen: false,
   }
 }
 
@@ -368,8 +533,8 @@ watch([() => options.value.page, () => options.value.itemsPerPage], () => {
 
 onMounted(() => {
   loadMosques()
-  loadCities()
   loadRegions()
+  loadOffices()
 })
 </script>
 
@@ -442,54 +607,49 @@ onMounted(() => {
           v-model="selectedRows"
         >
           <!-- Mosque name using ready-made template -->
-          <template #item.name="{ item }">
+          <template #item.mosqueName="{ item }">
             <div class="d-flex align-center">
               <VAvatar
                 size="32"
                 color="primary"
                 variant="tonal"
               >
-                {{ item.name.charAt(0).toUpperCase() }}
+                {{ item.mosqueName.charAt(0).toUpperCase() }}
               </VAvatar>
               <div class="d-flex flex-column ms-3">
-                <span class="d-block font-weight-medium text-truncate text-high-emphasis">{{ item.name }}</span>
-                <small class="text-medium-emphasis">{{ item.description || 'لا يوجد وصف' }}</small>
+                <span class="d-block font-weight-medium text-truncate text-high-emphasis">{{ item.mosqueName }}</span>
+                <small class="text-medium-emphasis">{{ item.briefDescription || 'لا يوجد وصف' }}</small>
               </div>
             </div>
           </template>
 
-          <!-- Address using ready-made template -->
-          <template #item.address="{ item }">
-            <span class="text-medium-emphasis">{{ item.address || 'لا يوجد عنوان' }}</span>
-          </template>
-
-          <!-- City using ready-made template -->
-          <template #item.cityName="{ item }">
+          <!-- File number using ready-made template -->
+          <template #item.fileNumber="{ item }">
             <VChip
-              v-if="item.cityName"
+              v-if="item.fileNumber"
               color="secondary"
               variant="tonal"
               size="small"
             >
-              {{ item.cityName }}
+              {{ item.fileNumber }}
             </VChip>
             <span 
               v-else 
               class="text-medium-emphasis"
             >
-              لا توجد مدينة
+              لا يوجد رقم ملف
             </span>
           </template>
 
           <!-- Region using ready-made template -->
-          <template #item.regionName="{ item }">
+          <template #item.region="{ item }">
             <VChip
-              v-if="item.regionName"
+              v-if="item.region"
               color="info"
               variant="tonal"
               size="small"
             >
-              {{ item.regionName }}
+              {{ item.region }}
             </VChip>
             <span 
               v-else 
@@ -499,26 +659,21 @@ onMounted(() => {
             </span>
           </template>
 
-          <!-- Imam using ready-made template -->
-          <template #item.imamName="{ item }">
-            <span class="text-medium-emphasis">{{ item.imamName || 'غير محدد' }}</span>
-          </template>
-
-          <!-- Capacity using ready-made template -->
-          <template #item.capacity="{ item }">
+          <!-- Office using ready-made template -->
+          <template #item.office="{ item }">
             <VChip
-              v-if="item.capacity"
+              v-if="item.office"
               color="success"
               variant="tonal"
               size="small"
             >
-              {{ item.capacity }}
+              {{ item.office }}
             </VChip>
             <span 
               v-else 
               class="text-medium-emphasis"
             >
-              غير محدد
+              لا يوجد مكتب
             </span>
           </template>
 
@@ -558,7 +713,7 @@ onMounted(() => {
       </VCardText>
     </VCard>
 
-    <!-- Add Mosque Dialog using VExpansionPanels -->
+    <!-- Add Mosque Dialog -->
     <VDialog
       v-model="dialog"
       max-width="800px"
@@ -567,119 +722,200 @@ onMounted(() => {
       <VCard>
         <VCardTitle class="text-h6">إضافة مسجد جديد</VCardTitle>
         <VCardText>
-          <VExpansionPanels v-model="addPanel">
-            <!-- Basic Information Panel -->
-            <VExpansionPanel>
-              <VExpansionPanelTitle>
-                <VIcon icon="mdi-information" class="me-2" />
-                المعلومات الأساسية
-              </VExpansionPanelTitle>
-              <VExpansionPanelText>
-                <VForm @submit.prevent="addMosque">
-                  <VRow>
-                    <VCol cols="12">
-                      <VTextField
-                        v-model="newMosque.name"
-                        label="اسم المسجد"
-                        variant="outlined"
-                        required
-                        :rules="[v => !!v || 'اسم المسجد مطلوب']"
-                        prepend-inner-icon="mdi-mosque"
-                      />
-                    </VCol>
-                    <VCol cols="12">
-                      <VTextField
-                        v-model="newMosque.address"
-                        label="العنوان"
-                        variant="outlined"
-                        required
-                        :rules="[v => !!v || 'العنوان مطلوب']"
-                        prepend-inner-icon="mdi-map-marker"
-                      />
-                    </VCol>
-                    <VCol cols="12" md="6">
-                      <VAutocomplete
-                        v-model="newMosque.cityId"
-                        label="المدينة"
-                        variant="outlined"
-                        :items="cities"
-                        item-title="name"
-                        item-value="id"
-                        :loading="citiesLoading"
-                        clearable
-                        no-data-text="لا توجد مدن متاحة"
-                        required
-                        :rules="[v => !!v || 'المدينة مطلوبة']"
-                        prepend-inner-icon="mdi-city"
-                        placeholder="اختر المدينة..."
-                        hide-no-data
-                      />
-                    </VCol>
-                    <VCol cols="12" md="6">
-                      <VAutocomplete
-                        v-model="newMosque.regionId"
-                        label="المنطقة"
-                        variant="outlined"
-                        :items="regions"
-                        item-title="name"
-                        item-value="id"
-                        :loading="regionsLoading"
-                        clearable
-                        no-data-text="لا توجد مناطق متاحة"
-                        required
-                        :rules="[v => !!v || 'المنطقة مطلوبة']"
-                        prepend-inner-icon="mdi-map-marker"
-                        placeholder="اختر المنطقة..."
-                        hide-no-data
-                      />
-                    </VCol>
-                  </VRow>
-                </VForm>
-              </VExpansionPanelText>
-            </VExpansionPanel>
-
-            <!-- Additional Information Panel -->
-            <VExpansionPanel>
-              <VExpansionPanelTitle>
-                <VIcon icon="mdi-details" class="me-2" />
-                معلومات إضافية
-              </VExpansionPanelTitle>
-              <VExpansionPanelText>
-                <VRow>
-                  <VCol cols="12" md="6">
-                    <VTextField
-                      v-model="newMosque.imamName"
-                      label="اسم الإمام"
-                      variant="outlined"
-                      placeholder="أدخل اسم الإمام..."
-                      prepend-inner-icon="mdi-account"
-                    />
-                  </VCol>
-                  <VCol cols="12" md="6">
-                    <VTextField
-                      v-model="newMosque.capacity"
-                      label="السعة"
-                      variant="outlined"
-                      type="number"
-                      placeholder="أدخل السعة..."
-                      min="0"
-                      prepend-inner-icon="mdi-account-group"
-                    />
-                  </VCol>
-                  <VCol cols="12">
-                    <VTextarea
-                      v-model="newMosque.description"
-                      label="الوصف"
-                      variant="outlined"
-                      rows="3"
-                      placeholder="أدخل وصف المسجد..."
-                      prepend-inner-icon="mdi-text"
-                    />
-                  </VCol>
-                </VRow>
-              </VExpansionPanelText>
-            </VExpansionPanel>
-          </VExpansionPanels>
+          <VForm @submit.prevent="addMosque">
+            <VRow>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="newMosque.name"
+                  label="اسم المسجد"
+                  variant="outlined"
+                  required
+                  :rules="[v => !!v || 'اسم المسجد مطلوب']"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="newMosque.fileNumber"
+                  label="رقم الملف"
+                  variant="outlined"
+                  required
+                  :rules="[v => !!v || 'رقم الملف مطلوب']"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VAutocomplete
+                  v-model="newMosque.regionId"
+                  label="المنطقة"
+                  variant="outlined"
+                  :items="regions"
+                  item-title="name"
+                  item-value="id"
+                  :loading="regionsLoading"
+                  clearable
+                  no-data-text="لا توجد مناطق متاحة"
+                  required
+                  :rules="[v => !!v || 'المنطقة مطلوبة']"
+                  prepend-inner-icon="mdi-map"
+                  placeholder="اختر المنطقة..."
+                  hide-no-data
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VAutocomplete
+                  v-model="newMosque.officeId"
+                  label="المكتب"
+                  variant="outlined"
+                  :items="offices"
+                  item-title="name"
+                  item-value="id"
+                  :loading="officesLoading"
+                  clearable
+                  no-data-text="لا توجد مكاتب متاحة"
+                  required
+                  :rules="[v => !!v || 'المكتب مطلوب']"
+                  prepend-inner-icon="mdi-office-building"
+                  placeholder="اختر المكتب..."
+                  hide-no-data
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="newMosque.unit"
+                  label="الوحدة"
+                  variant="outlined"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="newMosque.nearestLandmark"
+                  label="أقرب معلم"
+                  variant="outlined"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="newMosque.mapLocation"
+                  label="موقع الخريطة"
+                  variant="outlined"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="newMosque.electricityMeter"
+                  label="عداد الكهرباء"
+                  variant="outlined"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="newMosque.alternativeEnergySource"
+                  label="مصدر الطاقة البديل"
+                  variant="outlined"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="newMosque.waterSource"
+                  label="مصدر المياه"
+                  variant="outlined"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="newMosque.sanitation"
+                  label="الصرف الصحي"
+                  variant="outlined"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="newMosque.totalLandArea"
+                  label="إجمالي مساحة الأرض"
+                  variant="outlined"
+                  type="number"
+                  step="0.01"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="newMosque.totalCoveredArea"
+                  label="إجمالي المساحة المغطاة"
+                  variant="outlined"
+                  type="number"
+                  step="0.01"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="newMosque.numberOfFloors"
+                  label="عدد الطوابق"
+                  variant="outlined"
+                  type="number"
+                  min="1"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="newMosque.openingDate"
+                  label="تاريخ الافتتاح"
+                  variant="outlined"
+                  type="date"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="newMosque.constructionDate"
+                  label="تاريخ البناء"
+                  variant="outlined"
+                  type="date"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VSelect
+                  v-model="newMosque.mosqueDefinition"
+                  label="تعريف المسجد"
+                  variant="outlined"
+                  :items="mosqueDefinitions"
+                  item-title="label"
+                  item-value="value"
+                  required
+                  :rules="[v => v !== null || 'تعريف المسجد مطلوب']"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VSelect
+                  v-model="newMosque.mosqueClassification"
+                  label="تصنيف المسجد"
+                  variant="outlined"
+                  :items="mosqueClassifications"
+                  item-title="label"
+                  item-value="value"
+                  required
+                  :rules="[v => v !== null || 'تصنيف المسجد مطلوب']"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VSelect
+                  v-model="newMosque.sourceFunds"
+                  label="مصدر التمويل"
+                  variant="outlined"
+                  :items="sourceFundsOptions"
+                  item-title="label"
+                  item-value="value"
+                  required
+                  :rules="[v => v !== null || 'مصدر التمويل مطلوب']"
+                />
+              </VCol>
+              <VCol cols="12">
+                <VTextarea
+                  v-model="newMosque.briefDescription"
+                  label="وصف مختصر"
+                  variant="outlined"
+                  rows="3"
+                />
+              </VCol>
+            </VRow>
+          </VForm>
         </VCardText>
         <VCardActions>
           <VSpacer />
@@ -701,7 +937,7 @@ onMounted(() => {
       </VCard>
     </VDialog>
 
-    <!-- Edit Mosque Dialog using VExpansionPanels -->
+    <!-- Edit Mosque Dialog -->
     <VDialog
       v-model="editDialog"
       max-width="800px"
@@ -710,119 +946,200 @@ onMounted(() => {
       <VCard>
         <VCardTitle class="text-h6">تعديل المسجد</VCardTitle>
         <VCardText>
-          <VExpansionPanels v-model="editPanel">
-            <!-- Basic Information Panel -->
-            <VExpansionPanel>
-              <VExpansionPanelTitle>
-                <VIcon icon="mdi-information" class="me-2" />
-                المعلومات الأساسية
-              </VExpansionPanelTitle>
-              <VExpansionPanelText>
-                <VForm @submit.prevent="updateMosque">
-                  <VRow>
-                    <VCol cols="12">
-                      <VTextField
-                        v-model="editMosque.name"
-                        label="اسم المسجد"
-                        variant="outlined"
-                        required
-                        :rules="[v => !!v || 'اسم المسجد مطلوب']"
-                        prepend-inner-icon="mdi-mosque"
-                      />
-                    </VCol>
-                    <VCol cols="12">
-                      <VTextField
-                        v-model="editMosque.address"
-                        label="العنوان"
-                        variant="outlined"
-                        required
-                        :rules="[v => !!v || 'العنوان مطلوب']"
-                        prepend-inner-icon="mdi-map-marker"
-                      />
-                    </VCol>
-                    <VCol cols="12" md="6">
-                      <VAutocomplete
-                        v-model="editMosque.cityId"
-                        label="المدينة"
-                        variant="outlined"
-                        :items="cities"
-                        item-title="name"
-                        item-value="id"
-                        :loading="citiesLoading"
-                        clearable
-                        no-data-text="لا توجد مدن متاحة"
-                        required
-                        :rules="[v => !!v || 'المدينة مطلوبة']"
-                        prepend-inner-icon="mdi-city"
-                        placeholder="اختر المدينة..."
-                        hide-no-data
-                      />
-                    </VCol>
-                    <VCol cols="12" md="6">
-                      <VAutocomplete
-                        v-model="editMosque.regionId"
-                        label="المنطقة"
-                        variant="outlined"
-                        :items="regions"
-                        item-title="name"
-                        item-value="id"
-                        :loading="regionsLoading"
-                        clearable
-                        no-data-text="لا توجد مناطق متاحة"
-                        required
-                        :rules="[v => !!v || 'المنطقة مطلوبة']"
-                        prepend-inner-icon="mdi-map-marker"
-                        placeholder="اختر المنطقة..."
-                        hide-no-data
-                      />
-                    </VCol>
-                  </VRow>
-                </VForm>
-              </VExpansionPanelText>
-            </VExpansionPanel>
-
-            <!-- Additional Information Panel -->
-            <VExpansionPanel>
-              <VExpansionPanelTitle>
-                <VIcon icon="mdi-details" class="me-2" />
-                معلومات إضافية
-              </VExpansionPanelTitle>
-              <VExpansionPanelText>
-                <VRow>
-                  <VCol cols="12" md="6">
-                    <VTextField
-                      v-model="editMosque.imamName"
-                      label="اسم الإمام"
-                      variant="outlined"
-                      placeholder="أدخل اسم الإمام..."
-                      prepend-inner-icon="mdi-account"
-                    />
-                  </VCol>
-                  <VCol cols="12" md="6">
-                    <VTextField
-                      v-model="editMosque.capacity"
-                      label="السعة"
-                      variant="outlined"
-                      type="number"
-                      placeholder="أدخل السعة..."
-                      min="0"
-                      prepend-inner-icon="mdi-account-group"
-                    />
-                  </VCol>
-                  <VCol cols="12">
-                    <VTextarea
-                      v-model="editMosque.description"
-                      label="الوصف"
-                      variant="outlined"
-                      rows="3"
-                      placeholder="أدخل وصف المسجد..."
-                      prepend-inner-icon="mdi-text"
-                    />
-                  </VCol>
-                </VRow>
-              </VExpansionPanelText>
-            </VExpansionPanel>
-          </VExpansionPanels>
+          <VForm @submit.prevent="updateMosque">
+            <VRow>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="editMosque.name"
+                  label="اسم المسجد"
+                  variant="outlined"
+                  required
+                  :rules="[v => !!v || 'اسم المسجد مطلوب']"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="editMosque.fileNumber"
+                  label="رقم الملف"
+                  variant="outlined"
+                  required
+                  :rules="[v => !!v || 'رقم الملف مطلوب']"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VAutocomplete
+                  v-model="editMosque.regionId"
+                  label="المنطقة"
+                  variant="outlined"
+                  :items="regions"
+                  item-title="name"
+                  item-value="id"
+                  :loading="regionsLoading"
+                  clearable
+                  no-data-text="لا توجد مناطق متاحة"
+                  required
+                  :rules="[v => !!v || 'المنطقة مطلوبة']"
+                  prepend-inner-icon="mdi-map"
+                  placeholder="اختر المنطقة..."
+                  hide-no-data
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VAutocomplete
+                  v-model="editMosque.officeId"
+                  label="المكتب"
+                  variant="outlined"
+                  :items="offices"
+                  item-title="name"
+                  item-value="id"
+                  :loading="officesLoading"
+                  clearable
+                  no-data-text="لا توجد مكاتب متاحة"
+                  required
+                  :rules="[v => !!v || 'المكتب مطلوب']"
+                  prepend-inner-icon="mdi-office-building"
+                  placeholder="اختر المكتب..."
+                  hide-no-data
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="editMosque.unit"
+                  label="الوحدة"
+                  variant="outlined"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="editMosque.nearestLandmark"
+                  label="أقرب معلم"
+                  variant="outlined"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="editMosque.mapLocation"
+                  label="موقع الخريطة"
+                  variant="outlined"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="editMosque.electricityMeter"
+                  label="عداد الكهرباء"
+                  variant="outlined"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="editMosque.alternativeEnergySource"
+                  label="مصدر الطاقة البديل"
+                  variant="outlined"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="editMosque.waterSource"
+                  label="مصدر المياه"
+                  variant="outlined"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="editMosque.sanitation"
+                  label="الصرف الصحي"
+                  variant="outlined"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="editMosque.totalLandArea"
+                  label="إجمالي مساحة الأرض"
+                  variant="outlined"
+                  type="number"
+                  step="0.01"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="editMosque.totalCoveredArea"
+                  label="إجمالي المساحة المغطاة"
+                  variant="outlined"
+                  type="number"
+                  step="0.01"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="editMosque.numberOfFloors"
+                  label="عدد الطوابق"
+                  variant="outlined"
+                  type="number"
+                  min="1"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="editMosque.openingDate"
+                  label="تاريخ الافتتاح"
+                  variant="outlined"
+                  type="date"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="editMosque.constructionDate"
+                  label="تاريخ البناء"
+                  variant="outlined"
+                  type="date"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VSelect
+                  v-model="editMosque.mosqueDefinition"
+                  label="تعريف المسجد"
+                  variant="outlined"
+                  :items="mosqueDefinitions"
+                  item-title="label"
+                  item-value="value"
+                  required
+                  :rules="[v => v !== null || 'تعريف المسجد مطلوب']"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VSelect
+                  v-model="editMosque.mosqueClassification"
+                  label="تصنيف المسجد"
+                  variant="outlined"
+                  :items="mosqueClassifications"
+                  item-title="label"
+                  item-value="value"
+                  required
+                  :rules="[v => v !== null || 'تصنيف المسجد مطلوب']"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VSelect
+                  v-model="editMosque.sourceFunds"
+                  label="مصدر التمويل"
+                  variant="outlined"
+                  :items="sourceFundsOptions"
+                  item-title="label"
+                  item-value="value"
+                  required
+                  :rules="[v => v !== null || 'مصدر التمويل مطلوب']"
+                />
+              </VCol>
+              <VCol cols="12">
+                <VTextarea
+                  v-model="editMosque.briefDescription"
+                  label="وصف مختصر"
+                  variant="outlined"
+                  rows="3"
+                />
+              </VCol>
+            </VRow>
+          </VForm>
         </VCardText>
         <VCardActions>
           <VSpacer />
@@ -852,7 +1169,7 @@ onMounted(() => {
       <VCard>
         <VCardTitle class="text-h6">تأكيد الحذف</VCardTitle>
         <VCardText>
-          هل أنت متأكد من حذف المسجد "<strong>{{ selectedMosque?.name }}</strong>"؟
+          هل أنت متأكد من حذف المسجد "<strong>{{ selectedMosque?.mosqueName }}</strong>"؟
           <br>
           <span class="text-error">لا يمكن التراجع عن هذا الإجراء.</span>
         </VCardText>
@@ -880,5 +1197,4 @@ onMounted(() => {
 
 <style scoped>
 /* Using template styling */
-</style>
-
+</style> 

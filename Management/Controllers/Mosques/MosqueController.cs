@@ -23,32 +23,32 @@ namespace SpecificSolutions.Endowment.Management.Controllers.Mosques
         }
 
         [HttpPost]
-        public async Task<EndowmentResponse> CreateMosque([FromBody] CreateMosqueCommand command)
+        public async Task<IActionResult> Create(CreateMosqueCommand command)
         {
             var response = await _mediator.Send(command);
-            return response;
+            return Ok(response);
         }
 
         [HttpPut("{id}")]
-        public async Task<EndowmentResponse> Update(Guid id, UpdateMosqueCommand command)
+        public async Task<IActionResult> Update(Guid id, UpdateMosqueCommand command)
         {
-            //if (id != command.Id) return BadRequest();
+            if (id != command.Id) return BadRequest();
             var response = await _mediator.Send(command);
-            return response;
+            return Ok(response);
         }
 
         [HttpDelete("{id}")]
-        public async Task<EndowmentResponse> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             var response = await _mediator.Send(new DeleteMosqueCommand { Id = id });
-            return response;
+            return Ok(response);
         }
 
         [HttpGet("filter")]
-        public async Task<EndowmentResponse<PagedList<MosqueDTO>>> Filter([FromQuery] FilterMosqueQuery queryParams)
+        public async Task<IActionResult> Filter([FromQuery] FilterMosqueQuery queryParams)
         {
             var response = await _mediator.Send(queryParams);
-            return response;
+            return Ok(response);
         }
     }
 }
