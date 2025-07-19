@@ -101,6 +101,10 @@ const loadOffices = async () => {
     })
     
     const response = await $api(`/Office/filter?${params}`)
+    console.log('API Response:', response)
+    console.log('Offices data:', response.data)
+    console.log('Offices items:', response.data.items)
+    
     offices.value = response.data.items || []
     
     // Update total count for pagination
@@ -291,7 +295,14 @@ const deleteSelectedRows = async () => {
 }
 
 const openEditDialog = (office: Office) => {
-  editOffice.value = { ...office }
+  console.log('Opening edit dialog for office:', office)
+  editOffice.value = { 
+    ...office,
+    location: office.location || office.Location || '', // Handle both cases
+    phoneNumber: office.phoneNumber || office.PhoneNumber || '',
+    name: office.name || office.Name || ''
+  }
+  console.log('Edit office data:', editOffice.value)
   editDialog.value = true
 }
 
