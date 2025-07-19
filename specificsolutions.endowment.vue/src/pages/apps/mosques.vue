@@ -23,6 +23,7 @@ interface Mosque {
   waterSource: string
   sanitation: string
   briefDescription: string
+  picturePath: string
 }
 
 interface NewMosque {
@@ -52,6 +53,7 @@ interface NewMosque {
   sourceFunds: number
   servicesSpecialNeeds: boolean
   specialEntranceWomen: boolean
+  picturePath: string
 }
 
 definePage({
@@ -128,6 +130,7 @@ const newMosque = ref<NewMosque>({
   sourceFunds: 1,
   servicesSpecialNeeds: false,
   specialEntranceWomen: false,
+  picturePath: '',
 })
 
 const editMosque = ref<NewMosque>({
@@ -157,6 +160,7 @@ const editMosque = ref<NewMosque>({
   sourceFunds: 1,
   servicesSpecialNeeds: false,
   specialEntranceWomen: false,
+  picturePath: '',
 })
 
 // Using the ready-made template structure
@@ -288,6 +292,7 @@ const addMosque = async () => {
         sourceFunds: newMosque.value.sourceFunds,
         servicesSpecialNeeds: newMosque.value.servicesSpecialNeeds,
         specialEntranceWomen: newMosque.value.specialEntranceWomen,
+        picturePath: newMosque.value.picturePath,
       },
     })
     
@@ -346,6 +351,7 @@ const updateMosque = async () => {
         sourceFunds: editMosque.value.sourceFunds,
         servicesSpecialNeeds: editMosque.value.servicesSpecialNeeds,
         specialEntranceWomen: editMosque.value.specialEntranceWomen,
+        picturePath: editMosque.value.picturePath,
       },
     })
     
@@ -479,6 +485,7 @@ const openEditDialog = (mosque: Mosque) => {
     sourceFunds: 1,
     servicesSpecialNeeds: false,
     specialEntranceWomen: false,
+    picturePath: mosque.picturePath || '',
   }
   selectedMosque.value = mosque
   editDialog.value = true
@@ -517,6 +524,7 @@ const resetNewMosque = () => {
     sourceFunds: 1,
     servicesSpecialNeeds: false,
     specialEntranceWomen: false,
+    picturePath: '',
   }
 }
 

@@ -68,7 +68,7 @@ public class Building
             UserId = command.UserId,
             ServicesSpecialNeeds = command.ServicesSpecialNeeds,
             SpecialEntranceWomen = command.SpecialEntranceWomen,
-            PicturePath = command.PicturePath,
+            PicturePath = command.PicturePath ?? string.Empty,
             LandDonorName = command.LandDonorName,
             PrayerCapacity = command.PrayerCapacity,
             SourceFunds = command.SourceFunds,
@@ -103,7 +103,7 @@ public class Building
         UserId = command.UserId;
         ServicesSpecialNeeds = command.ServicesSpecialNeeds;
         SpecialEntranceWomen = command.SpecialEntranceWomen;
-        PicturePath = command.PicturePath;
+        PicturePath = command.PicturePath ?? string.Empty;
         LandDonorName = command.LandDonorName;
         PrayerCapacity = command.PrayerCapacity;
         SourceFunds = command.SourceFunds;
