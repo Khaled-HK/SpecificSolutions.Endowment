@@ -69,6 +69,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Of
             {
                 Id = o.Id,
                 Name = o.Name,
+                Location = o.Location,
                 PhoneNumber = o.PhoneNumber,
                 RegionName = o.Region != null ? o.Region.Name : string.Empty
             });

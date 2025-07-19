@@ -9,6 +9,7 @@ namespace SpecificSolutions.Endowment.Core.Entities.Offices
 
         public Guid Id { get; private set; }
         public string Name { get; private set; }
+        public string Location { get; private set; }
         public Guid RegionId { get; private set; }
         public Region Region { get; private set; }
         public string PhoneNumber { get; private set; }
@@ -21,6 +22,7 @@ namespace SpecificSolutions.Endowment.Core.Entities.Offices
         {
             Id = Guid.NewGuid();
             Name = name;
+            Location = location;
             PhoneNumber = phoneNumber;
             RegionId = regionId;
         }
@@ -43,6 +45,7 @@ namespace SpecificSolutions.Endowment.Core.Entities.Offices
         public void Update(string name, string location, string phoneNumber)
         {
             Name = name;
+            Location = location;
             PhoneNumber = phoneNumber;
         }
     }
