@@ -134,6 +134,7 @@ function mapPermissionToSubject(permission) {
   if (permission.startsWith('City_')) return 'City'
   if (permission.startsWith('Region_')) return 'Region'
   if (permission.startsWith('Building_')) return 'Building'
+  if (permission.startsWith('Mosque_')) return 'Mosque'
   return null // Return null for unknown permissions
 }
 </script>

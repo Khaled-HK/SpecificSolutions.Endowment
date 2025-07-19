@@ -35,6 +35,13 @@ export default [
             action: 'View',
             subject: 'Region',
           },
+          {
+            title: 'Offices',
+            to: 'apps-offices',
+            icon: { icon: 'tabler-building-office' },
+            action: 'View',
+            subject: 'Office',
+          },
         ],
       },
       {

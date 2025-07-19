@@ -6,6 +6,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Offices.Queries.Filte
 {
     public class FilterOfficeQuery : IQuery<PagedList<FilterOfficeDTO>>
     {
+        public string? SearchTerm { get; set; }
         public string? Name { get; set; }
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 10;

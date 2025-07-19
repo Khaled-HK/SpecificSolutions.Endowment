@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using SpecificSolutions.Endowment.Application.Handlers.Offices.Commands.Create;
 using SpecificSolutions.Endowment.Application.Handlers.Offices.Commands.Delete;
 using SpecificSolutions.Endowment.Application.Handlers.Offices.Commands.Update;
+using SpecificSolutions.Endowment.Application.Handlers.Offices.Queries.Filter;
 using SpecificSolutions.Endowment.Application.Handlers.Offices.Queries.GetOffice;
 using SpecificSolutions.Endowment.Application.Handlers.Offices.Queries.GetOffices;
+using SpecificSolutions.Endowment.Application.Models.DTOs.Offices;
 using SpecificSolutions.Endowment.Application.Models.Global;
 
 namespace SpecificSolutions.Endowment.Api.Controllers.Offices
@@ -32,6 +34,10 @@ namespace SpecificSolutions.Endowment.Api.Controllers.Offices
         [HttpGet("{id}")]
         public async Task<EndowmentResponse> GetOfficeById(Guid id, CancellationToken cancellationToken)
             => await _mediator.Send(new GetOfficeQuery(id), cancellationToken);
+
+        [HttpGet("filter")]
+        public async Task<EndowmentResponse<PagedList<FilterOfficeDTO>>> Filter([FromQuery] FilterOfficeQuery query, CancellationToken cancellationToken)
+            => await _mediator.Send(query, cancellationToken);
 
         [HttpGet("GetOffices")]
         public async Task<EndowmentResponse<IEnumerable<KeyValuPair>>> GetOffices([FromQuery] GetOfficesQuery query, CancellationToken cancellationToken)

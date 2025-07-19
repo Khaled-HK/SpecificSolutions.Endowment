@@ -4,7 +4,7 @@ using SpecificSolutions.Endowment.Application.Handlers.Offices.Queries.GetOffice
 using SpecificSolutions.Endowment.Application.Models.DTOs.Offices;
 using SpecificSolutions.Endowment.Application.Models.Global;
 using SpecificSolutions.Endowment.Core.Entities.Offices;
-using SpecificSolutions.Endowment.Core.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Offices
 {
@@ -46,9 +46,19 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Of
 
         public async Task<PagedList<FilterOfficeDTO>> GetByFilterAsync(FilterOfficeQuery query, CancellationToken cancellationToken)
         {
-            var officesQuery = _context.Offices.AsQueryable();
+            var officesQuery = _context.Offices
+                .Include(o => o.Region)
+                .AsQueryable();
 
             // Apply filtering based on the query parameters
+            if (!string.IsNullOrEmpty(query.SearchTerm))
+            {
+                officesQuery = officesQuery.Where(o => 
+                    o.Name.Contains(query.SearchTerm) ||
+                    o.PhoneNumber.Contains(query.SearchTerm) ||
+                    (o.Region != null && o.Region.Name.Contains(query.SearchTerm)));
+            }
+
             if (!string.IsNullOrEmpty(query.Name))
             {
                 officesQuery = officesQuery.Where(o => o.Name.Contains(query.Name));
@@ -59,7 +69,8 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Of
             {
                 Id = o.Id,
                 Name = o.Name,
-                PhoneNumber = o.PhoneNumber
+                PhoneNumber = o.PhoneNumber,
+                RegionName = o.Region != null ? o.Region.Name : string.Empty
             });
 
             // Return paged results
