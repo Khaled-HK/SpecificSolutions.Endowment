@@ -4,7 +4,6 @@ using SpecificSolutions.Endowment.Application.Handlers.Offices.Queries.GetOffice
 using SpecificSolutions.Endowment.Application.Models.DTOs.Offices;
 using SpecificSolutions.Endowment.Application.Models.Global;
 using SpecificSolutions.Endowment.Core.Entities.Offices;
-using Microsoft.EntityFrameworkCore;
 
 namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Offices
 {
@@ -44,6 +43,12 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Of
             return await _context.Offices.AnyAsync(o => o.Id == id);
         }
 
+        public async Task<bool> GetRelatedDataAsync(Guid id)
+        {
+            // Check if office has any related buildings
+            return await _context.Buildings.AnyAsync(b => b.OfficeId == id);
+        }
+
         public async Task<PagedList<FilterOfficeDTO>> GetByFilterAsync(FilterOfficeQuery query, CancellationToken cancellationToken)
         {
             var officesQuery = _context.Offices
@@ -53,7 +58,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Of
             // Apply filtering based on the query parameters
             if (!string.IsNullOrEmpty(query.SearchTerm))
             {
-                officesQuery = officesQuery.Where(o => 
+                officesQuery = officesQuery.Where(o =>
                     o.Name.Contains(query.SearchTerm) ||
                     o.PhoneNumber.Contains(query.SearchTerm) ||
                     (o.Region != null && o.Region.Name.Contains(query.SearchTerm)));

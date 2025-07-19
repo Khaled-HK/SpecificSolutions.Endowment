@@ -1,28 +1,34 @@
 using MediatR;
 using SpecificSolutions.Endowment.Application.Abstractions.IRepositories;
-using SpecificSolutions.Endowment.Application.Handlers.Offices.Exceptions;
 using SpecificSolutions.Endowment.Application.Models.Global;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.Offices.Commands.Delete
 {
     public class DeleteOfficeHandler : IRequestHandler<DeleteOfficeCommand, EndowmentResponse>
     {
-        private readonly IOfficeRepository _officeRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public DeleteOfficeHandler(IOfficeRepository officeRepository)
+        public DeleteOfficeHandler(IUnitOfWork unitOfWork)
         {
-            _officeRepository = officeRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<EndowmentResponse> Handle(DeleteOfficeCommand request, CancellationToken cancellationToken)
         {
-            var office = await _officeRepository.GetByIdAsync(request.Id, cancellationToken);
+            var office = await _unitOfWork.Offices.GetByIdAsync(request.Id, cancellationToken);
             if (office == null)
+                return Response.FailureResponse("Office not found.");
+
+            // Check if office has any related data
+            var hasRelatedData = await _unitOfWork.Offices.GetRelatedDataAsync(request.Id);
+            if (hasRelatedData)
             {
-                throw new OfficeNotFoundException(request.Id);
+                var errorMessage = $"Cannot delete office '{office.Name}' because it has related data. Please delete the related data first.";
+                return Response.FailureResponse(errorMessage: errorMessage);
             }
 
-            await _officeRepository.RemoveAsync(office);
+            await _unitOfWork.Offices.RemoveAsync(office);
+            await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Deleted();
         }

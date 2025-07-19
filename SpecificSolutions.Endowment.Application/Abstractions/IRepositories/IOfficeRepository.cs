@@ -3,7 +3,6 @@ using SpecificSolutions.Endowment.Application.Handlers.Offices.Queries.GetOffice
 using SpecificSolutions.Endowment.Application.Models.DTOs.Offices;
 using SpecificSolutions.Endowment.Application.Models.Global;
 using SpecificSolutions.Endowment.Core.Entities.Offices;
-using SpecificSolutions.Endowment.Core.Models;
 
 namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
 {
@@ -16,5 +15,6 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
         Task<bool> ExistsAsync(Guid id);
         Task<PagedList<FilterOfficeDTO>> GetByFilterAsync(FilterOfficeQuery query, CancellationToken cancellationToken);
         Task<IEnumerable<KeyValuPair>> GetOfficesAsync(GetOfficesQuery query, CancellationToken cancellationToken);
+        Task<bool> GetRelatedDataAsync(Guid id);
     }
 }
