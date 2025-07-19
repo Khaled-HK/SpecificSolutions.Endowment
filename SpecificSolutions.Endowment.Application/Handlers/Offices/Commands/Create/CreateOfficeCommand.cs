@@ -8,6 +8,6 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Offices.Commands.Crea
         public string Name { get; set; }
         public string Location { get; set; }
         public string PhoneNumber { get; set; }
-        public Guid RegionId { get; internal set; }
+        public Guid RegionId { get; set; }
     }
 }

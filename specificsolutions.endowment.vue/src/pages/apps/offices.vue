@@ -8,6 +8,7 @@ interface Office {
   value: string
   name: string
   phoneNumber: string
+  location?: string
   regionId?: string
   regionName?: string
 }
@@ -57,6 +58,7 @@ const editOffice = ref<Office>({
   value: '',
   name: '',
   phoneNumber: '',
+  location: '',
   regionId: '',
 })
 
@@ -181,6 +183,7 @@ const updateOffice = async () => {
       body: {
         id: editOffice.value.id,
         name: editOffice.value.name,
+        location: editOffice.value.location || '',
         phoneNumber: editOffice.value.phoneNumber,
       },
     })
@@ -581,6 +584,15 @@ onMounted(() => {
                   variant="outlined"
                   required
                   :rules="[v => !!v || 'اسم المكتب مطلوب']"
+                />
+              </VCol>
+              <VCol cols="12">
+                <VTextField
+                  v-model="editOffice.location"
+                  label="الموقع"
+                  variant="outlined"
+                  required
+                  :rules="[v => !!v || 'الموقع مطلوب']"
                 />
               </VCol>
               <VCol cols="12">

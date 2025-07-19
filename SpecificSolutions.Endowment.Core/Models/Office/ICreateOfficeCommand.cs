@@ -5,5 +5,6 @@
         string Name { get; set; }
         string Location { get; set; }
         string PhoneNumber { get; set; }
+        Guid RegionId { get; set; }
     }
 }
