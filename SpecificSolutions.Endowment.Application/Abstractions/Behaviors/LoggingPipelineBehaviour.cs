@@ -26,19 +26,19 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.Behaviors
             var requestId = Guid.NewGuid();
             var userId = _userContext.GetUserIdOrDefault()?.ToString() ?? "Unauthenticated";
 
-            _logger.LogInformation("Starting request {RequestName} | RequestId: {RequestId} | UserId: {UserId}", 
+            _logger.LogInformation("Starting request {RequestName} | RequestId: {RequestId} | UserId: {UserId}",
                 typeof(TRequest).Name, requestId, userId);
 
             var response = await next();
 
             if (response is EndowmentResponse endowmentResponse && !endowmentResponse.IsSuccess)
             {
-                _logger.LogWarning("Request {RequestName} completed with warnings | RequestId: {RequestId} | UserId: {UserId} | Message: {Message}", 
+                _logger.LogWarning("Request {RequestName} completed with warnings | RequestId: {RequestId} | UserId: {UserId} | Message: {Message}",
                     typeof(TRequest).Name, requestId, userId, endowmentResponse.Message);
             }
             else
             {
-                _logger.LogInformation("Request {RequestName} completed successfully | RequestId: {RequestId} | UserId: {UserId}", 
+                _logger.LogInformation("Request {RequestName} completed successfully | RequestId: {RequestId} | UserId: {UserId}",
                     typeof(TRequest).Name, requestId, userId);
             }
 

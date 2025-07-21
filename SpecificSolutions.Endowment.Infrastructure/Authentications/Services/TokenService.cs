@@ -22,10 +22,11 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var roles = await userManager.GetRolesAsync((ApplicationUser)user); // Fix to get roles
             var claims = new List<Claim>
-        {
-            new(ClaimTypes.Email, user.Email),
-            new("UserId", user.Id.ToString())
-        };
+            {
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new("sub", user.Id.ToString()),
+                new(ClaimTypes.Email, user.Email)
+            };
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -52,10 +53,11 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var roles = await userManager.GetRolesAsync((ApplicationUser)user); // Fix to get roles
             var claims = new List<Claim>
-        {
-            new(ClaimTypes.Email, user.Email),
-            new("UserId", user.Id.ToString())
-        };
+            {
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new("sub", user.Id.ToString()),
+                new(ClaimTypes.Email, user.Email)
+            };
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -94,7 +96,10 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
             {
                 if (tokenHandler.ReadToken(token) is JwtSecurityToken securityToken)
                 {
-                    return securityToken.Claims.First(claim => claim.Type == "UserId").Value;
+                    // حاول الحصول على NameIdentifier أو sub
+                    var userIdClaim = securityToken.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)
+                        ?? securityToken.Claims.FirstOrDefault(claim => claim.Type == "sub");
+                    return userIdClaim?.Value;
                 }
             }
 

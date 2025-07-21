@@ -1,7 +1,4 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using SpecificSolutions.Endowment.Application.Models.Identity;
 using System.Text;
@@ -23,7 +20,7 @@ public static class JwtAuthExtensions
         .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
         {
             var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>();
-            
+
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,

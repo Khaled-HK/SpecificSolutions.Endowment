@@ -19,10 +19,8 @@ export const useApi = createFetch({
           ...options.headers,
           Authorization: `Bearer ${accessToken}`,
         }
-      }
-
-      // Add UserId to headers if available
-      if (userData && userData.id) {
+      } else if (userData && userData.id) {
+        // فقط إذا لم يوجد توكن
         options.headers = {
           ...options.headers,
           'X-User-Id': userData.id,
