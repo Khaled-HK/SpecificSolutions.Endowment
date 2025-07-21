@@ -64,6 +64,12 @@ namespace Dashboard
 
             });
 
+            // Configure HTTPS redirection
+            services.AddHttpsRedirection(options =>
+            {
+                options.HttpsPort = 5001; // Use the HTTPS port from launchSettings.json
+            });
+
             //services.AddControllersWithViews(config =>
             //{  
             //});
@@ -97,7 +103,12 @@ namespace Dashboard
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            // Only use HTTPS redirection in production or when HTTPS is available
+            if (!env.IsDevelopment() || Configuration["ASPNETCORE_URLS"]?.Contains("https") == true)
+            {
+                app.UseHttpsRedirection();
+            }
+
             app.UseStaticFiles();
             app.UseRouting();
             app.UseSpaStaticFiles();
@@ -105,12 +116,12 @@ namespace Dashboard
             app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller}/{action=Index}/{id?}");
-                endpoints.MapRazorPages();
-            });
+                        {
+                            endpoints.MapControllerRoute(
+                                name: "default",
+                                pattern: "{controller}/{action=Index}/{id?}");
+                            endpoints.MapRazorPages();
+                        });
 
             // app.UseStatusCodePagesWithReExecute("/Login");
 

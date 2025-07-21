@@ -46,6 +46,12 @@ builder.Services.AddAntiforgery(options =>
     options.HeaderName = "X-XSRF-TOKEN";
 });
 
+// Configure HTTPS redirection
+builder.Services.AddHttpsRedirection(options =>
+{
+    options.HttpsPort = 7141; // Use the HTTPS port from launchSettings.json
+});
+
 //$.ajax({
 //type: "POST",
 //    url: "/your-endpoint",
@@ -104,12 +110,19 @@ app.UseCors(CorsPolicyName);
 //app.UseExceptionHandler();
 app.UseExceptionHandler("/Home/Error");
 
-app.UseHttpsRedirection();
+// Only use HTTPS redirection in production or when HTTPS is available
+if (!app.Environment.IsDevelopment() || builder.Configuration["ASPNETCORE_URLS"]?.Contains("https") == true)
+{
+    app.UseHttpsRedirection();
+}
 
 // Use rate limiting
 app.UseRateLimiter();
 
-// Use JWT authentication
+// Add middleware
+app.UseUserContext();
+
+// Add authentication and authorization
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -641,7 +641,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("WaterSource")
                         .IsRequired()
@@ -652,6 +652,8 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Migrations
                     b.HasIndex("OfficeId");
 
                     b.HasIndex("RegionId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Buildings");
                 });
@@ -1310,6 +1312,12 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("SpecificSolutions.Endowment.Application.Models.Identity.Entities.ApplicationUser", null)
+                        .WithMany("Buildings")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Office");
 
                     b.Navigation("Region");
@@ -1507,6 +1515,8 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Migrations
                     b.Navigation("Accounts");
 
                     b.Navigation("AuditLogs");
+
+                    b.Navigation("Buildings");
 
                     b.Navigation("Decisions");
 

@@ -57,7 +57,7 @@ const login = async () => {
     })
 
     const user = res.data
-    useCookie('accessToken').value = user.Token
+    useCookie('accessToken').value = user.token
     useCookie('userData').value = user
 
     if (!user.permissions) {

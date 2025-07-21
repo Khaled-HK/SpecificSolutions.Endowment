@@ -18,7 +18,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Mosques.Commands.Upda
         public string? NearestLandmark { get; set; }
         public string? MapLocation { get; set; }
         public string? Sanitation { get; set; }
-        public string? UserId { get; set; }
+        public string UserId { get; set; } = string.Empty; // Required by IUpdateBuildingCommand
         public string? ElectricityMeter { get; set; }
         public string? AlternativeEnergySource { get; set; }
         public string? WaterSource { get; set; }

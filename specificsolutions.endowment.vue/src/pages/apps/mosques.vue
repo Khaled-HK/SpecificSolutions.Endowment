@@ -94,7 +94,7 @@ const sourceFundsOptions = [
 // Simple alert state
 const showAlert = ref(false)
 const alertMessage = ref('')
-const alertType = ref('success')
+const alertType = ref<'success' | 'error' | 'warning' | 'info'>('success')
 
 const dialog = ref(false)
 const editDialog = ref(false)

@@ -16,9 +16,7 @@ namespace SpecificSolutions.Endowment.Core.Entities.Decisions
         // Navigation property for related appuser
         public string UserId { get; private set; }
         //public AppUser AppUser { get; private set; }
-
         public ICollection<Request> Requests { get; private set; } = new List<Request>();
-
 
         // Constructor for creating a new Decision
         public Decision(ICreateDecisionCommand command)

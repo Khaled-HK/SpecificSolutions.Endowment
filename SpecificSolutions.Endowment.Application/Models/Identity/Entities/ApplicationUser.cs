@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using SpecificSolutions.Endowment.Core.Entities.Accounts;
 using SpecificSolutions.Endowment.Core.Entities.AuditLogs;
+using SpecificSolutions.Endowment.Core.Entities.Buildings;
 using SpecificSolutions.Endowment.Core.Entities.Decisions;
 using SpecificSolutions.Endowment.Core.Entities.Offices;
 using SpecificSolutions.Endowment.Core.Entities.Requests;
@@ -17,6 +18,7 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity.Entities
         public virtual ICollection<Decision> Decisions { get; private set; } = new HashSet<Decision>();
         public virtual ICollection<Request> Requests { get; private set; } = new HashSet<Request>();
         public virtual ICollection<Account> Accounts { get; private set; } = new HashSet<Account>();
+        public virtual ICollection<Building> Buildings { get; private set; } = new HashSet<Building>();
         public virtual ICollection<RefreshToken> IdentityUserTokens { get; private set; } = new HashSet<RefreshToken>();
         public virtual ICollection<AuditLog> AuditLogs { get; private set; } = new HashSet<AuditLog>();
         public Guid OfficeId { get; private set; }

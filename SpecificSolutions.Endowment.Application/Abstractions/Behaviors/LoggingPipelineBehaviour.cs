@@ -1,34 +1,48 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using SpecificSolutions.Endowment.Application.Abstractions.Contracts;
 using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
-//using SpecificSolutions.Endowment.Application.Models.Global;
+using SpecificSolutions.Endowment.Application.Models.Global;
 
 namespace SpecificSolutions.Endowment.Application.Abstractions.Behaviors
 {
-    public class LoggingPipelineBehaviour<TRequest, TResponse>(IUserContext currentUser) : IPipelineBehavior<TRequest, TResponse>
+    public class LoggingPipelineBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : ICommand
         where TResponse : notnull
     {
+        private readonly IUserContext _userContext;
+        private readonly ILogger<LoggingPipelineBehaviour<TRequest, TResponse>> _logger;
+
+        public LoggingPipelineBehaviour(
+            IUserContext userContext,
+            ILogger<LoggingPipelineBehaviour<TRequest, TResponse>> logger)
+        {
+            _userContext = userContext;
+            _logger = logger;
+        }
+
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
-            var requestName = typeof(TRequest).Name;
-            //var userId = currentUser.UserId;
+            var requestId = Guid.NewGuid();
+            var userId = _userContext.GetUserIdOrDefault()?.ToString() ?? "Unauthenticated";
 
-            //logger.LogInformation("Request: {@RequestName} | UserId: {UserId} | RequestData: {@Request}",
-            //    requestName, userId, request);
+            _logger.LogInformation("Starting request {RequestName} | RequestId: {RequestId} | UserId: {UserId}", 
+                typeof(TRequest).Name, requestId, userId);
 
-            var resilt = await next();
+            var response = await next();
 
-            //if (resilt.IsSuccess)
-            //{
-            //    logger.LogInformation("Response: {@Response}", resilt);
-            //}
-            //else
-            //{
-            //    logger.LogError("Response: {@Response}", resilt);
-            //}
+            if (response is EndowmentResponse endowmentResponse && !endowmentResponse.IsSuccess)
+            {
+                _logger.LogWarning("Request {RequestName} completed with warnings | RequestId: {RequestId} | UserId: {UserId} | Message: {Message}", 
+                    typeof(TRequest).Name, requestId, userId, endowmentResponse.Message);
+            }
+            else
+            {
+                _logger.LogInformation("Request {RequestName} completed successfully | RequestId: {RequestId} | UserId: {UserId}", 
+                    typeof(TRequest).Name, requestId, userId);
+            }
 
-            return resilt;
+            return response;
         }
     }
 }

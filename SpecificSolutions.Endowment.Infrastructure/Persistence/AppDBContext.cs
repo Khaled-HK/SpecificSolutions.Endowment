@@ -123,6 +123,12 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence
                 .HasForeignKey(c => c.OfficeId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<Building>()
+                .HasOne<ApplicationUser>()
+                .WithMany(u => u.Buildings)
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             //modelBuilder.Entity<RefreshToken>()
             //    .ToTable("RefreshTokens")
             //    .HasBaseType<IdentityUserToken<string>>(); // This specifies the base type
