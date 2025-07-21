@@ -25,7 +25,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Mo
             // Select the relevant fields to return as DTOs
             var accountDTOs = mosques.Select(a => new MosqueDTO
             {
-                MosqueID = a.Building.Id,
+                MosqueID = a.Id,
                 MosqueClassification = a.MosqueClassification,
                 MapLocation = a.Building.MapLocation,
                 // complete all 
@@ -55,7 +55,9 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Mo
 
         public async Task<Mosque> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return await _context.Mosques.FindAsync(id, cancellationToken);
+            return await _context.Mosques
+                .Include(m => m.Building)
+                .FirstOrDefaultAsync(m => m.Id == id, cancellationToken);
         }
 
         public async Task<IEnumerable<Mosque>> GetAllAsync(CancellationToken cancellationToken)

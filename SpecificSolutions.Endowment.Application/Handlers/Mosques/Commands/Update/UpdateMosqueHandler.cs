@@ -1,6 +1,6 @@
+using SpecificSolutions.Endowment.Application.Abstractions.Contracts;
 using SpecificSolutions.Endowment.Application.Abstractions.IRepositories;
 using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
-using SpecificSolutions.Endowment.Application.Abstractions.Contracts;
 using SpecificSolutions.Endowment.Application.Handlers.Mosques.Exceptions;
 using SpecificSolutions.Endowment.Application.Models.Global;
 
@@ -33,7 +33,16 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Mosques.Commands.Upda
                 
                 request.UserId = userId.Value.ToString();
 
+                // Update the mosque
                 mosque.Update(request);
+
+                // Update the building as well
+                mosque.Building.Update(request);
+
+                // طباعة للتأكد من التحديث
+                Console.WriteLine($"Mosque updated - Definition: {mosque.MosqueDefinition}, Classification: {mosque.MosqueClassification}");
+                Console.WriteLine($"Building updated - Name: {mosque.Building.Name}, RegionId: {mosque.Building.RegionId}, OfficeId: {mosque.Building.OfficeId}");
+                Console.WriteLine($"Dates updated - OpeningDate: {mosque.Building.OpeningDate}, ConstructionDate: {mosque.Building.ConstructionDate}");
 
                 await _unitOfWork.CompleteAsync(cancellationToken);
 

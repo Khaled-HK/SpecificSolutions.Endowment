@@ -1,9 +1,9 @@
+using SpecificSolutions.Endowment.Application.Abstractions.Contracts;
 using SpecificSolutions.Endowment.Application.Abstractions.IRepositories;
 using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
-using SpecificSolutions.Endowment.Application.Abstractions.Contracts;
 using SpecificSolutions.Endowment.Application.Models.Global;
-using SpecificSolutions.Endowment.Core.Entities.Mosques;
 using SpecificSolutions.Endowment.Core.Entities.Buildings;
+using SpecificSolutions.Endowment.Core.Entities.Mosques;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.Mosques.Commands.Create
 {

@@ -91,6 +91,12 @@ const sourceFundsOptions = [
   { value: 1, label: 'محسنين' },
 ]
 
+// دالة للحصول على التاريخ الحالي بصيغة YYYY-MM-DD
+const getCurrentDate = (): string => {
+  const today = new Date();
+  return today.toISOString().split('T')[0];
+}
+
 // Simple alert state
 const showAlert = ref(false)
 const alertMessage = ref('')
@@ -121,13 +127,13 @@ const newMosque = ref<NewMosque>({
   totalCoveredArea: 0,
   totalLandArea: 0,
   numberOfFloors: 1,
-  openingDate: '',
-  constructionDate: '',
-  mosqueDefinition: 1,
-  mosqueClassification: 1,
+  openingDate: getCurrentDate(), // تعبئة التاريخ الحالي
+  constructionDate: getCurrentDate(), // تعبئة التاريخ الحالي
+  mosqueDefinition: 0, // تغيير من 1 إلى 0
+  mosqueClassification: 0, // تغيير من 1 إلى 0
   landDonorName: '',
   prayerCapacity: '',
-  sourceFunds: 1,
+  sourceFunds: 0, // تغيير من 1 إلى 0
   servicesSpecialNeeds: false,
   specialEntranceWomen: false,
   picturePath: '',
@@ -263,6 +269,25 @@ const loadOffices = async () => {
 
 const addMosque = async () => {
   try {
+    // معالجة التواريخ - إجبارية
+    const processDate = (dateString: string): string => {
+      if (!dateString || dateString.trim() === '') {
+        // إذا كان التاريخ فارغ، استخدم التاريخ الحالي
+        return getCurrentDate();
+      }
+      try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) {
+          // إذا كان التاريخ غير صحيح، استخدم التاريخ الحالي
+          return getCurrentDate();
+        }
+        return date.toISOString().split('T')[0]; // YYYY-MM-DD
+      } catch {
+        // في حالة الخطأ، استخدم التاريخ الحالي
+        return getCurrentDate();
+      }
+    };
+
     const response = await $api('/Mosque', {
       method: 'POST',
       body: {
@@ -283,8 +308,8 @@ const addMosque = async () => {
         totalCoveredArea: newMosque.value.totalCoveredArea,
         totalLandArea: newMosque.value.totalLandArea,
         numberOfFloors: newMosque.value.numberOfFloors,
-        openingDate: newMosque.value.openingDate,
-        constructionDate: newMosque.value.constructionDate,
+        openingDate: processDate(newMosque.value.openingDate),
+        constructionDate: processDate(newMosque.value.constructionDate),
         mosqueDefinition: newMosque.value.mosqueDefinition,
         mosqueClassification: newMosque.value.mosqueClassification,
         landDonorName: newMosque.value.landDonorName,
@@ -321,6 +346,40 @@ const addMosque = async () => {
 
 const updateMosque = async () => {
   try {
+    // معالجة التواريخ - إجبارية
+    const processDate = (dateString: string): string => {
+      if (!dateString || dateString.trim() === '') {
+        // إذا كان التاريخ فارغ، استخدم التاريخ الحالي
+        return getCurrentDate();
+      }
+      try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) {
+          // إذا كان التاريخ غير صحيح، استخدم التاريخ الحالي
+          return getCurrentDate();
+        }
+        return date.toISOString().split('T')[0]; // YYYY-MM-DD
+      } catch {
+        // في حالة الخطأ، استخدم التاريخ الحالي
+        return getCurrentDate();
+      }
+    };
+
+    // طباعة البيانات المرسلة للتأكد
+    console.log('البيانات المرسلة للتحديث:', {
+      id: selectedMosque.value?.mosqueID,
+      name: editMosque.value.name,
+      regionId: editMosque.value.regionId,
+      officeId: editMosque.value.officeId,
+      openingDate: processDate(editMosque.value.openingDate),
+      constructionDate: processDate(editMosque.value.constructionDate),
+      // ... باقي الحقول
+    });
+    
+    // طباعة الـ ID المرسل للتأكد
+    console.log('ID المرسل:', selectedMosque.value?.mosqueID);
+    console.log('نوع الـ ID:', typeof selectedMosque.value?.mosqueID);
+    
     const response = await $api(`/Mosque/${selectedMosque.value?.mosqueID}`, {
       method: 'PUT',
       body: {
@@ -342,8 +401,8 @@ const updateMosque = async () => {
         totalCoveredArea: editMosque.value.totalCoveredArea,
         totalLandArea: editMosque.value.totalLandArea,
         numberOfFloors: editMosque.value.numberOfFloors,
-        openingDate: editMosque.value.openingDate,
-        constructionDate: editMosque.value.constructionDate,
+        openingDate: processDate(editMosque.value.openingDate),
+        constructionDate: processDate(editMosque.value.constructionDate),
         mosqueDefinition: editMosque.value.mosqueDefinition,
         mosqueClassification: editMosque.value.mosqueClassification,
         landDonorName: editMosque.value.landDonorName,
@@ -457,14 +516,41 @@ const deleteSelectedRows = async () => {
   }
 }
 
-const openEditDialog = (mosque: Mosque) => {
+const openEditDialog = async (mosque: Mosque) => {
+  // طباعة بيانات المسجد القادمة من API
+  console.log('بيانات المسجد من API:', mosque);
+  
+  // تأكد من تحميل القوائم قبل التعديل
+  if (regions.value.length === 0) await loadRegions();
+  if (offices.value.length === 0) await loadOffices();
+
+  // البحث عن regionId بناءً على اسم المنطقة
+  const regionId = regions.value.find(r => r.name === mosque.region)?.id || '';
+  
+  // البحث عن officeId بناءً على اسم المكتب
+  const officeId = offices.value.find(o => o.name === mosque.office)?.id || '';
+  
+  console.log('تم العثور على:', { regionId, officeId, regionName: mosque.region, officeName: mosque.office });
+
+  // تحويل التواريخ من ISO string إلى YYYY-MM-DD
+  const formatDate = (dateString: string | null | undefined): string => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      return date.toISOString().split('T')[0]; // YYYY-MM-DD
+    } catch {
+      return '';
+    }
+  };
+
+  // تعبئة بيانات المسجد للتعديل
   editMosque.value = {
     name: mosque.mosqueName,
-    regionId: '',
-    officeId: '',
+    regionId: regionId,
+    officeId: officeId,
     fileNumber: mosque.fileNumber,
-    definition: '',
-    classification: '',
+    definition: mosque.definition || '',
+    classification: mosque.classification || '',
     unit: mosque.unit,
     nearestLandmark: mosque.nearestLandmark,
     mapLocation: mosque.mapLocation,
@@ -476,24 +562,33 @@ const openEditDialog = (mosque: Mosque) => {
     totalCoveredArea: mosque.totalCoveredArea,
     totalLandArea: mosque.totalLandArea,
     numberOfFloors: mosque.numberOfFloors,
-    openingDate: mosque.openingDate,
-    constructionDate: mosque.constructionDate,
-    mosqueDefinition: 1,
-    mosqueClassification: 1,
-    landDonorName: '',
-    prayerCapacity: '',
-    sourceFunds: 1,
-    servicesSpecialNeeds: false,
-    specialEntranceWomen: false,
+    openingDate: formatDate(mosque.openingDate),
+    constructionDate: formatDate(mosque.constructionDate),
+    mosqueDefinition: mosque.mosqueDefinition || 0, // استخدام القيمة من API أو 0 كافتراضي
+    mosqueClassification: mosque.mosqueClassification || 0, // استخدام القيمة من API أو 0 كافتراضي
+    landDonorName: mosque.landDonorName || '',
+    prayerCapacity: mosque.prayerCapacity || '',
+    sourceFunds: mosque.sourceFunds || 0, // استخدام القيمة من API أو 0 كافتراضي
+    servicesSpecialNeeds: mosque.servicesSpecialNeeds || false,
+    specialEntranceWomen: mosque.specialEntranceWomen || false,
     picturePath: mosque.picturePath || '',
-  }
-  selectedMosque.value = mosque
-  editDialog.value = true
+  };
+  selectedMosque.value = mosque;
+  editDialog.value = true;
+  // طباعة القيم للتأكد
+  console.log('editMosque.value عند التعديل:', editMosque.value);
 }
 
 const openDeleteDialog = (mosque: Mosque) => {
   selectedMosque.value = mosque
   deleteDialog.value = true
+}
+
+const openAddDialog = () => {
+  // تعبئة التاريخ الحالي تلقائياً
+  newMosque.value.openingDate = getCurrentDate()
+  newMosque.value.constructionDate = getCurrentDate()
+  dialog.value = true
 }
 
 const resetNewMosque = () => {
@@ -515,13 +610,13 @@ const resetNewMosque = () => {
     totalCoveredArea: 0,
     totalLandArea: 0,
     numberOfFloors: 1,
-    openingDate: '',
-    constructionDate: '',
-    mosqueDefinition: 1,
-    mosqueClassification: 1,
+    openingDate: getCurrentDate(), // تعبئة التاريخ الحالي
+    constructionDate: getCurrentDate(), // تعبئة التاريخ الحالي
+    mosqueDefinition: 0,
+    mosqueClassification: 0,
     landDonorName: '',
     prayerCapacity: '',
-    sourceFunds: 1,
+    sourceFunds: 0,
     servicesSpecialNeeds: false,
     specialEntranceWomen: false,
     picturePath: '',
@@ -573,7 +668,7 @@ onMounted(() => {
           </VBtn>
           <VBtn
             color="primary"
-            @click="dialog = true"
+            @click="openAddDialog"
           >
             إضافة مسجد
           </VBtn>
@@ -868,6 +963,8 @@ onMounted(() => {
                   label="تاريخ الافتتاح"
                   variant="outlined"
                   type="date"
+                  required
+                  :rules="[v => !!v || 'تاريخ الافتتاح مطلوب']"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -876,6 +973,8 @@ onMounted(() => {
                   label="تاريخ البناء"
                   variant="outlined"
                   type="date"
+                  required
+                  :rules="[v => !!v || 'تاريخ البناء مطلوب']"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -1092,6 +1191,8 @@ onMounted(() => {
                   label="تاريخ الافتتاح"
                   variant="outlined"
                   type="date"
+                  required
+                  :rules="[v => !!v || 'تاريخ الافتتاح مطلوب']"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -1100,6 +1201,8 @@ onMounted(() => {
                   label="تاريخ البناء"
                   variant="outlined"
                   type="date"
+                  required
+                  :rules="[v => !!v || 'تاريخ البناء مطلوب']"
                 />
               </VCol>
               <VCol cols="12" md="6">

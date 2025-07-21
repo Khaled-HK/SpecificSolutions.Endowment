@@ -75,10 +75,14 @@ namespace SpecificSolutions.Endowment.Application.Validators.Mosques
                 .LessThanOrEqualTo(50).WithMessage("عدد الطوابق يجب أن لا يتجاوز 50");
 
             RuleFor(x => x.OpeningDate)
-                .GreaterThan(DateTime.MinValue).WithMessage("تاريخ الافتتاح غير صحيح");
+                .NotEmpty().WithMessage("تاريخ الافتتاح مطلوب")
+                .GreaterThan(DateTime.MinValue).WithMessage("تاريخ الافتتاح غير صحيح")
+                .LessThanOrEqualTo(DateTime.Today.AddYears(10)).WithMessage("تاريخ الافتتاح لا يمكن أن يكون في المستقبل البعيد");
 
             RuleFor(x => x.ConstructionDate)
-                .GreaterThan(DateTime.MinValue).WithMessage("تاريخ البناء غير صحيح");
+                .NotEmpty().WithMessage("تاريخ البناء مطلوب")
+                .GreaterThan(DateTime.MinValue).WithMessage("تاريخ البناء غير صحيح")
+                .LessThanOrEqualTo(DateTime.Today.AddYears(10)).WithMessage("تاريخ البناء لا يمكن أن يكون في المستقبل البعيد");
 
             RuleFor(x => x.LandDonorName)
                 .MaximumLength(200).When(x => !string.IsNullOrWhiteSpace(x.LandDonorName))

@@ -35,4 +35,4 @@ namespace SpecificSolutions.Endowment.Application.Middlewares
             return builder.UseMiddleware<UserContextMiddleware>();
         }
     }
-} 
+}
