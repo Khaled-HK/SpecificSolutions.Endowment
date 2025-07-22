@@ -1,4 +1,4 @@
-﻿import axios from 'axios';
+import axios from 'axios';
 
 axios.defaults.headers.common['X-CSRF-TOKEN'] = document.cookie.split("=")[1];
 
@@ -50,6 +50,14 @@ export default {
     FilterBuildingDetail(queryParams) {
         return axios.get(`api/BuildingDetail/filter`, {
             params: queryParams // Axios converts this to `?Name=...&City=...`
+        });
+    },
+
+    UpdateBuildingDetail(id, command) {
+        return axios.put(`api/BuildingDetail/${id}`, command, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
         });
     },
 
@@ -589,6 +597,8 @@ export default {
 
 
     // ********************************| End Dictionaries |********************************
+
+
 
 
 

@@ -1,4 +1,4 @@
-﻿
+
 import Swal from "sweetalert2";
 import HelperMixin from '../../Shared/HelperMixin.vue';
 import PaginationHelper from '../../Shared/PaginationHelper.vue';
@@ -60,6 +60,15 @@ export default {
             },
              
             buildingDetailRuleForm: {
+                Name: '',
+                WithinMosqueArea: false,
+                Floors: 0,  // Ensure this is number, not string
+                BuildingCategory: 'Facility',  // Must match enum name exactly
+                MosqueID: ''
+            },
+
+            editBuildingDetailRuleForm: {
+                Id: '',
                 Name: '',
                 WithinMosqueArea: false,
                 Floors: 0,  // Ensure this is number, not string
@@ -305,6 +314,57 @@ export default {
                                 this.$helper.ShowMessage('error', 'خطأ بعملية الإظافة', err);
                             } else {
                                 this.$helper.ShowMessage('error', 'خطأ بعملية الإظافة', 'حدت خطاء غير متوقع');
+                            }
+                        });
+
+                } else {
+                    this.$helper.showSwal('warning');
+                    return false;
+                }
+            });
+        },
+
+        EditBuildingDetail(item) {
+            // Populate the edit form with the selected item data
+            this.editBuildingDetailRuleForm.Id = item.id;
+            this.editBuildingDetailRuleForm.Name = item.name;
+            this.editBuildingDetailRuleForm.WithinMosqueArea = item.withinMosqueArea;
+            // Ensure floors is properly converted to number to avoid default value issue
+            this.editBuildingDetailRuleForm.Floors = parseInt(item.floors) || 1;
+            this.editBuildingDetailRuleForm.BuildingCategory = item.buildingCategory;
+            this.editBuildingDetailRuleForm.MosqueID = this.SelectedItem.mosqueID;
+            
+            console.log('Editing building detail - Original item:', item);
+            console.log('Editing building detail - Floors value:', item.floors, 'Type:', typeof item.floors);
+            console.log('Editing building detail - Form after population:', this.editBuildingDetailRuleForm);
+        },
+
+        updateBuildingDetailSubmitForm(formName) {
+            console.log('updateBuildingDetailSubmitForm called with:', this.editBuildingDetailRuleForm);
+            this.editBuildingDetailRuleForm.MosqueID = this.SelectedItem.mosqueID;
+            this.editBuildingDetailRuleForm.MosqueID = this.SelectedItem?.mosqueID || '';
+
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    this.$blockUI.Start();
+                    
+                    // Call the update API endpoint
+                    this.$http.UpdateBuildingDetail(this.editBuildingDetailRuleForm.Id, this.editBuildingDetailRuleForm)
+                        .then(response => {
+                            this.$blockUI.Stop();
+                            this.GetBuildingDetails(1); // Refresh the building details list
+                            this.ClearForm(this.editBuildingDetailRuleForm);
+                            this.$helper.ShowMessage('success', 'عملية ناجحة', 'تم تحديث تفصيل المبنى بنجاح');
+                            
+                            // Close the modal
+                            document.getElementById('CloseEdit').click();
+                        })
+                        .catch((err) => {
+                            this.$blockUI.Stop();
+                            if (err.response && err.response.data) {
+                                this.$helper.ShowMessage('error', 'خطأ بعملية التحديث', err.response.data);
+                            } else {
+                                this.$helper.ShowMessage('error', 'خطأ بعملية التحديث', 'حدت خطاء غير متوقع');
                             }
                         });
 

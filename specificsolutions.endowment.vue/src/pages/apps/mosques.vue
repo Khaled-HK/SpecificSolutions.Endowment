@@ -116,6 +116,15 @@ const buildingDetails = ref<any[]>([])
 const buildingDetailsLoading = ref(false)
 const buildingDetailsSearch = ref('')
 const addBuildingDetailForm = ref()
+const editBuildingDetailDialog = ref(false)
+const editBuildingDetailForm = ref()
+const editingBuildingDetail = ref({
+  id: '',
+  name: '',
+  floors: 1,
+  withinMosqueArea: true,
+  buildingCategory: 'Endowment'
+})
 const newBuildingDetail = ref({
   name: '',
   floors: 1,
@@ -775,6 +784,70 @@ const deleteBuildingDetail = async (buildingDetailId: string) => {
 
 const openAddBuildingDetailDialog = () => {
   addBuildingDetailDialog.value = true
+}
+
+const openEditBuildingDetailDialog = (buildingDetail: any) => {
+  editingBuildingDetail.value = {
+    id: buildingDetail.id,
+    name: buildingDetail.name,
+    floors: parseInt(buildingDetail.floors) || 1, // Ensure proper number conversion
+    withinMosqueArea: buildingDetail.withinMosqueArea,
+    buildingCategory: buildingDetail.buildingCategory
+  }
+  console.log('Editing building detail - Original item:', buildingDetail)
+  console.log('Editing building detail - Floors value:', buildingDetail.floors, 'Type:', typeof buildingDetail.floors)
+  console.log('Editing building detail - Form after population:', editingBuildingDetail.value)
+  editBuildingDetailDialog.value = true
+}
+
+const closeEditBuildingDetailDialog = () => {
+  editBuildingDetailDialog.value = false
+  // Reset form
+  editingBuildingDetail.value = {
+    id: '',
+    name: '',
+    floors: 1,
+    withinMosqueArea: true,
+    buildingCategory: 'Endowment'
+  }
+}
+
+const updateBuildingDetail = async () => {
+  try {
+    const response = await $api(`/BuildingDetail/${editingBuildingDetail.value.id}`, {
+      method: 'PUT',
+      body: {
+        id: editingBuildingDetail.value.id,
+        name: editingBuildingDetail.value.name,
+        floors: editingBuildingDetail.value.floors,
+        withinMosqueArea: editingBuildingDetail.value.withinMosqueArea,
+        buildingCategory: editingBuildingDetail.value.buildingCategory
+      },
+    })
+    
+    if (response && response.isSuccess === false) {
+      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء تعديل تفصيل المبنى'
+      alertMessage.value = errorMsg
+      alertType.value = 'error'
+      showAlert.value = true
+      return
+    }
+    
+    // Close popup dialog and reload data
+    closeEditBuildingDetailDialog()
+    
+    // Reload building details
+    await reloadBuildingDetails()
+    
+    alertMessage.value = 'تم تعديل تفصيل المبنى بنجاح'
+    alertType.value = 'success'
+    showAlert.value = true
+  } catch (error) {
+    console.error('Error updating building detail:', error)
+    alertMessage.value = 'حدث خطأ أثناء تعديل تفصيل المبنى'
+    alertType.value = 'error'
+    showAlert.value = true
+  }
 }
 
 const closeAddBuildingDetailDialog = () => {
@@ -1628,6 +1701,9 @@ onMounted(() => {
                 </template>
                 <template #item.actions="{ item }">
                   <div class="d-flex gap-1">
+                    <IconBtn @click="openEditBuildingDetailDialog(item)" color="primary">
+                      <VIcon icon="tabler-edit" />
+                    </IconBtn>
                     <IconBtn @click="deleteBuildingDetail(item.id)" color="error">
                       <VIcon icon="tabler-trash" />
                     </IconBtn>
@@ -1742,6 +1818,103 @@ onMounted(() => {
             prepend-icon="tabler-plus"
           >
             إضافة
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+
+    <!-- Edit Building Detail Popup Dialog -->
+    <VDialog
+      v-model="editBuildingDetailDialog"
+      max-width="600px"
+      persistent
+    >
+      <VCard>
+        <VCardTitle class="text-h6 d-flex align-center">
+          <VIcon icon="tabler-building-edit" class="me-2" />
+          تعديل تفصيل مبنى
+          <VSpacer />
+          <IconBtn @click="closeEditBuildingDetailDialog" size="small">
+            <VIcon icon="tabler-x" />
+          </IconBtn>
+        </VCardTitle>
+        <VCardSubtitle v-if="selectedMosque" class="text-medium-emphasis">
+          للمسجد: {{ selectedMosque.mosqueName }}
+        </VCardSubtitle>
+        <VCardText>
+          <VForm @submit.prevent="updateBuildingDetail" ref="editBuildingDetailForm">
+            <VRow>
+              <VCol cols="12">
+                <VTextField
+                  v-model="editingBuildingDetail.name"
+                  label="اسم المبنى"
+                  variant="outlined"
+                  required
+                  :rules="[v => !!v || 'اسم المبنى مطلوب']"
+                  placeholder="مثال: منزل الإمام، المصلى، دورة المياه..."
+                  prepend-inner-icon="tabler-building"
+                  clearable
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="editingBuildingDetail.floors"
+                  label="عدد الطوابق"
+                  variant="outlined"
+                  type="number"
+                  min="1"
+                  max="50"
+                  required
+                  :rules="[v => !!v || 'عدد الطوابق مطلوب', v => v > 0 || 'عدد الطوابق يجب أن يكون أكبر من صفر']"
+                  prepend-inner-icon="tabler-layers"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VSelect
+                  v-model="editingBuildingDetail.buildingCategory"
+                  label="نوع المبنى"
+                  variant="outlined"
+                  :items="buildingCategoryOptions"
+                  item-title="label"
+                  item-value="value"
+                  required
+                  :rules="[v => !!v || 'نوع المبنى مطلوب']"
+                  prepend-inner-icon="tabler-category"
+                />
+              </VCol>
+              <VCol cols="12">
+                <VCheckbox
+                  v-model="editingBuildingDetail.withinMosqueArea"
+                  label="داخل مساحة المسجد"
+                  hide-details
+                  color="primary"
+                  class="mt-2"
+                />
+                <VCardText class="text-caption text-medium-emphasis pa-0 mt-1">
+                  <VIcon icon="tabler-info-circle" size="small" class="me-1" />
+                  إذا كان المبنى داخل حدود المسجد أم خارجه
+                </VCardText>
+              </VCol>
+            </VRow>
+          </VForm>
+        </VCardText>
+        <VCardActions>
+          <VSpacer />
+          <VBtn
+            color="grey-darken-1"
+            variant="text"
+            @click="closeEditBuildingDetailDialog"
+          >
+            إلغاء
+          </VBtn>
+          <VBtn
+            color="primary"
+            variant="flat"
+            @click="updateBuildingDetail"
+            :loading="buildingDetailsLoading"
+            prepend-icon="tabler-check"
+          >
+            تحديث
           </VBtn>
         </VCardActions>
       </VCard>

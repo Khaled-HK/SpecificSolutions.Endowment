@@ -1,4 +1,4 @@
-﻿<div class="content-wrapper">
+<div class="content-wrapper">
     <!-- Content -->
 
     <div class="container-xxl flex-grow-1 container-p-y" v-if="state==0">
@@ -1924,6 +1924,16 @@
                                                             </el-tooltip>
 
                                                             <a href="javascript:;"
+                                                               @click.prevent="EditBuildingDetail(item)"
+                                                               type="button" data-bs-toggle="modal"
+                                                               data-bs-target="#EditBuildingDetailDialog"
+                                                               class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill"
+                                                               data-bs-placement="top" aria-label="Edit Building Detail"
+                                                               data-bs-original-title="Edit Building Detail">
+                                                                <i class="ti ti-edit text-primary ti-md"></i>
+                                                            </a>
+
+                                                            <a href="javascript:;"
                                                                @click.prevent="ActiveProfileYear(item.id)"
                                                                type="button"
                                                                v-if="item.status==2"
@@ -2033,6 +2043,92 @@
                                                     </button>
                                                     <button type="reset"
                                                             id="Close"
+                                                            class="btn btn-label-secondary btn-reset"
+                                                            data-bs-dismiss="modal"
+                                                            aria-label="Close">
+                                                        إلغاء
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </el-form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--Edit Building Detail Dialog-->
+                        <div class="modal fade"
+                             id="EditBuildingDetailDialog"
+                             tabindex="-1"
+                             aria-hidden="true">
+                            <div class="modal-dialog modal-simple modal-enable-otp modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <div class="text-center mb-6">
+                                            <h4 class="mb-2">تعديل تفصيل المبنى</h4>
+                                            <p>قم بتعديل بيانات تفصيل المبنى</p>
+                                        </div>
+                                        <el-form id="editBuildingDetailRuleForm"
+                                                 :model="editBuildingDetailRuleForm"
+                                                 :rules="buildingDetailRules"
+                                                 ref="editBuildingDetailRuleForm"
+                                                 label-width="120px"
+                                                 class="demo-ruleForm">
+                                            <form class="row g-4" id="editBuildingDetailForm" onsubmit="return false">
+                                                <div class="col-12">
+                                                    <el-form-item prop="Name" label="اسم المبنى">
+                                                        <div class="input-group input-group-merge">
+                                                            <input type="text" id="modalEditBuildingName"
+                                                                   class="form-control"
+                                                                   v-model="editBuildingDetailRuleForm.Name"
+                                                                   placeholder="أدخل اسم المبنى" />
+                                                        </div>
+                                                    </el-form-item>
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <el-form-item label="داخل مساحة المسجد">
+                                                        <el-checkbox v-model="editBuildingDetailRuleForm.WithinMosqueArea">
+                                                            داخل مساحة المسجد
+                                                        </el-checkbox>
+                                                    </el-form-item>
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <el-form-item prop="Floors" label="عدد الطوابق">
+                                                        <div class="input-group input-group-merge">
+                                                            <input type="number" id="modalEditBuildingFloors"
+                                                                   class="form-control"
+                                                                   v-model="editBuildingDetailRuleForm.Floors"
+                                                                   placeholder="أدخل عدد الطوابق" />
+                                                        </div>
+                                                    </el-form-item>
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <el-form-item prop="BuildingCategory" label="تصنيف المبنى">
+                                                        <el-select v-model="editBuildingDetailRuleForm.BuildingCategory"
+                                                                   style="width: 100%;"
+                                                                   filterable
+                                                                   placeholder="اختر تصنيف المبنى"
+                                                                   clearable>
+                                                            <el-option v-for="(value, key) in BuildingCategories"
+                                                                       :key="key"
+                                                                       :label="value"
+                                                                       :value="key">
+                                                            </el-option>
+                                                        </el-select>
+                                                    </el-form-item>
+                                                </div>
+
+                                                <div class="col-12 text-center">
+                                                    <button type="submit" class="btn btn-primary me-3"
+                                                            @click.prevent="updateBuildingDetailSubmitForm('editBuildingDetailRuleForm')">
+                                                        تحديث البيانات
+                                                    </button>
+                                                    <button type="reset"
+                                                            id="CloseEdit"
                                                             class="btn btn-label-secondary btn-reset"
                                                             data-bs-dismiss="modal"
                                                             aria-label="Close">
