@@ -120,12 +120,12 @@ const newBuildingDetail = ref({
   name: '',
   floors: 1,
   withinMosqueArea: true,
-  buildingCategory: 'Endowment'
+  buildingCategory: 1
 })
 
 const buildingCategoryOptions = [
-  { value: 'Facility', label: 'منشأة' },
-  { value: 'Endowment', label: 'وقف' }
+  { value: 0, label: 'منشأة' },
+  { value: 1, label: 'وقف' }
 ]
 
 const newMosque = ref<NewMosque>({
@@ -784,7 +784,7 @@ const closeAddBuildingDetailDialog = () => {
     name: '',
     floors: 1,
     withinMosqueArea: true,
-    buildingCategory: 'Endowment'
+    buildingCategory: 1
   }
 }
 
@@ -1610,11 +1610,11 @@ onMounted(() => {
                 </template>
                 <template #item.buildingCategory="{ item }">
                   <VChip
-                    :color="item.buildingCategory === 'Facility' ? 'success' : 'warning'"
+                    :color="item.buildingCategory === 0 ? 'success' : 'warning'"
                     variant="tonal"
                     size="small"
                   >
-                    {{ item.buildingCategory === 'Facility' ? 'منشأة' : 'وقف' }}
+                    {{ item.buildingCategory === 0 ? 'منشأة' : 'وقف' }}
                   </VChip>
                 </template>
                 <template #item.withinMosqueArea="{ item }">
