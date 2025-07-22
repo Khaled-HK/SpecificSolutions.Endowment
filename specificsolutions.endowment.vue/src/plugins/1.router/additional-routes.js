@@ -8,15 +8,24 @@ export const redirects = [
     path: '/',
     name: 'index',
     redirect: to => {
-      // TODO: Get type from backend
-      const userData = useCookie('userData')
-      const userRole = userData.value?.role
-      if (userRole === 'admin')
-        return { name: 'dashboards-crm' }
-      if (userRole === 'client')
-        return { name: 'access-control' }
-      
-      return { name: 'login', query: to.query }
+      // التحقق من وجود بيانات المستخدم بطريقة آمنة
+      try {
+        const userData = useCookie('userData')
+        const userRole = userData.value?.role
+        
+        // إذا كان المستخدم مسجل دخول، توجيهه حسب دوره
+        if (userRole === 'admin')
+          return { name: 'dashboard' }
+        if (userRole === 'client')
+          return { name: 'dashboard' }
+        
+        // إذا لم يكن مسجل دخول، توجيهه لصفحة تسجيل الدخول
+        return { name: 'login', query: to.query }
+      } catch (error) {
+        console.log('Error accessing user data, redirecting to login:', error)
+        // في حالة حدوث خطأ، توجيه المستخدم لصفحة تسجيل الدخول
+        return { name: 'login', query: to.query }
+      }
     },
   },
   {
