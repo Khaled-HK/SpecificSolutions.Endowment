@@ -58,7 +58,8 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Fa
             {
                 Id = fd.Id,
                 Quantity = fd.Quantity,
-                // أضف باقي الخصائص إذا لزم
+                ProductId = fd.ProductId,
+                ProductName = fd.Product.Name
             });
 
             return await PagedList<FacilityDetailDTO>.CreateAsync(dtos, query.PageNumber, query.PageSize, cancellationToken);

@@ -28,7 +28,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.FacilityDetails.Queri
                 Quantity = facilityDetail.Quantity,
             };
 
-            return new(data: facilityDetailDTO);
+            return Response.FilterResponse(facilityDetailDTO);
         }
     }
 }
