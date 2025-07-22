@@ -15,7 +15,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Fa
             _context = context;
         }
 
-        public async Task<FacilityDetail> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<FacilityDetail?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
             return await _context.FacilityDetails.FindAsync(id, cancellationToken);
         }
@@ -25,17 +25,17 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Fa
             return await _context.FacilityDetails.ToListAsync(cancellationToken);
         }
 
-        public async Task AddAsync(FacilityDetail FacilityDetail, CancellationToken cancellationToken)
-        {
-            await _context.FacilityDetails.AddAsync(FacilityDetail, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
-        }
+        //public async Task AddAsync(FacilityDetail FacilityDetail, CancellationToken cancellationToken)
+        //{
+        //    await _context.FacilityDetails.AddAsync(FacilityDetail, cancellationToken);
+        //    await _context.SaveChangesAsync(cancellationToken);
+        //}
 
-        public async Task UpdateAsync(FacilityDetail FacilityDetail)
-        {
-            _context.FacilityDetails.Update(FacilityDetail);
-            await _context.SaveChangesAsync();
-        }
+        //public async Task UpdateAsync(FacilityDetail FacilityDetail)
+        //{
+        //    _context.FacilityDetails.Update(FacilityDetail);
+        //    await _context.SaveChangesAsync();
+        //}
 
         public async Task DeleteAsync(Guid id)
         {
@@ -49,23 +49,19 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Fa
 
         public async Task<PagedList<FacilityDetailDTO>> GetByFilterAsync(FilterFacilityDetailQuery query, CancellationToken cancellationToken)
         {
-            var citiesQuery = _context.Cities.AsQueryable();
+            var facilityDetailsQuery = _context.FacilityDetails.AsQueryable();
 
             if (!string.IsNullOrEmpty(query.SearchTerm))
-            {
-                citiesQuery = citiesQuery.Where(c =>
-                    c.Name.Contains(query.SearchTerm) ||
-                    c.Country.Contains(query.SearchTerm));
-            }
+                facilityDetailsQuery = facilityDetailsQuery.Where(fd => fd.Product.Name.Contains(query.SearchTerm));
 
-            var dtos = citiesQuery.Select(c => new FacilityDetailDTO
+            var dtos = facilityDetailsQuery.Select(fd => new FacilityDetailDTO
             {
-                Id = c.Id,
-                //Name = c.Name,
+                Id = fd.Id,
+                Quantity = fd.Quantity,
+                // أضف باقي الخصائص إذا لزم
             });
 
             return await PagedList<FacilityDetailDTO>.CreateAsync(dtos, query.PageNumber, query.PageSize, cancellationToken);
         }
-
     }
 }

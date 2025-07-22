@@ -5,5 +5,6 @@ namespace SpecificSolutions.Endowment.Core.Models.FacilityDetails
     {
         public int Quantity { get; set; }
         Guid ProductId { get; }
+        Guid BuildingDetailId { get; set; }
     }
 }

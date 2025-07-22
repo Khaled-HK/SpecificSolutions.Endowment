@@ -26,6 +26,7 @@ namespace SpecificSolutions.Endowment.Core.Entities.FacilityDetails
             {
                 Quantity = command.Quantity,
                 ProductId = command.ProductId,
+                BuildingDetailId = command.BuildingDetailId
             };
         }
     }

@@ -8,5 +8,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.FacilityDetails.Comma
         public int Quantity { get; set; }
 
         public Guid ProductId { get; set; }
+
+        public Guid BuildingDetailId { get; set; }
     }
 }

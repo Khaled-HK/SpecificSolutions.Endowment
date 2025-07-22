@@ -16,18 +16,12 @@ namespace SpecificSolutions.Endowment.Application.Handlers.FacilityDetails.Queri
 
         public async Task<EndowmentResponse<PagedList<FacilityDetailDTO>>> Handle(FilterFacilityDetailQuery request, CancellationToken cancellationToken)
         {
-            var FacilityDetails = await _unitOfWork.FacilityDetails.GetAllAsync(cancellationToken);
-            var filteredDetails = FacilityDetails
-                .Where(md => md.Product.Name.Contains(request.SearchTerm))
-                .Select(md => new FacilityDetailDTO
-                {
-                    Id = md.Id,
+            var facilityDetails = await _unitOfWork.FacilityDetails.GetByFilterAsync(request, cancellationToken);
 
-                });
+            if (!facilityDetails.Items.Any())
+                return Response.FilterResponse(PagedList<FacilityDetailDTO>.Empty());
 
-            var pagedList = await PagedList<FacilityDetailDTO>.CreateAsync(filteredDetails.AsQueryable(), request.PageNumber, request.PageSize, cancellationToken);
-
-            return Response.FilterResponse(pagedList);
+            return Response.FilterResponse(facilityDetails);
         }
     }
 }

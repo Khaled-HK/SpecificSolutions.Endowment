@@ -934,7 +934,7 @@ const loadFacilityDetailsByBuildingDetailId = async (buildingDetail) => {
       return
     }
     // جلب FacilityDetail المرتبطة بهذا المبنى
-    const response = await $api(`/FacilityDetail/filter?BuildingDetailId=${buildingDetail.id}&PageSize=100`)
+    const response = await $api(`/FacilityDetail/filter?BuildingDetailId=${buildingDetail.id}&PageSize=100&searchTerm=`)
     if (response && response.data && response.data.items) {
       facilityDetailsList.value = response.data.items
     } else {
@@ -947,10 +947,11 @@ const loadFacilityDetailsByBuildingDetailId = async (buildingDetail) => {
   }
 }
 
-const openProductManagementDialog = async (facilityDetail) => {
-  selectedFacilityDetail.value = facilityDetail
+const openProductManagementDialog = async (buildingDetail) => {
+  selectedBuildingDetail.value = buildingDetail
+  selectedFacilityDetail.value = buildingDetail // للحفاظ على التوافق مع الكود الحالي إذا لزم
   productManagementDialog.value = true
-  await loadFacilityDetailsByBuildingDetailId(facilityDetail)
+  await loadFacilityDetailsByBuildingDetailId(buildingDetail)
 }
 
 // Watch for search changes
@@ -1004,19 +1005,19 @@ const closeAddFacilityDetailDialog = () => {
 }
 
 const addFacilityDetail = async () => {
-  if (!selectedFacilityDetail.value) return
+  if (!selectedBuildingDetail.value) return
   addFacilityDetailLoading.value = true
   try {
     await $api('/FacilityDetail', {
       method: 'POST',
       body: {
-        buildingDetailId: selectedFacilityDetail.value.id || selectedFacilityDetail.value.Id,
+        buildingDetailId: selectedBuildingDetail.value.id || selectedBuildingDetail.value.Id,
         productId: newFacilityDetail.value.productId,
         quantity: newFacilityDetail.value.quantity
       }
     })
     addFacilityDetailDialog.value = false
-    await loadFacilityDetailsByBuildingDetailId(selectedFacilityDetail.value)
+    await loadFacilityDetailsByBuildingDetailId(selectedBuildingDetail.value)
     showAlertMsg('تمت إضافة المادة بنجاح', 'success')
   } catch (e) {
     showAlertMsg('حدث خطأ أثناء إضافة المادة', 'error')

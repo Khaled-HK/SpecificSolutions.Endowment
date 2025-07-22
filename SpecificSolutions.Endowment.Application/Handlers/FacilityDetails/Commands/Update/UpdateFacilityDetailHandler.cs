@@ -19,7 +19,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.FacilityDetails.Comma
             if (facilityDetail == null)
                 return Response.FailureResponse("FacilityDetail not found.");
 
-            await _unitOfWork.FacilityDetails.UpdateAsync(facilityDetail);
+            //facilityDetail.UpdateAsync(facilityDetail);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Updated();
