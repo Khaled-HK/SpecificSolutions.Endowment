@@ -263,7 +263,11 @@ const loadRegions = async () => {
   regionsLoading.value = true
   try {
     const response = await $api('/Region/filter?PageSize=100')
-    regions.value = response.data.items || []
+    const rawList = response.data.items || []
+    regions.value = rawList.map(item => ({
+      ...item,
+      name: item.name || item.regionName || item.title || item.id // fallback
+    }))
   } catch (error) {
     console.error('Error loading regions:', error)
     alertMessage.value = 'حدث خطأ أثناء تحميل المناطق'
@@ -278,7 +282,11 @@ const loadOffices = async () => {
   officesLoading.value = true
   try {
     const response = await $api('/Office/filter?PageSize=100')
-    offices.value = response.data.items || []
+    const rawList = response.data.items || []
+    offices.value = rawList.map(item => ({
+      ...item,
+      name: item.name || item.officeName || item.title || item.id // fallback
+    }))
   } catch (error) {
     console.error('Error loading offices:', error)
     alertMessage.value = 'حدث خطأ أثناء تحميل المكاتب'
@@ -983,7 +991,12 @@ const fetchProductsList = async () => {
   try {
     const response = await $api('/Product/GetProducts')
     if (response && response.data) {
-      productsList.value = response.data.data || response.data || []
+      // معالجة: تأكد أن كل عنصر له خاصية name
+      const rawList = response.data.data || response.data || []
+      productsList.value = rawList.map(item => ({
+        ...item,
+        name: item.name || item.productName || (item.product && item.product.name) || item.title || item.id // fallback
+      }))
     } else {
       productsList.value = []
     }
@@ -1060,23 +1073,31 @@ const editFacilityDetail = ref({ id: '', productId: '', quantity: 1 })
 const editFacilityDetailLoading = ref(false)
 
 const openEditFacilityDetailDialog = async (facilityDetail) => {
+  // تحميل المنتجات أولاً
+  await fetchProductsList();
+
+  // تعبئة النموذج مباشرة من الكائن المرسل
   editFacilityDetail.value = {
     id: facilityDetail.id || facilityDetail.Id,
     productId: facilityDetail.productId || facilityDetail.ProductId,
-    quantity: facilityDetail.quantity ?? facilityDetail.Quantity ?? 1
+    quantity: facilityDetail.quantity || facilityDetail.Quantity || 1
   }
-  await fetchProductsList()
-  editFacilityDetailDialog.value = true
+  editFacilityDetailDialog.value = true;
 }
 
 const closeEditFacilityDetailDialog = () => {
-  editFacilityDetailDialog.value = false
+  editFacilityDetailDialog.value = false;
+  editFacilityDetail.value = {
+    id: '',
+    productId: '',
+    quantity: 1
+  }
 }
 
 const updateFacilityDetail = async () => {
   editFacilityDetailLoading.value = true
   try {
-    await $api(`/FacilityDetail/${editFacilityDetail.value.id}`, {
+    const response = await $api(`/FacilityDetail/${editFacilityDetail.value.id}`, {
       method: 'PUT',
       body: {
         id: editFacilityDetail.value.id,
@@ -1084,6 +1105,11 @@ const updateFacilityDetail = async () => {
         quantity: editFacilityDetail.value.quantity
       }
     })
+    if (response && response.isSuccess === false) {
+      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء تعديل المادة';
+      showAlertMsg(errorMsg, 'error');
+      return;
+    }
     editFacilityDetailDialog.value = false
     await loadFacilityDetailsByBuildingDetailId(selectedFacilityDetail.value)
     showAlertMsg('تم تعديل المادة بنجاح', 'success')
@@ -2174,9 +2200,7 @@ function showAlertMsg(msg, type = 'success') {
           />
           <VDataTable
             :headers="[
-              { title: 'رقم السجل', key: 'id', sortable: true },
               { title: 'اسم المادة', key: 'productName', sortable: true },
-              { title: 'رقم المادة', key: 'productId', sortable: true },
               { title: 'الكمية', key: 'quantity', sortable: true },
               { title: 'الإجراءات', key: 'actions', sortable: false, width: '80px' }
             ]"
@@ -2186,14 +2210,8 @@ function showAlertMsg(msg, type = 'success') {
             class="text-no-wrap"
             no-data-text="لا توجد مواد مرتبطة بهذا المبنى"
           >
-            <template #item.id="{ item }">
-              <span>{{ item.id || item.Id }}</span>
-            </template>
             <template #item.productName="{ item }">
-              <span>{{ item.product?.name || item.productName || '---' }}</span>
-            </template>
-            <template #item.productId="{ item }">
-              <span>{{ item.productId || item.ProductId }}</span>
+              <span>{{ item.productName || item.product?.name || '---' }}</span>
             </template>
             <template #item.quantity="{ item }">
               <span>{{ item.quantity ?? item.Quantity ?? 0 }}</span>
@@ -2244,10 +2262,10 @@ function showAlertMsg(msg, type = 'success') {
             <VAutocomplete
               v-model="newFacilityDetail.productId"
               :items="productsList"
-              :loading="productsLoading"
               item-title="value"
               item-value="key"
               label="اختر المادة"
+              :loading="productsLoading"
               required
               clearable
               no-data-text="لا توجد مواد متاحة"
@@ -2291,40 +2309,44 @@ function showAlertMsg(msg, type = 'success') {
     </VDialog>
 
     <!-- Edit FacilityDetail Dialog -->
-    <VDialog
-      v-model="editFacilityDetailDialog"
-      max-width="500px"
-      persistent
-    >
+    <VDialog v-model="editFacilityDetailDialog" max-width="500px" persistent>
       <VCard>
         <VCardTitle class="text-h6">تعديل المادة</VCardTitle>
         <VCardText>
           <VForm @submit.prevent="updateFacilityDetail">
-            <VAutocomplete
-              v-model="editFacilityDetail.productId"
-              :items="productsList"
-              :loading="productsLoading"
-              item-title="value"
-              item-value="key"
-              label="اختر المادة"
-              required
-              clearable
-              no-data-text="لا توجد مواد متاحة"
-              placeholder="اختر المادة..."
-            />
-            <VTextField
-              v-model="editFacilityDetail.quantity"
-              label="الكمية"
-              type="number"
-              min="1"
-              required
-            />
+            <VRow>
+              <VCol cols="12">
+                <VAutocomplete
+                  v-model="editFacilityDetail.productId"
+                  :items="productsList"
+                  item-title="value"
+                  item-value="key"
+                  label="المادة"
+                  :loading="productsLoading"
+                  :rules="[v => !!v || 'المادة مطلوبة']"
+                  required
+                  clearable
+                  no-data-text="لا توجد مواد متاحة"
+                  placeholder="اختر المادة..."
+                />
+              </VCol>
+              <VCol cols="12">
+                <VTextField
+                  v-model="editFacilityDetail.quantity"
+                  label="الكمية"
+                  type="number"
+                  min="1"
+                  :rules="[v => !!v || 'الكمية مطلوبة', v => v > 0 || 'الكمية يجب أن تكون أكبر من صفر']"
+                  required
+                />
+              </VCol>
+            </VRow>
           </VForm>
         </VCardText>
         <VCardActions>
           <VSpacer />
           <VBtn color="grey-darken-1" variant="text" @click="closeEditFacilityDetailDialog">إلغاء</VBtn>
-          <VBtn color="primary" variant="flat" @click="updateFacilityDetail" :loading="editFacilityDetailLoading">حفظ</VBtn>
+          <VBtn color="primary" :loading="editFacilityDetailLoading" @click="updateFacilityDetail">حفظ</VBtn>
         </VCardActions>
       </VCard>
     </VDialog>

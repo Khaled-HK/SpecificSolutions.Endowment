@@ -8,9 +8,9 @@ namespace SpecificSolutions.Endowment.Core.Entities.FacilityDetails
     {
         public Guid Id { get; private set; }
         // quantity of the product
-        public int Quantity { get; private set; }
+        public int Quantity { get; set; }
         // price of the product 
-        public Guid ProductId { get; private set; }
+        public Guid ProductId { get; set; }
         public Product Product { get; private set; }
 
         public Guid BuildingDetailId { get; private set; }
@@ -28,6 +28,13 @@ namespace SpecificSolutions.Endowment.Core.Entities.FacilityDetails
                 ProductId = command.ProductId,
                 BuildingDetailId = command.BuildingDetailId
             };
+        }
+
+        // Update method for updating FacilityDetail
+        public void Update(IUpdateFacilityDetailCommand command)
+        {
+            ProductId = command.ProductId;
+            Quantity = command.Quantity;
         }
     }
 }
