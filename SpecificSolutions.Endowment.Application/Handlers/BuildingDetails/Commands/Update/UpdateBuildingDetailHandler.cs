@@ -15,13 +15,13 @@ namespace SpecificSolutions.Endowment.Application.Handlers.BuildingDetails.Comma
 
         public async Task<EndowmentResponse> Handle(UpdateBuildingDetailCommand request, CancellationToken cancellationToken)
         {
-            var building = await _unitOfWork.BuildingDetails.FindAsync(request.Id, cancellationToken);
-            if (building == null)
+            var buildingDetail = await _unitOfWork.BuildingDetails.GetByIdAsync(request.Id, cancellationToken);
+            if (buildingDetail == null)
             {
-                return Response.FailureResponse("Id", "BuildingDetails not found.");
+                return Response.FailureResponse("Building detail not found.");
             }
 
-            building.Update(request.Name);
+            buildingDetail.Update(request);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Updated();

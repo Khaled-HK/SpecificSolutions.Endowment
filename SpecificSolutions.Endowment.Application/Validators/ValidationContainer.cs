@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.Login;
 using SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.Register;
+using SpecificSolutions.Endowment.Application.Handlers.BuildingDetails.Commands.Create;
+using SpecificSolutions.Endowment.Application.Handlers.BuildingDetails.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Create;
 using SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.Mosques.Commands.Create;
@@ -13,6 +15,7 @@ using SpecificSolutions.Endowment.Application.Handlers.Regions.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Create;
 using SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Update;
 using SpecificSolutions.Endowment.Application.Validators.Authentications;
+using SpecificSolutions.Endowment.Application.Validators.BuildingDetails;
 using SpecificSolutions.Endowment.Application.Validators.Mosques;
 using SpecificSolutions.Endowment.Application.Validators.Offices;
 using SpecificSolutions.Endowment.Application.Validators.Regions;
@@ -40,6 +43,10 @@ namespace SpecificSolutions.Endowment.Application.Validators
             // Mosque Validators
             services.AddTransient<IValidator<CreateMosqueCommand>, CreateMosqueCommandValidator>();
             services.AddTransient<IValidator<UpdateMosqueCommand>, UpdateMosqueCommandValidator>();
+
+            // Building Details Validators
+            services.AddTransient<IValidator<CreateBuildingDetailCommand>, CreateBuildingDetailCommandValidator>();
+            services.AddTransient<IValidator<UpdateBuildingDetailCommand>, UpdateBuildingDetailCommandValidator>();
 
             return services;
         }

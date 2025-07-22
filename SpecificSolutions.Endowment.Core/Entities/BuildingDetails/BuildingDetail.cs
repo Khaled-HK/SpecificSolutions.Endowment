@@ -42,9 +42,12 @@ namespace SpecificSolutions.Endowment.Core.Entities.BuildingDetails
             };
         }
 
-        public void Update(string name)
+        public void Update(IUpdateBuildingDetailCommand command)
         {
-            Name = name;
+            Name = command.Name;
+            WithinMosqueArea = command.WithinMosqueArea;
+            Floors = command.Floors;
+            BuildingCategory = command.BuildingCategory;
         }
     }
 }

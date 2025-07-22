@@ -107,7 +107,9 @@ const editDialog = ref(false)
 const deleteDialog = ref(false)
 const buildingDetailsDialog = ref(false)
 const addBuildingDetailDialog = ref(false)
+const editBuildingDetailDialog = ref(false)
 const selectedMosque = ref<Mosque | null>(null)
+const selectedBuildingDetail = ref<any>(null)
 const selectedRows = ref<Mosque[]>([])
 const search = ref('')
 
@@ -116,7 +118,15 @@ const buildingDetails = ref<any[]>([])
 const buildingDetailsLoading = ref(false)
 const buildingDetailsSearch = ref('')
 const addBuildingDetailForm = ref()
+const editBuildingDetailForm = ref()
 const newBuildingDetail = ref({
+  name: '',
+  floors: 1,
+  withinMosqueArea: true,
+  buildingCategory: 'Endowment'
+})
+const editBuildingDetail = ref({
+  id: '',
   name: '',
   floors: 1,
   withinMosqueArea: true,
@@ -824,6 +834,79 @@ const searchBuildingDetails = async () => {
 const clearBuildingDetailsSearch = async () => {
   buildingDetailsSearch.value = ''
   await reloadBuildingDetails()
+}
+
+const openEditBuildingDetailDialog = (buildingDetail: any) => {
+  selectedBuildingDetail.value = buildingDetail
+  editBuildingDetail.value = {
+    id: buildingDetail.id,
+    name: buildingDetail.name,
+    floors: buildingDetail.floors,
+    withinMosqueArea: buildingDetail.withinMosqueArea,
+    buildingCategory: buildingDetail.buildingCategory
+  }
+  editBuildingDetailDialog.value = true
+}
+
+const closeEditBuildingDetailDialog = () => {
+  editBuildingDetailDialog.value = false
+  selectedBuildingDetail.value = null
+  // Reset form
+  editBuildingDetail.value = {
+    id: '',
+    name: '',
+    floors: 1,
+    withinMosqueArea: true,
+    buildingCategory: 'Endowment'
+  }
+}
+
+const updateBuildingDetail = async () => {
+  if (!editBuildingDetailForm.value) return
+
+  const isValid = await editBuildingDetailForm.value.validate()
+  if (!isValid) {
+    alertMessage.value = 'يرجى ملء جميع الحقول المطلوبة'
+    alertType.value = 'warning'
+    showAlert.value = true
+    return
+  }
+
+  try {
+    const response = await $api(`/BuildingDetail/${editBuildingDetail.value.id}`, {
+      method: 'PUT',
+      body: {
+        id: editBuildingDetail.value.id,
+        name: editBuildingDetail.value.name,
+        floors: editBuildingDetail.value.floors,
+        withinMosqueArea: editBuildingDetail.value.withinMosqueArea,
+        buildingCategory: editBuildingDetail.value.buildingCategory
+      },
+    })
+    
+    if (response && response.isSuccess === false) {
+      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء تحديث تفصيل المبنى'
+      alertMessage.value = errorMsg
+      alertType.value = 'error'
+      showAlert.value = true
+      return
+    }
+    
+    // Close popup dialog and reload data
+    closeEditBuildingDetailDialog()
+    
+    // Reload building details
+    await reloadBuildingDetails()
+    
+    alertMessage.value = 'تم تحديث تفصيل المبنى بنجاح'
+    alertType.value = 'success'
+    showAlert.value = true
+  } catch (error) {
+    console.error('Error updating building detail:', error)
+    alertMessage.value = 'حدث خطأ أثناء تحديث تفصيل المبنى'
+    alertType.value = 'error'
+    showAlert.value = true
+  }
 }
 
 // Watch for search changes
@@ -1628,9 +1711,20 @@ onMounted(() => {
                 </template>
                 <template #item.actions="{ item }">
                   <div class="d-flex gap-1">
-                    <IconBtn @click="deleteBuildingDetail(item.id)" color="error">
-                      <VIcon icon="tabler-trash" />
-                    </IconBtn>
+                    <VTooltip text="تعديل تفصيل المبنى" location="top">
+                      <template #activator="{ props }">
+                        <IconBtn @click="openEditBuildingDetailDialog(item)" color="info" v-bind="props">
+                          <VIcon icon="tabler-edit" />
+                        </IconBtn>
+                      </template>
+                    </VTooltip>
+                    <VTooltip text="حذف تفصيل المبنى" location="top">
+                      <template #activator="{ props }">
+                        <IconBtn @click="deleteBuildingDetail(item.id)" color="error" v-bind="props">
+                          <VIcon icon="tabler-trash" />
+                        </IconBtn>
+                      </template>
+                    </VTooltip>
                   </div>
                 </template>
               </VDataTable>
@@ -1742,6 +1836,103 @@ onMounted(() => {
             prepend-icon="tabler-plus"
           >
             إضافة
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+
+    <!-- Edit Building Detail Popup Dialog -->
+    <VDialog
+      v-model="editBuildingDetailDialog"
+      max-width="600px"
+      persistent
+    >
+      <VCard>
+        <VCardTitle class="text-h6 d-flex align-center">
+          <VIcon icon="tabler-building-edit" class="me-2" />
+          تعديل تفصيل المبنى
+          <VSpacer />
+          <IconBtn @click="closeEditBuildingDetailDialog" size="small">
+            <VIcon icon="tabler-x" />
+          </IconBtn>
+        </VCardTitle>
+        <VCardSubtitle v-if="selectedMosque" class="text-medium-emphasis">
+          للمسجد: {{ selectedMosque.mosqueName }}
+        </VCardSubtitle>
+        <VCardText>
+          <VForm @submit.prevent="updateBuildingDetail" ref="editBuildingDetailForm">
+            <VRow>
+              <VCol cols="12">
+                <VTextField
+                  v-model="editBuildingDetail.name"
+                  label="اسم المبنى"
+                  variant="outlined"
+                  required
+                  :rules="[v => !!v || 'اسم المبنى مطلوب']"
+                  placeholder="مثال: منزل الإمام، المصلى، دورة المياه..."
+                  prepend-inner-icon="tabler-building"
+                  clearable
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="editBuildingDetail.floors"
+                  label="عدد الطوابق"
+                  variant="outlined"
+                  type="number"
+                  min="1"
+                  max="50"
+                  required
+                  :rules="[v => !!v || 'عدد الطوابق مطلوب', v => v > 0 || 'عدد الطوابق يجب أن يكون أكبر من صفر']"
+                  prepend-inner-icon="tabler-layers"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VSelect
+                  v-model="editBuildingDetail.buildingCategory"
+                  label="نوع المبنى"
+                  variant="outlined"
+                  :items="buildingCategoryOptions"
+                  item-title="label"
+                  item-value="value"
+                  required
+                  :rules="[v => !!v || 'نوع المبنى مطلوب']"
+                  prepend-inner-icon="tabler-category"
+                />
+              </VCol>
+              <VCol cols="12">
+                <VCheckbox
+                  v-model="editBuildingDetail.withinMosqueArea"
+                  label="داخل مساحة المسجد"
+                  hide-details
+                  color="primary"
+                  class="mt-2"
+                />
+                <VCardText class="text-caption text-medium-emphasis pa-0 mt-1">
+                  <VIcon icon="tabler-info-circle" size="small" class="me-1" />
+                  إذا كان المبنى داخل حدود المسجد أم خارجه
+                </VCardText>
+              </VCol>
+            </VRow>
+          </VForm>
+        </VCardText>
+        <VCardActions>
+          <VSpacer />
+          <VBtn
+            color="grey-darken-1"
+            variant="text"
+            @click="closeEditBuildingDetailDialog"
+          >
+            إلغاء
+          </VBtn>
+          <VBtn
+            color="primary"
+            variant="flat"
+            @click="updateBuildingDetail"
+            :loading="buildingDetailsLoading"
+            prepend-icon="tabler-check"
+          >
+            تحديث
           </VBtn>
         </VCardActions>
       </VCard>
