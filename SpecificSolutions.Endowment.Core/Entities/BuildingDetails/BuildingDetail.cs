@@ -37,7 +37,7 @@ namespace SpecificSolutions.Endowment.Core.Entities.BuildingDetails
                 WithinMosqueArea = command.WithinMosqueArea,
                 Floors = command.Floors,
                 BuildingCategory = command.BuildingCategory,
-                BuildingId = command.MosqueID,
+                BuildingId = command.BuildingId,
                 //_FacilityDetails = command.CreateFacilityDetailCommands.Select(FacilityDetail.Create).ToHashSet()
             };
         }

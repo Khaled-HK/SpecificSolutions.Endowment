@@ -17,15 +17,21 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Mo
 
         public async Task<PagedList<MosqueDTO>> GetByFilterAsync(FilterMosqueQuery query, CancellationToken cancellationToken)
         {
-            var mosques = _context.Mosques.AsQueryable();
+            var mosques = _context.Mosques
+                .Include(m => m.Building)
+                    .ThenInclude(b => b.Office)
+                .Include(m => m.Building)
+                    .ThenInclude(b => b.Region)
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(query.SearchTerm))
-                mosques = mosques.Where(m => m.Building.Name == query.SearchTerm);
+                mosques = mosques.Where(m => m.Building.Name.Contains(query.SearchTerm));
 
             // Select the relevant fields to return as DTOs
             var accountDTOs = mosques.Select(a => new MosqueDTO
             {
                 MosqueID = a.Id,
+                BuildingId = a.BuildingId,
                 MosqueClassification = a.MosqueClassification,
                 MapLocation = a.Building.MapLocation,
                 // complete all 
@@ -44,19 +50,21 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Mo
                 TotalLandArea = a.Building.TotalLandArea,
                 WaterSource = a.Building.WaterSource,
                 Unit = a.Building.Unit,
-                Office = a.Building.Office.Name,
-                Region = a.Building.Region.Name,
-
+                Office = a.Building.Office != null ? a.Building.Office.Name : string.Empty,
+                Region = a.Building.Region != null ? a.Building.Region.Name : string.Empty,
             });
 
             // Return paged results
             return await PagedList<MosqueDTO>.CreateAsync(accountDTOs, query.PageNumber, query.PageSize, cancellationToken);
         }
 
-        public async Task<Mosque> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<Mosque?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
             return await _context.Mosques
                 .Include(m => m.Building)
+                    .ThenInclude(b => b.Office)
+                .Include(m => m.Building)
+                    .ThenInclude(b => b.Region)
                 .FirstOrDefaultAsync(m => m.Id == id, cancellationToken);
         }
 
@@ -68,13 +76,13 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Mo
         public async Task AddAsync(Mosque mosque, CancellationToken cancellationToken)
         {
             await _context.Mosques.AddAsync(mosque, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
+            // Remove SaveChangesAsync here as it should be handled by UnitOfWork
         }
 
         public async Task UpdateAsync(Mosque mosque)
         {
             _context.Mosques.Update(mosque);
-            await _context.SaveChangesAsync();
+            // Remove SaveChangesAsync here as it should be handled by UnitOfWork
         }
 
         public async Task DeleteAsync(Guid id)
@@ -83,7 +91,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Mo
             if (mosque != null)
             {
                 _context.Mosques.Remove(mosque);
-                await _context.SaveChangesAsync();
+                // Remove SaveChangesAsync here as it should be handled by UnitOfWork
             }
         }
     }

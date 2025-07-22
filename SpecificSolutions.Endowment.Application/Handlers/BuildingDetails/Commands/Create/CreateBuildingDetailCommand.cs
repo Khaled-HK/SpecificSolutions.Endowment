@@ -8,7 +8,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.BuildingDetails.Comma
     public class CreateBuildingDetailCommand : ICommand, ICreateBuildingDetailCommand
     {
         public string Name { get; set; }
-        public Guid MosqueID { get; set; }
+        public Guid BuildingId { get; set; }
         public int Floors { get; set; }
         public bool WithinMosqueArea { get; set; }
 

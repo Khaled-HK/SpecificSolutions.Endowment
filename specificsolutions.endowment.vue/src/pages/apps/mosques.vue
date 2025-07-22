@@ -105,9 +105,28 @@ const alertType = ref<'success' | 'error' | 'warning' | 'info'>('success')
 const dialog = ref(false)
 const editDialog = ref(false)
 const deleteDialog = ref(false)
+const buildingDetailsDialog = ref(false)
+const addBuildingDetailDialog = ref(false)
 const selectedMosque = ref<Mosque | null>(null)
 const selectedRows = ref<Mosque[]>([])
 const search = ref('')
+
+// Building Details variables
+const buildingDetails = ref<any[]>([])
+const buildingDetailsLoading = ref(false)
+const buildingDetailsSearch = ref('')
+const addBuildingDetailForm = ref()
+const newBuildingDetail = ref({
+  name: '',
+  floors: 1,
+  withinMosqueArea: true,
+  buildingCategory: 'Endowment'
+})
+
+const buildingCategoryOptions = [
+  { value: 'Facility', label: 'منشأة' },
+  { value: 'Endowment', label: 'وقف' }
+]
 
 const newMosque = ref<NewMosque>({
   name: '',
@@ -177,29 +196,22 @@ const options = ref({
   sortDesc: [false],
 })
 
-// Headers using the ready-made template structure
+// Data table headers
 const headers = [
-  {
-    title: 'اسم المسجد',
-    key: 'mosqueName',
-  },
-  {
-    title: 'رقم الملف',
-    key: 'fileNumber',
-  },
-  {
-    title: 'المنطقة',
-    key: 'region',
-  },
-  {
-    title: 'المكتب',
-    key: 'office',
-  },
-  {
-    title: 'الإجراءات',
-    key: 'actions',
-    sortable: false,
-  },
+  { title: 'اسم المسجد', key: 'mosqueName', sortable: true },
+  { title: 'رقم الملف', key: 'fileNumber', sortable: true },
+  { title: 'المنطقة', key: 'region', sortable: true },
+  { title: 'المكتب', key: 'office', sortable: true },
+  { title: 'الإجراءات', key: 'actions', sortable: false, width: '120px' },
+]
+
+// Building Details table headers
+const buildingDetailHeaders = [
+  { title: 'اسم المبنى', key: 'name', sortable: true },
+  { title: 'عدد الطوابق', key: 'floors', sortable: true },
+  { title: 'نوع المبنى', key: 'buildingCategory', sortable: true },
+  { title: 'الموقع', key: 'withinMosqueArea', sortable: true },
+  { title: 'الإجراءات', key: 'actions', sortable: false, width: '80px' },
 ]
 
 const loadMosques = async () => {
@@ -579,6 +591,50 @@ const openEditDialog = async (mosque: Mosque) => {
   console.log('editMosque.value عند التعديل:', editMosque.value);
 }
 
+const openBuildingDetailsDialog = async (mosque: Mosque) => {
+  selectedMosque.value = mosque
+  buildingDetailsDialog.value = true
+  await loadBuildingDetails(mosque.mosqueID)
+}
+
+const reloadBuildingDetails = async () => {
+  if (selectedMosque.value) {
+    await loadBuildingDetails(selectedMosque.value.mosqueID)
+  }
+}
+
+const loadBuildingDetails = async (mosqueId: string) => {
+  buildingDetailsLoading.value = true
+  try {
+    // نحتاج إلى الحصول على BuildingId من Mosque أولاً
+    const mosqueResponse = await $api(`/Mosque/${mosqueId}`)
+    if (mosqueResponse && mosqueResponse.data) {
+      const buildingId = mosqueResponse.data.buildingId
+      if (buildingId) {
+        // استخدام filter endpoint مع BuildingId
+        const response = await $api(`/BuildingDetail/filter?BuildingId=${buildingId}&PageSize=100&PageNumber=1`)
+        if (response && response.data) {
+          buildingDetails.value = response.data.items || []
+        } else {
+          buildingDetails.value = []
+        }
+      } else {
+        buildingDetails.value = []
+      }
+    } else {
+      buildingDetails.value = []
+    }
+  } catch (error) {
+    console.error('Error loading building details:', error)
+    alertMessage.value = 'حدث خطأ أثناء تحميل تفاصيل المبنى'
+    alertType.value = 'error'
+    showAlert.value = true
+    buildingDetails.value = []
+  } finally {
+    buildingDetailsLoading.value = false
+  }
+}
+
 const openDeleteDialog = (mosque: Mosque) => {
   selectedMosque.value = mosque
   deleteDialog.value = true
@@ -621,6 +677,153 @@ const resetNewMosque = () => {
     specialEntranceWomen: false,
     picturePath: '',
   }
+}
+
+const addBuildingDetail = async () => {
+  if (!addBuildingDetailForm.value) return
+
+  const isValid = await addBuildingDetailForm.value.validate()
+  if (!isValid) {
+    alertMessage.value = 'يرجى ملء جميع الحقول المطلوبة'
+    alertType.value = 'warning'
+    showAlert.value = true
+    return
+  }
+
+  try {
+    // نحتاج إلى الحصول على BuildingId من Mosque أولاً
+    const mosqueResponse = await $api(`/Mosque/${selectedMosque.value?.mosqueID}`)
+    if (!mosqueResponse || !mosqueResponse.data) {
+      alertMessage.value = 'لم يتم العثور على المسجد'
+      alertType.value = 'error'
+      showAlert.value = true
+      return
+    }
+
+    const buildingId = mosqueResponse.data.buildingId
+    if (!buildingId) {
+      alertMessage.value = 'لم يتم العثور على المبنى المرتبط بالمسجد'
+      alertType.value = 'error'
+      showAlert.value = true
+      return
+    }
+
+    const response = await $api('/BuildingDetail', {
+      method: 'POST',
+      body: {
+        name: newBuildingDetail.value.name,
+        buildingId: buildingId, // استخدام BuildingId
+        floors: newBuildingDetail.value.floors,
+        withinMosqueArea: newBuildingDetail.value.withinMosqueArea,
+        buildingCategory: newBuildingDetail.value.buildingCategory
+      },
+    })
+    
+    if (response && response.isSuccess === false) {
+      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء إضافة تفصيل المبنى'
+      alertMessage.value = errorMsg
+      alertType.value = 'error'
+      showAlert.value = true
+      return
+    }
+    
+    // Close popup dialog and reload data
+    closeAddBuildingDetailDialog()
+    
+    // Reload building details
+    await reloadBuildingDetails()
+    
+    alertMessage.value = 'تم إضافة تفصيل المبنى بنجاح'
+    alertType.value = 'success'
+    showAlert.value = true
+  } catch (error) {
+    console.error('Error adding building detail:', error)
+    alertMessage.value = 'حدث خطأ أثناء إضافة تفصيل المبنى'
+    alertType.value = 'error'
+    showAlert.value = true
+  }
+}
+
+const deleteBuildingDetail = async (buildingDetailId: string) => {
+  try {
+    const response = await $api(`/BuildingDetail/${buildingDetailId}`, {
+      method: 'DELETE',
+    })
+    
+    if (response && response.isSuccess === false) {
+      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء حذف تفصيل المبنى'
+      alertMessage.value = errorMsg
+      alertType.value = 'error'
+      showAlert.value = true
+      return
+    }
+    
+    if (selectedMosque.value) {
+      await reloadBuildingDetails()
+    }
+    
+    alertMessage.value = 'تم حذف تفصيل المبنى بنجاح'
+    alertType.value = 'success'
+    showAlert.value = true
+  } catch (error) {
+    console.error('Error deleting building detail:', error)
+    alertMessage.value = 'حدث خطأ أثناء حذف تفصيل المبنى'
+    alertType.value = 'error'
+    showAlert.value = true
+  }
+}
+
+const openAddBuildingDetailDialog = () => {
+  addBuildingDetailDialog.value = true
+}
+
+const closeAddBuildingDetailDialog = () => {
+  addBuildingDetailDialog.value = false
+  // Reset form
+  newBuildingDetail.value = {
+    name: '',
+    floors: 1,
+    withinMosqueArea: true,
+    buildingCategory: 'Endowment'
+  }
+}
+
+const searchBuildingDetails = async () => {
+  if (!selectedMosque.value) return
+  
+  buildingDetailsLoading.value = true
+  try {
+    const mosqueResponse = await $api(`/Mosque/${selectedMosque.value.mosqueID}`)
+    if (mosqueResponse && mosqueResponse.data) {
+      const buildingId = mosqueResponse.data.buildingId
+      if (buildingId) {
+        // استخدام filter endpoint مع BuildingId و SearchTerm
+        const response = await $api(`/BuildingDetail/filter?BuildingId=${buildingId}&SearchTerm=${buildingDetailsSearch.value}&PageSize=100&PageNumber=1`)
+        if (response && response.data) {
+          buildingDetails.value = response.data.items || []
+        } else {
+          buildingDetails.value = []
+        }
+      } else {
+        buildingDetails.value = []
+      }
+    } else {
+      buildingDetails.value = []
+    }
+  } catch (error) {
+    console.error('Error searching building details:', error)
+    alertMessage.value = 'حدث خطأ أثناء البحث في تفاصيل المبنى'
+    alertType.value = 'error'
+    showAlert.value = true
+    buildingDetails.value = []
+  } finally {
+    buildingDetailsLoading.value = false
+  }
+}
+
+const clearBuildingDetailsSearch = async () => {
+  buildingDetailsSearch.value = ''
+  await reloadBuildingDetails()
 }
 
 // Watch for search changes
@@ -786,6 +989,13 @@ onMounted(() => {
               <IconBtn @click="openEditDialog(item)">
                 <VIcon icon="tabler-edit" />
               </IconBtn>
+              <VTooltip text="إدارة تفاصيل المبنى (منزل الإمام، المصلى، دورة المياه...)" location="top">
+                <template #activator="{ props }">
+                  <IconBtn @click="openBuildingDetailsDialog(item)" color="info" v-bind="props">
+                    <VIcon icon="tabler-building" />
+                  </IconBtn>
+                </template>
+              </VTooltip>
               <IconBtn @click="openDeleteDialog(item)">
                 <VIcon icon="tabler-trash" />
               </IconBtn>
@@ -1299,6 +1509,239 @@ onMounted(() => {
             @click="deleteMosque"
           >
             حذف
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+
+    <!-- Building Details Dialog -->
+    <VDialog
+      v-model="buildingDetailsDialog"
+      max-width="1000px"
+      persistent
+    >
+      <VCard>
+        <VCardTitle class="text-h6">
+          تفاصيل المبنى - {{ selectedMosque?.mosqueName }}
+        </VCardTitle>
+        <VCardText>
+          <!-- Building Details Table -->
+          <VCard variant="outlined">
+            <VCardTitle class="text-h6 d-flex justify-space-between align-center">
+              تفاصيل المبنى الحالية
+              <VBtn
+                color="primary"
+                variant="flat"
+                size="small"
+                @click="openAddBuildingDetailDialog"
+                prepend-icon="tabler-plus"
+                :disabled="buildingDetailsLoading"
+              >
+                إضافة تفصيل جديد
+              </VBtn>
+            </VCardTitle>
+            <VCardText>
+              <!-- Search Bar -->
+              <VRow class="mb-4">
+                <VCol cols="12" md="6">
+                  <VTextField
+                    v-model="buildingDetailsSearch"
+                    label="البحث في تفاصيل المبنى"
+                    variant="outlined"
+                    density="compact"
+                    prepend-inner-icon="tabler-search"
+                    clearable
+                    @update:model-value="searchBuildingDetails"
+                    @click:clear="clearBuildingDetailsSearch"
+                    placeholder="ابحث عن اسم المبنى..."
+                  />
+                </VCol>
+                <VCol cols="12" md="6" class="d-flex align-center">
+                  <VChip
+                    color="info"
+                    variant="tonal"
+                    size="small"
+                    class="me-2"
+                  >
+                    {{ buildingDetails.length }} تفصيل
+                  </VChip>
+                </VCol>
+              </VRow>
+              <VDataTable
+                :headers="buildingDetailHeaders"
+                :items="buildingDetails"
+                :loading="buildingDetailsLoading"
+                :items-per-page="10"
+                class="text-no-wrap"
+                no-data-text="لا توجد تفاصيل مبنى"
+              >
+                <template #no-data>
+                  <div class="text-center py-8">
+                    <VIcon icon="tabler-building-off" size="48" color="grey" class="mb-4" />
+                    <div class="text-h6 text-medium-emphasis mb-2">لا توجد تفاصيل مبنى</div>
+                    <div class="text-body-2 text-medium-emphasis mb-4">
+                      لم يتم إضافة أي تفاصيل مبنى لهذا المسجد بعد
+                    </div>
+                    <VBtn
+                      color="primary"
+                      variant="outlined"
+                      size="small"
+                      @click="openAddBuildingDetailDialog"
+                      prepend-icon="tabler-plus"
+                    >
+                      إضافة أول تفصيل
+                    </VBtn>
+                  </div>
+                </template>
+                <template #item.name="{ item }">
+                  <div class="d-flex align-center">
+                    <VAvatar
+                      size="32"
+                      color="info"
+                      variant="tonal"
+                    >
+                      {{ item.name.charAt(0).toUpperCase() }}
+                    </VAvatar>
+                    <div class="d-flex flex-column ms-3">
+                      <span class="d-block font-weight-medium text-truncate text-high-emphasis">{{ item.name }}</span>
+                      <small class="text-medium-emphasis">{{ item.floors }} طابق</small>
+                    </div>
+                  </div>
+                </template>
+                <template #item.buildingCategory="{ item }">
+                  <VChip
+                    :color="item.buildingCategory === 'Facility' ? 'success' : 'warning'"
+                    variant="tonal"
+                    size="small"
+                  >
+                    {{ item.buildingCategory === 'Facility' ? 'منشأة' : 'وقف' }}
+                  </VChip>
+                </template>
+                <template #item.withinMosqueArea="{ item }">
+                  <VChip
+                    :color="item.withinMosqueArea ? 'success' : 'error'"
+                    variant="tonal"
+                    size="small"
+                  >
+                    {{ item.withinMosqueArea ? 'داخل المسجد' : 'خارج المسجد' }}
+                  </VChip>
+                </template>
+                <template #item.actions="{ item }">
+                  <div class="d-flex gap-1">
+                    <IconBtn @click="deleteBuildingDetail(item.id)" color="error">
+                      <VIcon icon="tabler-trash" />
+                    </IconBtn>
+                  </div>
+                </template>
+              </VDataTable>
+            </VCardText>
+          </VCard>
+        </VCardText>
+        <VCardActions>
+          <VSpacer />
+          <VBtn
+            color="grey-darken-1"
+            variant="text"
+            @click="buildingDetailsDialog = false"
+          >
+            إغلاق
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+
+    <!-- Add Building Detail Popup Dialog -->
+    <VDialog
+      v-model="addBuildingDetailDialog"
+      max-width="600px"
+      persistent
+    >
+      <VCard>
+        <VCardTitle class="text-h6 d-flex align-center">
+          <VIcon icon="tabler-building-plus" class="me-2" />
+          إضافة تفصيل مبنى جديد
+          <VSpacer />
+          <IconBtn @click="closeAddBuildingDetailDialog" size="small">
+            <VIcon icon="tabler-x" />
+          </IconBtn>
+        </VCardTitle>
+        <VCardSubtitle v-if="selectedMosque" class="text-medium-emphasis">
+          للمسجد: {{ selectedMosque.mosqueName }}
+        </VCardSubtitle>
+        <VCardText>
+          <VForm @submit.prevent="addBuildingDetail" ref="addBuildingDetailForm">
+            <VRow>
+              <VCol cols="12">
+                <VTextField
+                  v-model="newBuildingDetail.name"
+                  label="اسم المبنى"
+                  variant="outlined"
+                  required
+                  :rules="[v => !!v || 'اسم المبنى مطلوب']"
+                  placeholder="مثال: منزل الإمام، المصلى، دورة المياه..."
+                  prepend-inner-icon="tabler-building"
+                  clearable
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="newBuildingDetail.floors"
+                  label="عدد الطوابق"
+                  variant="outlined"
+                  type="number"
+                  min="1"
+                  max="50"
+                  required
+                  :rules="[v => !!v || 'عدد الطوابق مطلوب', v => v > 0 || 'عدد الطوابق يجب أن يكون أكبر من صفر']"
+                  prepend-inner-icon="tabler-layers"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VSelect
+                  v-model="newBuildingDetail.buildingCategory"
+                  label="نوع المبنى"
+                  variant="outlined"
+                  :items="buildingCategoryOptions"
+                  item-title="label"
+                  item-value="value"
+                  required
+                  :rules="[v => !!v || 'نوع المبنى مطلوب']"
+                  prepend-inner-icon="tabler-category"
+                />
+              </VCol>
+              <VCol cols="12">
+                <VCheckbox
+                  v-model="newBuildingDetail.withinMosqueArea"
+                  label="داخل مساحة المسجد"
+                  hide-details
+                  color="primary"
+                  class="mt-2"
+                />
+                <VCardText class="text-caption text-medium-emphasis pa-0 mt-1">
+                  <VIcon icon="tabler-info-circle" size="small" class="me-1" />
+                  إذا كان المبنى داخل حدود المسجد أم خارجه
+                </VCardText>
+              </VCol>
+            </VRow>
+          </VForm>
+        </VCardText>
+        <VCardActions>
+          <VSpacer />
+          <VBtn
+            color="grey-darken-1"
+            variant="text"
+            @click="closeAddBuildingDetailDialog"
+          >
+            إلغاء
+          </VBtn>
+          <VBtn
+            color="primary"
+            variant="flat"
+            @click="addBuildingDetail"
+            :loading="buildingDetailsLoading"
+            prepend-icon="tabler-plus"
+          >
+            إضافة
           </VBtn>
         </VCardActions>
       </VCard>

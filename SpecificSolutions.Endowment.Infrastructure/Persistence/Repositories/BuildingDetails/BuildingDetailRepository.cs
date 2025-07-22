@@ -17,24 +17,28 @@ public class BuildingDetailRepository : Repository<BuildingDetail>, IBuildingDet
 
     public async Task<BuildingDetail> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return await _context.BuildingDetails.FindAsync(id, cancellationToken);
+        return await _context.BuildingDetails
+            .Include(bd => bd.Building)
+            .FirstOrDefaultAsync(bd => bd.Id == id, cancellationToken);
     }
 
     public async Task<IEnumerable<BuildingDetail>> GetAllAsync(CancellationToken cancellationToken)
     {
-        return await _context.BuildingDetails.ToListAsync(cancellationToken);
+        return await _context.BuildingDetails
+            .Include(bd => bd.Building)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task AddAsync(BuildingDetail buildingDetail, CancellationToken cancellationToken)
     {
         await _context.BuildingDetails.AddAsync(buildingDetail, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
+        // Remove SaveChangesAsync here as it should be handled by UnitOfWork
     }
 
     public async Task UpdateAsync(BuildingDetail buildingDetail)
     {
         _context.BuildingDetails.Update(buildingDetail);
-        await _context.SaveChangesAsync();
+        // Remove SaveChangesAsync here as it should be handled by UnitOfWork
     }
 
     public async Task DeleteAsync(Guid id)
@@ -43,28 +47,36 @@ public class BuildingDetailRepository : Repository<BuildingDetail>, IBuildingDet
         if (buildingDetail != null)
         {
             _context.BuildingDetails.Remove(buildingDetail);
-            await _context.SaveChangesAsync();
+            // Remove SaveChangesAsync here as it should be handled by UnitOfWork
         }
     }
 
     public async Task<PagedList<BuildingDetailDTO>> GetByFilterAsync(FilterBuildingDetailQuery query, CancellationToken cancellationToken)
     {
-        var buildingDetailsQuery = _context.BuildingDetails.Where(b => b.BuildingId == query.BuildingId).AsQueryable();
+        var buildingDetails = _context.BuildingDetails
+            .Include(bd => bd.Building)
+            .AsQueryable();
 
-        if (!string.IsNullOrEmpty(query.SearchTerm))
-        {
-            buildingDetailsQuery = buildingDetailsQuery.Where(bd =>
-                bd.Name.Contains(query.SearchTerm));
-        }
+        // Filter by BuildingId if provided
+        if (query.BuildingId.HasValue)
+            buildingDetails = buildingDetails.Where(bd => bd.BuildingId == query.BuildingId.Value);
 
-        var dtos = buildingDetailsQuery.Select(bd => new BuildingDetailDTO
+        // Filter by search term if provided
+        if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+            buildingDetails = buildingDetails.Where(bd => bd.Name.Contains(query.SearchTerm));
+
+        // Select the relevant fields to return as DTOs
+        var buildingDetailDTOs = buildingDetails.Select(bd => new BuildingDetailDTO
         {
             Id = bd.Id,
             Name = bd.Name,
             Floors = bd.Floors,
-            WithinMosqueArea = bd.WithinMosqueArea
+            WithinMosqueArea = bd.WithinMosqueArea,
+            BuildingCategory = bd.BuildingCategory,
+            BuildingId = bd.BuildingId
         });
 
-        return await PagedList<BuildingDetailDTO>.CreateAsync(dtos, query.PageNumber, query.PageSize, cancellationToken);
+        // Return paged results
+        return await PagedList<BuildingDetailDTO>.CreateAsync(buildingDetailDTOs, query.PageNumber, query.PageSize, cancellationToken);
     }
 }

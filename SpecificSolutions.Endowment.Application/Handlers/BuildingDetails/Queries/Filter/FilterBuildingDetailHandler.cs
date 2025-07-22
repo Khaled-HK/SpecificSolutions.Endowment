@@ -16,11 +16,11 @@ public class FilterBuildingDetailHandler : IQueryHandler<FilterBuildingDetailQue
 
     public async Task<EndowmentResponse<PagedList<BuildingDetailDTO>>> Handle(FilterBuildingDetailQuery query, CancellationToken cancellationToken)
     {
-        var requests = await _unitOfWork.BuildingDetails.GetByFilterAsync(query, cancellationToken);
+        var buildingDetails = await _unitOfWork.BuildingDetails.GetByFilterAsync(query, cancellationToken);
 
-        if (!requests.Items.Any())
+        if (!buildingDetails.Items.Any())
             return Response.FilterResponse<PagedList<BuildingDetailDTO>>(PagedList<BuildingDetailDTO>.Empty());
 
-        return Response.FilterResponse<PagedList<BuildingDetailDTO>>(requests);
+        return Response.FilterResponse<PagedList<BuildingDetailDTO>>(buildingDetails);
     }
 }

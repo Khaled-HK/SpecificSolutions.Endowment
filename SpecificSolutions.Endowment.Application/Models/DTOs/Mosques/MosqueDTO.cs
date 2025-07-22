@@ -5,6 +5,7 @@ namespace SpecificSolutions.Endowment.Application.Models.DTOs.Mosques
     public class MosqueDTO
     {
         public Guid MosqueID { get; set; }
+        public Guid BuildingId { get; set; }
         public string MosqueName { get; set; }
         public string FileNumber { get; set; }
         public MosqueDefinition MosqueDefinition { get; set; }

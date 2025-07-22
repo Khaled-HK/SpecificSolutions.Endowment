@@ -8,7 +8,7 @@ namespace SpecificSolutions.Endowment.Core.Models.BuildingDetails
         public bool WithinMosqueArea { get; set; }
         public int Floors { get; set; }
         public BuildingCategory BuildingCategory { get; set; }
-        Guid MosqueID { get; set; }
+        Guid BuildingId { get; set; }
         //HashSet<ICreateFacilityDetailCommand> CreateFacilityDetailCommands { get; set; }
     }
 }
