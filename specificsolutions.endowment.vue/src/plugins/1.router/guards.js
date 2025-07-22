@@ -15,7 +15,16 @@ export const setupGuards = router => {
          * Check if user is logged in by checking if token & user data exists in local storage
          * Feel free to update this logic to suit your needs
          */
-    const isLoggedIn = !!(useCookie('userData').value && useCookie('accessToken').value)
+    let isLoggedIn = false
+    try {
+      const userData = useCookie('userData')
+      const accessToken = useCookie('accessToken')
+      isLoggedIn = !!(userData.value && accessToken.value)
+      console.log('Login check:', { hasUserData: !!userData.value, hasToken: !!accessToken.value, isLoggedIn })
+    } catch (error) {
+      console.log('Error checking login status:', error)
+      isLoggedIn = false
+    }
 
     /*
           If user is logged in and is trying to access login like page, redirect to home

@@ -40,6 +40,17 @@ export const redirects = [
   },
 ]
 export const routes = [
+  // مسار مباشر لصفحة تسجيل الدخول
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('@/pages/login.vue'),
+    meta: {
+      layout: 'blank',
+      unauthenticatedOnly: true,
+      public: false,
+    },
+  },
   // Email filter
   {
     path: '/apps/email/filter/:filter',
