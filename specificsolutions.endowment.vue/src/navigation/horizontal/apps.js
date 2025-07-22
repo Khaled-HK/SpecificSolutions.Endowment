@@ -42,6 +42,13 @@ export default [
             action: 'View',
             subject: 'Office',
           },
+          {
+            title: 'Products',
+            to: 'apps-products',
+            icon: { icon: 'tabler-package' },
+            action: 'View',
+            subject: 'Product',
+          },
         ],
       },
       {

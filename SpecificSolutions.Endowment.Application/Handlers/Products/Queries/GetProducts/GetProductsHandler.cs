@@ -1,18 +1,26 @@
-using MediatR;
 using SpecificSolutions.Endowment.Application.Abstractions.IRepositories;
+using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
 using SpecificSolutions.Endowment.Application.Models.Global;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.Products.Queries.GetProducts
 {
-    public class GetProductsHandler : IRequestHandler<GetProductsQuery, EndowmentResponse<IEnumerable<KeyValuPair>>>
+    public class GetProductsHandler : IQueryHandler<GetProductsQuery, IEnumerable<KeyValuPair>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        public GetProductsHandler(IUnitOfWork unitOfWork) { _unitOfWork = unitOfWork; }
-        public async Task<EndowmentResponse<IEnumerable<KeyValuPair>>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
+
+        public GetProductsHandler(IUnitOfWork unitOfWork)
         {
-            var entities = await _unitOfWork.Products.GetAllAsync(cancellationToken);
-            var result = entities.Select(e => new KeyValuPair { Key = e.Id, Value = e.Name });
-            return Response.FilterResponse<IEnumerable<KeyValuPair>>(result);
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        }
+
+        public async Task<EndowmentResponse<IEnumerable<KeyValuPair>>> Handle(GetProductsQuery query, CancellationToken cancellationToken)
+        {
+            var products = await _unitOfWork.Products.GetProductsAsync(query, cancellationToken);
+
+            if (!products.Any())
+                return Response.FilterResponse<IEnumerable<KeyValuPair>>(new List<KeyValuPair>());
+
+            return Response.FilterResponse(products);
         }
     }
 } 
