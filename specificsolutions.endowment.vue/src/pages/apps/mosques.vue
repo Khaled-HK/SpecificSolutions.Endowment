@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 
 // Define interfaces for better type safety
 interface Mosque {
@@ -918,6 +918,41 @@ const updateBuildingDetail = async () => {
   }
 }
 
+const productManagementDialog = ref(false)
+const selectedFacilityDetail = ref(null)
+
+const facilityDetailsList = ref([])
+const facilityDetailsLoading = ref(false)
+
+const loadFacilityDetailsByBuildingDetailId = async (buildingDetail) => {
+  facilityDetailsLoading.value = true
+  try {
+    // جلب تفاصيل المبنى (نفس نمط جلب المسجد)
+    const buildingDetailResponse = await $api(`/BuildingDetail/${buildingDetail.id}`)
+    if (!buildingDetailResponse || !buildingDetailResponse.data) {
+      facilityDetailsList.value = []
+      return
+    }
+    // جلب FacilityDetail المرتبطة بهذا المبنى
+    const response = await $api(`/FacilityDetail/filter?BuildingDetailId=${buildingDetail.id}&PageSize=100`)
+    if (response && response.data && response.data.items) {
+      facilityDetailsList.value = response.data.items
+    } else {
+      facilityDetailsList.value = []
+    }
+  } catch (error) {
+    facilityDetailsList.value = []
+  } finally {
+    facilityDetailsLoading.value = false
+  }
+}
+
+const openProductManagementDialog = async (facilityDetail) => {
+  selectedFacilityDetail.value = facilityDetail
+  productManagementDialog.value = true
+  await loadFacilityDetailsByBuildingDetailId(facilityDetail)
+}
+
 // Watch for search changes
 watch(search, () => {
   options.value.page = 1 // Reset to first page when searching
@@ -934,6 +969,154 @@ onMounted(() => {
   loadRegions()
   loadOffices()
 })
+
+const addFacilityDetailDialog = ref(false)
+const newFacilityDetail = ref({ productId: '', quantity: 1 })
+const addFacilityDetailLoading = ref(false)
+
+const productsList = ref([])
+const productsLoading = ref(false)
+
+const fetchProductsList = async () => {
+  productsLoading.value = true
+  try {
+    const response = await $api('/Product/GetProducts')
+    if (response && response.data) {
+      productsList.value = response.data.data || response.data || []
+    } else {
+      productsList.value = []
+    }
+  } catch {
+    productsList.value = []
+  } finally {
+    productsLoading.value = false
+  }
+}
+
+const openAddFacilityDetailDialog = async () => {
+  newFacilityDetail.value = { productId: '', quantity: 1 }
+  await fetchProductsList()
+  addFacilityDetailDialog.value = true
+}
+
+const closeAddFacilityDetailDialog = () => {
+  addFacilityDetailDialog.value = false
+}
+
+const addFacilityDetail = async () => {
+  if (!selectedFacilityDetail.value) return
+  addFacilityDetailLoading.value = true
+  try {
+    await $api('/FacilityDetail', {
+      method: 'POST',
+      body: {
+        buildingDetailId: selectedFacilityDetail.value.id || selectedFacilityDetail.value.Id,
+        productId: newFacilityDetail.value.productId,
+        quantity: newFacilityDetail.value.quantity
+      }
+    })
+    addFacilityDetailDialog.value = false
+    await loadFacilityDetailsByBuildingDetailId(selectedFacilityDetail.value)
+    showAlertMsg('تمت إضافة المادة بنجاح', 'success')
+  } catch (e) {
+    showAlertMsg('حدث خطأ أثناء إضافة المادة', 'error')
+  } finally {
+    addFacilityDetailLoading.value = false
+  }
+}
+
+const deleteFacilityDetailDialog = ref(false)
+const facilityDetailToDelete = ref(null)
+const deleteFacilityDetailLoading = ref(false)
+
+const openDeleteFacilityDetailDialog = (facilityDetail) => {
+  facilityDetailToDelete.value = facilityDetail
+  deleteFacilityDetailDialog.value = true
+}
+
+const closeDeleteFacilityDetailDialog = () => {
+  deleteFacilityDetailDialog.value = false
+  facilityDetailToDelete.value = null
+}
+
+const deleteFacilityDetail = async () => {
+  if (!facilityDetailToDelete.value) return
+  deleteFacilityDetailLoading.value = true
+  try {
+    await $api(`/FacilityDetail/${facilityDetailToDelete.value.id || facilityDetailToDelete.value.Id}`, { method: 'DELETE' })
+    deleteFacilityDetailDialog.value = false
+    await loadFacilityDetailsByBuildingDetailId(selectedFacilityDetail.value)
+    showAlertMsg('تم حذف المادة بنجاح', 'success')
+  } catch (e) {
+    showAlertMsg('حدث خطأ أثناء حذف المادة', 'error')
+  } finally {
+    deleteFacilityDetailLoading.value = false
+  }
+}
+
+const editFacilityDetailDialog = ref(false)
+const editFacilityDetail = ref({ id: '', productId: '', quantity: 1 })
+const editFacilityDetailLoading = ref(false)
+
+const openEditFacilityDetailDialog = async (facilityDetail) => {
+  editFacilityDetail.value = {
+    id: facilityDetail.id || facilityDetail.Id,
+    productId: facilityDetail.productId || facilityDetail.ProductId,
+    quantity: facilityDetail.quantity ?? facilityDetail.Quantity ?? 1
+  }
+  await fetchProductsList()
+  editFacilityDetailDialog.value = true
+}
+
+const closeEditFacilityDetailDialog = () => {
+  editFacilityDetailDialog.value = false
+}
+
+const updateFacilityDetail = async () => {
+  editFacilityDetailLoading.value = true
+  try {
+    await $api(`/FacilityDetail/${editFacilityDetail.value.id}`, {
+      method: 'PUT',
+      body: {
+        id: editFacilityDetail.value.id,
+        productId: editFacilityDetail.value.productId,
+        quantity: editFacilityDetail.value.quantity
+      }
+    })
+    editFacilityDetailDialog.value = false
+    await loadFacilityDetailsByBuildingDetailId(selectedFacilityDetail.value)
+    showAlertMsg('تم تعديل المادة بنجاح', 'success')
+  } catch (e) {
+    showAlertMsg('حدث خطأ أثناء تعديل المادة', 'error')
+  } finally {
+    editFacilityDetailLoading.value = false
+  }
+}
+
+const facilityDetailsSearch = ref('')
+
+const filteredFacilityDetails = computed(() => {
+  if (!facilityDetailsSearch.value) return facilityDetailsList.value
+  const search = facilityDetailsSearch.value.toLowerCase()
+  return facilityDetailsList.value.filter(item => {
+    const name = item.product?.name || item.productName || ''
+    const id = String(item.id || item.Id || '')
+    const productId = String(item.productId || item.ProductId || '')
+    const quantity = String(item.quantity ?? item.Quantity ?? '')
+    return (
+      name.toLowerCase().includes(search) ||
+      id.includes(search) ||
+      productId.includes(search) ||
+      quantity.includes(search)
+    )
+  })
+})
+
+function showAlertMsg(msg, type = 'success') {
+  alertMessage.value = msg
+  alertType.value = type
+  showAlert.value = true
+}
 </script>
 
 <template>
@@ -1734,6 +1917,13 @@ onMounted(() => {
                         </IconBtn>
                       </template>
                     </VTooltip>
+                    <VTooltip text="إدارة المواد" location="top">
+                      <template #activator="{ props }">
+                        <IconBtn @click="openProductManagementDialog(item)" color="primary" v-bind="props">
+                          <VIcon icon="tabler-package" />
+                        </IconBtn>
+                      </template>
+                    </VTooltip>
                   </div>
                 </template>
               </VDataTable>
@@ -1943,6 +2133,197 @@ onMounted(() => {
           >
             تحديث
           </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+
+    <!-- Product Management Dialog -->
+    <VDialog
+      v-model="productManagementDialog"
+      max-width="800px"
+      persistent
+    >
+      <VCard>
+        <VCardTitle class="text-h6 d-flex align-center">
+          <VIcon icon="tabler-package" class="me-2" />
+          إدارة المواد المرتبطة بالمبنى
+          <VSpacer />
+          <IconBtn @click="productManagementDialog = false" size="small">
+            <VIcon icon="tabler-x" />
+          </IconBtn>
+        </VCardTitle>
+        <VCardSubtitle v-if="selectedFacilityDetail" class="text-medium-emphasis">
+          للمبنى: {{ selectedFacilityDetail.name }}
+        </VCardSubtitle>
+        <VCardText>
+          <!-- هنا سيتم وضع جدول المواد المرتبطة بهذا المبنى -->
+          <div class="text-center text-medium-emphasis py-8">
+            <VIcon icon="tabler-package" size="48" class="mb-2" />
+            <div>هنا سيتم عرض وإدارة المواد (Products) المرتبطة بهذا المبنى.</div>
+          </div>
+          <div class="d-flex justify-end mb-2">
+            <VBtn color="primary" @click="openAddFacilityDetailDialog" prepend-icon="tabler-plus">إضافة مادة جديدة</VBtn>
+          </div>
+          <VTextField
+            v-model="facilityDetailsSearch"
+            label="بحث في المواد..."
+            prepend-inner-icon="tabler-search"
+            clearable
+            class="mb-2"
+          />
+          <VDataTable
+            :headers="[
+              { title: 'رقم السجل', key: 'id', sortable: true },
+              { title: 'اسم المادة', key: 'productName', sortable: true },
+              { title: 'رقم المادة', key: 'productId', sortable: true },
+              { title: 'الكمية', key: 'quantity', sortable: true },
+              { title: 'الإجراءات', key: 'actions', sortable: false, width: '80px' }
+            ]"
+            :items="filteredFacilityDetails"
+            :loading="facilityDetailsLoading"
+            :items-per-page="10"
+            class="text-no-wrap"
+            no-data-text="لا توجد مواد مرتبطة بهذا المبنى"
+          >
+            <template #item.id="{ item }">
+              <span>{{ item.id || item.Id }}</span>
+            </template>
+            <template #item.productName="{ item }">
+              <span>{{ item.product?.name || item.productName || '---' }}</span>
+            </template>
+            <template #item.productId="{ item }">
+              <span>{{ item.productId || item.ProductId }}</span>
+            </template>
+            <template #item.quantity="{ item }">
+              <span>{{ item.quantity ?? item.Quantity ?? 0 }}</span>
+            </template>
+            <template #item.actions="{ item }">
+              <div class="d-flex gap-1">
+                <VTooltip text="تعديل المادة" location="top">
+                  <template #activator="{ props }">
+                    <IconBtn @click="openEditFacilityDetailDialog(item)" color="info" v-bind="props">
+                      <VIcon icon="tabler-edit" />
+                    </IconBtn>
+                  </template>
+                </VTooltip>
+                <VTooltip text="حذف المادة" location="top">
+                  <template #activator="{ props }">
+                    <IconBtn @click="openDeleteFacilityDetailDialog(item)" color="error" v-bind="props">
+                      <VIcon icon="tabler-trash" />
+                    </IconBtn>
+                  </template>
+                </VTooltip>
+              </div>
+            </template>
+          </VDataTable>
+        </VCardText>
+        <VCardActions>
+          <VSpacer />
+          <VBtn
+            color="grey-darken-1"
+            variant="text"
+            @click="productManagementDialog = false"
+          >
+            إغلاق
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+
+    <!-- Add FacilityDetail Dialog -->
+    <VDialog
+      v-model="addFacilityDetailDialog"
+      max-width="500px"
+      persistent
+    >
+      <VCard>
+        <VCardTitle class="text-h6">إضافة مادة جديدة</VCardTitle>
+        <VCardText>
+          <VForm @submit.prevent="addFacilityDetail">
+            <VAutocomplete
+              v-model="newFacilityDetail.productId"
+              :items="productsList"
+              :loading="productsLoading"
+              item-title="value"
+              item-value="key"
+              label="اختر المادة"
+              required
+              clearable
+              no-data-text="لا توجد مواد متاحة"
+              placeholder="اختر المادة..."
+            />
+            <VTextField
+              v-model="newFacilityDetail.quantity"
+              label="الكمية"
+              type="number"
+              min="1"
+              required
+            />
+          </VForm>
+        </VCardText>
+        <VCardActions>
+          <VSpacer />
+          <VBtn color="grey-darken-1" variant="text" @click="closeAddFacilityDetailDialog">إلغاء</VBtn>
+          <VBtn color="primary" variant="flat" @click="addFacilityDetail" :loading="addFacilityDetailLoading">حفظ</VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+
+    <!-- Delete FacilityDetail Dialog -->
+    <VDialog
+      v-model="deleteFacilityDetailDialog"
+      max-width="400px"
+    >
+      <VCard>
+        <VCardTitle class="text-h6">تأكيد حذف المادة</VCardTitle>
+        <VCardText>
+          هل أنت متأكد من حذف المادة؟
+          <br>
+          <span class="text-error">لا يمكن التراجع عن هذا الإجراء.</span>
+        </VCardText>
+        <VCardActions>
+          <VSpacer />
+          <VBtn color="grey-darken-1" variant="text" @click="closeDeleteFacilityDetailDialog">إلغاء</VBtn>
+          <VBtn color="error" variant="flat" @click="deleteFacilityDetail" :loading="deleteFacilityDetailLoading">حذف</VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+
+    <!-- Edit FacilityDetail Dialog -->
+    <VDialog
+      v-model="editFacilityDetailDialog"
+      max-width="500px"
+      persistent
+    >
+      <VCard>
+        <VCardTitle class="text-h6">تعديل المادة</VCardTitle>
+        <VCardText>
+          <VForm @submit.prevent="updateFacilityDetail">
+            <VAutocomplete
+              v-model="editFacilityDetail.productId"
+              :items="productsList"
+              :loading="productsLoading"
+              item-title="value"
+              item-value="key"
+              label="اختر المادة"
+              required
+              clearable
+              no-data-text="لا توجد مواد متاحة"
+              placeholder="اختر المادة..."
+            />
+            <VTextField
+              v-model="editFacilityDetail.quantity"
+              label="الكمية"
+              type="number"
+              min="1"
+              required
+            />
+          </VForm>
+        </VCardText>
+        <VCardActions>
+          <VSpacer />
+          <VBtn color="grey-darken-1" variant="text" @click="closeEditFacilityDetailDialog">إلغاء</VBtn>
+          <VBtn color="primary" variant="flat" @click="updateFacilityDetail" :loading="editFacilityDetailLoading">حفظ</VBtn>
         </VCardActions>
       </VCard>
     </VDialog>

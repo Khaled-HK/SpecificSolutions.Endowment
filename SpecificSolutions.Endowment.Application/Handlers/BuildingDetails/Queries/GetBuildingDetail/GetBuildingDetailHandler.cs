@@ -32,7 +32,8 @@ namespace SpecificSolutions.Endowment.Application.Handlers.BuildingDetails.Queri
                 BuildingId = buildingDetail.BuildingId
             };
 
-            return new(data: buildingDetailDTO);
+            return Response.FilterResponse(buildingDetailDTO);
+
         }
     }
-} 
+}
