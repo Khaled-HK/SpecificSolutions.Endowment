@@ -45,20 +45,29 @@ const rememberMe = ref(false)
 
 const login = async () => {
   try {
-    const res = await $api('/Auth/login', {
-      method: 'POST',
-      body: {
-        email: credentials.value.email,
-        password: credentials.value.password,
-      },
-      onResponseError({ response }) {
-        errors.value = response._data.errors || { general: 'Login failed. Please check your credentials.' }
-      },
-    })
+    // تجاهل API مؤقتاً واستخدام بيانات تجريبية
+    console.log('محاولة تسجيل الدخول مع:', credentials.value.email)
+    
+    // بيانات تجريبية للمستخدم
+    const mockUser = {
+      id: 1,
+      name: 'مدير النظام',
+      email: credentials.value.email,
+      role: credentials.value.email.includes('admin') ? 'admin' : 'client',
+      token: 'mock-jwt-token-12345',
+      permissions: [
+        'Dashboard_View',
+        'User_View', 'User_Add', 'User_Edit', 'User_Delete',
+        'Account_View', 'Account_Add', 'Account_Edit', 'Account_Delete',
+        'City_View', 'City_Add', 'City_Edit', 'City_Delete'
+      ]
+    }
 
-    const user = res.data
-    useCookie('accessToken').value = user.token
-    useCookie('userData').value = user
+    // حفظ بيانات المستخدم والتوكن
+    useCookie('accessToken').value = mockUser.token
+    useCookie('userData').value = mockUser
+
+    const user = mockUser
 
     if (!user.permissions) {
       console.error('User object does not have permissions:', user)
