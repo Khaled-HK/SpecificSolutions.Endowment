@@ -1,5 +1,6 @@
 using SpecificSolutions.Endowment.Application.Abstractions.IRepositories;
 using SpecificSolutions.Endowment.Application.Handlers.Products.Queries.Filter;
+using SpecificSolutions.Endowment.Application.Handlers.Products.Queries.GetProducts;
 using SpecificSolutions.Endowment.Application.Models.DTOs.Products;
 using SpecificSolutions.Endowment.Application.Models.Global;
 using SpecificSolutions.Endowment.Core.Entities.Products;
@@ -66,6 +67,24 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories
             });
 
             return await PagedList<ProductDTO>.CreateAsync(dtos, query.PageNumber, query.PageSize, cancellationToken);
+        }
+
+        public async Task<IEnumerable<KeyValuPair>> GetProductsAsync(GetProductsQuery query, CancellationToken cancellationToken)
+        {
+            var productsQuery = _context.Products.AsQueryable();
+            // Apply filtering based on the query parameters
+            if (!string.IsNullOrEmpty(query.Name))
+            {
+                productsQuery = productsQuery.Where(p => p.Name.Contains(query.Name));
+            }
+            // Select the relevant fields to return as DTOs
+            var productDTOs = productsQuery.Select(p => new KeyValuPair
+            {
+                Key = p.Id,
+                Value = p.Name,
+            });
+            // Return paged results
+            return await productDTOs.ToListAsync();
         }
     }
 }

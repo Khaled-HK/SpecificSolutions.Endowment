@@ -70,6 +70,30 @@ export default {
         });
     },
 
+    //// ********************************| Products |********************************
+
+    getProducts(queryParams) {
+        return axios.get(`api/Product/filter`, {
+            params: queryParams // Axios converts this to `?PageNumber=...&PageSize=...&SearchTerm=...`
+        });
+    },
+
+    createProduct(productData) {
+        return axios.post(`api/Product`, productData);
+    },
+
+    updateProduct(id, productData) {
+        return axios.put(`api/Product/${id}`, productData);
+    },
+
+    deleteProduct(id) {
+        return axios.delete(`api/Product/${id}`);
+    },
+
+    getProductById(id) {
+        return axios.get(`api/Product/${id}`);
+    },
+
     //// ********************************| Schools |********************************
 
 

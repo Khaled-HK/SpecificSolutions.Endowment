@@ -2277,6 +2277,17 @@ function showAlertMsg(msg, type = 'success') {
       <VCard>
         <VCardTitle class="text-h6">إضافة مادة جديدة</VCardTitle>
         <VCardText>
+          <!-- Alert for messages -->
+          <VAlert
+            v-model="showAlert"
+            :type="alertType"
+            variant="tonal"
+            closable
+            class="mb-4"
+          >
+            {{ alertMessage }}
+          </VAlert>
+          
           <VForm @submit.prevent="addFacilityDetail">
             <VAutocomplete
               v-model="newFacilityDetail.productId"
@@ -2332,6 +2343,17 @@ function showAlertMsg(msg, type = 'success') {
       <VCard>
         <VCardTitle class="text-h6">تعديل المادة</VCardTitle>
         <VCardText>
+          <!-- Alert for messages -->
+          <VAlert
+            v-model="showAlert"
+            :type="alertType"
+            variant="tonal"
+            closable
+            class="mb-4"
+          >
+            {{ alertMessage }}
+          </VAlert>
+          
           <VForm @submit.prevent="updateFacilityDetail">
             <VRow>
               <VCol cols="12">

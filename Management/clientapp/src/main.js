@@ -43,6 +43,9 @@ import StudentsDashboard from './components/Students/Dashboard/Dashboard.vue';
 import Instructors from './components/Instructors/Instructors.vue';
 import InstructorsSuspend from './components/Instructors/Suspend/Suspend.vue';
 
+//Products
+import Products from './components/Products/Products.vue';
+
 //Financial
 //import Instructors from './components/Instructors/Instructors.vue';
 import FinancialSubscriptions from './components/Financial/Subscriptions/Subscriptions.vue';
@@ -131,6 +134,9 @@ const router = new VueRouter({
                         //Instructors
                         { path: 'Instructors', component: Instructors },
                         { path: 'InstructorsSuspend', component: InstructorsSuspend },
+
+                        //Products
+                        { path: 'Products', component: Products },
 
                         //Financial
                         //{ path: 'Instructors', component: Instructors },
