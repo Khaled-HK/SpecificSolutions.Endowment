@@ -1,4 +1,4 @@
-using FluentValidation;
+kuusing FluentValidation;
 using SpecificSolutions.Endowment.Application.Handlers.BuildingDetails.Commands.Create;
 
 namespace SpecificSolutions.Endowment.Application.Validators.BuildingDetails

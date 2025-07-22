@@ -836,16 +836,25 @@ const clearBuildingDetailsSearch = async () => {
   await reloadBuildingDetails()
 }
 
-const openEditBuildingDetailDialog = (buildingDetail: any) => {
-  selectedBuildingDetail.value = buildingDetail
+const openEditBuildingDetailDialog = async (buildingDetail) => {
+  // تحويل القيمة الرقمية إلى نصية
+  let buildingCategoryText = '';
+  if (buildingDetail.buildingCategory === 0 || buildingDetail.buildingCategory === 'Facility') {
+    buildingCategoryText = 'Facility';
+  } else if (buildingDetail.buildingCategory === 1 || buildingDetail.buildingCategory === 'Endowment') {
+    buildingCategoryText = 'Endowment';
+  } else {
+    buildingCategoryText = 'Endowment'; // افتراضي
+  }
   editBuildingDetail.value = {
     id: buildingDetail.id,
     name: buildingDetail.name,
     floors: buildingDetail.floors,
     withinMosqueArea: buildingDetail.withinMosqueArea,
-    buildingCategory: buildingDetail.buildingCategory
+    buildingCategory: buildingCategoryText
   }
-  editBuildingDetailDialog.value = true
+  selectedBuildingDetail.value = buildingDetail;
+  editBuildingDetailDialog.value = true;
 }
 
 const closeEditBuildingDetailDialog = () => {
