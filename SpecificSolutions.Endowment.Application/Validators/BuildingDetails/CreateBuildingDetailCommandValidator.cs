@@ -1,4 +1,4 @@
-kuusing FluentValidation;
+using FluentValidation;
 using SpecificSolutions.Endowment.Application.Handlers.BuildingDetails.Commands.Create;
 
 namespace SpecificSolutions.Endowment.Application.Validators.BuildingDetails
@@ -22,4 +22,4 @@ namespace SpecificSolutions.Endowment.Application.Validators.BuildingDetails
                 .NotEmpty().WithMessage("معرف المبنى مطلوب");
         }
     }
-} 
+}
