@@ -5,6 +5,7 @@ using SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Update
 using SpecificSolutions.Endowment.Application.Handlers.Decisions.Queries.Filter;
 using SpecificSolutions.Endowment.Application.Handlers.Decisions.Queries.GetById;
 using SpecificSolutions.Endowment.Application.Handlers.Decisions.Queries.GetDecisions;
+using SpecificSolutions.Endowment.Application.Models.DTOs.Decisions;
 using SpecificSolutions.Endowment.Application.Models.Global;
 
 namespace SpecificSolutions.Endowment.Api.Controllers.Decisions
@@ -36,11 +37,11 @@ namespace SpecificSolutions.Endowment.Api.Controllers.Decisions
             await _mediator.Send(new DeleteDecisionCommand(id), cancellationToken);
 
         [HttpGet("filter")]
-        public async Task<EndowmentResponse> Filter([FromQuery] string searchTerm, CancellationToken cancellationToken = default) =>
-            await _mediator.Send(new FilterDecisionQuery { Title = searchTerm }, cancellationToken);
+        public async Task<EndowmentResponse<PagedList<FilterDecisionDTO>>> Filter([FromQuery] FilterDecisionQuery query, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(query, cancellationToken);
 
-        [HttpGet("entities")]
-        public async Task<EndowmentResponse> GetEntities(CancellationToken cancellationToken = default) =>
-            await _mediator.Send(new GetDecisionsQuery(), cancellationToken);
+        [HttpGet("GetDecisions")]
+        public async Task<EndowmentResponse<IEnumerable<KeyValuPair>>> GetDecisions([FromQuery] GetDecisionsQuery query, CancellationToken cancellationToken = default) =>
+            await _mediator.Send(query, cancellationToken);
     }
 }

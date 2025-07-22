@@ -42,13 +42,20 @@ export default [
             action: 'View',
             subject: 'Office',
           },
-          {
-            title: 'Products',
-            to: 'apps-products',
-            icon: { icon: 'tabler-package' },
-            action: 'View',
-            subject: 'Product',
-          },
+                            {
+                    title: 'Products',
+                    to: 'apps-products',
+                    icon: { icon: 'tabler-package' },
+                    action: 'View',
+                    subject: 'Product',
+                  },
+                  {
+                    title: 'Decisions',
+                    to: 'apps-decisions',
+                    icon: { icon: 'tabler-file-text' },
+                    action: 'View',
+                    subject: 'Decision',
+                  },
         ],
       },
       {
