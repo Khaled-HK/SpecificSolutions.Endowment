@@ -1021,7 +1021,7 @@ const addFacilityDetail = async () => {
   if (!selectedBuildingDetail.value) return
   addFacilityDetailLoading.value = true
   try {
-    await $api('/FacilityDetail', {
+    const response = await $api('/FacilityDetail', {
       method: 'POST',
       body: {
         buildingDetailId: selectedBuildingDetail.value.id || selectedBuildingDetail.value.Id,
@@ -1029,6 +1029,12 @@ const addFacilityDetail = async () => {
         quantity: newFacilityDetail.value.quantity
       }
     })
+    if (response && response.isSuccess === false) {
+      let errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء إضافة المادة';
+      errorMsg = errorMsg.replace(/\n/g, '');
+      showAlertMsg(errorMsg, 'error');
+      return;
+    }
     addFacilityDetailDialog.value = false
     await loadFacilityDetailsByBuildingDetailId(selectedBuildingDetail.value)
     showAlertMsg('تمت إضافة المادة بنجاح', 'success')
@@ -1106,7 +1112,9 @@ const updateFacilityDetail = async () => {
       }
     })
     if (response && response.isSuccess === false) {
-      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء تعديل المادة';
+      let errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء تعديل المادة';
+      errorMsg = errorMsg.replace(/\n/g, '');
+      console.log('رسالة الخطأ:', errorMsg);
       showAlertMsg(errorMsg, 'error');
       return;
     }
@@ -2183,6 +2191,17 @@ function showAlertMsg(msg, type = 'success') {
           للمبنى: {{ selectedFacilityDetail.name }}
         </VCardSubtitle>
         <VCardText>
+          <!-- Alert for messages -->
+          <VAlert
+            v-model="showAlert"
+            :type="alertType"
+            variant="tonal"
+            closable
+            class="mb-4"
+          >
+            {{ alertMessage }}
+          </VAlert>
+          
           <!-- هنا سيتم وضع جدول المواد المرتبطة بهذا المبنى -->
           <div class="text-center text-medium-emphasis py-8">
             <VIcon icon="tabler-package" size="48" class="mb-2" />
