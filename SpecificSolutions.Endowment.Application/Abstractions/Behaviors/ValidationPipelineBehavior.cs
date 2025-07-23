@@ -53,7 +53,6 @@ public class ValidationPipelineBehavior<TRequest, TResponse> :
                 .Distinct()
                 .ToArray();
 
-
             if (failures.Any())
                 throw new SpecificSolutions.Endowment.Application.Abstractions.Exceptions.ValidationException(failures);
         }

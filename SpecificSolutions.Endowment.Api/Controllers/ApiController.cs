@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace SpecificSolutions.Endowment.Api.Controllers
 {
-    // [Authorize] // Temporarily disabled for testing
+    [Authorize] // تفعيل الحماية على جميع Controllers
     [ApiController]
     [Route("api/[controller]")]
     public class ApiController : ControllerBase

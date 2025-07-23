@@ -35,5 +35,26 @@ export const useApi = createFetch({
       
       return { data: parsedData, response }
     },
+    onFetchError(ctx) {
+      const { response } = ctx
+      
+      // إذا كان الخطأ 401 (غير مخول) أو 403 (ممنوع)
+      if (response.status === 401 || response.status === 403) {
+        console.warn('Token expired or unauthorized, clearing cookies...')
+        
+        // تنظيف الكوكيز
+        const accessToken = useCookie('accessToken')
+        const userData = useCookie('userData')
+        
+        accessToken.value = null
+        userData.value = null
+        
+        // إعادة توجيه لصفحة تسجيل الدخول
+        if (process.client) {
+          const router = useRouter()
+          router.push('/login')
+        }
+      }
+    },
   },
 })

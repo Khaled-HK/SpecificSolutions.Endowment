@@ -1,4 +1,46 @@
 export const setupGuards = router => {
+  // دالة لفك تشفير JWT Token محلياً
+  const decodeJWT = (token) => {
+    try {
+      // JWT Token يتكون من 3 أجزاء مفصولة بـ .
+      const parts = token.split('.')
+      if (parts.length !== 3) return null
+      
+      // فك تشفير الجزء الثاني (payload)
+      const payload = parts[1]
+      const decoded = JSON.parse(atob(payload))
+      
+      return decoded
+    } catch (error) {
+      console.warn('JWT decode failed:', error)
+      return null
+    }
+  }
+
+  // دالة للتحقق المحلي من صلاحية Token
+  const validateTokenLocally = () => {
+    try {
+      const accessToken = useCookie('accessToken').value
+      if (!accessToken) return false
+      
+      // فك تشفير Token
+      const decoded = decodeJWT(accessToken)
+      if (!decoded) return false
+      
+      // التحقق من انتهاء الصلاحية
+      const currentTime = Math.floor(Date.now() / 1000)
+      if (decoded.exp && decoded.exp < currentTime) {
+        console.warn('Token expired locally')
+        return false
+      }
+      
+      return true
+    } catch (error) {
+      console.warn('Local token validation failed:', error)
+      return false
+    }
+  }
+
   // 👉 router.beforeEach
   // Docs: https://router.vuejs.org/guide/advanced/navigation-guards.html#global-before-guards
   router.beforeEach((to, from, next) => {
@@ -18,7 +60,7 @@ export const setupGuards = router => {
        */
       const userData = useCookie('userData')
       const accessToken = useCookie('accessToken')
-      const isLoggedIn = !!(userData.value && accessToken.value)
+      const hasToken = !!(userData.value && accessToken.value)
 
       /*
         If user is logged in and is trying to access login like page, redirect to home
@@ -26,7 +68,7 @@ export const setupGuards = router => {
         (WARN: Don't allow executing further by return statement because next code will check for permissions)
        */
       if (to.meta.unauthenticatedOnly) {
-        if (isLoggedIn) {
+        if (hasToken) {
           next('/')
           return
         } else {
@@ -36,7 +78,7 @@ export const setupGuards = router => {
       }
 
       // If user is not logged in and trying to access protected route
-      if (!isLoggedIn) {
+      if (!hasToken) {
         next({
           name: 'login',
           query: {
@@ -47,7 +89,26 @@ export const setupGuards = router => {
         return
       }
 
-      // User is logged in, allow access
+      // التحقق المحلي من Token (بدون الاتصال بالباك إند)
+      const isTokenValid = validateTokenLocally()
+      if (!isTokenValid) {
+        console.warn('Invalid token detected locally, redirecting to login...')
+        
+        // تنظيف الكوكيز
+        userData.value = null
+        accessToken.value = null
+        
+        next({
+          name: 'login',
+          query: {
+            ...to.query,
+            to: to.fullPath !== '/' ? to.path : undefined,
+          },
+        })
+        return
+      }
+
+      // User is logged in and token is valid, allow access
       next()
     } catch (error) {
       console.error('Navigation guard error:', error)
