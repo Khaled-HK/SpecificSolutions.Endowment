@@ -4,6 +4,7 @@ definePage({
   meta: {
     action: 'View',
     subject: 'Dashboard',
+    requiresAuth: true, // Require authentication
   },
 })
 

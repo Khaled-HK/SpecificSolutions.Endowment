@@ -16,7 +16,7 @@ export const can = (action, subject) => {
     return false
   const localCan = vm.proxy && '$can' in vm.proxy
     
-  return localCan ? vm.proxy?.$can(action, subject) : true
+  return localCan ? vm.proxy?.$can(action, subject) : false
 }
 
 /**
@@ -44,7 +44,12 @@ export const canNavigate = to => {
   if (targetRoute?.meta?.action && targetRoute?.meta?.subject)
     return ability.can(targetRoute.meta.action, targetRoute.meta.subject)
 
-  // If no specific permissions, fall back to checking if any parent route allows access
-    
+  // If no specific permissions, check if user is authenticated
+  const isAuthenticated = !!(useCookie('userData').value && useCookie('accessToken').value)
+  if (!isAuthenticated) {
+    return false
+  }
+
+  // If authenticated but no specific permissions, allow access
   return to.matched.some(route => ability.can(route.meta.action, route.meta.subject))
 }

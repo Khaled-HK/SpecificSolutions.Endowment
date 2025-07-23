@@ -8,15 +8,25 @@ export const redirects = [
     path: '/',
     name: 'index',
     redirect: to => {
-      // TODO: Get type from backend
-      const userData = useCookie('userData')
-      const userRole = userData.value?.role
-      if (userRole === 'admin')
-        return { name: 'dashboards-crm' }
-      if (userRole === 'client')
-        return { name: 'access-control' }
-      
-      return { name: 'login', query: to.query }
+      try {
+        // Check if user is logged in
+        const userData = useCookie('userData')
+        const accessToken = useCookie('accessToken')
+        
+        const isLoggedIn = !!(userData.value && accessToken.value)
+        
+        if (isLoggedIn) {
+          // User is logged in, redirect to dashboard
+          return { name: 'dashboard' }
+        } else {
+          // User is not logged in, redirect to login
+          return { name: 'login', query: to.query }
+        }
+      } catch (error) {
+        console.error('Redirect error:', error)
+        // Fallback to login page
+        return { name: 'login', query: to.query }
+      }
     },
   },
   {
