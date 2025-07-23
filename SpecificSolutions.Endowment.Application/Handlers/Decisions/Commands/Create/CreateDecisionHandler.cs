@@ -3,6 +3,7 @@ using SpecificSolutions.Endowment.Application.Abstractions.IRepositories;
 using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
 using SpecificSolutions.Endowment.Application.Models.Global;
 using SpecificSolutions.Endowment.Core.Entities.Decisions;
+using SpecificSolutions.Endowment.Core.Resources;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Create
 {
@@ -19,26 +20,19 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Cr
 
         public async Task<EndowmentResponse> Handle(CreateDecisionCommand request, CancellationToken cancellationToken)
         {
-            try
+            // Get UserId from JWT token via IUserContext (آمن)
+            var userId = _userContext.GetUserIdOrDefault();
+            if (!userId.HasValue)
             {
-                // Get UserId from JWT token via IUserContext (آمن)
-                var userId = _userContext.GetUserIdOrDefault();
-                if (!userId.HasValue)
-                {
-                    return Response.FailureResponse("User context is unavailable - Please log in again");
-                }
-
-                var decision = new Decision(request, userId.Value.ToString());
-
-                await _unitOfWork.Decisions.AddAsync(decision, cancellationToken);
-                await _unitOfWork.CompleteAsync(cancellationToken);
-
-                return Response.Added();
+                return Response.FailureResponse("User context is unavailable - Please log in again");
             }
-            catch (Exception ex)
-            {
-                return Response.FailureResponse($"حدث خطأ أثناء إنشاء القرار: {ex.Message}");
-            }
+
+            var decision = new Decision(request, userId.Value.ToString());
+
+            await _unitOfWork.Decisions.AddAsync(decision, cancellationToken);
+            await _unitOfWork.CompleteAsync(cancellationToken);
+
+            return Response.Added();
         }
     }
 }

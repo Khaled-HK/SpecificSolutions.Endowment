@@ -19,43 +19,32 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Mosques.Commands.Upda
 
         public async Task<EndowmentResponse> Handle(UpdateMosqueCommand request, CancellationToken cancellationToken)
         {
-            try
+            var mosque = await _unitOfWork.Mosques.GetByIdAsync(request.Id, cancellationToken);
+            if (mosque == null) throw new MosqueNotFoundException();
+
+            // Get UserId from JWT token via IUserContext and set it in the command for audit purposes
+            var userId = _userContext.GetUserIdOrDefault();
+            if (!userId.HasValue)
             {
-                var mosque = await _unitOfWork.Mosques.GetByIdAsync(request.Id, cancellationToken);
-                if (mosque == null) throw new MosqueNotFoundException();
-
-                // Get UserId from JWT token via IUserContext and set it in the command for audit purposes
-                var userId = _userContext.GetUserIdOrDefault();
-                if (!userId.HasValue)
-                {
-                    return Response.FailureResponse("User context is unavailable - Please log in again");
-                }
-                
-                request.UserId = userId.Value.ToString();
-
-                // Update the mosque
-                mosque.Update(request);
-
-                // Update the building as well
-                mosque.Building.Update(request);
-
-                // طباعة للتأكد من التحديث
-                Console.WriteLine($"Mosque updated - Definition: {mosque.MosqueDefinition}, Classification: {mosque.MosqueClassification}");
-                Console.WriteLine($"Building updated - Name: {mosque.Building.Name}, RegionId: {mosque.Building.RegionId}, OfficeId: {mosque.Building.OfficeId}");
-                Console.WriteLine($"Dates updated - OpeningDate: {mosque.Building.OpeningDate}, ConstructionDate: {mosque.Building.ConstructionDate}");
-
-                await _unitOfWork.CompleteAsync(cancellationToken);
-
-                return Response.Updated();
+                return Response.FailureResponse("User context is unavailable - Please log in again");
             }
-            catch (MosqueNotFoundException)
-            {
-                return Response.FailureResponse("المسجد غير موجود");
-            }
-            catch (Exception ex)
-            {
-                return Response.FailureResponse($"حدث خطأ أثناء تحديث المسجد: {ex.Message}");
-            }
+            
+            request.UserId = userId.Value.ToString();
+
+            // Update the mosque
+            mosque.Update(request);
+
+            // Update the building as well
+            mosque.Building.Update(request);
+
+            // طباعة للتأكد من التحديث
+            Console.WriteLine($"Mosque updated - Definition: {mosque.MosqueDefinition}, Classification: {mosque.MosqueClassification}");
+            Console.WriteLine($"Building updated - Name: {mosque.Building.Name}, RegionId: {mosque.Building.RegionId}, OfficeId: {mosque.Building.OfficeId}");
+            Console.WriteLine($"Dates updated - OpeningDate: {mosque.Building.OpeningDate}, ConstructionDate: {mosque.Building.ConstructionDate}");
+
+            await _unitOfWork.CompleteAsync(cancellationToken);
+
+            return Response.Updated();
         }
     }
 }

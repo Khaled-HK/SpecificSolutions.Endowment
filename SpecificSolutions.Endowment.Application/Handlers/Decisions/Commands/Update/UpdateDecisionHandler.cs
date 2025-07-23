@@ -2,6 +2,7 @@ using SpecificSolutions.Endowment.Application.Abstractions.IRepositories;
 using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
 using SpecificSolutions.Endowment.Application.Abstractions.Contracts;
 using SpecificSolutions.Endowment.Application.Models.Global;
+using SpecificSolutions.Endowment.Core.Resources;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Update
 {
@@ -18,34 +19,27 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Up
 
         public async Task<EndowmentResponse> Handle(UpdateDecisionCommand request, CancellationToken cancellationToken)
         {
-            try
+            var decision = await _unitOfWork.Decisions.GetByIdAsync(request.Id, cancellationToken);
+            if (decision == null)
             {
-                var decision = await _unitOfWork.Decisions.GetByIdAsync(request.Id, cancellationToken);
-                if (decision == null)
-                {
-                    return Response.FailureResponse("Id", "Decision not found.");
-                }
-
-                // Get UserId from JWT token via IUserContext (للتحقق من الصلاحيات)
-                var userId = _userContext.GetUserIdOrDefault();
-                if (!userId.HasValue)
-                {
-                    return Response.FailureResponse("User context is unavailable - Please log in again");
-                }
-
-                // يمكن إضافة تحقق من الصلاحيات هنا إذا لزم الأمر
-                // مثلاً: التحقق من أن المستخدم هو منشئ القرار أو لديه صلاحيات التحديث
-
-                decision.Update(request);
-
-                await _unitOfWork.CompleteAsync(cancellationToken);
-
-                return Response.Updated();
+                return Response.FailureResponse("Id", "القرار غير موجود");
             }
-            catch (Exception ex)
+
+            // Get UserId from JWT token via IUserContext (للتحقق من الصلاحيات)
+            var userId = _userContext.GetUserIdOrDefault();
+            if (!userId.HasValue)
             {
-                return Response.FailureResponse($"حدث خطأ أثناء تحديث القرار: {ex.Message}");
+                return Response.FailureResponse("User context is unavailable - Please log in again");
             }
+
+            // يمكن إضافة تحقق من الصلاحيات هنا إذا لزم الأمر
+            // مثلاً: التحقق من أن المستخدم هو منشئ القرار أو لديه صلاحيات التحديث
+
+            decision.Update(request);
+
+            await _unitOfWork.CompleteAsync(cancellationToken);
+
+            return Response.Updated();
         }
     }
 }

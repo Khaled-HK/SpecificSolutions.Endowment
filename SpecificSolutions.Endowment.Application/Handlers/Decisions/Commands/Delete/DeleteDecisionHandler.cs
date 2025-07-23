@@ -1,6 +1,7 @@
 using MediatR;
 using SpecificSolutions.Endowment.Application.Abstractions.IRepositories;
 using SpecificSolutions.Endowment.Application.Models.Global;
+using SpecificSolutions.Endowment.Core.Resources;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Delete
 {
@@ -18,7 +19,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.De
             var decision = await _unitOfWork.Decisions.GetByIdAsync(command.Id, cancellationToken);
             if (decision == null)
             {
-                return Response.FailureResponse("Id", "Decision not found.");
+                return Response.FailureResponse("Id", "القرار غير موجود");
             }
 
             await _unitOfWork.Decisions.RemoveAsync(decision);

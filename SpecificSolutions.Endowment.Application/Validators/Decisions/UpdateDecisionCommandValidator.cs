@@ -1,12 +1,24 @@
 using FluentValidation;
 using SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Update;
+using SpecificSolutions.Endowment.Core.Resources;
 
-public class UpdateDecisionCommandValidator : AbstractValidator<UpdateDecisionCommand>
+namespace SpecificSolutions.Endowment.Application.Validators.Decisions
 {
-    public UpdateDecisionCommandValidator()
+    public class UpdateDecisionCommandValidator : AbstractValidator<UpdateDecisionCommand>
     {
-        RuleFor(x => x.Title).NotEmpty().WithMessage("Title is required.");
-        RuleFor(x => x.Description).NotEmpty().WithMessage("Description is required.");
-        RuleFor(x => x.ReferenceNumber).NotEmpty().WithMessage("Reference number is required.");
+        public UpdateDecisionCommandValidator()
+        {
+            RuleFor(x => x.Title)
+                .NotEmpty()
+                .WithMessage("عنوان القرار مطلوب");
+
+            RuleFor(x => x.Description)
+                .NotEmpty()
+                .WithMessage("وصف القرار مطلوب");
+
+            RuleFor(x => x.ReferenceNumber)
+                .NotEmpty()
+                .WithMessage("رقم المرجع مطلوب");
+        }
     }
 }

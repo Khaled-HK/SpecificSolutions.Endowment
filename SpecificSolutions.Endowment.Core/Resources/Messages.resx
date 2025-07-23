@@ -40,25 +40,22 @@
     ResXResourceReader how to depersist the object. This is currently not 
     extensible. For a given mimetype the value must be set accordingly:
     
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
-    read any of the formats listed below.
+    Note - the mimetype is stored as a string, but should be treated as a URI. It is not 
+    validated by the .NET Framework.
     
-    mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-            : and then encoded with base64 encoding.
+    There are 2 ResX Header definitions.
     
-    mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-            : and then encoded with base64 encoding.
-
-    mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
-            : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding.
-    -->
+    resmimetype: Defines the mime type for the .resx root element.
+    version:    Defines the version of the .resx schema used.
+    
+    The version defined for the .resx file will be compared to the version
+    of the System.Resources.ResXResourceReader and an error will be thrown 
+    if they don't match. To fix this, either change the version to 2.0 or 
+    use a ResXResourceReader that supports version 1.3.
+    
+    These headers are used by the ResXResourceReader and ResXResourceWriter 
+    classes to provide version information about the .resx format.
+  -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -146,5 +143,36 @@
   </data>
   <data name="Updated" xml:space="preserve">
     <value>Updated</value>
+  </data>
+  <!-- رسائل القرارات -->
+  <data name="DecisionTitleRequired" xml:space="preserve">
+    <value>عنوان القرار مطلوب</value>
+  </data>
+  <data name="DecisionDescriptionRequired" xml:space="preserve">
+    <value>وصف القرار مطلوب</value>
+  </data>
+  <data name="DecisionReferenceNumberRequired" xml:space="preserve">
+    <value>رقم المرجع مطلوب</value>
+  </data>
+  <data name="DecisionNotFound" xml:space="preserve">
+    <value>القرار غير موجود</value>
+  </data>
+  <data name="DecisionCreatedSuccessfully" xml:space="preserve">
+    <value>تم إنشاء القرار بنجاح</value>
+  </data>
+  <data name="DecisionUpdatedSuccessfully" xml:space="preserve">
+    <value>تم تحديث القرار بنجاح</value>
+  </data>
+  <data name="DecisionDeletedSuccessfully" xml:space="preserve">
+    <value>تم حذف القرار بنجاح</value>
+  </data>
+  <data name="DecisionCreationError" xml:space="preserve">
+    <value>حدث خطأ أثناء إنشاء القرار</value>
+  </data>
+  <data name="DecisionUpdateError" xml:space="preserve">
+    <value>حدث خطأ أثناء تحديث القرار</value>
+  </data>
+  <data name="DecisionDeleteError" xml:space="preserve">
+    <value>حدث خطأ أثناء حذف القرار</value>
   </data>
 </root>
