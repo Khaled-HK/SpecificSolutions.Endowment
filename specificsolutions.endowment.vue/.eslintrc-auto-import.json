@@ -357,6 +357,15 @@
     "watchThrottled": true,
     "watchTriggerable": true,
     "watchWithFilter": true,
-    "whenever": true
+    "whenever": true,
+    "clearFieldErrors": true,
+    "createFormSubmitHandler": true,
+    "createValidationRules": true,
+    "displayFieldErrors": true,
+    "getUserFriendlyMessage": true,
+    "handleApiCall": true,
+    "isNetworkError": true,
+    "isValidationError": true,
+    "processBackendErrors": true
   }
 }
