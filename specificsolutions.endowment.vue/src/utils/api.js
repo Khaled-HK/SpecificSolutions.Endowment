@@ -22,12 +22,13 @@ export const $api = ofetch.create({
     }
 
     // Add Accept-Language header based on current locale
-    const { locale } = useI18n()
+    // Use cookie or localStorage instead of useI18n to avoid composition API error
+    const currentLocale = useCookie('i18n_redirected').value || 'ar'
     const languageMap = {
       'ar': 'ar-LY',
       'en': 'en-US'
     }
-    const currentLanguage = languageMap[locale.value] || 'ar-LY'
+    const currentLanguage = languageMap[currentLocale] || 'ar-LY'
     
     options.headers = {
       ...options.headers,
@@ -48,8 +49,8 @@ export const $api = ofetch.create({
       
       // إعادة توجيه لصفحة تسجيل الدخول
       if (process.client) {
-        const router = useRouter()
-        router.push('/login')
+        // Use window.location instead of useRouter to avoid composition API error
+        window.location.href = '/login'
       }
     }
   },
