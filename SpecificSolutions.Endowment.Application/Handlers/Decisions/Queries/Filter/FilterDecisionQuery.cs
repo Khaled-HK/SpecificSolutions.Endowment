@@ -6,8 +6,8 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Decisions.Queries.Fil
 {
     public class FilterDecisionQuery : IQuery<PagedList<FilterDecisionDTO>>
     {
-        public string Title { get; set; }
-        public string ReferenceNumber { get; set; }
+        public string? Title { get; set; }
+        public string? ReferenceNumber { get; set; }
         public DateTime? CreatedDate { get; set; }
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 10;

@@ -23,8 +23,6 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Up
 
             decision.Update(command);
 
-            _unitOfWork.Decisions.Update(decision);
-
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Updated();

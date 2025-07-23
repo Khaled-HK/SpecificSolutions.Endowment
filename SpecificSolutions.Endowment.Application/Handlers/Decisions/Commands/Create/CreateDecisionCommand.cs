@@ -7,7 +7,8 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Cr
     {
         public string Title { get; set; }
         public string Description { get; set; }
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow; // إعادة إضافة مع قيمة افتراضية
         public string ReferenceNumber { get; set; }
+        public string UserId { get; set; }
     }
 }

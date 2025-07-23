@@ -7,8 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Handlers\Decisions\Queries\GetEntities\**" />
     <Compile Remove="Resources\**" />
+    <EmbeddedResource Remove="Handlers\Decisions\Queries\GetEntities\**" />
     <EmbeddedResource Remove="Resources\**" />
+    <None Remove="Handlers\Decisions\Queries\GetEntities\**" />
     <None Remove="Resources\**" />
   </ItemGroup>
 

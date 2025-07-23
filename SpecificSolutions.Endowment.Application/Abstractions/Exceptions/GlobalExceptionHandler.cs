@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using SpecificSolutions.Endowment.Application.Abstractions.Exceptions;
 using SpecificSolutions.Endowment.Application.Models.Global;
 using System.Net;
+using ValidationException = SpecificSolutions.Endowment.Application.Abstractions.Exceptions.ValidationException;
 
 namespace SpecificSolutions.Endowment.Application.Handlers
 {
@@ -51,23 +52,23 @@ namespace SpecificSolutions.Endowment.Application.Handlers
         {
             var exception = (ValidationException)ex;
 
+            // تحويل Dictionary<string, string[]> إلى Errors
             var errors = exception.Errors
-             .SelectMany(kvp => kvp.Value.Select(v => new Error(kvp.Key, v)))
-             .ToArray();
+                .SelectMany(kvp => kvp.Value.Select(errorMessage => new Error(kvp.Key, errorMessage)))
+                .ToArray();
 
             var response = new EndowmentResponse(state: ResponseState.BadRequest, "Validation failed", errors);
             httpContext.Response.ContentType = "application/json";
             httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-            httpContext.Response.Cookies.Append("Content-Type", "application/json");
 
             await httpContext.Response.WriteAsJsonAsync<EndowmentResponse>(response, cancellationToken);
-
         }
 
         private async Task<EndowmentResponse> HandleNotFoundException(HttpContext httpContext, Exception ex, CancellationToken cancellationToken)
         {
             var exception = (NotFoundException)ex;
 
+            httpContext.Response.ContentType = "application/json";
             httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
 
             await httpContext.Response.WriteAsJsonAsync(new ProblemDetails()
@@ -83,13 +84,14 @@ namespace SpecificSolutions.Endowment.Application.Handlers
 
         private async Task<EndowmentResponse> HandleUnauthorizedAccessException(HttpContext httpContext, Exception ex, CancellationToken cancellationToken)
         {
+            httpContext.Response.ContentType = "application/json";
             httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
 
             await httpContext.Response.WriteAsJsonAsync(new ProblemDetails
             {
                 Status = StatusCodes.Status401Unauthorized,
                 Title = "Unauthorized",
-                Type = "https://tools.ietf.org/html/rfc7235#section-3.1"
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3"
             });
 
             return await Task.FromResult(new EndowmentResponse(ResponseState.Unauthorized, ex.Message, null));
@@ -97,6 +99,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers
 
         private async Task<EndowmentResponse> HandleForbiddenAccessException(HttpContext httpContext, Exception ex, CancellationToken cancellationToken)
         {
+            httpContext.Response.ContentType = "application/json";
             httpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
 
             await httpContext.Response.WriteAsJsonAsync(new ProblemDetails
@@ -115,6 +118,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers
 
             _logger.LogWarning(exception, "Concurrency conflict detected.");
 
+            httpContext.Response.ContentType = "application/json";
             httpContext.Response.StatusCode = (int)HttpStatusCode.Conflict; // 409 Conflict
             await httpContext.Response.WriteAsJsonAsync(new ProblemDetails
             {

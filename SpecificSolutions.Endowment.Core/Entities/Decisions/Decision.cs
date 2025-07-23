@@ -23,8 +23,9 @@ namespace SpecificSolutions.Endowment.Core.Entities.Decisions
         {
             Title = command.Title;
             Description = command.Description;
-            CreatedDate = DateTime.UtcNow;
+            CreatedDate = command.CreatedDate != default ? command.CreatedDate : DateTime.UtcNow;
             ReferenceNumber = command.ReferenceNumber;
+            UserId = command.UserId  
         }
 
         // Method to add a request to the decision
@@ -39,6 +40,7 @@ namespace SpecificSolutions.Endowment.Core.Entities.Decisions
             Title = command.Title;
             Description = command.Description;
             ReferenceNumber = command.ReferenceNumber;
+            UserId = command.UserId  
         }
     }
 }
