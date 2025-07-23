@@ -27,6 +27,19 @@ export const useApi = createFetch({
         }
       }
 
+      // Add Accept-Language header based on current locale
+      const { locale } = useI18n()
+      const languageMap: Record<string, string> = {
+        'ar': 'ar-LY',
+        'en': 'en-US'
+      }
+      const currentLanguage = languageMap[locale.value] || 'ar-LY'
+      
+      options.headers = {
+        ...options.headers,
+        'Accept-Language': currentLanguage,
+      }
+
       return { options }
     },
     afterFetch(ctx) {

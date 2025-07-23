@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, reactive, computed } from 'vue'
+import { useFormValidation } from '@/composables/useFormValidation'
+import { useI18n } from 'vue-i18n'
 
 // Define interfaces for better type safety
 interface Product {
@@ -26,6 +28,8 @@ definePage({
   },
 })
 
+const { t } = useI18n()
+
 const products = ref<Product[]>([])
 const loading = ref(false)
 const totalItems = ref(0)
@@ -42,14 +46,33 @@ const selectedProduct = ref<Product | null>(null)
 const selectedRows = ref<Product[]>([])
 const search = ref('')
 
-const newProduct = ref<NewProduct>({
+// استخدام نظام التحقق الجديد
+const {
+  validationState,
+  addError,
+  removeError,
+  setErrorsFromResponse,
+  clearErrors,
+  hasErrors,
+  hasFieldError,
+  getFieldErrors,
+  getFirstFieldError,
+  setFieldTouched,
+  setFieldDirty,
+  shouldShowFieldError,
+  validateRequired,
+  validateEmail,
+  validateLength,
+} = useFormValidation()
+
+const newProduct = reactive<NewProduct>({
   name: '',
   description: '',
   price: 0,
   quantity: 0,
 })
 
-const editProduct = ref<Product>({
+const editProduct = reactive<Product>({
   id: 0,
   key: '',
   value: '',
@@ -67,30 +90,30 @@ const options = ref({
   sortDesc: [false],
 })
 
-// Headers using the ready-made template structure
-const headers = [
+// Headers using dynamic i18n translations
+const headers = computed(() => [
   {
-    title: 'اسم المادة',
+    title: t('tableHeaders.products.name'),
     key: 'name',
   },
   {
-    title: 'الوصف',
+    title: t('tableHeaders.products.description'),
     key: 'description',
   },
   {
-    title: 'السعر',
+    title: t('tableHeaders.products.price'),
     key: 'price',
   },
   {
-    title: 'الكمية',
+    title: t('tableHeaders.products.quantity'),
     key: 'quantity',
   },
   {
-    title: 'الإجراءات',
+    title: t('tableHeaders.products.actions'),
     key: 'actions',
     sortable: false,
   },
-]
+])
 
 const loadProducts = async () => {
   loading.value = true
@@ -128,23 +151,60 @@ const loadProducts = async () => {
 }
 
 const addProduct = async () => {
+  // Clear previous errors
+  clearErrors()
+  
+  // Validate required fields
+  let isValid = true
+  
+  if (!validateRequired(newProduct.name, 'name', 'اسم المادة مطلوب')) {
+    isValid = false
+  } else if (!validateLength(newProduct.name, 'name', 2, 100, 'اسم المادة يجب أن يكون بين 2 و 100 حرف')) {
+    isValid = false
+  }
+  
+  if (!validateRequired(newProduct.description, 'description', 'وصف المادة مطلوب')) {
+    isValid = false
+  } else if (!validateLength(newProduct.description, 'description', 10, 500, 'وصف المادة يجب أن يكون بين 10 و 500 حرف')) {
+    isValid = false
+  }
+  
+  if (newProduct.price < 0) {
+    addError('price', 'السعر لا يمكن أن يكون سالب')
+    isValid = false
+  }
+  
+  if (newProduct.quantity < 0) {
+    addError('quantity', 'الكمية لا يمكن أن تكون سالبة')
+    isValid = false
+  }
+  
+  if (!isValid) {
+    return
+  }
+  
   try {
     const response = await $api('/Product', {
       method: 'POST',
       body: {
-        name: newProduct.value.name,
-        description: newProduct.value.description,
-        price: newProduct.value.price,
-        quantity: newProduct.value.quantity,
+        name: newProduct.name,
+        description: newProduct.description,
+        price: newProduct.price,
+        quantity: newProduct.quantity,
       },
     })
     
     // Check if the response indicates success - response comes directly
     if (response && response.isSuccess === false) {
-      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء إضافة المادة'
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
+      // Handle backend validation errors
+      if (response.errors && Array.isArray(response.errors)) {
+        setErrorsFromResponse(response)
+      } else {
+        const errorMsg = response.message || 'حدث خطأ أثناء إضافة المادة'
+        alertMessage.value = errorMsg
+        alertType.value = 'error'
+        showAlert.value = true
+      }
       return
     }
     
@@ -163,24 +223,61 @@ const addProduct = async () => {
 }
 
 const updateProduct = async () => {
+  // Clear previous errors
+  clearErrors()
+  
+  // Validate required fields
+  let isValid = true
+  
+  if (!validateRequired(editProduct.name, 'editName', 'اسم المادة مطلوب')) {
+    isValid = false
+  } else if (!validateLength(editProduct.name, 'editName', 2, 100, 'اسم المادة يجب أن يكون بين 2 و 100 حرف')) {
+    isValid = false
+  }
+  
+  if (!validateRequired(editProduct.description, 'editDescription', 'وصف المادة مطلوب')) {
+    isValid = false
+  } else if (!validateLength(editProduct.description, 'editDescription', 10, 500, 'وصف المادة يجب أن يكون بين 10 و 500 حرف')) {
+    isValid = false
+  }
+  
+  if ((editProduct.price || 0) < 0) {
+    addError('editPrice', 'السعر لا يمكن أن يكون سالب')
+    isValid = false
+  }
+  
+  if ((editProduct.quantity || 0) < 0) {
+    addError('editQuantity', 'الكمية لا يمكن أن تكون سالبة')
+    isValid = false
+  }
+  
+  if (!isValid) {
+    return
+  }
+  
   try {
-    const response = await $api(`/Product/${editProduct.value.id}`, {
+    const response = await $api(`/Product/${editProduct.id}`, {
       method: 'PUT',
       body: {
-        id: editProduct.value.id,
-        name: editProduct.value.name,
-        description: editProduct.value.description,
-        price: editProduct.value.price,
-        quantity: editProduct.value.quantity,
+        id: editProduct.id,
+        name: editProduct.name,
+        description: editProduct.description,
+        price: editProduct.price || 0,
+        quantity: editProduct.quantity || 0,
       },
     })
     
     // Check if the response indicates success - response comes directly
     if (response && response.isSuccess === false) {
-      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء تحديث المادة'
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
+      // Handle backend validation errors
+      if (response.errors && Array.isArray(response.errors)) {
+        setErrorsFromResponse(response)
+      } else {
+        const errorMsg = response.message || 'حدث خطأ أثناء تحديث المادة'
+        alertMessage.value = errorMsg
+        alertType.value = 'error'
+        showAlert.value = true
+      }
       return
     }
     
@@ -229,34 +326,110 @@ const deleteProduct = async () => {
 }
 
 const openEditDialog = (product: Product) => {
-  editProduct.value = { ...product }
+  clearErrors() // Clear previous validation errors
+  editProduct.id = product.id
+  editProduct.key = product.key
+  editProduct.value = product.value
+  editProduct.name = product.name
+  editProduct.description = product.description
+  editProduct.price = product.price || 0
+  editProduct.quantity = product.quantity || 0
   editDialog.value = true
 }
 
 const openDeleteDialog = (product: Product) => {
+  clearErrors() // Clear any validation errors
   selectedProduct.value = product
   deleteDialog.value = true
 }
 
 const resetNewProduct = () => {
-  newProduct.value = {
-    name: '',
-    description: '',
-    price: 0,
-    quantity: 0,
-  }
+  newProduct.name = ''
+  newProduct.description = ''
+  newProduct.price = 0
+  newProduct.quantity = 0
+  clearErrors() // Clear validation errors
 }
 
 const resetEditProduct = () => {
-  editProduct.value = {
-    id: 0,
-    key: '',
-    value: '',
-    name: '',
-    description: '',
-    price: 0,
-    quantity: 0,
+  editProduct.id = 0
+  editProduct.key = ''
+  editProduct.value = ''
+  editProduct.name = ''
+  editProduct.description = ''
+  editProduct.price = 0
+  editProduct.quantity = 0
+  clearErrors() // Clear validation errors
+}
+
+const validateNewProduct = () => {
+  clearErrors()
+  
+  let isValid = true
+  
+  if (!validateRequired(newProduct.name, 'name', 'اسم المادة مطلوب')) {
+    isValid = false
+  } else if (!validateLength(newProduct.name, 'name', 2, 100, 'اسم المادة يجب أن يكون بين 2 و 100 حرف')) {
+    isValid = false
   }
+  
+  if (!validateRequired(newProduct.description, 'description', 'وصف المادة مطلوب')) {
+    isValid = false
+  } else if (!validateLength(newProduct.description, 'description', 10, 500, 'وصف المادة يجب أن يكون بين 10 و 500 حرف')) {
+    isValid = false
+  }
+  
+  if (newProduct.price < 0) {
+    addError('price', 'السعر لا يمكن أن يكون سالب')
+    isValid = false
+  }
+  
+  if (newProduct.quantity < 0) {
+    addError('quantity', 'الكمية لا يمكن أن تكون سالبة')
+    isValid = false
+  }
+  
+  setFieldTouched('name')
+  setFieldTouched('description')
+  setFieldTouched('price')
+  setFieldTouched('quantity')
+  
+  return isValid
+}
+
+const validateEditProduct = () => {
+  clearErrors()
+  
+  let isValid = true
+  
+  if (!validateRequired(editProduct.name, 'editName', 'اسم المادة مطلوب')) {
+    isValid = false
+  } else if (!validateLength(editProduct.name, 'editName', 2, 100, 'اسم المادة يجب أن يكون بين 2 و 100 حرف')) {
+    isValid = false
+  }
+  
+  if (!validateRequired(editProduct.description, 'editDescription', 'وصف المادة مطلوب')) {
+    isValid = false
+  } else if (!validateLength(editProduct.description, 'editDescription', 10, 500, 'وصف المادة يجب أن يكون بين 10 و 500 حرف')) {
+    isValid = false
+  }
+  
+  if (editProduct.price < 0) {
+    addError('editPrice', 'السعر لا يمكن أن يكون سالب')
+    isValid = false
+  }
+  
+  if (editProduct.quantity < 0) {
+    addError('editQuantity', 'الكمية لا يمكن أن تكون سالبة')
+    isValid = false
+  }
+  
+  setFieldTouched('editName')
+  setFieldTouched('editDescription')
+  setFieldTouched('editPrice')
+  setFieldTouched('editQuantity')
+  
+  return isValid
 }
 
 // Watch for changes in options to reload data
@@ -290,7 +463,7 @@ onMounted(() => {
       <VSpacer />
       <VBtn
         prepend-icon="tabler-plus"
-        @click="dialog = true"
+        @click="() => { clearErrors(); dialog = true; }"
       >
         إضافة مادة جديدة
       </VBtn>
@@ -386,6 +559,9 @@ onMounted(() => {
                   v-model="newProduct.name"
                   label="اسم المادة"
                   required
+                  :error="shouldShowFieldError('name')"
+                  :error-messages="getFieldErrors('name')"
+                  @blur="setFieldTouched('name')"
                 />
               </VCol>
               <VCol cols="12">
@@ -393,6 +569,9 @@ onMounted(() => {
                   v-model="newProduct.description"
                   label="الوصف"
                   rows="3"
+                  :error="shouldShowFieldError('description')"
+                  :error-messages="getFieldErrors('description')"
+                  @blur="setFieldTouched('description')"
                 />
               </VCol>
               <VCol cols="6">
@@ -402,6 +581,9 @@ onMounted(() => {
                   type="number"
                   min="0"
                   step="0.01"
+                  :error="shouldShowFieldError('price')"
+                  :error-messages="getFieldErrors('price')"
+                  @blur="setFieldTouched('price')"
                 />
               </VCol>
               <VCol cols="6">
@@ -410,6 +592,9 @@ onMounted(() => {
                   label="الكمية"
                   type="number"
                   min="0"
+                  :error="shouldShowFieldError('quantity')"
+                  :error-messages="getFieldErrors('quantity')"
+                  @blur="setFieldTouched('quantity')"
                 />
               </VCol>
             </VRow>
@@ -428,6 +613,7 @@ onMounted(() => {
           <VBtn
             color="blue-darken-1"
             @click="addProduct"
+            :disabled="hasErrors"
           >
             إضافة
           </VBtn>
@@ -453,6 +639,9 @@ onMounted(() => {
                   v-model="editProduct.name"
                   label="اسم المادة"
                   required
+                  :error="shouldShowFieldError('editName')"
+                  :error-messages="getFieldErrors('editName')"
+                  @blur="setFieldTouched('editName')"
                 />
               </VCol>
               <VCol cols="12">
@@ -460,6 +649,9 @@ onMounted(() => {
                   v-model="editProduct.description"
                   label="الوصف"
                   rows="3"
+                  :error="shouldShowFieldError('editDescription')"
+                  :error-messages="getFieldErrors('editDescription')"
+                  @blur="setFieldTouched('editDescription')"
                 />
               </VCol>
               <VCol cols="6">
@@ -469,6 +661,9 @@ onMounted(() => {
                   type="number"
                   min="0"
                   step="0.01"
+                  :error="shouldShowFieldError('editPrice')"
+                  :error-messages="getFieldErrors('editPrice')"
+                  @blur="setFieldTouched('editPrice')"
                 />
               </VCol>
               <VCol cols="6">
@@ -477,6 +672,9 @@ onMounted(() => {
                   label="الكمية"
                   type="number"
                   min="0"
+                  :error="shouldShowFieldError('editQuantity')"
+                  :error-messages="getFieldErrors('editQuantity')"
+                  @blur="setFieldTouched('editQuantity')"
                 />
               </VCol>
             </VRow>
@@ -495,6 +693,7 @@ onMounted(() => {
           <VBtn
             color="blue-darken-1"
             @click="updateProduct"
+            :disabled="hasErrors"
           >
             تحديث
           </VBtn>

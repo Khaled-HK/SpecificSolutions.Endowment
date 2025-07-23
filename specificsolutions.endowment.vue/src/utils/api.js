@@ -20,6 +20,19 @@ export const $api = ofetch.create({
         'X-User-Id': userData.id,
       }
     }
+
+    // Add Accept-Language header based on current locale
+    const { locale } = useI18n()
+    const languageMap = {
+      'ar': 'ar-LY',
+      'en': 'en-US'
+    }
+    const currentLanguage = languageMap[locale.value] || 'ar-LY'
+    
+    options.headers = {
+      ...options.headers,
+      'Accept-Language': currentLanguage,
+    }
   },
   async onResponseError({ response }) {
     // إذا كان الخطأ 401 (غير مخول) أو 403 (ممنوع)

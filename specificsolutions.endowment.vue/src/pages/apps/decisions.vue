@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useFormValidation } from '@/composables/useFormValidation'
+import { useI18n } from 'vue-i18n'
 
 // Define interfaces for better type safety
 interface Decision {
@@ -69,6 +70,9 @@ const {
   validateLength,
 } = useFormValidation()
 
+// استخدام i18n للترجمة
+const { t } = useI18n()
+
 // Using the ready-made template structure
 const options = ref({
   page: 1,
@@ -77,30 +81,30 @@ const options = ref({
   sortDesc: [false],
 })
 
-// Headers using the ready-made template structure
-const headers = [
+// Headers using i18n translations
+const headers = computed(() => [
   {
-    title: 'عنوان القرار',
+    title: t('tableHeaders.decisions.title'),
     key: 'title',
   },
   {
-    title: 'رقم المرجع',
+    title: t('tableHeaders.decisions.referenceNumber'),
     key: 'referenceNumber',
   },
   {
-    title: 'الوصف',
+    title: t('tableHeaders.decisions.description'),
     key: 'description',
   },
   {
-    title: 'تاريخ الإنشاء',
+    title: t('tableHeaders.decisions.createdDate'),
     key: 'createdDate',
   },
   {
-    title: 'الإجراءات',
+    title: t('tableHeaders.decisions.actions'),
     key: 'actions',
     sortable: false,
   },
-]
+])
 
 const loadDecisions = async () => {
   loading.value = true

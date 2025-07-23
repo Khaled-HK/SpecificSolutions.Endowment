@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
+import { useFormValidation } from '@/composables/useFormValidation'
 
 // Define interfaces for better type safety
 interface Region {
@@ -58,6 +59,20 @@ const editRegion = ref<Region>({
   description: '',
   cityId: '',
 })
+
+// استخدام نظام التحقق الجديد "نمط خالد"
+const {
+  validationState,
+  validateRequired,
+  validateEmail,
+  addError,
+  clearErrors,
+  setFieldTouched,
+  hasErrors,
+  hasFieldError,
+  getFirstFieldError,
+  shouldShowFieldError
+} = useFormValidation()
 
 // Using the ready-made template structure
 const options = ref({
@@ -138,7 +153,44 @@ const loadCities = async () => {
   }
 }
 
+// دالة التحقق من صحة بيانات المنطقة الجديدة
+const validateNewRegion = (): boolean => {
+  clearErrors()
+  
+  // التحقق من اسم المنطقة
+  validateRequired(newRegion.value.name, 'name', 'اسم المنطقة مطلوب')
+  
+  // التحقق من المدينة
+  validateRequired(newRegion.value.cityId, 'cityId', 'المدينة مطلوبة')
+  
+  // التحقق من الدولة
+  validateRequired(newRegion.value.country, 'country', 'الدولة مطلوبة')
+  
+  return !hasErrors.value
+}
+
+// دالة التحقق من صحة بيانات المنطقة المحررة
+const validateEditRegion = (): boolean => {
+  clearErrors()
+  
+  // التحقق من اسم المنطقة
+  validateRequired(editRegion.value.name, 'editName', 'اسم المنطقة مطلوب')
+  
+  // التحقق من المدينة
+  validateRequired(editRegion.value.cityId, 'editCityId', 'المدينة مطلوبة')
+  
+  // التحقق من الدولة
+  validateRequired(editRegion.value.country, 'editCountry', 'الدولة مطلوبة')
+  
+  return !hasErrors.value
+}
+
 const addRegion = async () => {
+  // التحقق من صحة البيانات قبل الإرسال
+  if (!validateNewRegion()) {
+    return
+  }
+  
   try {
     const response = await $api('/Region', {
       method: 'POST',
@@ -149,17 +201,31 @@ const addRegion = async () => {
       },
     })
     
-    // Check if the response indicates success - response comes directly
+    // التحقق من أخطاء FluentValidation من الخادم
     if (response && response.isSuccess === false) {
-      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء إضافة المنطقة'
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
+      // تطبيق أخطاء FluentValidation على حالة التحقق
+      if (response.errors && Array.isArray(response.errors)) {
+        response.errors.forEach((error: any) => {
+          if (error.propertyName === 'Name') {
+            addError('name', error.errorMessage)
+          } else if (error.propertyName === 'Country') {
+            addError('country', error.errorMessage)
+          } else if (error.propertyName === 'CityId') {
+            addError('cityId', error.errorMessage)
+          }
+        })
+      } else {
+        const errorMsg = response.message || 'حدث خطأ أثناء إضافة المنطقة'
+        alertMessage.value = errorMsg
+        alertType.value = 'error'
+        showAlert.value = true
+      }
       return
     }
     
     dialog.value = false
     resetNewRegion()
+    clearErrors()
     loadRegions()
     alertMessage.value = 'تم إضافة المنطقة بنجاح'
     alertType.value = 'success'
@@ -173,6 +239,11 @@ const addRegion = async () => {
 }
 
 const updateRegion = async () => {
+  // التحقق من صحة البيانات قبل الإرسال
+  if (!validateEditRegion()) {
+    return
+  }
+  
   try {
     const response = await $api(`/Region/${editRegion.value.id}`, {
       method: 'PUT',
@@ -184,16 +255,30 @@ const updateRegion = async () => {
       },
     })
     
-    // Check if the response indicates success - response comes directly
+    // التحقق من أخطاء FluentValidation من الخادم
     if (response && response.isSuccess === false) {
-      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء تحديث المنطقة'
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
+      // تطبيق أخطاء FluentValidation على حالة التحقق
+      if (response.errors && Array.isArray(response.errors)) {
+        response.errors.forEach((error: any) => {
+          if (error.propertyName === 'Name') {
+            addError('editName', error.errorMessage)
+          } else if (error.propertyName === 'Country') {
+            addError('editCountry', error.errorMessage)
+          } else if (error.propertyName === 'CityId') {
+            addError('editCityId', error.errorMessage)
+          }
+        })
+      } else {
+        const errorMsg = response.message || 'حدث خطأ أثناء تحديث المنطقة'
+        alertMessage.value = errorMsg
+        alertType.value = 'error'
+        showAlert.value = true
+      }
       return
     }
     
     editDialog.value = false
+    clearErrors()
     loadRegions()
     alertMessage.value = 'تم تحديث المنطقة بنجاح'
     alertType.value = 'success'
@@ -291,6 +376,7 @@ const openEditDialog = (region: Region) => {
     ...region, 
     country: region.country || region.description || '' 
   }
+  clearErrors()
   editDialog.value = true
 }
 
@@ -305,6 +391,7 @@ const resetNewRegion = () => {
     country: '',
     cityId: '',
   }
+  clearErrors()
 }
 
 // Watch for search changes
@@ -326,16 +413,14 @@ onMounted(() => {
 
 <template>
   <div>
-    <!-- Simple VAlert - just like template examples -->
-    <VAlert
+    <!-- Snackbar للتنبيهات -->
+    <VSnackbar
       v-model="showAlert"
-      :type="alertType"
-      variant="tonal"
-      closable
-      class="mb-4"
+      :color="alertType"
+      :timeout="3000"
     >
       {{ alertMessage }}
-    </VAlert>
+    </VSnackbar>
 
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center pa-6">
@@ -464,38 +549,37 @@ onMounted(() => {
     </VCard>
 
     <!-- Add Region Dialog -->
-    <VDialog
-      v-model="dialog"
-      max-width="600px"
-      persistent
-    >
+    <VDialog v-model="dialog" max-width="500px">
       <VCard>
-        <VCardTitle class="text-h6">إضافة منطقة جديدة</VCardTitle>
+        <VCardTitle>
+          <span class="text-h5">إضافة منطقة جديدة</span>
+        </VCardTitle>
         <VCardText>
-          <VForm @submit.prevent="addRegion">
+          <VContainer>
             <VRow>
               <VCol cols="12">
                 <VTextField
                   v-model="newRegion.name"
                   label="اسم المنطقة"
-                  variant="outlined"
                   required
-                  :rules="[v => !!v || 'اسم المنطقة مطلوب']"
+                  :error="validationState.errors.name && validationState.errors.name.length > 0 && validationState.touched.name"
+                  :error-messages="validationState.errors.name || []"
+                  @blur="setFieldTouched('name')"
                 />
               </VCol>
               <VCol cols="12">
                 <VAutocomplete
                   v-model="newRegion.cityId"
                   label="المدينة"
-                  variant="outlined"
                   :items="cities"
                   item-title="name"
                   item-value="id"
-                  :loading="citiesLoading"
+                  required
+                  :error="validationState.errors.cityId && validationState.errors.cityId.length > 0 && validationState.touched.cityId"
+                  :error-messages="validationState.errors.cityId || []"
+                  @blur="setFieldTouched('cityId')"
                   clearable
                   no-data-text="لا توجد مدن متاحة"
-                  required
-                  :rules="[v => !!v || 'المدينة مطلوبة']"
                   prepend-inner-icon="mdi-city"
                   placeholder="اختر المدينة..."
                   hide-no-data
@@ -505,37 +589,25 @@ onMounted(() => {
                 <VAutocomplete
                   v-model="newRegion.country"
                   label="الدولة"
-                  variant="outlined"
                   :items="countries"
-                  :loading="citiesLoading"
+                  required
+                  :error="validationState.errors.country && validationState.errors.country.length > 0 && validationState.touched.country"
+                  :error-messages="validationState.errors.country || []"
+                  @blur="setFieldTouched('country')"
                   clearable
                   no-data-text="لا توجد دول متاحة"
-                  required
-                  :rules="[v => !!v || 'الدولة مطلوبة']"
-                  prepend-inner-icon="mdi-magnify"
+                  prepend-inner-icon="mdi-flag"
                   placeholder="ابحث عن دولة..."
                   hide-no-data
                 />
               </VCol>
             </VRow>
-          </VForm>
+          </VContainer>
         </VCardText>
         <VCardActions>
           <VSpacer />
-          <VBtn
-            color="grey-darken-1"
-            variant="text"
-            @click="dialog = false"
-          >
-            إلغاء
-          </VBtn>
-          <VBtn
-            color="primary"
-            variant="flat"
-            @click="addRegion"
-          >
-            حفظ
-          </VBtn>
+          <VBtn color="blue-darken-1" variant="text" @click="dialog = false">إلغاء</VBtn>
+          <VBtn color="blue-darken-1" @click="addRegion">إضافة</VBtn>
         </VCardActions>
       </VCard>
     </VDialog>

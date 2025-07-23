@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from 'vue'
+import { useFormValidation } from '@/composables/useFormValidation'
+import { useI18n } from 'vue-i18n'
 
 // Define interfaces for better type safety
 interface Mosque {
   mosqueID: string
   mosqueName: string
   fileNumber: string
-  mosqueDefinition: string
-  mosqueClassification: string
+  mosqueDefinition: string | number
+  mosqueClassification: string | number
   office: string
   unit: string
   region: string
@@ -24,6 +26,13 @@ interface Mosque {
   sanitation: string
   briefDescription: string
   picturePath: string
+  definition?: string
+  classification?: string
+  landDonorName?: string
+  prayerCapacity?: string
+  sourceFunds?: number
+  servicesSpecialNeeds?: boolean
+  specialEntranceWomen?: boolean
 }
 
 interface NewMosque {
@@ -62,6 +71,27 @@ definePage({
     subject: 'Mosque',
   },
 })
+
+const { t } = useI18n()
+
+// استخدام نظام التحقق الجديد
+const {
+  validationState,
+  addError,
+  removeError,
+  setErrorsFromResponse,
+  clearErrors,
+  hasErrors,
+  hasFieldError,
+  getFieldErrors,
+  getFirstFieldError,
+  setFieldTouched,
+  setFieldDirty,
+  shouldShowFieldError,
+  validateRequired,
+  validateEmail,
+  validateLength,
+} = useFormValidation()
 
 const mosques = ref<Mosque[]>([])
 const regions = ref<any[]>([])
@@ -206,23 +236,23 @@ const options = ref({
   sortDesc: [false],
 })
 
-// Data table headers
-const headers = [
-  { title: 'اسم المسجد', key: 'mosqueName', sortable: true },
-  { title: 'رقم الملف', key: 'fileNumber', sortable: true },
-  { title: 'المنطقة', key: 'region', sortable: true },
-  { title: 'المكتب', key: 'office', sortable: true },
-  { title: 'الإجراءات', key: 'actions', sortable: false, width: '120px' },
-]
+// Headers using dynamic i18n translations
+const headers = computed(() => [
+  { title: t('tableHeaders.mosques.name'), key: 'mosqueName', sortable: true },
+  { title: t('tableHeaders.mosques.fileNumber'), key: 'fileNumber', sortable: true },
+  { title: t('tableHeaders.mosques.region'), key: 'region', sortable: true },
+  { title: t('tableHeaders.mosques.office'), key: 'office', sortable: true },
+  { title: t('tableHeaders.mosques.actions'), key: 'actions', sortable: false, width: '120px' },
+])
 
 // Building Details table headers
-const buildingDetailHeaders = [
-  { title: 'اسم المبنى', key: 'name', sortable: true },
-  { title: 'عدد الطوابق', key: 'floors', sortable: true },
-  { title: 'نوع المبنى', key: 'buildingCategory', sortable: true },
-  { title: 'الموقع', key: 'withinMosqueArea', sortable: true },
-  { title: 'الإجراءات', key: 'actions', sortable: false, width: '80px' },
-]
+const buildingDetailHeaders = computed(() => [
+  { title: t('tableHeaders.buildingDetails.name'), key: 'name', sortable: true },
+  { title: t('tableHeaders.buildingDetails.floors'), key: 'floors', sortable: true },
+  { title: t('tableHeaders.buildingDetails.buildingCategory'), key: 'buildingCategory', sortable: true },
+  { title: t('tableHeaders.buildingDetails.withinMosqueArea'), key: 'withinMosqueArea', sortable: true },
+  { title: t('tableHeaders.buildingDetails.actions'), key: 'actions', sortable: false, width: '80px' },
+])
 
 const loadMosques = async () => {
   loading.value = true
@@ -298,6 +328,49 @@ const loadOffices = async () => {
 }
 
 const addMosque = async () => {
+  // Clear previous errors
+  clearErrors()
+  
+  // Validate required fields
+  let isValid = true
+  
+  if (!validateRequired(newMosque.value.name, 'name', 'اسم المسجد مطلوب')) {
+    isValid = false
+  } else if (!validateLength(newMosque.value.name, 'name', 2, 100, 'اسم المسجد يجب أن يكون بين 2 و 100 حرف')) {
+    isValid = false
+  }
+  
+  if (!validateRequired(newMosque.value.fileNumber, 'fileNumber', 'رقم الملف مطلوب')) {
+    isValid = false
+  }
+  
+  if (!validateRequired(newMosque.value.regionId, 'regionId', 'المنطقة مطلوبة')) {
+    isValid = false
+  }
+  
+  if (!validateRequired(newMosque.value.officeId, 'officeId', 'المكتب مطلوب')) {
+    isValid = false
+  }
+  
+  if (newMosque.value.totalCoveredArea < 0) {
+    addError('totalCoveredArea', 'المساحة المغطاة لا يمكن أن تكون سالبة')
+    isValid = false
+  }
+  
+  if (newMosque.value.totalLandArea < 0) {
+    addError('totalLandArea', 'المساحة الكلية لا يمكن أن تكون سالبة')
+    isValid = false
+  }
+  
+  if (newMosque.value.numberOfFloors < 1) {
+    addError('numberOfFloors', 'عدد الطوابق يجب أن يكون 1 على الأقل')
+    isValid = false
+  }
+  
+  if (!isValid) {
+    return
+  }
+
   try {
     // معالجة التواريخ - إجبارية
     const processDate = (dateString: string): string => {
@@ -353,10 +426,15 @@ const addMosque = async () => {
     
     // Check if the response indicates success - response comes directly
     if (response && response.isSuccess === false) {
-      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء إضافة المسجد'
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
+      // Handle backend validation errors
+      if (response.errors && Array.isArray(response.errors)) {
+        setErrorsFromResponse(response)
+      } else {
+        const errorMsg = response.message || 'حدث خطأ أثناء إضافة المسجد'
+        alertMessage.value = errorMsg
+        alertType.value = 'error'
+        showAlert.value = true
+      }
       return
     }
     
@@ -375,6 +453,49 @@ const addMosque = async () => {
 }
 
 const updateMosque = async () => {
+  // Clear previous errors
+  clearErrors()
+  
+  // Validate required fields
+  let isValid = true
+  
+  if (!validateRequired(editMosque.value.name, 'editName', 'اسم المسجد مطلوب')) {
+    isValid = false
+  } else if (!validateLength(editMosque.value.name, 'editName', 2, 100, 'اسم المسجد يجب أن يكون بين 2 و 100 حرف')) {
+    isValid = false
+  }
+  
+  if (!validateRequired(editMosque.value.fileNumber, 'editFileNumber', 'رقم الملف مطلوب')) {
+    isValid = false
+  }
+  
+  if (!validateRequired(editMosque.value.regionId, 'editRegionId', 'المنطقة مطلوبة')) {
+    isValid = false
+  }
+  
+  if (!validateRequired(editMosque.value.officeId, 'editOfficeId', 'المكتب مطلوب')) {
+    isValid = false
+  }
+  
+  if (editMosque.value.totalCoveredArea < 0) {
+    addError('editTotalCoveredArea', 'المساحة المغطاة لا يمكن أن تكون سالبة')
+    isValid = false
+  }
+  
+  if (editMosque.value.totalLandArea < 0) {
+    addError('editTotalLandArea', 'المساحة الكلية لا يمكن أن تكون سالبة')
+    isValid = false
+  }
+  
+  if (editMosque.value.numberOfFloors < 1) {
+    addError('editNumberOfFloors', 'عدد الطوابق يجب أن يكون 1 على الأقل')
+    isValid = false
+  }
+  
+  if (!isValid) {
+    return
+  }
+
   try {
     // معالجة التواريخ - إجبارية
     const processDate = (dateString: string): string => {
@@ -446,10 +567,15 @@ const updateMosque = async () => {
     
     // Check if the response indicates success - response comes directly
     if (response && response.isSuccess === false) {
-      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء تحديث المسجد'
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
+      // Handle backend validation errors
+      if (response.errors && Array.isArray(response.errors)) {
+        setErrorsFromResponse(response)
+      } else {
+        const errorMsg = response.message || 'حدث خطأ أثناء تحديث المسجد'
+        alertMessage.value = errorMsg
+        alertType.value = 'error'
+        showAlert.value = true
+      }
       return
     }
     
@@ -1353,7 +1479,9 @@ function showAlertMsg(msg, type = 'success') {
                   label="اسم المسجد"
                   variant="outlined"
                   required
-                  :rules="[v => !!v || 'اسم المسجد مطلوب']"
+                  :error="shouldShowFieldError('name')"
+                  :error-messages="getFieldErrors('name')"
+                  @blur="setFieldTouched('name')"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -1362,7 +1490,9 @@ function showAlertMsg(msg, type = 'success') {
                   label="رقم الملف"
                   variant="outlined"
                   required
-                  :rules="[v => !!v || 'رقم الملف مطلوب']"
+                  :error="shouldShowFieldError('fileNumber')"
+                  :error-messages="getFieldErrors('fileNumber')"
+                  @blur="setFieldTouched('fileNumber')"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -1377,7 +1507,9 @@ function showAlertMsg(msg, type = 'success') {
                   clearable
                   no-data-text="لا توجد مناطق متاحة"
                   required
-                  :rules="[v => !!v || 'المنطقة مطلوبة']"
+                  :error="shouldShowFieldError('regionId')"
+                  :error-messages="getFieldErrors('regionId')"
+                  @blur="setFieldTouched('regionId')"
                   prepend-inner-icon="mdi-map"
                   placeholder="اختر المنطقة..."
                   hide-no-data
@@ -1395,7 +1527,9 @@ function showAlertMsg(msg, type = 'success') {
                   clearable
                   no-data-text="لا توجد مكاتب متاحة"
                   required
-                  :rules="[v => !!v || 'المكتب مطلوب']"
+                  :error="shouldShowFieldError('officeId')"
+                  :error-messages="getFieldErrors('officeId')"
+                  @blur="setFieldTouched('officeId')"
                   prepend-inner-icon="mdi-office-building"
                   placeholder="اختر المكتب..."
                   hide-no-data
@@ -1557,6 +1691,7 @@ function showAlertMsg(msg, type = 'success') {
             color="primary"
             variant="flat"
             @click="addMosque"
+            :disabled="hasErrors"
           >
             حفظ
           </VBtn>
@@ -1581,7 +1716,9 @@ function showAlertMsg(msg, type = 'success') {
                   label="اسم المسجد"
                   variant="outlined"
                   required
-                  :rules="[v => !!v || 'اسم المسجد مطلوب']"
+                  :error="shouldShowFieldError('editName')"
+                  :error-messages="getFieldErrors('editName')"
+                  @blur="setFieldTouched('editName')"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -1590,7 +1727,9 @@ function showAlertMsg(msg, type = 'success') {
                   label="رقم الملف"
                   variant="outlined"
                   required
-                  :rules="[v => !!v || 'رقم الملف مطلوب']"
+                  :error="shouldShowFieldError('editFileNumber')"
+                  :error-messages="getFieldErrors('editFileNumber')"
+                  @blur="setFieldTouched('editFileNumber')"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -1605,7 +1744,9 @@ function showAlertMsg(msg, type = 'success') {
                   clearable
                   no-data-text="لا توجد مناطق متاحة"
                   required
-                  :rules="[v => !!v || 'المنطقة مطلوبة']"
+                  :error="shouldShowFieldError('editRegionId')"
+                  :error-messages="getFieldErrors('editRegionId')"
+                  @blur="setFieldTouched('editRegionId')"
                   prepend-inner-icon="mdi-map"
                   placeholder="اختر المنطقة..."
                   hide-no-data
@@ -1623,7 +1764,9 @@ function showAlertMsg(msg, type = 'success') {
                   clearable
                   no-data-text="لا توجد مكاتب متاحة"
                   required
-                  :rules="[v => !!v || 'المكتب مطلوب']"
+                  :error="shouldShowFieldError('editOfficeId')"
+                  :error-messages="getFieldErrors('editOfficeId')"
+                  @blur="setFieldTouched('editOfficeId')"
                   prepend-inner-icon="mdi-office-building"
                   placeholder="اختر المكتب..."
                   hide-no-data
@@ -1785,6 +1928,7 @@ function showAlertMsg(msg, type = 'success') {
             color="primary"
             variant="flat"
             @click="updateMosque"
+            :disabled="hasErrors"
           >
             تحديث
           </VBtn>

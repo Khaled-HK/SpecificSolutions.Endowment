@@ -167,6 +167,58 @@
   "25": "25",
   "50": "50",
   "100": "100",
+  "tableHeaders": {
+    "decisions": {
+      "title": "Decision Title",
+      "referenceNumber": "Reference Number",
+      "description": "Description",
+      "createdDate": "Created Date",
+      "actions": "Actions"
+    },
+    "regions": {
+      "name": "Region",
+      "country": "Country",
+      "actions": "Actions"
+    },
+    "cities": {
+      "name": "City",
+      "regionName": "Region",
+      "country": "Country",
+      "actions": "Actions"
+    },
+    "products": {
+      "name": "Product Name",
+      "description": "Description",
+      "price": "Price",
+      "quantity": "Quantity",
+      "actions": "Actions"
+    },
+    "offices": {
+      "name": "Office",
+      "regionName": "Region",
+      "phoneNumber": "Phone Number",
+      "actions": "Actions"
+    },
+    "mosques": {
+      "name": "Mosque Name",
+      "fileNumber": "File Number",
+      "region": "Region",
+      "office": "Office",
+      "actions": "Actions"
+    },
+    "buildingDetails": {
+      "name": "Building Name",
+      "floors": "Number of Floors",
+      "buildingCategory": "Building Type",
+      "withinMosqueArea": "Location",
+      "actions": "Actions"
+    },
+    "facilityDetails": {
+      "productName": "Product Name",
+      "quantity": "Quantity",
+      "actions": "Actions"
+    }
+  },
   "$vuetify": {
     "badge": "Badge",
     "noDataText": "No data available",

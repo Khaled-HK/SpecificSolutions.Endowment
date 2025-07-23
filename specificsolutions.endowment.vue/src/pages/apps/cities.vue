@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, reactive, computed } from 'vue'
+import { useFormValidation } from '@/composables/useFormValidation'
+import { useI18n } from 'vue-i18n'
 
 // Define interfaces for better type safety
 interface City {
@@ -24,6 +26,27 @@ definePage({
   },
 })
 
+const { t } = useI18n()
+
+// استخدام نظام التحقق الجديد
+const {
+  validationState,
+  addError,
+  removeError,
+  setErrorsFromResponse,
+  clearErrors,
+  hasErrors,
+  hasFieldError,
+  getFieldErrors,
+  getFirstFieldError,
+  setFieldTouched,
+  setFieldDirty,
+  shouldShowFieldError,
+  validateRequired,
+  validateEmail,
+  validateLength,
+} = useFormValidation()
+
 const cities = ref<City[]>([])
 const regions = ref<any[]>([])
 const loading = ref(false)
@@ -42,13 +65,13 @@ const selectedCity = ref<City | null>(null)
 const selectedRows = ref<City[]>([])
 const search = ref('')
 
-const newCity = ref<NewCity>({
+const newCity = reactive<NewCity>({
   name: '',
   regionId: '',
   description: '',
 })
 
-const editCity = ref<City>({
+const editCity = reactive<City>({
   id: 0,
   name: '',
   description: '',
@@ -63,26 +86,26 @@ const options = ref({
   sortDesc: [false],
 })
 
-// Headers using the ready-made template structure
-const headers = [
+// Headers using dynamic i18n translations
+const headers = computed(() => [
   {
-    title: 'المدينة',
+    title: t('tableHeaders.cities.name'),
     key: 'name',
   },
   {
-    title: 'المنطقة',
+    title: t('tableHeaders.cities.regionName'),
     key: 'regionName',
   },
   {
-    title: 'الدولة',
+    title: t('tableHeaders.cities.country'),
     key: 'country',
   },
   {
-    title: 'الإجراءات',
+    title: t('tableHeaders.cities.actions'),
     key: 'actions',
     sortable: false,
   },
-]
+])
 
 const loadCities = async () => {
   loading.value = true
@@ -135,22 +158,45 @@ const loadRegions = async () => {
 }
 
 const addCity = async () => {
+  // Clear previous errors
+  clearErrors()
+  
+  // Validate required fields
+  let isValid = true
+  
+  if (!validateRequired(newCity.name, 'name', 'اسم المدينة مطلوب')) {
+    isValid = false
+  }
+  
+  if (!validateRequired(newCity.regionId, 'regionId', 'المنطقة مطلوبة')) {
+    isValid = false
+  }
+  
+  if (!isValid) {
+    return
+  }
+  
   try {
     const response = await $api('/City', {
       method: 'POST',
       body: {
-        name: newCity.value.name,
-        regionId: newCity.value.regionId,
-        description: newCity.value.description,
+        name: newCity.name,
+        regionId: newCity.regionId,
+        description: newCity.description,
       },
     })
     
     // Check if the response indicates success - response comes directly
     if (response && response.isSuccess === false) {
-      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء إضافة المدينة'
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
+      // Handle backend validation errors
+      if (response.errors && Array.isArray(response.errors)) {
+        setErrorsFromResponse(response)
+      } else {
+        const errorMsg = response.message || 'حدث خطأ أثناء إضافة المدينة'
+        alertMessage.value = errorMsg
+        alertType.value = 'error'
+        showAlert.value = true
+      }
       return
     }
     
@@ -169,23 +215,46 @@ const addCity = async () => {
 }
 
 const updateCity = async () => {
+  // Clear previous errors
+  clearErrors()
+  
+  // Validate required fields
+  let isValid = true
+  
+  if (!validateRequired(editCity.name, 'editName', 'اسم المدينة مطلوب')) {
+    isValid = false
+  }
+  
+  if (!validateRequired(editCity.regionId, 'editRegionId', 'المنطقة مطلوبة')) {
+    isValid = false
+  }
+  
+  if (!isValid) {
+    return
+  }
+  
   try {
-    const response = await $api(`/City/${editCity.value.id}`, {
+    const response = await $api(`/City/${editCity.id}`, {
       method: 'PUT',
       body: {
-        id: editCity.value.id,
-        name: editCity.value.name,
-        regionId: editCity.value.regionId,
-        description: editCity.value.description,
+        id: editCity.id,
+        name: editCity.name,
+        regionId: editCity.regionId,
+        description: editCity.description,
       },
     })
     
     // Check if the response indicates success - response comes directly
     if (response && response.isSuccess === false) {
-      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء تحديث المدينة'
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
+      // Handle backend validation errors
+      if (response.errors && Array.isArray(response.errors)) {
+        setErrorsFromResponse(response)
+      } else {
+        const errorMsg = response.message || 'حدث خطأ أثناء تحديث المدينة'
+        alertMessage.value = errorMsg
+        alertType.value = 'error'
+        showAlert.value = true
+      }
       return
     }
     
@@ -283,21 +352,25 @@ const deleteSelectedRows = async () => {
 }
 
 const openEditDialog = (city: City) => {
-  editCity.value = { ...city }
+  clearErrors() // Clear previous validation errors
+  editCity.id = city.id // Ensure id is set for update
+  editCity.name = city.name
+  editCity.description = city.description
+  editCity.regionId = city.regionId || ''
   editDialog.value = true
 }
 
 const openDeleteDialog = (city: City) => {
+  clearErrors() // Clear any validation errors
   selectedCity.value = city
   deleteDialog.value = true
 }
 
 const resetNewCity = () => {
-  newCity.value = {
-    name: '',
-    regionId: '',
-    description: '',
-  }
+  newCity.name = ''
+  newCity.regionId = ''
+  newCity.description = ''
+  clearErrors() // Clear validation errors
 }
 
 // Watch for search changes
@@ -344,7 +417,7 @@ onMounted(() => {
           </VBtn>
           <VBtn
             color="primary"
-            @click="dialog = true"
+            @click="() => { clearErrors(); dialog = true; }"
           >
             إضافة مدينة
           </VBtn>
@@ -491,7 +564,9 @@ onMounted(() => {
                   label="اسم المدينة"
                   variant="outlined"
                   required
-                  :rules="[v => !!v || 'اسم المدينة مطلوب']"
+                  :error="shouldShowFieldError('name')"
+                  :error-messages="getFieldErrors('name')"
+                  @blur="setFieldTouched('name')"
                 />
               </VCol>
               <VCol cols="12">
@@ -506,10 +581,12 @@ onMounted(() => {
                   clearable
                   no-data-text="لا توجد مناطق متاحة"
                   required
-                  :rules="[v => !!v || 'المنطقة مطلوبة']"
                   prepend-inner-icon="mdi-map-marker"
                   placeholder="اختر المنطقة..."
                   hide-no-data
+                  :error="shouldShowFieldError('regionId')"
+                  :error-messages="getFieldErrors('regionId')"
+                  @blur="setFieldTouched('regionId')"
                 />
               </VCol>
               <VCol cols="12">
@@ -519,6 +596,9 @@ onMounted(() => {
                   variant="outlined"
                   rows="3"
                   placeholder="أدخل وصف المدينة..."
+                  :error="shouldShowFieldError('description')"
+                  :error-messages="getFieldErrors('description')"
+                  @blur="setFieldTouched('description')"
                 />
               </VCol>
             </VRow>
@@ -536,6 +616,7 @@ onMounted(() => {
           <VBtn
             color="primary"
             variant="flat"
+            :disabled="hasErrors"
             @click="addCity"
           >
             حفظ
@@ -561,7 +642,9 @@ onMounted(() => {
                   label="اسم المدينة"
                   variant="outlined"
                   required
-                  :rules="[v => !!v || 'اسم المدينة مطلوب']"
+                  :error="shouldShowFieldError('editName')"
+                  :error-messages="getFieldErrors('editName')"
+                  @blur="setFieldTouched('editName')"
                 />
               </VCol>
               <VCol cols="12">
@@ -576,10 +659,12 @@ onMounted(() => {
                   clearable
                   no-data-text="لا توجد مناطق متاحة"
                   required
-                  :rules="[v => !!v || 'المنطقة مطلوبة']"
                   prepend-inner-icon="mdi-map-marker"
                   placeholder="اختر المنطقة..."
                   hide-no-data
+                  :error="shouldShowFieldError('editRegionId')"
+                  :error-messages="getFieldErrors('editRegionId')"
+                  @blur="setFieldTouched('editRegionId')"
                 />
               </VCol>
               <VCol cols="12">
@@ -589,6 +674,9 @@ onMounted(() => {
                   variant="outlined"
                   rows="3"
                   placeholder="أدخل وصف المدينة..."
+                  :error="shouldShowFieldError('editDescription')"
+                  :error-messages="getFieldErrors('editDescription')"
+                  @blur="setFieldTouched('editDescription')"
                 />
               </VCol>
             </VRow>
@@ -606,6 +694,7 @@ onMounted(() => {
           <VBtn
             color="primary"
             variant="flat"
+            :disabled="hasErrors"
             @click="updateCity"
           >
             تحديث

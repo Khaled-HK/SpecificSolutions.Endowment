@@ -9,6 +9,7 @@ import authV2RegisterIllustrationDark from '@images/pages/auth-v2-register-illus
 import authV2RegisterIllustrationLight from '@images/pages/auth-v2-register-illustration-light.png'
 import authV2MaskDark from '@images/pages/misc-mask-dark.png'
 import authV2MaskLight from '@images/pages/misc-mask-light.png'
+import { useFormValidation } from '@/composables/useFormValidation'
 
 const imageVariant = useGenerateImageVariant(authV2RegisterIllustrationLight, authV2RegisterIllustrationDark, authV2RegisterIllustrationBorderedLight, authV2RegisterIllustrationBorderedDark, true)
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
@@ -20,7 +21,20 @@ definePage({
   },
 })
 
-const form = ref({
+// استخدام نظام التحقق الجديد
+const {
+  validationState,
+  setErrorsFromResponse,
+  clearErrors,
+  hasErrors,
+  setFieldTouched,
+  validateRequired,
+  validateEmail,
+  validateLength,
+  addError,
+} = useFormValidation()
+
+const form = reactive({
   username: '',
   email: '',
   password: '',
@@ -28,6 +42,45 @@ const form = ref({
 })
 
 const isPasswordVisible = ref(false)
+
+const handleSubmit = async () => {
+  clearErrors()
+  
+  let isValid = true
+  
+  if (!validateRequired(form.username, 'username', 'اسم المستخدم مطلوب')) {
+    isValid = false
+  } else if (!validateLength(form.username, 'username', 3, 50, 'اسم المستخدم يجب أن يكون بين 3 و 50 حرف')) {
+    isValid = false
+  }
+  
+  if (!validateRequired(form.email, 'email', 'البريد الإلكتروني مطلوب')) {
+    isValid = false
+  } else if (!validateEmail(form.email, 'email', 'البريد الإلكتروني غير صحيح')) {
+    isValid = false
+  }
+  
+  if (!validateRequired(form.password, 'password', 'كلمة المرور مطلوبة')) {
+    isValid = false
+  } else if (!validateLength(form.password, 'password', 6, 100, 'كلمة المرور يجب أن تكون بين 6 و 100 حرف')) {
+    isValid = false
+  }
+  
+  if (!form.privacyPolicies) {
+    addError('privacyPolicies', 'يجب الموافقة على سياسة الخصوصية والشروط')
+    isValid = false
+  }
+  
+  setFieldTouched('username')
+  setFieldTouched('email')
+  setFieldTouched('password')
+  setFieldTouched('privacyPolicies')
+  
+  if (!isValid) return
+  
+  // هنا يمكن إضافة منطق التسجيل
+  console.log('تم التحقق من النموذج بنجاح')
+}
 </script>
 
 <template>
@@ -91,16 +144,18 @@ const isPasswordVisible = ref(false)
         </VCardText>
 
         <VCardText>
-          <VForm @submit.prevent="() => {}">
+          <VForm @submit.prevent="handleSubmit">
             <VRow>
               <!-- Username -->
               <VCol cols="12">
                 <AppTextField
                   v-model="form.username"
-                  :rules="[requiredValidator]"
                   autofocus
-                  label="Username"
+                  label="اسم المستخدم"
                   placeholder="Johndoe"
+                  :error="validationState.errors.username && validationState.errors.username.length > 0 && validationState.touched.username"
+                  :error-messages="validationState.errors.username || []"
+                  @blur="setFieldTouched('username')"
                 />
               </VCol>
 
@@ -108,10 +163,12 @@ const isPasswordVisible = ref(false)
               <VCol cols="12">
                 <AppTextField
                   v-model="form.email"
-                  :rules="[requiredValidator, emailValidator]"
-                  label="Email"
+                  label="البريد الإلكتروني"
                   type="email"
                   placeholder="johndoe@email.com"
+                  :error="validationState.errors.email && validationState.errors.email.length > 0 && validationState.touched.email"
+                  :error-messages="validationState.errors.email || []"
+                  @blur="setFieldTouched('email')"
                 />
               </VCol>
 
@@ -119,13 +176,15 @@ const isPasswordVisible = ref(false)
               <VCol cols="12">
                 <AppTextField
                   v-model="form.password"
-                  :rules="[requiredValidator]"
-                  label="Password"
+                  label="كلمة المرور"
                   placeholder="············"
                   :type="isPasswordVisible ? 'text' : 'password'"
                   autocomplete="password"
+                  :error="validationState.errors.password && validationState.errors.password.length > 0 && validationState.touched.password"
+                  :error-messages="validationState.errors.password || []"
                   :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                  @blur="setFieldTouched('password')"
                 />
 
                 <div class="d-flex align-center my-6">
@@ -133,24 +192,30 @@ const isPasswordVisible = ref(false)
                     id="privacy-policy"
                     v-model="form.privacyPolicies"
                     inline
+                    :error="validationState.errors.privacyPolicies && validationState.errors.privacyPolicies.length > 0 && validationState.touched.privacyPolicies"
                   />
                   <VLabel
                     for="privacy-policy"
                     style="opacity: 1;"
                   >
-                    <span class="me-1 text-high-emphasis">I agree to</span>
+                    <span class="me-1 text-high-emphasis">أوافق على</span>
                     <a
                       href="javascript:void(0)"
                       class="text-primary"
-                    >privacy policy & terms</a>
+                    >سياسة الخصوصية والشروط</a>
                   </VLabel>
+                </div>
+                
+                <div v-if="validationState.errors.privacyPolicies && validationState.errors.privacyPolicies.length > 0 && validationState.touched.privacyPolicies" class="text-error text-caption mt-1">
+                  {{ validationState.errors.privacyPolicies[0] }}
                 </div>
 
                 <VBtn
                   block
                   type="submit"
+                  :disabled="hasErrors"
                 >
-                  Sign up
+                  إنشاء حساب
                 </VBtn>
               </VCol>
 

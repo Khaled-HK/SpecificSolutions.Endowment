@@ -168,6 +168,58 @@
   "25": "25",
   "50": "50",
   "100": "100",
+  "tableHeaders": {
+    "decisions": {
+      "title": "عنوان القرار",
+      "referenceNumber": "رقم المرجع",
+      "description": "الوصف",
+      "createdDate": "تاريخ الإنشاء",
+      "actions": "الإجراءات"
+    },
+    "regions": {
+      "name": "المنطقة",
+      "country": "الدولة",
+      "actions": "الإجراءات"
+    },
+    "cities": {
+      "name": "المدينة",
+      "regionName": "المنطقة",
+      "country": "الدولة",
+      "actions": "الإجراءات"
+    },
+    "products": {
+      "name": "اسم المادة",
+      "description": "الوصف",
+      "price": "السعر",
+      "quantity": "الكمية",
+      "actions": "الإجراءات"
+    },
+    "offices": {
+      "name": "المكتب",
+      "regionName": "المنطقة",
+      "phoneNumber": "رقم الهاتف",
+      "actions": "الإجراءات"
+    },
+    "mosques": {
+      "name": "اسم المسجد",
+      "fileNumber": "رقم الملف",
+      "region": "المنطقة",
+      "office": "المكتب",
+      "actions": "الإجراءات"
+    },
+    "buildingDetails": {
+      "name": "اسم المبنى",
+      "floors": "عدد الطوابق",
+      "buildingCategory": "نوع المبنى",
+      "withinMosqueArea": "الموقع",
+      "actions": "الإجراءات"
+    },
+    "facilityDetails": {
+      "productName": "اسم المادة",
+      "quantity": "الكمية",
+      "actions": "الإجراءات"
+    }
+  },
   "$vuetify": {
     "badge": "شارة",
     "noDataText": "لا تتوافر بيانات",

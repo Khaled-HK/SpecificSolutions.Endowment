@@ -10,9 +10,10 @@ import authV2MaskDark from '@images/pages/misc-mask-dark.png'
 import authV2MaskLight from '@images/pages/misc-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAbility } from '@/plugins/casl/composables/useAbility'
+import { useFormValidation } from '@/composables/useFormValidation'
 
 const authThemeImg = useGenerateImageVariant(authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
@@ -29,14 +30,21 @@ const route = useRoute()
 const router = useRouter()
 const ability = useAbility()
 
-const errors = ref({
-  email: undefined,
-  password: undefined,
-})
+// استخدام نظام التحقق الجديد
+const {
+  validationState,
+  setErrorsFromResponse,
+  clearErrors,
+  hasErrors,
+  setFieldTouched,
+  validateRequired,
+  validateEmail,
+  addError,
+} = useFormValidation()
 
 const refVForm = ref()
 
-const credentials = ref({
+const credentials = reactive({
   email: 'admin@demo.com',
   password: 'admin',
 })
@@ -48,11 +56,16 @@ const login = async () => {
     const res = await $api('/Auth/login', {
       method: 'POST',
       body: {
-        email: credentials.value.email,
-        password: credentials.value.password,
+        email: credentials.email,
+        password: credentials.password,
       },
       onResponseError({ response }) {
-        errors.value = response._data.errors || { general: 'Login failed. Please check your credentials.' }
+        if (response._data.errors) {
+          setErrorsFromResponse(response._data)
+        } else {
+          // إضافة خطأ عام إذا لم تكن هناك أخطاء محددة
+          addError('email', 'فشل تسجيل الدخول. يرجى التحقق من بيانات الاعتماد.')
+        }
       },
     })
 
@@ -62,7 +75,7 @@ const login = async () => {
 
     if (!user.permissions) {
       console.error('User object does not have permissions:', user)
-      errors.value = { general: 'Login failed: No permissions found.' }
+      addError('email', 'فشل تسجيل الدخول: لم يتم العثور على صلاحيات.')
       return
     }
     
@@ -101,15 +114,31 @@ const login = async () => {
     })
   } catch (err) {
     console.error('Login error:', err)
-    errors.value = { general: 'Login failed. Please try again.' }
+    addError('email', 'فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.')
   }
 }
 
-const onSubmit = () => {
-  refVForm.value?.validate().then(({ valid: isValid }) => {
-    if (isValid)
-      login()
-  })
+const onSubmit = async () => {
+  clearErrors()
+  
+  let isValid = true
+  
+  if (!validateRequired(credentials.email, 'email', 'البريد الإلكتروني مطلوب')) {
+    isValid = false
+  } else if (!validateEmail(credentials.email, 'email', 'البريد الإلكتروني غير صحيح')) {
+    isValid = false
+  }
+  
+  if (!validateRequired(credentials.password, 'password', 'كلمة المرور مطلوبة')) {
+    isValid = false
+  }
+  
+  setFieldTouched('email')
+  setFieldTouched('password')
+  
+  if (!isValid) return
+  
+  await login()
 }
 
 // Helper functions to map backend permissions to CASL actions/subjects
@@ -220,12 +249,13 @@ function mapPermissionToSubject(permission) {
               <VCol cols="12">
                 <AppTextField
                   v-model="credentials.email"
-                  label="Email"
+                  label="البريد الإلكتروني"
                   placeholder="johndoe@email.com"
                   type="email"
                   autofocus
-                  :rules="[requiredValidator, emailValidator]"
-                  :error-messages="errors.email"
+                  :error="validationState.errors.email && validationState.errors.email.length > 0 && validationState.touched.email"
+                  :error-messages="validationState.errors.email || []"
+                  @blur="setFieldTouched('email')"
                 />
               </VCol>
 
@@ -233,14 +263,15 @@ function mapPermissionToSubject(permission) {
               <VCol cols="12">
                 <AppTextField
                   v-model="credentials.password"
-                  label="Password"
+                  label="كلمة المرور"
                   placeholder="············"
-                  :rules="[requiredValidator]"
                   :type="isPasswordVisible ? 'text' : 'password'"
                   autocomplete="password"
-                  :error-messages="errors.password"
+                  :error="validationState.errors.password && validationState.errors.password.length > 0 && validationState.touched.password"
+                  :error-messages="validationState.errors.password || []"
                   :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                  @blur="setFieldTouched('password')"
                 />
 
                 <div class="d-flex align-center flex-wrap justify-space-between my-6">
@@ -259,8 +290,9 @@ function mapPermissionToSubject(permission) {
                 <VBtn
                   block
                   type="submit"
+                  :disabled="hasErrors"
                 >
-                  Login
+                  تسجيل الدخول
                 </VBtn>
               </VCol>
 
