@@ -1,0 +1,1 @@
+import{b2 as s}from"./index-B2yH2wlm.js";const r=(n,c)=>{var o;const a=s();return a&&a.proxy&&"$can"in a.proxy?(o=a.proxy)==null?void 0:o.$can(n,c):!1},u=n=>{const c=n.children.some(a=>r(a.action,a.subject));return n.action&&n.subject?r(n.action,n.subject)&&c:c};export{r as a,u as c};
