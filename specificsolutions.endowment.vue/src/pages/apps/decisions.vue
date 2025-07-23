@@ -71,7 +71,7 @@ const {
 } = useFormValidation()
 
 // استخدام i18n للترجمة
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 // Using the ready-made template structure
 const options = ref({
@@ -115,7 +115,11 @@ const loadDecisions = async () => {
       SearchTerm: search.value || ''
     })
     
-    const response = await $api(`/Decision/filter?${params}`)
+    const response = await $api(`/Decision/filter?${params}`, {
+      headers: {
+        'Accept-Language': locale.value
+      }
+    })
     decisions.value = response.data.items || []
     
     // Update total count for pagination
@@ -131,7 +135,7 @@ const loadDecisions = async () => {
     }
   } catch (error) {
     console.error('Error loading decisions:', error)
-    alertMessage.value = 'حدث خطأ أثناء تحميل القرارات'
+    alertMessage.value = locale.value === 'ar' ? 'حدث خطأ أثناء تحميل القرارات' : 'Error loading decisions'
     alertType.value = 'error'
     showAlert.value = true
     decisions.value = []
@@ -149,23 +153,23 @@ const addDecision = async () => {
   let isValid = true
   
   // التحقق من عنوان القرار
-  if (!validateRequired(newDecision.value.title, 'title', 'عنوان القرار مطلوب')) {
+  if (!validateRequired(newDecision.value.title, 'title', locale.value === 'ar' ? 'عنوان القرار مطلوب' : 'Decision title is required')) {
     isValid = false
-  } else if (!validateLength(newDecision.value.title, 'title', 1, 100, 'عنوان القرار يجب أن يكون بين 1 و 100 حرف')) {
+  } else if (!validateLength(newDecision.value.title, 'title', 1, 100, locale.value === 'ar' ? 'عنوان القرار يجب أن يكون بين 1 و 100 حرف' : 'Decision title must be between 1 and 100 characters')) {
     isValid = false
   }
   
   // التحقق من وصف القرار
-  if (!validateRequired(newDecision.value.description, 'description', 'وصف القرار مطلوب')) {
+  if (!validateRequired(newDecision.value.description, 'description', locale.value === 'ar' ? 'وصف القرار مطلوب' : 'Decision description is required')) {
     isValid = false
-  } else if (!validateLength(newDecision.value.description, 'description', 1, 500, 'وصف القرار يجب أن يكون بين 1 و 500 حرف')) {
+  } else if (!validateLength(newDecision.value.description, 'description', 1, 500, locale.value === 'ar' ? 'وصف القرار يجب أن يكون بين 1 و 500 حرف' : 'Decision description must be between 1 and 500 characters')) {
     isValid = false
   }
   
   // التحقق من رقم المرجع
-  if (!validateRequired(newDecision.value.referenceNumber, 'referenceNumber', 'رقم المرجع مطلوب')) {
+  if (!validateRequired(newDecision.value.referenceNumber, 'referenceNumber', locale.value === 'ar' ? 'رقم المرجع مطلوب' : 'Reference number is required')) {
     isValid = false
-  } else if (!validateLength(newDecision.value.referenceNumber, 'referenceNumber', 1, 50, 'رقم المرجع يجب أن يكون بين 1 و 50 حرف')) {
+  } else if (!validateLength(newDecision.value.referenceNumber, 'referenceNumber', 1, 50, locale.value === 'ar' ? 'رقم المرجع يجب أن يكون بين 1 و 50 حرف' : 'Reference number must be between 1 and 50 characters')) {
     isValid = false
   }
   
@@ -191,71 +195,122 @@ const addDecision = async () => {
     const response = await $api('/Decision', {
       method: 'POST',
       body: requestBody,
+      headers: {
+        'Accept-Language': locale.value
+      }
     })
     
     console.log('Response received:', response)
     
     // Check if the response indicates success - response comes directly
     if (response && response.isSuccess === false) {
-      // تطبيق أخطاء التحقق من الباك إند على الحقول
-      if (response.errors && response.errors.length > 0) {
+      // Handle backend validation errors
+      if (response.errors && Array.isArray(response.errors)) {
         setErrorsFromResponse(response)
         // تعيين جميع الحقول كملموسة لعرض الأخطاء
         setFieldTouched('title')
         setFieldTouched('description')
         setFieldTouched('referenceNumber')
-        return
-      } else if (response.message) {
-        alertMessage.value = response.message
+      } else {
+        const errorMsg = response.message || (locale.value === 'ar' ? 'حدث خطأ أثناء إضافة القرار' : 'Error adding decision')
+        alertMessage.value = errorMsg
         alertType.value = 'error'
         showAlert.value = true
-        return
       }
+      return
     }
     
     dialog.value = false
     resetNewDecision()
     loadDecisions()
-    alertMessage.value = 'تم إضافة القرار بنجاح'
+    alertMessage.value = locale.value === 'ar' ? 'تم إضافة القرار بنجاح' : 'Decision added successfully'
     alertType.value = 'success'
     showAlert.value = true
   } catch (error) {
     console.error('Error adding decision:', error)
-    alertMessage.value = 'حدث خطأ أثناء إضافة القرار'
+    alertMessage.value = locale.value === 'ar' ? 'حدث خطأ أثناء إضافة القرار' : 'Error adding decision'
     alertType.value = 'error'
     showAlert.value = true
   }
 }
 
 const updateDecision = async () => {
+  // مسح الأخطاء السابقة
+  clearErrors()
+  
+  // التحقق من صحة البيانات قبل الإرسال
+  let isValid = true
+  
+  // التحقق من عنوان القرار
+  if (!validateRequired(editDecision.value.title, 'title', locale.value === 'ar' ? 'عنوان القرار مطلوب' : 'Decision title is required')) {
+    isValid = false
+  } else if (!validateLength(editDecision.value.title, 'title', 1, 100, locale.value === 'ar' ? 'عنوان القرار يجب أن يكون بين 1 و 100 حرف' : 'Decision title must be between 1 and 100 characters')) {
+    isValid = false
+  }
+  
+  // التحقق من وصف القرار
+  if (!validateRequired(editDecision.value.description, 'description', locale.value === 'ar' ? 'وصف القرار مطلوب' : 'Decision description is required')) {
+    isValid = false
+  } else if (!validateLength(editDecision.value.description, 'description', 1, 500, locale.value === 'ar' ? 'وصف القرار يجب أن يكون بين 1 و 500 حرف' : 'Decision description must be between 1 and 500 characters')) {
+    isValid = false
+  }
+  
+  // التحقق من رقم المرجع
+  if (!validateRequired(editDecision.value.referenceNumber, 'referenceNumber', locale.value === 'ar' ? 'رقم المرجع مطلوب' : 'Reference number is required')) {
+    isValid = false
+  } else if (!validateLength(editDecision.value.referenceNumber, 'referenceNumber', 1, 50, locale.value === 'ar' ? 'رقم المرجع يجب أن يكون بين 1 و 50 حرف' : 'Reference number must be between 1 and 50 characters')) {
+    isValid = false
+  }
+  
+  // تعيين جميع الحقول كملموسة لعرض الأخطاء
+  setFieldTouched('title')
+  setFieldTouched('description')
+  setFieldTouched('referenceNumber')
+  
+  if (!isValid) {
+    return
+  }
+
   try {
     const response = await $api(`/Decision/${editDecision.value.id}`, {
       method: 'PUT',
       body: {
         id: editDecision.value.id,
-        title: editDecision.value.title,
-        description: editDecision.value.description,
-        referenceNumber: editDecision.value.referenceNumber,
+        title: editDecision.value.title.trim(),
+        description: editDecision.value.description.trim(),
+        referenceNumber: editDecision.value.referenceNumber.trim(),
       },
+      headers: {
+        'Accept-Language': locale.value
+      }
     })
     
     // Check if the response indicates success - response comes directly
     if (response && response.isSuccess === false) {
-      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء تحديث القرار'
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
+      // Handle backend validation errors
+      if (response.errors && Array.isArray(response.errors)) {
+        setErrorsFromResponse(response)
+        // تعيين جميع الحقول كملموسة لعرض الأخطاء
+        setFieldTouched('title')
+        setFieldTouched('description')
+        setFieldTouched('referenceNumber')
+      } else {
+        const errorMsg = response.message || (locale.value === 'ar' ? 'حدث خطأ أثناء تحديث القرار' : 'Error updating decision')
+        alertMessage.value = errorMsg
+        alertType.value = 'error'
+        showAlert.value = true
+      }
       return
     }
     
     editDialog.value = false
     loadDecisions()
-    alertMessage.value = 'تم تحديث القرار بنجاح'
+    alertMessage.value = locale.value === 'ar' ? 'تم تحديث القرار بنجاح' : 'Decision updated successfully'
     alertType.value = 'success'
     showAlert.value = true
   } catch (error) {
     console.error('Error updating decision:', error)
-    alertMessage.value = 'حدث خطأ أثناء تحديث القرار'
+    alertMessage.value = locale.value === 'ar' ? 'حدث خطأ أثناء تحديث القرار' : 'Error updating decision'
     alertType.value = 'error'
     showAlert.value = true
   }
@@ -267,11 +322,14 @@ const deleteDecision = async () => {
   try {
     const response = await $api(`/Decision/${selectedDecision.value.id}`, {
       method: 'DELETE',
+      headers: {
+        'Accept-Language': locale.value
+      }
     })
     
     // Check if the response indicates success - response comes directly
     if (response && response.isSuccess === false) {
-      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء حذف القرار'
+      const errorMsg = response.message || response.errors?.[0]?.errorMessage || (locale.value === 'ar' ? 'حدث خطأ أثناء حذف القرار' : 'Error deleting decision')
       alertMessage.value = errorMsg
       alertType.value = 'error'
       showAlert.value = true
@@ -281,12 +339,12 @@ const deleteDecision = async () => {
     deleteDialog.value = false
     selectedDecision.value = null
     loadDecisions()
-    alertMessage.value = 'تم حذف القرار بنجاح'
+    alertMessage.value = locale.value === 'ar' ? 'تم حذف القرار بنجاح' : 'Decision deleted successfully'
     alertType.value = 'success'
     showAlert.value = true
   } catch (error) {
     console.error('Error deleting decision:', error)
-    alertMessage.value = 'حدث خطأ أثناء حذف القرار'
+    alertMessage.value = locale.value === 'ar' ? 'حدث خطأ أثناء حذف القرار' : 'Error deleting decision'
     alertType.value = 'error'
     showAlert.value = true
   }
@@ -295,6 +353,8 @@ const deleteDecision = async () => {
 const openEditDialog = (decision: Decision) => {
   editDecision.value = { ...decision }
   editDialog.value = true
+  // مسح أخطاء التحقق عند فتح النافذة
+  clearErrors()
 }
 
 const openDeleteDialog = (decision: Decision) => {
@@ -346,10 +406,10 @@ onMounted(() => {
     <VCardText class="d-flex align-center flex-wrap gap-4">
       <div class="me-3">
         <h4 class="text-h4">
-          إدارة القرارات
+          {{ locale === 'ar' ? 'إدارة القرارات' : 'Decisions Management' }}
         </h4>
         <p class="mb-0">
-          عرض وإدارة القرارات في النظام
+          {{ locale === 'ar' ? 'عرض وإدارة القرارات في النظام' : 'View and manage decisions in the system' }}
         </p>
       </div>
       <VSpacer />
@@ -357,7 +417,7 @@ onMounted(() => {
         prepend-icon="tabler-plus"
         @click="dialog = true"
       >
-        إضافة قرار جديد
+        {{ locale === 'ar' ? 'إضافة قرار جديد' : 'Add New Decision' }}
       </VBtn>
     </VCardText>
 
@@ -373,7 +433,7 @@ onMounted(() => {
           <VTextField
             v-model="search"
             prepend-inner-icon="tabler-search"
-            label="البحث في القرارات"
+            :label="locale === 'ar' ? 'البحث في القرارات' : 'Search decisions'"
             single-line
             hide-details
             density="compact"
@@ -416,14 +476,14 @@ onMounted(() => {
           :color="item.referenceNumber ? 'success' : 'warning'"
           size="small"
         >
-          {{ item.referenceNumber || 'لا يوجد رقم مرجعي' }}
+          {{ item.referenceNumber || (locale === 'ar' ? 'لا يوجد رقم مرجعي' : 'No reference number') }}
         </VChip>
       </template>
 
       <!-- Description Column -->
       <template #item.description="{ item }">
         <span class="text-medium-emphasis">
-          {{ item.description || 'لا يوجد وصف' }}
+          {{ item.description || (locale === 'ar' ? 'لا يوجد وصف' : 'No description') }}
         </span>
       </template>
 
@@ -433,7 +493,7 @@ onMounted(() => {
           color="info"
           size="small"
         >
-          {{ new Date(item.createdDate).toLocaleDateString('ar-SA') }}
+          {{ new Date(item.createdDate).toLocaleDateString(locale === 'ar' ? 'ar-SA' : 'en-US') }}
         </VChip>
       </template>
 
@@ -463,7 +523,7 @@ onMounted(() => {
     >
       <VCard>
         <VCardTitle>
-          <span class="text-h5">إضافة قرار جديد</span>
+          <span class="text-h5">{{ locale === 'ar' ? 'إضافة قرار جديد' : 'Add New Decision' }}</span>
         </VCardTitle>
 
         <VCardText>
@@ -472,7 +532,7 @@ onMounted(() => {
               <VCol cols="12">
                 <VTextField
                   v-model="newDecision.title"
-                  label="عنوان القرار"
+                  :label="locale === 'ar' ? 'عنوان القرار' : 'Decision Title'"
                   required
                   :error="validationState.errors.title && validationState.errors.title.length > 0 && validationState.touched.title"
                   :error-messages="validationState.errors.title || []"
@@ -482,7 +542,7 @@ onMounted(() => {
               <VCol cols="12">
                 <VTextField
                   v-model="newDecision.referenceNumber"
-                  label="رقم المرجع"
+                  :label="locale === 'ar' ? 'رقم المرجع' : 'Reference Number'"
                   required
                   :error="validationState.errors.referenceNumber && validationState.errors.referenceNumber.length > 0 && validationState.touched.referenceNumber"
                   :error-messages="validationState.errors.referenceNumber || []"
@@ -492,7 +552,7 @@ onMounted(() => {
               <VCol cols="12">
                 <VTextarea
                   v-model="newDecision.description"
-                  label="الوصف"
+                  :label="locale === 'ar' ? 'الوصف' : 'Description'"
                   rows="3"
                   :error="validationState.errors.description && validationState.errors.description.length > 0 && validationState.touched.description"
                   :error-messages="validationState.errors.description || []"
@@ -510,13 +570,14 @@ onMounted(() => {
             variant="text"
             @click="dialog = false"
           >
-            إلغاء
+            {{ locale === 'ar' ? 'إلغاء' : 'Cancel' }}
           </VBtn>
           <VBtn
             color="blue-darken-1"
+            :disabled="hasErrors"
             @click="addDecision"
           >
-            إضافة
+            {{ locale === 'ar' ? 'إضافة' : 'Add' }}
           </VBtn>
         </VCardActions>
       </VCard>
@@ -529,7 +590,7 @@ onMounted(() => {
     >
       <VCard>
         <VCardTitle>
-          <span class="text-h5">تعديل القرار</span>
+          <span class="text-h5">{{ locale === 'ar' ? 'تعديل القرار' : 'Edit Decision' }}</span>
         </VCardTitle>
 
         <VCardText>
@@ -538,7 +599,7 @@ onMounted(() => {
               <VCol cols="12">
                 <VTextField
                   v-model="editDecision.title"
-                  label="عنوان القرار"
+                  :label="locale === 'ar' ? 'عنوان القرار' : 'Decision Title'"
                   required
                   :error="validationState.errors.title && validationState.errors.title.length > 0 && validationState.touched.title"
                   :error-messages="validationState.errors.title || []"
@@ -548,7 +609,7 @@ onMounted(() => {
               <VCol cols="12">
                 <VTextField
                   v-model="editDecision.referenceNumber"
-                  label="رقم المرجع"
+                  :label="locale === 'ar' ? 'رقم المرجع' : 'Reference Number'"
                   required
                   :error="validationState.errors.referenceNumber && validationState.errors.referenceNumber.length > 0 && validationState.touched.referenceNumber"
                   :error-messages="validationState.errors.referenceNumber || []"
@@ -558,7 +619,7 @@ onMounted(() => {
               <VCol cols="12">
                 <VTextarea
                   v-model="editDecision.description"
-                  label="الوصف"
+                  :label="locale === 'ar' ? 'الوصف' : 'Description'"
                   rows="3"
                   :error="validationState.errors.description && validationState.errors.description.length > 0 && validationState.touched.description"
                   :error-messages="validationState.errors.description || []"
@@ -576,13 +637,14 @@ onMounted(() => {
             variant="text"
             @click="editDialog = false"
           >
-            إلغاء
+            {{ locale === 'ar' ? 'إلغاء' : 'Cancel' }}
           </VBtn>
           <VBtn
             color="blue-darken-1"
+            :disabled="hasErrors"
             @click="updateDecision"
           >
-            تحديث
+            {{ locale === 'ar' ? 'تحديث' : 'Update' }}
           </VBtn>
         </VCardActions>
       </VCard>
@@ -595,12 +657,12 @@ onMounted(() => {
     >
       <VCard>
         <VCardTitle class="text-h5">
-          تأكيد الحذف
+          {{ locale === 'ar' ? 'تأكيد الحذف' : 'Confirm Delete' }}
         </VCardTitle>
         <VCardText>
-          هل أنت متأكد من حذف القرار "{{ selectedDecision?.title }}"؟
+          {{ locale === 'ar' ? `هل أنت متأكد من حذف القرار "${selectedDecision?.title}"؟` : `Are you sure you want to delete the decision "${selectedDecision?.title}"?` }}
           <br>
-          <strong>لا يمكن التراجع عن هذا الإجراء.</strong>
+          <strong>{{ locale === 'ar' ? 'لا يمكن التراجع عن هذا الإجراء.' : 'This action cannot be undone.' }}</strong>
         </VCardText>
         <VCardActions>
           <VSpacer />
@@ -609,13 +671,13 @@ onMounted(() => {
             variant="text"
             @click="deleteDialog = false"
           >
-            إلغاء
+            {{ locale === 'ar' ? 'إلغاء' : 'Cancel' }}
           </VBtn>
           <VBtn
             color="error"
             @click="deleteDecision"
           >
-            حذف
+            {{ locale === 'ar' ? 'حذف' : 'Delete' }}
           </VBtn>
         </VCardActions>
       </VCard>

@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
+import { useFormValidation } from '@/composables/useFormValidation'
+import { useI18n } from 'vue-i18n'
 
 // Define interfaces for better type safety
 interface Office {
@@ -62,6 +64,21 @@ const editOffice = ref<Office>({
   regionId: '',
 })
 
+// استخدام نظام التحقق من النماذج
+const {
+  validationState,
+  setErrorsFromResponse,
+  clearErrors,
+  hasErrors,
+  setFieldTouched,
+  validateRequired,
+  validateLength,
+  addError,
+} = useFormValidation()
+
+// استخدام i18n للترجمة
+const { t, locale } = useI18n()
+
 // Using the ready-made template structure
 const options = ref({
   page: 1,
@@ -70,26 +87,26 @@ const options = ref({
   sortDesc: [false],
 })
 
-// Headers using the ready-made template structure
-const headers = [
+// Headers using i18n translations
+const headers = computed(() => [
   {
-    title: 'المكتب',
+    title: t('tableHeaders.offices.name'),
     key: 'name',
   },
   {
-    title: 'المنطقة',
+    title: t('tableHeaders.offices.regionName'),
     key: 'regionName',
   },
   {
-    title: 'رقم الهاتف',
+    title: t('tableHeaders.offices.phoneNumber'),
     key: 'phoneNumber',
   },
   {
-    title: 'الإجراءات',
+    title: t('tableHeaders.offices.actions'),
     key: 'actions',
     sortable: false,
   },
-]
+])
 
 const loadOffices = async () => {
   loading.value = true
@@ -100,7 +117,11 @@ const loadOffices = async () => {
       SearchTerm: search.value || ''
     })
     
-    const response = await $api(`/Office/filter?${params}`)
+    const response = await $api(`/Office/filter?${params}`, {
+      headers: {
+        'Accept-Language': locale.value
+      }
+    })
     offices.value = response.data.items || []
     
     // Update total count for pagination
@@ -116,7 +137,7 @@ const loadOffices = async () => {
     }
   } catch (error) {
     console.error('Error loading offices:', error)
-    alertMessage.value = 'حدث خطأ أثناء تحميل المكاتب'
+    alertMessage.value = locale.value === 'ar' ? 'حدث خطأ أثناء تحميل المكاتب' : 'Error loading offices'
     alertType.value = 'error'
     showAlert.value = true
     offices.value = []
@@ -129,11 +150,15 @@ const loadOffices = async () => {
 const loadRegions = async () => {
   regionsLoading.value = true
   try {
-    const response = await $api('/Region/filter?PageSize=100')
+    const response = await $api('/Region/filter?PageSize=100', {
+      headers: {
+        'Accept-Language': locale.value
+      }
+    })
     regions.value = response.data.items || []
   } catch (error) {
     console.error('Error loading regions:', error)
-    alertMessage.value = 'حدث خطأ أثناء تحميل المناطق'
+    alertMessage.value = locale.value === 'ar' ? 'حدث خطأ أثناء تحميل المناطق' : 'Error loading regions'
     alertType.value = 'error'
     showAlert.value = true
   } finally {
@@ -142,69 +167,180 @@ const loadRegions = async () => {
 }
 
 const addOffice = async () => {
+  // مسح الأخطاء السابقة
+  clearErrors()
+  
+  // التحقق من صحة البيانات قبل الإرسال
+  let isValid = true
+  
+  // التحقق من اسم المكتب
+  if (!validateRequired(newOffice.value.name, 'name', locale.value === 'ar' ? 'اسم المكتب مطلوب' : 'Office name is required')) {
+    isValid = false
+  } else if (!validateLength(newOffice.value.name, 'name', 1, 100, locale.value === 'ar' ? 'اسم المكتب يجب أن يكون بين 1 و 100 حرف' : 'Office name must be between 1 and 100 characters')) {
+    isValid = false
+  }
+  
+  // التحقق من الموقع
+  if (!validateRequired(newOffice.value.location, 'location', locale.value === 'ar' ? 'الموقع مطلوب' : 'Location is required')) {
+    isValid = false
+  } else if (!validateLength(newOffice.value.location, 'location', 1, 200, locale.value === 'ar' ? 'الموقع يجب أن يكون بين 1 و 200 حرف' : 'Location must be between 1 and 200 characters')) {
+    isValid = false
+  }
+  
+  // التحقق من رقم الهاتف
+  if (!validateRequired(newOffice.value.phoneNumber, 'phoneNumber', locale.value === 'ar' ? 'رقم الهاتف مطلوب' : 'Phone number is required')) {
+    isValid = false
+  } else {
+    const phoneRegex = /^(09[1-5]|02[1-9])-?\d{7}$/
+    if (newOffice.value.phoneNumber && !phoneRegex.test(newOffice.value.phoneNumber)) {
+      addError('phoneNumber', locale.value === 'ar' ? 'يجب أن يكون رقم الهاتف بتنسيق ليبي صحيح (مثال: 091-1234567)' : 'Phone number must be in valid Libyan format (e.g., 091-1234567)')
+      isValid = false
+    }
+  }
+  
+  // التحقق من المنطقة
+  if (!validateRequired(newOffice.value.regionId, 'regionId', locale.value === 'ar' ? 'المنطقة مطلوبة' : 'Region is required')) {
+    isValid = false
+  }
+  
+  // تعيين جميع الحقول كملموسة لعرض الأخطاء
+  setFieldTouched('name')
+  setFieldTouched('location')
+  setFieldTouched('phoneNumber')
+  setFieldTouched('regionId')
+  
+  if (!isValid) {
+    return
+  }
+
   try {
     const response = await $api('/Office', {
       method: 'POST',
       body: {
-        name: newOffice.value.name,
-        location: newOffice.value.location,
-        phoneNumber: newOffice.value.phoneNumber,
+        name: newOffice.value.name.trim(),
+        location: newOffice.value.location.trim(),
+        phoneNumber: newOffice.value.phoneNumber.trim(),
         regionId: newOffice.value.regionId,
       },
+      headers: {
+        'Accept-Language': locale.value
+      }
     })
     
     // Check if the response indicates success - response comes directly
     if (response && response.isSuccess === false) {
-      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء إضافة المكتب'
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
+      // Handle backend validation errors
+      if (response.errors && Array.isArray(response.errors)) {
+        setErrorsFromResponse(response)
+        // تعيين جميع الحقول كملموسة لعرض الأخطاء
+        setFieldTouched('name')
+        setFieldTouched('location')
+        setFieldTouched('phoneNumber')
+        setFieldTouched('regionId')
+      } else {
+        const errorMsg = response.message || (locale.value === 'ar' ? 'حدث خطأ أثناء إضافة المكتب' : 'Error adding office')
+        alertMessage.value = errorMsg
+        alertType.value = 'error'
+        showAlert.value = true
+      }
       return
     }
     
     dialog.value = false
     resetNewOffice()
     loadOffices()
-    alertMessage.value = 'تم إضافة المكتب بنجاح'
+    alertMessage.value = locale.value === 'ar' ? 'تم إضافة المكتب بنجاح' : 'Office added successfully'
     alertType.value = 'success'
     showAlert.value = true
   } catch (error) {
     console.error('Error adding office:', error)
-    alertMessage.value = 'حدث خطأ أثناء إضافة المكتب'
+    alertMessage.value = locale.value === 'ar' ? 'حدث خطأ أثناء إضافة المكتب' : 'Error adding office'
     alertType.value = 'error'
     showAlert.value = true
   }
 }
 
 const updateOffice = async () => {
+  // مسح الأخطاء السابقة
+  clearErrors()
+  
+  // التحقق من صحة البيانات قبل الإرسال
+  let isValid = true
+  
+  // التحقق من اسم المكتب
+  if (!validateRequired(editOffice.value.name, 'name', locale.value === 'ar' ? 'اسم المكتب مطلوب' : 'Office name is required')) {
+    isValid = false
+  } else if (!validateLength(editOffice.value.name, 'name', 1, 100, locale.value === 'ar' ? 'اسم المكتب يجب أن يكون بين 1 و 100 حرف' : 'Office name must be between 1 and 100 characters')) {
+    isValid = false
+  }
+  
+  // التحقق من الموقع
+  if (!validateRequired(editOffice.value.location, 'location', locale.value === 'ar' ? 'الموقع مطلوب' : 'Location is required')) {
+    isValid = false
+  } else if (editOffice.value.location && !validateLength(editOffice.value.location, 'location', 1, 200, locale.value === 'ar' ? 'الموقع يجب أن يكون بين 1 و 200 حرف' : 'Location must be between 1 and 200 characters')) {
+    isValid = false
+  }
+  
+  // التحقق من رقم الهاتف
+  if (!validateRequired(editOffice.value.phoneNumber, 'phoneNumber', locale.value === 'ar' ? 'رقم الهاتف مطلوب' : 'Phone number is required')) {
+    isValid = false
+  } else {
+    const phoneRegex = /^(09[1-5]|02[1-9])-?\d{7}$/
+    if (editOffice.value.phoneNumber && !phoneRegex.test(editOffice.value.phoneNumber)) {
+      addError('phoneNumber', locale.value === 'ar' ? 'يجب أن يكون رقم الهاتف بتنسيق ليبي صحيح (مثال: 091-1234567)' : 'Phone number must be in valid Libyan format (e.g., 091-1234567)')
+      isValid = false
+    }
+  }
+  
+  // تعيين جميع الحقول كملموسة لعرض الأخطاء
+  setFieldTouched('name')
+  setFieldTouched('location')
+  setFieldTouched('phoneNumber')
+  
+  if (!isValid) {
+    return
+  }
+
   try {
     const response = await $api(`/Office/${editOffice.value.id}`, {
       method: 'PUT',
       body: {
         id: editOffice.value.id,
-        name: editOffice.value.name,
-        location: editOffice.value.location || '',
-        phoneNumber: editOffice.value.phoneNumber,
+        name: editOffice.value.name.trim(),
+        location: editOffice.value.location?.trim() || '',
+        phoneNumber: editOffice.value.phoneNumber.trim(),
       },
+      headers: {
+        'Accept-Language': locale.value
+      }
     })
     
     // Check if the response indicates success - response comes directly
     if (response && response.isSuccess === false) {
-      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء تحديث المكتب'
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
+      // Handle backend validation errors
+      if (response.errors && Array.isArray(response.errors)) {
+        setErrorsFromResponse(response)
+        // تعيين جميع الحقول كملموسة لعرض الأخطاء
+        setFieldTouched('name')
+        setFieldTouched('location')
+        setFieldTouched('phoneNumber')
+      } else {
+        const errorMsg = response.message || (locale.value === 'ar' ? 'حدث خطأ أثناء تحديث المكتب' : 'Error updating office')
+        alertMessage.value = errorMsg
+        alertType.value = 'error'
+        showAlert.value = true
+      }
       return
     }
     
     editDialog.value = false
     loadOffices()
-    alertMessage.value = 'تم تحديث المكتب بنجاح'
+    alertMessage.value = locale.value === 'ar' ? 'تم تحديث المكتب بنجاح' : 'Office updated successfully'
     alertType.value = 'success'
     showAlert.value = true
   } catch (error) {
     console.error('Error updating office:', error)
-    alertMessage.value = 'حدث خطأ أثناء تحديث المكتب'
+    alertMessage.value = locale.value === 'ar' ? 'حدث خطأ أثناء تحديث المكتب' : 'Error updating office'
     alertType.value = 'error'
     showAlert.value = true
   }
@@ -216,11 +352,14 @@ const deleteOffice = async () => {
   try {
     const response = await $api(`/Office/${selectedOffice.value.id}`, {
       method: 'DELETE',
+      headers: {
+        'Accept-Language': locale.value
+      }
     })
     
     // Check if the response indicates success - response comes directly
     if (response && response.isSuccess === false) {
-      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء حذف المكتب'
+      const errorMsg = response.message || response.errors?.[0]?.errorMessage || (locale.value === 'ar' ? 'حدث خطأ أثناء حذف المكتب' : 'Error deleting office')
       alertMessage.value = errorMsg
       alertType.value = 'error'
       showAlert.value = true
@@ -231,13 +370,13 @@ const deleteOffice = async () => {
     // If we reach here, the deletion was successful
     deleteDialog.value = false
     loadOffices()
-    alertMessage.value = 'تم حذف المكتب بنجاح'
+    alertMessage.value = locale.value === 'ar' ? 'تم حذف المكتب بنجاح' : 'Office deleted successfully'
     alertType.value = 'success'
     showAlert.value = true
   } catch (error) {
     console.error('Error deleting office:', error)
     // ofetch doesn't throw for HTTP errors, so this is likely a network error
-    alertMessage.value = 'حدث خطأ في الاتصال بالخادم'
+    alertMessage.value = locale.value === 'ar' ? 'حدث خطأ في الاتصال بالخادم' : 'Network connection error'
     alertType.value = 'error'
     showAlert.value = true
     deleteDialog.value = false
@@ -249,7 +388,12 @@ const deleteSelectedRows = async () => {
   
   try {
     const deletePromises = selectedRows.value.map(office => 
-      $api(`/Office/${office.id}`, { method: 'DELETE' })
+      $api(`/Office/${office.id}`, { 
+        method: 'DELETE',
+        headers: {
+          'Accept-Language': locale.value
+        }
+      })
     )
     const responses = await Promise.all(deletePromises)
     
@@ -260,9 +404,11 @@ const deleteSelectedRows = async () => {
     
     if (failedOperations.length > 0) {
       const errorMessages = failedOperations.map((response: any) => 
-        response?.message || response?.errors?.[0]?.errorMessage || 'حدث خطأ أثناء العملية'
+        response?.message || response?.errors?.[0]?.errorMessage || (locale.value === 'ar' ? 'حدث خطأ أثناء العملية' : 'Operation error')
       )
-      const errorMsg = `فشل في حذف ${failedOperations.length} عنصر: ${errorMessages.join(', ')}`
+      const errorMsg = locale.value === 'ar' 
+        ? `فشل في حذف ${failedOperations.length} عنصر: ${errorMessages.join(', ')}`
+        : `Failed to delete ${failedOperations.length} items: ${errorMessages.join(', ')}`
       alertMessage.value = errorMsg
       alertType.value = 'error'
       showAlert.value = true
@@ -272,13 +418,13 @@ const deleteSelectedRows = async () => {
     // If we reach here, all deletions were successful
     selectedRows.value = []
     loadOffices()
-    alertMessage.value = 'تم حذف المكاتب المحددة بنجاح'
+    alertMessage.value = locale.value === 'ar' ? 'تم حذف المكاتب المحددة بنجاح' : 'Selected offices deleted successfully'
     alertType.value = 'success'
     showAlert.value = true
   } catch (error) {
     console.error('Error deleting selected offices:', error)
     // ofetch doesn't throw for HTTP errors, so this is likely a network error
-    alertMessage.value = 'حدث خطأ في الاتصال بالخادم'
+    alertMessage.value = locale.value === 'ar' ? 'حدث خطأ في الاتصال بالخادم' : 'Network connection error'
     alertType.value = 'error'
     showAlert.value = true
   }
@@ -292,6 +438,8 @@ const openEditDialog = (office: Office) => {
     name: office.name || ''
   }
   editDialog.value = true
+  // مسح أخطاء التحقق عند فتح النافذة
+  clearErrors()
 }
 
 const openDeleteDialog = (office: Office) => {
@@ -306,6 +454,8 @@ const resetNewOffice = () => {
     phoneNumber: '',
     regionId: '',
   }
+  // مسح أخطاء التحقق
+  clearErrors()
 }
 
 // Watch for search changes
@@ -340,7 +490,7 @@ onMounted(() => {
 
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center pa-6">
-        <span class="text-h5">إدارة المكاتب</span>
+        <span class="text-h5">{{ locale === 'ar' ? 'إدارة المكاتب' : 'Offices Management' }}</span>
         <div class="d-flex gap-2">
           <VBtn
             v-if="selectedRows.length > 0"
@@ -348,13 +498,13 @@ onMounted(() => {
             variant="outlined"
             @click="deleteSelectedRows"
           >
-            حذف المحدد ({{ selectedRows.length }})
+            {{ locale === 'ar' ? `حذف المحدد (${selectedRows.length})` : `Delete Selected (${selectedRows.length})` }}
           </VBtn>
           <VBtn
             color="primary"
             @click="dialog = true"
           >
-            إضافة مكتب
+            {{ locale === 'ar' ? 'إضافة مكتب' : 'Add Office' }}
           </VBtn>
         </div>
       </VCardTitle>
@@ -371,7 +521,7 @@ onMounted(() => {
           >
             <VTextField
               v-model="search"
-              placeholder="البحث في المكاتب..."
+              :placeholder="locale === 'ar' ? 'البحث في المكاتب...' : 'Search offices...'"
               prepend-inner-icon="mdi-magnify"
               single-line
               hide-details
@@ -423,7 +573,7 @@ onMounted(() => {
               v-else 
               class="text-medium-emphasis"
             >
-              لا توجد منطقة
+              {{ locale === 'ar' ? 'لا توجد منطقة' : 'No region' }}
             </span>
           </template>
 
@@ -441,7 +591,7 @@ onMounted(() => {
               v-else 
               class="text-medium-emphasis"
             >
-              لا يوجد رقم هاتف
+              {{ locale === 'ar' ? 'لا يوجد رقم هاتف' : 'No phone number' }}
             </span>
           </template>
 
@@ -464,7 +614,7 @@ onMounted(() => {
                 <VSelect
                   v-model="options.itemsPerPage"
                   :items="[5, 10, 25, 50, 100]"
-                  label="عناصر في الصفحة:"
+                  :label="locale === 'ar' ? 'عناصر في الصفحة:' : 'Items per page:'"
                   variant="underlined"
                   style="max-inline-size: 8rem;min-inline-size: 5rem;"
                 />
@@ -488,57 +638,62 @@ onMounted(() => {
       persistent
     >
       <VCard>
-        <VCardTitle class="text-h6">إضافة مكتب جديد</VCardTitle>
+        <VCardTitle class="text-h6">{{ locale === 'ar' ? 'إضافة مكتب جديد' : 'Add New Office' }}</VCardTitle>
         <VCardText>
           <VForm @submit.prevent="addOffice">
             <VRow>
               <VCol cols="12">
                 <VTextField
                   v-model="newOffice.name"
-                  label="اسم المكتب"
+                  :label="locale === 'ar' ? 'اسم المكتب' : 'Office Name'"
                   variant="outlined"
                   required
-                  :rules="[v => !!v || 'اسم المكتب مطلوب']"
+                  :error="validationState.errors.name && validationState.errors.name.length > 0 && validationState.touched.name"
+                  :error-messages="validationState.errors.name || []"
+                  @blur="setFieldTouched('name')"
                 />
               </VCol>
               <VCol cols="12">
                 <VTextField
                   v-model="newOffice.location"
-                  label="الموقع"
+                  :label="locale === 'ar' ? 'الموقع' : 'Location'"
                   variant="outlined"
                   required
-                  :rules="[v => !!v || 'الموقع مطلوب']"
+                  :error="validationState.errors.location && validationState.errors.location.length > 0 && validationState.touched.location"
+                  :error-messages="validationState.errors.location || []"
+                  @blur="setFieldTouched('location')"
                 />
               </VCol>
               <VCol cols="12">
                 <VTextField
                   v-model="newOffice.phoneNumber"
-                  label="رقم الهاتف"
+                  :label="locale === 'ar' ? 'رقم الهاتف' : 'Phone Number'"
                   variant="outlined"
                   required
-                  placeholder="091-1234567 أو 021-1234567"
-                  :rules="[
-                    v => !!v || 'رقم الهاتف مطلوب',
-                    v => /^(09[1-5]|02[1-9])-?\d{7}$/.test(v) || 'يجب أن يكون رقم الهاتف بتنسيق ليبي صحيح (مثال: 091-1234567)'
-                  ]"
+                  :placeholder="locale === 'ar' ? '091-1234567 أو 021-1234567' : '091-1234567 or 021-1234567'"
+                  :error="validationState.errors.phoneNumber && validationState.errors.phoneNumber.length > 0 && validationState.touched.phoneNumber"
+                  :error-messages="validationState.errors.phoneNumber || []"
+                  @blur="setFieldTouched('phoneNumber')"
                   prepend-inner-icon="mdi-phone"
                 />
               </VCol>
               <VCol cols="12">
                 <VAutocomplete
                   v-model="newOffice.regionId"
-                  label="المنطقة"
+                  :label="locale === 'ar' ? 'المنطقة' : 'Region'"
                   variant="outlined"
                   :items="regions"
                   item-title="name"
                   item-value="id"
                   :loading="regionsLoading"
                   clearable
-                  no-data-text="لا توجد مناطق متاحة"
+                  :no-data-text="locale === 'ar' ? 'لا توجد مناطق متاحة' : 'No regions available'"
                   required
-                  :rules="[v => !!v || 'المنطقة مطلوبة']"
+                  :error="validationState.errors.regionId && validationState.errors.regionId.length > 0 && validationState.touched.regionId"
+                  :error-messages="validationState.errors.regionId || []"
+                  @blur="setFieldTouched('regionId')"
                   prepend-inner-icon="mdi-map-marker"
-                  placeholder="اختر المنطقة..."
+                  :placeholder="locale === 'ar' ? 'اختر المنطقة...' : 'Select region...'"
                   hide-no-data
                 />
               </VCol>
@@ -552,14 +707,15 @@ onMounted(() => {
             variant="text"
             @click="dialog = false"
           >
-            إلغاء
+            {{ locale === 'ar' ? 'إلغاء' : 'Cancel' }}
           </VBtn>
           <VBtn
             color="primary"
             variant="flat"
+            :disabled="hasErrors"
             @click="addOffice"
           >
-            حفظ
+            {{ locale === 'ar' ? 'حفظ' : 'Save' }}
           </VBtn>
         </VCardActions>
       </VCard>
@@ -572,39 +728,42 @@ onMounted(() => {
       persistent
     >
       <VCard>
-        <VCardTitle class="text-h6">تعديل المكتب</VCardTitle>
+        <VCardTitle class="text-h6">{{ locale === 'ar' ? 'تعديل المكتب' : 'Edit Office' }}</VCardTitle>
         <VCardText>
           <VForm @submit.prevent="updateOffice">
             <VRow>
               <VCol cols="12">
                 <VTextField
                   v-model="editOffice.name"
-                  label="اسم المكتب"
+                  :label="locale === 'ar' ? 'اسم المكتب' : 'Office Name'"
                   variant="outlined"
                   required
-                  :rules="[v => !!v || 'اسم المكتب مطلوب']"
+                  :error="validationState.errors.name && validationState.errors.name.length > 0 && validationState.touched.name"
+                  :error-messages="validationState.errors.name || []"
+                  @blur="setFieldTouched('name')"
                 />
               </VCol>
               <VCol cols="12">
                 <VTextField
                   v-model="editOffice.location"
-                  label="الموقع"
+                  :label="locale === 'ar' ? 'الموقع' : 'Location'"
                   variant="outlined"
                   required
-                  :rules="[v => !!v || 'الموقع مطلوب']"
+                  :error="validationState.errors.location && validationState.errors.location.length > 0 && validationState.touched.location"
+                  :error-messages="validationState.errors.location || []"
+                  @blur="setFieldTouched('location')"
                 />
               </VCol>
               <VCol cols="12">
                 <VTextField
                   v-model="editOffice.phoneNumber"
-                  label="رقم الهاتف"
+                  :label="locale === 'ar' ? 'رقم الهاتف' : 'Phone Number'"
                   variant="outlined"
                   required
-                  placeholder="091-1234567 أو 021-1234567"
-                  :rules="[
-                    v => !!v || 'رقم الهاتف مطلوب',
-                    v => /^(09[1-5]|02[1-9])-?\d{7}$/.test(v) || 'يجب أن يكون رقم الهاتف بتنسيق ليبي صحيح (مثال: 091-1234567)'
-                  ]"
+                  :placeholder="locale === 'ar' ? '091-1234567 أو 021-1234567' : '091-1234567 or 021-1234567'"
+                  :error="validationState.errors.phoneNumber && validationState.errors.phoneNumber.length > 0 && validationState.touched.phoneNumber"
+                  :error-messages="validationState.errors.phoneNumber || []"
+                  @blur="setFieldTouched('phoneNumber')"
                   prepend-inner-icon="mdi-phone"
                 />
               </VCol>
@@ -618,14 +777,15 @@ onMounted(() => {
             variant="text"
             @click="editDialog = false"
           >
-            إلغاء
+            {{ locale === 'ar' ? 'إلغاء' : 'Cancel' }}
           </VBtn>
           <VBtn
             color="primary"
             variant="flat"
+            :disabled="hasErrors"
             @click="updateOffice"
           >
-            تحديث
+            {{ locale === 'ar' ? 'تحديث' : 'Update' }}
           </VBtn>
         </VCardActions>
       </VCard>
@@ -637,11 +797,11 @@ onMounted(() => {
       max-width="400px"
     >
       <VCard>
-        <VCardTitle class="text-h6">تأكيد الحذف</VCardTitle>
+        <VCardTitle class="text-h6">{{ locale === 'ar' ? 'تأكيد الحذف' : 'Confirm Delete' }}</VCardTitle>
         <VCardText>
-          هل أنت متأكد من حذف المكتب "<strong>{{ selectedOffice?.name }}</strong>"؟
+          {{ locale === 'ar' ? `هل أنت متأكد من حذف المكتب "${selectedOffice?.name}"؟` : `Are you sure you want to delete the office "${selectedOffice?.name}"?` }}
           <br>
-          <span class="text-error">لا يمكن التراجع عن هذا الإجراء.</span>
+          <span class="text-error">{{ locale === 'ar' ? 'لا يمكن التراجع عن هذا الإجراء.' : 'This action cannot be undone.' }}</span>
         </VCardText>
         <VCardActions>
           <VSpacer />
@@ -650,14 +810,14 @@ onMounted(() => {
             variant="text"
             @click="deleteDialog = false"
           >
-            إلغاء
+            {{ locale === 'ar' ? 'إلغاء' : 'Cancel' }}
           </VBtn>
           <VBtn
             color="error"
             variant="flat"
             @click="deleteOffice"
           >
-            حذف
+            {{ locale === 'ar' ? 'حذف' : 'Delete' }}
           </VBtn>
         </VCardActions>
       </VCard>
