@@ -28,8 +28,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Cr
                     return Response.FailureResponse("User context is unavailable - Please log in again");
                 }
 
-                request.UserId = userId.Value.ToString();
-                var decision = new Decision(request);
+                var decision = new Decision(request, userId.Value.ToString());
 
                 await _unitOfWork.Decisions.AddAsync(decision, cancellationToken);
                 await _unitOfWork.CompleteAsync(cancellationToken);

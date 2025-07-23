@@ -1,31 +1,51 @@
-using MediatR;
 using SpecificSolutions.Endowment.Application.Abstractions.IRepositories;
+using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
+using SpecificSolutions.Endowment.Application.Abstractions.Contracts;
 using SpecificSolutions.Endowment.Application.Models.Global;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Update
 {
-    public class UpdateDecisionHandler : IRequestHandler<UpdateDecisionCommand, EndowmentResponse>
+    public class UpdateDecisionHandler : ICommandHandler<UpdateDecisionCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IUserContext _userContext;
 
-        public UpdateDecisionHandler(IUnitOfWork unitOfWork)
+        public UpdateDecisionHandler(IUnitOfWork unitOfWork, IUserContext userContext)
         {
             _unitOfWork = unitOfWork;
+            _userContext = userContext;
         }
 
-        public async Task<EndowmentResponse> Handle(UpdateDecisionCommand command, CancellationToken cancellationToken)
+        public async Task<EndowmentResponse> Handle(UpdateDecisionCommand request, CancellationToken cancellationToken)
         {
-            var decision = await _unitOfWork.Decisions.GetByIdAsync(command.Id, cancellationToken);
-            if (decision == null)
+            try
             {
-                return Response.FailureResponse("Id", "Decision not found.");
+                var decision = await _unitOfWork.Decisions.GetByIdAsync(request.Id, cancellationToken);
+                if (decision == null)
+                {
+                    return Response.FailureResponse("Id", "Decision not found.");
+                }
+
+                // Get UserId from JWT token via IUserContext (للتحقق من الصلاحيات)
+                var userId = _userContext.GetUserIdOrDefault();
+                if (!userId.HasValue)
+                {
+                    return Response.FailureResponse("User context is unavailable - Please log in again");
+                }
+
+                // يمكن إضافة تحقق من الصلاحيات هنا إذا لزم الأمر
+                // مثلاً: التحقق من أن المستخدم هو منشئ القرار أو لديه صلاحيات التحديث
+
+                decision.Update(request);
+
+                await _unitOfWork.CompleteAsync(cancellationToken);
+
+                return Response.Updated();
             }
-
-            decision.Update(command);
-
-            await _unitOfWork.CompleteAsync(cancellationToken);
-
-            return Response.Updated();
+            catch (Exception ex)
+            {
+                return Response.FailureResponse($"حدث خطأ أثناء تحديث القرار: {ex.Message}");
+            }
         }
     }
 }

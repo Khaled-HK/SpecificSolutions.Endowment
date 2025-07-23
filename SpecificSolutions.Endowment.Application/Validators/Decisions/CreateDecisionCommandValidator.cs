@@ -27,8 +27,8 @@ public class CreateDecisionCommandValidator : AbstractValidator<CreateDecisionCo
             .MaximumLength(50)
             .WithMessage("رقم المرجع يجب أن لا يتجاوز 50 حرف.");
 
-        RuleFor(x => x.UserId)
-            .NotEmpty()
-            .WithMessage("معرف المستخدم مطلوب.");
+        //RuleFor(x => x.UserId)
+        //    .NotEmpty()
+        //    .WithMessage("معرف المستخدم مطلوب.");
     }
 }

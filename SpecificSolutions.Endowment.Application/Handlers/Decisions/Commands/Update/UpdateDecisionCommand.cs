@@ -9,5 +9,6 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Up
         public string Title { get; set; }
         public string Description { get; set; }
         public string ReferenceNumber { get; set; }
+        // تم إزالة UserId لمنع انتحال الشخصية - سيتم تعيينه من JWT token
     }
 }

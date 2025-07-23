@@ -126,19 +126,60 @@ const loadDecisions = async () => {
 }
 
 const addDecision = async () => {
+  // التحقق من صحة البيانات قبل الإرسال
+  if (!newDecision.value.title || newDecision.value.title.trim() === '') {
+    alertMessage.value = 'عنوان القرار مطلوب.'
+    alertType.value = 'error'
+    showAlert.value = true
+    return
+  }
+
+  if (!newDecision.value.description || newDecision.value.description.trim() === '') {
+    alertMessage.value = 'وصف القرار مطلوب.'
+    alertType.value = 'error'
+    showAlert.value = true
+    return
+  }
+
+  if (!newDecision.value.referenceNumber || newDecision.value.referenceNumber.trim() === '') {
+    alertMessage.value = 'رقم المرجع مطلوب.'
+    alertType.value = 'error'
+    showAlert.value = true
+    return
+  }
+
   try {
+    const requestBody = {
+      title: newDecision.value.title.trim(),
+      description: newDecision.value.description.trim(),
+      referenceNumber: newDecision.value.referenceNumber.trim(),
+      createdDate: new Date().toISOString(), // إضافة تاريخ الإنشاء (اختياري)
+    }
+    
+    console.log('Sending decision data:', requestBody)
+    
     const response = await $api('/Decision', {
       method: 'POST',
-      body: {
-        title: newDecision.value.title,
-        description: newDecision.value.description,
-        referenceNumber: newDecision.value.referenceNumber,
-      },
+      body: requestBody,
     })
+    
+    console.log('Response received:', response)
     
     // Check if the response indicates success - response comes directly
     if (response && response.isSuccess === false) {
-      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء إضافة القرار'
+      // تحسين عرض الأخطاء
+      let errorMsg = 'حدث خطأ أثناء إضافة القرار'
+      
+      if (response.errors && response.errors.length > 0) {
+        // عرض جميع الأخطاء
+        const errorMessages = response.errors.map((error: any) => 
+          `${error.propertyName}: ${error.errorMessage}`
+        ).join('\n')
+        errorMsg = `الحقول المطلوبة:\n${errorMessages}`
+      } else if (response.message) {
+        errorMsg = response.message
+      }
+      
       alertMessage.value = errorMsg
       alertType.value = 'error'
       showAlert.value = true

@@ -18,14 +18,14 @@ namespace SpecificSolutions.Endowment.Core.Entities.Decisions
         //public AppUser AppUser { get; private set; }
         public ICollection<Request> Requests { get; private set; } = new List<Request>();
 
-        // Constructor for creating a new Decision
-        public Decision(ICreateDecisionCommand command)
+        // Constructor for creating a new Decision (آمن - UserId من JWT)
+        public Decision(ICreateDecisionCommand command, string userId)
         {
             Title = command.Title;
             Description = command.Description;
             CreatedDate = command.CreatedDate != default ? command.CreatedDate : DateTime.UtcNow;
             ReferenceNumber = command.ReferenceNumber;
-            UserId = command.UserId  
+            UserId = userId; // من JWT token (آمن)
         }
 
         // Method to add a request to the decision
@@ -34,13 +34,13 @@ namespace SpecificSolutions.Endowment.Core.Entities.Decisions
             Requests.Add(request);
         }
 
-        // Method to update the decision details
+        // Method to update the decision details (لا يتم تحديث UserId)
         public void Update(IUpdateDecisionCommand command)
         {
             Title = command.Title;
             Description = command.Description;
             ReferenceNumber = command.ReferenceNumber;
-            UserId = command.UserId  
+            // لا يتم تحديث UserId - يبقى كما هو لمنع انتحال الشخصية
         }
     }
 }
