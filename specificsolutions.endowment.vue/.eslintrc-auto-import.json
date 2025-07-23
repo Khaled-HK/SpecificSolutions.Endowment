@@ -366,6 +366,7 @@
     "handleApiCall": true,
     "isNetworkError": true,
     "isValidationError": true,
-    "processBackendErrors": true
+    "processBackendErrors": true,
+    "useFormValidation": true
   }
 }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
+import { useFormValidation } from '@/composables/useFormValidation'
 
 // Define interfaces for better type safety
 interface Decision {
@@ -56,6 +57,17 @@ const editDecision = ref<Decision>({
   referenceNumber: '',
   createdDate: '',
 })
+
+// استخدام نظام التحقق من النماذج
+const {
+  validationState,
+  setErrorsFromResponse,
+  clearErrors,
+  hasErrors,
+  setFieldTouched,
+  validateRequired,
+  validateLength,
+} = useFormValidation()
 
 // Using the ready-made template structure
 const options = ref({
@@ -126,25 +138,39 @@ const loadDecisions = async () => {
 }
 
 const addDecision = async () => {
+  // مسح الأخطاء السابقة
+  clearErrors()
+  
   // التحقق من صحة البيانات قبل الإرسال
-  if (!newDecision.value.title || newDecision.value.title.trim() === '') {
-    alertMessage.value = 'عنوان القرار مطلوب.'
-    alertType.value = 'error'
-    showAlert.value = true
-    return
+  let isValid = true
+  
+  // التحقق من عنوان القرار
+  if (!validateRequired(newDecision.value.title, 'title', 'عنوان القرار مطلوب')) {
+    isValid = false
+  } else if (!validateLength(newDecision.value.title, 'title', 1, 100, 'عنوان القرار يجب أن يكون بين 1 و 100 حرف')) {
+    isValid = false
   }
-
-  if (!newDecision.value.description || newDecision.value.description.trim() === '') {
-    alertMessage.value = 'وصف القرار مطلوب.'
-    alertType.value = 'error'
-    showAlert.value = true
-    return
+  
+  // التحقق من وصف القرار
+  if (!validateRequired(newDecision.value.description, 'description', 'وصف القرار مطلوب')) {
+    isValid = false
+  } else if (!validateLength(newDecision.value.description, 'description', 1, 500, 'وصف القرار يجب أن يكون بين 1 و 500 حرف')) {
+    isValid = false
   }
-
-  if (!newDecision.value.referenceNumber || newDecision.value.referenceNumber.trim() === '') {
-    alertMessage.value = 'رقم المرجع مطلوب.'
-    alertType.value = 'error'
-    showAlert.value = true
+  
+  // التحقق من رقم المرجع
+  if (!validateRequired(newDecision.value.referenceNumber, 'referenceNumber', 'رقم المرجع مطلوب')) {
+    isValid = false
+  } else if (!validateLength(newDecision.value.referenceNumber, 'referenceNumber', 1, 50, 'رقم المرجع يجب أن يكون بين 1 و 50 حرف')) {
+    isValid = false
+  }
+  
+  // تعيين جميع الحقول كملموسة لعرض الأخطاء
+  setFieldTouched('title')
+  setFieldTouched('description')
+  setFieldTouched('referenceNumber')
+  
+  if (!isValid) {
     return
   }
 
@@ -167,23 +193,20 @@ const addDecision = async () => {
     
     // Check if the response indicates success - response comes directly
     if (response && response.isSuccess === false) {
-      // تحسين عرض الأخطاء
-      let errorMsg = 'حدث خطأ أثناء إضافة القرار'
-      
+      // تطبيق أخطاء التحقق من الباك إند على الحقول
       if (response.errors && response.errors.length > 0) {
-        // عرض جميع الأخطاء
-        const errorMessages = response.errors.map((error: any) => 
-          `${error.propertyName}: ${error.errorMessage}`
-        ).join('\n')
-        errorMsg = `الحقول المطلوبة:\n${errorMessages}`
+        setErrorsFromResponse(response)
+        // تعيين جميع الحقول كملموسة لعرض الأخطاء
+        setFieldTouched('title')
+        setFieldTouched('description')
+        setFieldTouched('referenceNumber')
+        return
       } else if (response.message) {
-        errorMsg = response.message
+        alertMessage.value = response.message
+        alertType.value = 'error'
+        showAlert.value = true
+        return
       }
-      
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
-      return
     }
     
     dialog.value = false
@@ -281,6 +304,8 @@ const resetNewDecision = () => {
     description: '',
     referenceNumber: '',
   }
+  // مسح أخطاء التحقق
+  clearErrors()
 }
 
 const resetEditDecision = () => {
@@ -445,6 +470,9 @@ onMounted(() => {
                   v-model="newDecision.title"
                   label="عنوان القرار"
                   required
+                  :error="validationState.errors.title && validationState.errors.title.length > 0 && validationState.touched.title"
+                  :error-messages="validationState.errors.title || []"
+                  @blur="setFieldTouched('title')"
                 />
               </VCol>
               <VCol cols="12">
@@ -452,6 +480,9 @@ onMounted(() => {
                   v-model="newDecision.referenceNumber"
                   label="رقم المرجع"
                   required
+                  :error="validationState.errors.referenceNumber && validationState.errors.referenceNumber.length > 0 && validationState.touched.referenceNumber"
+                  :error-messages="validationState.errors.referenceNumber || []"
+                  @blur="setFieldTouched('referenceNumber')"
                 />
               </VCol>
               <VCol cols="12">
@@ -459,6 +490,9 @@ onMounted(() => {
                   v-model="newDecision.description"
                   label="الوصف"
                   rows="3"
+                  :error="validationState.errors.description && validationState.errors.description.length > 0 && validationState.touched.description"
+                  :error-messages="validationState.errors.description || []"
+                  @blur="setFieldTouched('description')"
                 />
               </VCol>
             </VRow>
@@ -502,6 +536,9 @@ onMounted(() => {
                   v-model="editDecision.title"
                   label="عنوان القرار"
                   required
+                  :error="validationState.errors.title && validationState.errors.title.length > 0 && validationState.touched.title"
+                  :error-messages="validationState.errors.title || []"
+                  @blur="setFieldTouched('title')"
                 />
               </VCol>
               <VCol cols="12">
@@ -509,6 +546,9 @@ onMounted(() => {
                   v-model="editDecision.referenceNumber"
                   label="رقم المرجع"
                   required
+                  :error="validationState.errors.referenceNumber && validationState.errors.referenceNumber.length > 0 && validationState.touched.referenceNumber"
+                  :error-messages="validationState.errors.referenceNumber || []"
+                  @blur="setFieldTouched('referenceNumber')"
                 />
               </VCol>
               <VCol cols="12">
@@ -516,6 +556,9 @@ onMounted(() => {
                   v-model="editDecision.description"
                   label="الوصف"
                   rows="3"
+                  :error="validationState.errors.description && validationState.errors.description.length > 0 && validationState.touched.description"
+                  :error-messages="validationState.errors.description || []"
+                  @blur="setFieldTouched('description')"
                 />
               </VCol>
             </VRow>

@@ -400,6 +400,7 @@ declare module 'vue' {
     UpgradeToPro: typeof import('./src/components/UpgradeToPro.vue')['default']
     UserInfoEditDialog: typeof import('./src/components/dialogs/UserInfoEditDialog.vue')['default']
     UserUpgradePlanDialog: typeof import('./src/components/dialogs/UserUpgradePlanDialog.vue')['default']
+    ValidatedTextField: typeof import('./src/components/ValidatedTextField.vue')['default']
     VueApexCharts: typeof import('vue3-apexcharts')['default']
     WelcomeItem: typeof import('./src/components/WelcomeItem.vue')['default']
   }

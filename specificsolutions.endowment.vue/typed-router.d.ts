@@ -55,6 +55,7 @@ declare module 'vue-router/auto-routes' {
     'apps-roles': RouteRecordInfo<'apps-roles', '/apps/roles', Record<never, never>, Record<never, never>>,
     'apps-user-list': RouteRecordInfo<'apps-user-list', '/apps/user/list', Record<never, never>, Record<never, never>>,
     'apps-user-view-id': RouteRecordInfo<'apps-user-view-id', '/apps/user/view/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
+    'apps-validation-example': RouteRecordInfo<'apps-validation-example', '/apps/validation-example', Record<never, never>, Record<never, never>>,
     'apps-email-filter': RouteRecordInfo<'apps-email-filter', '/apps/email/:filter', { filter: ParamValue<true> }, { filter: ParamValue<false> }>,
     'apps-email-label': RouteRecordInfo<'apps-email-label', '/apps/email/:label', { label: ParamValue<true> }, { label: ParamValue<false> }>,
     'card-basic': RouteRecordInfo<'card-basic', '/card-basic', Record<never, never>, Record<never, never>>,
