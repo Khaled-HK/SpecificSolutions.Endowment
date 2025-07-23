@@ -384,6 +384,34 @@ const resetEditDecision = () => {
   }
 }
 
+const deleteSelectedRows = async () => {
+  if (selectedRows.value.length === 0) return
+  
+  try {
+    const deletePromises = selectedRows.value.map(decision => 
+      $api(`/Decision/${decision.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Accept-Language': locale.value
+        }
+      })
+    )
+    
+    await Promise.all(deletePromises)
+    
+    selectedRows.value = []
+    await loadDecisions()
+    alertMessage.value = locale.value === 'ar' ? 'تم حذف القرارات المحددة بنجاح' : 'Selected decisions deleted successfully'
+    alertType.value = 'success'
+    showAlert.value = true
+  } catch (error) {
+    console.error('Error deleting selected decisions:', error)
+    alertMessage.value = locale.value === 'ar' ? 'حدث خطأ أثناء حذف القرارات المحددة' : 'Error deleting selected decisions'
+    alertType.value = 'error'
+    showAlert.value = true
+  }
+}
+
 // Watch for changes in options to reload data
 watch(options, () => {
   loadDecisions()
@@ -401,120 +429,160 @@ onMounted(() => {
 </script>
 
 <template>
-  <VCard>
-    <!-- Header -->
-    <VCardText class="d-flex align-center flex-wrap gap-4">
-      <div class="me-3">
-        <h4 class="text-h4">
-          {{ locale === 'ar' ? 'إدارة القرارات' : 'Decisions Management' }}
-        </h4>
-        <p class="mb-0">
-          {{ locale === 'ar' ? 'عرض وإدارة القرارات في النظام' : 'View and manage decisions in the system' }}
-        </p>
-      </div>
-      <VSpacer />
-      <VBtn
-        prepend-icon="tabler-plus"
-        @click="dialog = true"
-      >
-        {{ locale === 'ar' ? 'إضافة قرار جديد' : 'Add New Decision' }}
-      </VBtn>
-    </VCardText>
+  <!-- Alert for showing messages -->
+  <VAlert
+    v-if="showAlert"
+    :type="alertType as 'success' | 'info' | 'warning' | 'error'"
+    :title="alertType === 'error' ? 'خطأ' : alertType === 'success' ? 'نجح' : 'معلومات'"
+    closable
+    class="mb-4"
+  >
+    {{ alertMessage }}
+  </VAlert>
 
-    <!-- Search and Filters -->
+  <VCard>
+    <VCardTitle class="d-flex justify-space-between align-center pa-6">
+      <span class="text-h5">{{ locale === 'ar' ? 'إدارة القرارات' : 'Decisions Management' }}</span>
+      <div class="d-flex gap-2">
+        <VBtn
+          v-if="selectedRows.length > 0"
+          color="error"
+          variant="outlined"
+          @click="deleteSelectedRows"
+        >
+          {{ locale === 'ar' ? `حذف المحدد (${selectedRows.length})` : `Delete Selected (${selectedRows.length})` }}
+        </VBtn>
+        <VBtn
+          color="primary"
+          @click="() => { clearErrors(); dialog = true; }"
+        >
+          {{ locale === 'ar' ? 'إضافة قرار' : 'Add Decision' }}
+        </VBtn>
+      </div>
+    </VCardTitle>
+
     <VDivider />
 
     <VCardText>
+      <!-- Search Bar -->
       <VRow>
         <VCol
           cols="12"
-          sm="4"
+          offset-md="8"
+          md="4"
         >
           <VTextField
             v-model="search"
-            prepend-inner-icon="tabler-search"
-            :label="locale === 'ar' ? 'البحث في القرارات' : 'Search decisions'"
+            :placeholder="locale === 'ar' ? 'البحث في القرارات...' : 'Search decisions...'"
+            prepend-inner-icon="mdi-magnify"
             single-line
             hide-details
-            density="compact"
+            dense
+            outlined
           />
         </VCol>
       </VRow>
-    </VCardText>
 
-    <!-- Data Table -->
-    <VDataTable
-      v-model="selectedRows"
-      :headers="headers"
-      :items="decisions"
-      :loading="loading"
-      :items-per-page="options.itemsPerPage"
-      :page="options.page"
-      :total="totalItems"
-      class="text-no-wrap"
-      @update:options="options = $event"
-    >
-      <!-- Title Column -->
-      <template #item.title="{ item }">
-        <div class="d-flex align-center">
-          <VAvatar
-            size="32"
-            color="primary"
-            variant="tonal"
-          >
-            {{ item.title.charAt(0).toUpperCase() }}
-          </VAvatar>
-          <div class="d-flex flex-column ms-3">
-            <span class="d-block font-weight-medium text-truncate text-high-emphasis">{{ item.title }}</span>
-          </div>
-        </div>
-      </template>
+      <!-- Data Table -->
+      <VDataTable
+        :headers="headers"
+        :items="decisions"
+        :loading="loading"
+        :items-per-page="options.itemsPerPage"
+        :page="options.page"
+        :options="options"
+        class="text-no-wrap"
+        show-select
+        v-model="selectedRows"
+      >
+             <!-- Title Column -->
+       <template #item.title="{ item }">
+         <div class="d-flex align-center">
+           <VAvatar
+             size="32"
+             color="primary"
+             variant="tonal"
+           >
+             {{ item.title.charAt(0).toUpperCase() }}
+           </VAvatar>
+           <div class="d-flex flex-column ms-3">
+             <span class="d-block font-weight-medium text-truncate text-high-emphasis">{{ item.title }}</span>
+             <small class="text-medium-emphasis">{{ item.description || (locale === 'ar' ? 'لا يوجد وصف' : 'No description') }}</small>
+           </div>
+         </div>
+       </template>
 
-      <!-- Reference Number Column -->
-      <template #item.referenceNumber="{ item }">
-        <VChip
-          :color="item.referenceNumber ? 'success' : 'warning'"
-          size="small"
-        >
-          {{ item.referenceNumber || (locale === 'ar' ? 'لا يوجد رقم مرجعي' : 'No reference number') }}
-        </VChip>
-      </template>
+       <!-- Reference Number Column -->
+       <template #item.referenceNumber="{ item }">
+         <VChip
+           v-if="item.referenceNumber"
+           color="success"
+           variant="tonal"
+           size="small"
+         >
+           {{ item.referenceNumber }}
+         </VChip>
+         <span 
+           v-else 
+           class="text-medium-emphasis"
+         >
+           {{ locale === 'ar' ? 'لا يوجد رقم مرجعي' : 'No reference number' }}
+         </span>
+       </template>
 
-      <!-- Description Column -->
-      <template #item.description="{ item }">
-        <span class="text-medium-emphasis">
-          {{ item.description || (locale === 'ar' ? 'لا يوجد وصف' : 'No description') }}
-        </span>
-      </template>
+       <!-- Description Column -->
+       <template #item.description="{ item }">
+         <span class="text-medium-emphasis">
+           {{ item.description || (locale === 'ar' ? 'لا يوجد وصف' : 'No description') }}
+         </span>
+       </template>
 
-      <!-- Created Date Column -->
-      <template #item.createdDate="{ item }">
-        <VChip
-          color="info"
-          size="small"
-        >
-          {{ new Date(item.createdDate).toLocaleDateString(locale === 'ar' ? 'ar-SA' : 'en-US') }}
-        </VChip>
-      </template>
+       <!-- Created Date Column -->
+       <template #item.createdDate="{ item }">
+         <VChip
+           color="info"
+           variant="tonal"
+           size="small"
+         >
+           {{ new Date(item.createdDate).toLocaleDateString(locale === 'ar' ? 'ar-SA' : 'en-US') }}
+         </VChip>
+       </template>
 
-      <!-- Actions Column -->
-      <template #item.actions="{ item }">
-        <VBtn
-          icon="tabler-edit"
-          variant="text"
-          size="small"
-          color="primary"
-          @click="openEditDialog(item)"
-        />
-        <VBtn
-          icon="tabler-trash"
-          variant="text"
-          size="small"
-          color="error"
-          @click="openDeleteDialog(item)"
-        />
-      </template>
-    </VDataTable>
+       <!-- Actions Column -->
+       <template #item.actions="{ item }">
+         <div class="d-flex gap-1">
+           <IconBtn @click="openEditDialog(item)">
+             <VIcon icon="tabler-edit" />
+           </IconBtn>
+           <IconBtn @click="openDeleteDialog(item)">
+             <VIcon icon="tabler-trash" />
+           </IconBtn>
+         </div>
+       </template>
+
+       <!-- External pagination -->
+       <template #bottom>
+         <VCardText class="pt-2">
+           <div class="d-flex flex-wrap justify-center justify-sm-space-between gap-y-2 mt-2">
+             <VSelect
+               v-model="options.itemsPerPage"
+               :items="[5, 10, 25, 50, 100]"
+               :label="locale === 'ar' ? 'عناصر في الصفحة:' : 'Items per page:'"
+               variant="underlined"
+               style="max-inline-size: 8rem;min-inline-size: 5rem;"
+             />
+
+             <VPagination
+               v-model="options.page"
+               :total-visible="$vuetify.display.smAndDown ? 3 : 5"
+               :length="Math.ceil(totalItems / options.itemsPerPage)"
+             />
+           </div>
+         </VCardText>
+       </template>
+     </VDataTable>
+   </VCardText>
+ </VCard>
 
     <!-- Add Decision Dialog -->
     <VDialog
@@ -682,14 +750,4 @@ onMounted(() => {
         </VCardActions>
       </VCard>
     </VDialog>
-
-    <!-- Alert -->
-    <VSnackbar
-      v-model="showAlert"
-      :color="alertType"
-      :timeout="3000"
-    >
-      {{ alertMessage }}
-    </VSnackbar>
-  </VCard>
 </template> 
