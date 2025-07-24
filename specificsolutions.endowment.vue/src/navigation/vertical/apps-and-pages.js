@@ -1,7 +1,7 @@
 export default [
   { heading: 'Apps & Pages' },
   {
-    title: 'Endowment Management',
+    title: 'endowmentManagement',
     icon: { icon: 'tabler-building-mosque' },
     children: [
       {

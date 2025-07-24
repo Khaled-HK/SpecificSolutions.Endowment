@@ -265,5 +265,7 @@
         "item": "item"
       }
     }
-  }
+  },
+  "endowmentManagement": "Endowment Management",
+  "systemTitle": "Endowment System"
 }
