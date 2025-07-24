@@ -12,6 +12,8 @@ using SpecificSolutions.Endowment.Application.Handlers.Mosques.Commands.Create;
 using SpecificSolutions.Endowment.Application.Handlers.Mosques.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.Offices.Commands.Create;
 using SpecificSolutions.Endowment.Application.Handlers.Offices.Commands.Update;
+using SpecificSolutions.Endowment.Application.Handlers.Cities.Commands.Create;
+using SpecificSolutions.Endowment.Application.Handlers.Cities.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.Regions.Commands.Create;
 using SpecificSolutions.Endowment.Application.Handlers.Regions.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Create;
@@ -24,6 +26,7 @@ using SpecificSolutions.Endowment.Application.Validators.Buildings;
 using SpecificSolutions.Endowment.Application.Validators.Decisions;
 using SpecificSolutions.Endowment.Application.Validators.Mosques;
 using SpecificSolutions.Endowment.Application.Validators.Offices;
+using SpecificSolutions.Endowment.Application.Validators.Cities;
 using SpecificSolutions.Endowment.Application.Validators.Regions;
 using SpecificSolutions.Endowment.Application.Validators.Requests;
 using SpecificSolutions.Endowment.Application.Validators.Accounts;
@@ -45,6 +48,10 @@ namespace SpecificSolutions.Endowment.Application.Validators
             // Decision Validators
             services.AddTransient<IValidator<CreateDecisionCommand>, CreateDecisionCommandValidator>();
             services.AddTransient<IValidator<UpdateDecisionCommand>, UpdateDecisionCommandValidator>();
+
+            // City Validators
+            services.AddTransient<IValidator<CreateCityCommand>, CreateCityCommandValidator>();
+            services.AddTransient<IValidator<UpdateCityCommand>, UpdateCityCommandValidator>();
 
             // Region Validators
             services.AddTransient<IValidator<CreateRegionCommand>, CreateRegionCommandValidator>();

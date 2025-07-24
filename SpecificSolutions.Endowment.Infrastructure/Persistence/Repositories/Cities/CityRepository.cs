@@ -28,13 +28,13 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Ci
         public async Task AddAsync(City city, CancellationToken cancellationToken)
         {
             await _context.Cities.AddAsync(city, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
+            // Remove SaveChangesAsync here as it should be handled by UnitOfWork
         }
 
         public async Task UpdateAsync(City city)
         {
             _context.Cities.Update(city);
-            await _context.SaveChangesAsync();
+            // Remove SaveChangesAsync here as it should be handled by UnitOfWork
         }
 
         public async Task DeleteAsync(Guid id)
@@ -43,7 +43,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Ci
             if (city != null)
             {
                 _context.Cities.Remove(city);
-                await _context.SaveChangesAsync();
+                // Remove SaveChangesAsync here as it should be handled by UnitOfWork
             }
         }
 

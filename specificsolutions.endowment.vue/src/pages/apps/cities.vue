@@ -7,16 +7,12 @@ import { useI18n } from 'vue-i18n'
 interface City {
   id: number
   name: string
-  description: string
-  regionId?: string
-  regionName?: string
   country?: string
 }
 
 interface NewCity {
   name: string
-  regionId: string
-  description: string
+  country: string
 }
 
 definePage({
@@ -48,15 +44,13 @@ const {
 } = useFormValidation()
 
 const cities = ref<City[]>([])
-const regions = ref<any[]>([])
 const loading = ref(false)
-const regionsLoading = ref(false)
 const totalItems = ref(0)
 
 // Simple alert state
 const showAlert = ref(false)
 const alertMessage = ref('')
-const alertType = ref('success')
+const alertType = ref<'success' | 'error' | 'warning' | 'info'>('success')
 
 const dialog = ref(false)
 const editDialog = ref(false)
@@ -67,15 +61,13 @@ const search = ref('')
 
 const newCity = reactive<NewCity>({
   name: '',
-  regionId: '',
-  description: '',
+  country: '',
 })
 
 const editCity = reactive<City>({
   id: 0,
   name: '',
-  description: '',
-  regionId: '',
+  country: '',
 })
 
 // Using the ready-made template structure
@@ -91,10 +83,6 @@ const headers = computed(() => [
   {
     title: t('tableHeaders.cities.name'),
     key: 'name',
-  },
-  {
-    title: t('tableHeaders.cities.regionName'),
-    key: 'regionName',
   },
   {
     title: t('tableHeaders.cities.country'),
@@ -142,21 +130,6 @@ const loadCities = async () => {
   }
 }
 
-const loadRegions = async () => {
-  regionsLoading.value = true
-  try {
-    const response = await $api('/Region/filter?PageSize=100')
-    regions.value = response.data.items || []
-  } catch (error) {
-    console.error('Error loading regions:', error)
-    alertMessage.value = 'حدث خطأ أثناء تحميل المناطق'
-    alertType.value = 'error'
-    showAlert.value = true
-  } finally {
-    regionsLoading.value = false
-  }
-}
-
 const addCity = async () => {
   // Clear previous errors
   clearErrors()
@@ -168,7 +141,7 @@ const addCity = async () => {
     isValid = false
   }
   
-  if (!validateRequired(newCity.regionId, 'regionId', 'المنطقة مطلوبة')) {
+  if (!validateRequired(newCity.country, 'country', 'الدولة مطلوبة')) {
     isValid = false
   }
   
@@ -181,8 +154,7 @@ const addCity = async () => {
       method: 'POST',
       body: {
         name: newCity.name,
-        regionId: newCity.regionId,
-        description: newCity.description,
+        country: newCity.country,
       },
     })
     
@@ -225,7 +197,7 @@ const updateCity = async () => {
     isValid = false
   }
   
-  if (!validateRequired(editCity.regionId, 'editRegionId', 'المنطقة مطلوبة')) {
+  if (!validateRequired(editCity.country, 'editCountry', 'الدولة مطلوبة')) {
     isValid = false
   }
   
@@ -239,8 +211,7 @@ const updateCity = async () => {
       body: {
         id: editCity.id,
         name: editCity.name,
-        regionId: editCity.regionId,
-        description: editCity.description,
+        country: editCity.country,
       },
     })
     
@@ -321,12 +292,12 @@ const deleteSelectedRows = async () => {
     const responses = await Promise.all(deletePromises)
     
     // Check if any operation failed - response comes directly
-    const failedOperations = responses.filter((response) => 
+    const failedOperations = responses.filter((response: any) => 
       response && response.isSuccess === false
     )
     
     if (failedOperations.length > 0) {
-      const errorMessages = failedOperations.map((response) => 
+      const errorMessages = failedOperations.map((response: any) => 
         response?.message || response?.errors?.[0]?.errorMessage || 'حدث خطأ أثناء العملية'
       )
       const errorMsg = `فشل في حذف ${failedOperations.length} عنصر: ${errorMessages.join(', ')}`
@@ -355,8 +326,7 @@ const openEditDialog = (city: City) => {
   clearErrors() // Clear previous validation errors
   editCity.id = city.id // Ensure id is set for update
   editCity.name = city.name
-  editCity.description = city.description
-  editCity.regionId = city.regionId || ''
+  editCity.country = city.country || ''
   editDialog.value = true
 }
 
@@ -368,8 +338,7 @@ const openDeleteDialog = (city: City) => {
 
 const resetNewCity = () => {
   newCity.name = ''
-  newCity.regionId = ''
-  newCity.description = ''
+  newCity.country = ''
   clearErrors() // Clear validation errors
 }
 
@@ -386,7 +355,6 @@ watch([() => options.value.page, () => options.value.itemsPerPage], () => {
 
 onMounted(() => {
   loadCities()
-  loadRegions()
 })
 </script>
 
@@ -470,27 +438,8 @@ onMounted(() => {
               </VAvatar>
               <div class="d-flex flex-column ms-3">
                 <span class="d-block font-weight-medium text-truncate text-high-emphasis">{{ item.name }}</span>
-                <small class="text-medium-emphasis">{{ item.description || 'لا يوجد وصف' }}</small>
               </div>
             </div>
-          </template>
-
-          <!-- Region using ready-made template -->
-          <template #item.regionName="{ item }">
-            <VChip
-              v-if="item.regionName"
-              color="secondary"
-              variant="tonal"
-              size="small"
-            >
-              {{ item.regionName }}
-            </VChip>
-            <span 
-              v-else 
-              class="text-medium-emphasis"
-            >
-              لا توجد منطقة
-            </span>
           </template>
 
           <!-- Country using ready-made template -->
@@ -570,35 +519,14 @@ onMounted(() => {
                 />
               </VCol>
               <VCol cols="12">
-                <VAutocomplete
-                  v-model="newCity.regionId"
-                  label="المنطقة"
+                <VTextField
+                  v-model="newCity.country"
+                  label="الدولة"
                   variant="outlined"
-                  :items="regions"
-                  item-title="name"
-                  item-value="id"
-                  :loading="regionsLoading"
-                  clearable
-                  no-data-text="لا توجد مناطق متاحة"
                   required
-                  prepend-inner-icon="mdi-map-marker"
-                  placeholder="اختر المنطقة..."
-                  hide-no-data
-                  :error="shouldShowFieldError('regionId')"
-                  :error-messages="getFieldErrors('regionId')"
-                  @blur="setFieldTouched('regionId')"
-                />
-              </VCol>
-              <VCol cols="12">
-                <VTextarea
-                  v-model="newCity.description"
-                  label="الوصف"
-                  variant="outlined"
-                  rows="3"
-                  placeholder="أدخل وصف المدينة..."
-                  :error="shouldShowFieldError('description')"
-                  :error-messages="getFieldErrors('description')"
-                  @blur="setFieldTouched('description')"
+                  :error="shouldShowFieldError('country')"
+                  :error-messages="getFieldErrors('country')"
+                  @blur="setFieldTouched('country')"
                 />
               </VCol>
             </VRow>
@@ -648,35 +576,14 @@ onMounted(() => {
                 />
               </VCol>
               <VCol cols="12">
-                <VAutocomplete
-                  v-model="editCity.regionId"
-                  label="المنطقة"
+                <VTextField
+                  v-model="editCity.country"
+                  label="الدولة"
                   variant="outlined"
-                  :items="regions"
-                  item-title="name"
-                  item-value="id"
-                  :loading="regionsLoading"
-                  clearable
-                  no-data-text="لا توجد مناطق متاحة"
                   required
-                  prepend-inner-icon="mdi-map-marker"
-                  placeholder="اختر المنطقة..."
-                  hide-no-data
-                  :error="shouldShowFieldError('editRegionId')"
-                  :error-messages="getFieldErrors('editRegionId')"
-                  @blur="setFieldTouched('editRegionId')"
-                />
-              </VCol>
-              <VCol cols="12">
-                <VTextarea
-                  v-model="editCity.description"
-                  label="الوصف"
-                  variant="outlined"
-                  rows="3"
-                  placeholder="أدخل وصف المدينة..."
-                  :error="shouldShowFieldError('editDescription')"
-                  :error-messages="getFieldErrors('editDescription')"
-                  @blur="setFieldTouched('editDescription')"
+                  :error="shouldShowFieldError('editCountry')"
+                  :error-messages="getFieldErrors('editCountry')"
+                  @blur="setFieldTouched('editCountry')"
                 />
               </VCol>
             </VRow>
