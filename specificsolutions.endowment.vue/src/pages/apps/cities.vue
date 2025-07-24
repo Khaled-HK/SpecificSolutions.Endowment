@@ -544,7 +544,6 @@ onMounted(() => {
           <VBtn
             color="primary"
             variant="flat"
-            :disabled="hasErrors"
             @click="addCity"
           >
             حفظ
@@ -601,7 +600,6 @@ onMounted(() => {
           <VBtn
             color="primary"
             variant="flat"
-            :disabled="hasErrors"
             @click="updateCity"
           >
             تحديث
