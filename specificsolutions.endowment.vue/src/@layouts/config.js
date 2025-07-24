@@ -3,7 +3,7 @@ import { AppContentLayoutNav, ContentWidth, FooterType, HorizontalNavType, Navba
 
 export const layoutConfig = {
   app: {
-    title: 'my-layout',
+    title: 'نظام الأوقاف',
     logo: h('img', { src: '/src/assets/logo.svg' }),
     contentWidth: ContentWidth.Boxed,
     contentLayoutNav: AppContentLayoutNav.Vertical,

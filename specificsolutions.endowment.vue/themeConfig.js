@@ -3,13 +3,17 @@ import { VIcon } from 'vuetify/components/VIcon'
 import { defineThemeConfig } from '@core'
 import { Skins } from '@core/enums'
 
-// ❗ Logo SVG must be imported with ?raw suffix
+// ❗ يمكن استخدام صورة PNG أو SVG
+// لاستخدام PNG، ضع الصورة في public/logo.png وأزل التعليق من السطر التالي:
+// import logoImage from '/logo.png'
 import logo from '@images/logo.svg?raw'
 import { AppContentLayoutNav, ContentWidth, FooterType, NavbarType } from '@layouts/enums'
 
 export const { themeConfig, layoutConfig } = defineThemeConfig({
   app: {
-    title: 'vuexy',
+    title: 'نظام الأوقاف',
+    // لاستخدام صورة PNG، استبدل السطر التالي بـ:
+    // logo: h('img', { src: '/logo.png', style: 'height: 30px; width: auto;' }),
     logo: h('div', { innerHTML: logo, style: 'line-height:0; color: rgb(var(--v-global-theme-primary))' }),
     contentWidth: ContentWidth.Boxed,
     contentLayoutNav: AppContentLayoutNav.Vertical,
