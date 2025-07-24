@@ -35,7 +35,7 @@ export default [
       {
         title: 'Offices',
         to: 'apps-offices',
-        icon: { icon: 'tabler-building-office' },
+        icon: { icon: 'tabler-building-community' },
         action: 'View',
         subject: 'Office',
       },
