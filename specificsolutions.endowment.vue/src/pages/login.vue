@@ -220,10 +220,10 @@ function mapPermissionToSubject(permission) {
       >
         <VCardText>
           <h4 class="text-h4 mb-1">
-            Welcome to <span class="text-capitalize"> {{ themeConfig.app.title }} </span>! 👋🏻
+            مرحباً بك في <span class="text-capitalize"> {{ themeConfig.app.title }} </span>! 👋🏻
           </h4>
           <p class="mb-0">
-            Please sign-in to your account and start the adventure
+            يرجى تسجيل الدخول إلى حسابك وابدأ المغامرة
           </p>
         </VCardText>
         <VCardText>
@@ -232,10 +232,10 @@ function mapPermissionToSubject(permission) {
             variant="tonal"
           >
             <p class="text-sm mb-2">
-              Admin Email: <strong>admin@demo.com</strong> / Pass: <strong>admin</strong>
+              بريد المدير: <strong>admin@demo.com</strong> / كلمة المرور: <strong>admin</strong>
             </p>
             <p class="text-sm mb-0">
-              Client Email: <strong>client@demo.com</strong> / Pass: <strong>client</strong>
+              بريد العميل: <strong>client@demo.com</strong> / كلمة المرور: <strong>client</strong>
             </p>
           </VAlert>
         </VCardText>
@@ -277,13 +277,13 @@ function mapPermissionToSubject(permission) {
                 <div class="d-flex align-center flex-wrap justify-space-between my-6">
                   <VCheckbox
                     v-model="rememberMe"
-                    label="Remember me"
+                    label="تذكرني"
                   />
                   <RouterLink
                     class="text-primary ms-2 mb-1"
                     :to="{ name: 'forgot-password' }"
                   >
-                    Forgot Password?
+                    نسيت كلمة المرور؟
                   </RouterLink>
                 </div>
 
@@ -301,12 +301,12 @@ function mapPermissionToSubject(permission) {
                 cols="12"
                 class="text-center"
               >
-                <span>New on our platform?</span>
+                <span>جديد على منصتنا؟</span>
                 <RouterLink
                   class="text-primary ms-1"
                   :to="{ name: 'register' }"
                 >
-                  Create an account
+                  إنشاء حساب
                 </RouterLink>
               </VCol>
               <VCol
@@ -314,7 +314,7 @@ function mapPermissionToSubject(permission) {
                 class="d-flex align-center"
               >
                 <VDivider />
-                <span class="mx-4">or</span>
+                <span class="mx-4">أو</span>
                 <VDivider />
               </VCol>
 
