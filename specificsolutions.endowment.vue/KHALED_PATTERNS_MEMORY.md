@@ -315,6 +315,81 @@ public class DecisionValidator : AbstractValidator<DecisionDto>
 - استخدام ملفات ترجمة منفصلة
 - توحيد أنماط الكود
 
+## حل مشاكل التحقق من صحة البيانات
+
+### مشكلة: زر "حفظ" معطل حتى بعد ملء الحقول
+**السبب**: عدم تعيين الحقول كملموسة (`touched`) قبل التحقق من صحة البيانات.
+
+**الحل**:
+```typescript
+const addCity = async () => {
+  // Clear previous errors
+  clearErrors()
+  
+  // Set fields as touched first - مهم جداً!
+  setFieldTouched('name')
+  setFieldTouched('country')
+  
+  // Validate required fields
+  let isValid = true
+  
+  if (!validateRequired(newCity.name, 'name', 'اسم المدينة مطلوب')) {
+    isValid = false
+  }
+  
+  if (!validateRequired(newCity.country, 'country', 'الدولة مطلوبة')) {
+    isValid = false
+  }
+  
+  // Check if there are any validation errors
+  if (!isValid) {
+    return
+  }
+  
+  // ... باقي الكود
+}
+```
+
+**النقاط المهمة**:
+1. **ترتيب العمليات مهم**: `setFieldTouched` يجب أن يكون قبل `validateRequired`
+2. **استخدام `!isValid` بدلاً من `hasErrors.value`**: للاعتماد على متغير التحقق المحلي
+3. **مسح الأخطاء في البداية**: `clearErrors()` لضمان حالة نظيفة
+
+### تطبيق نفس الحل على دالة التحديث
+```typescript
+const updateCity = async () => {
+  // Clear previous errors
+  clearErrors()
+  
+  // Set fields as touched first
+  setFieldTouched('editName')
+  setFieldTouched('editCountry')
+  
+  // Validate required fields
+  let isValid = true
+  
+  if (!validateRequired(editCity.name, 'editName', 'اسم المدينة مطلوب')) {
+    isValid = false
+  }
+  
+  if (!validateRequired(editCity.country, 'editCountry', 'الدولة مطلوبة')) {
+    isValid = false
+  }
+  
+  // Check if there are any validation errors
+  if (!isValid) {
+    return
+  }
+  
+  // ... باقي الكود
+}
+```
+
+### النتيجة المتوقعة
+- **الحقول فارغة**: رسائل خطأ تظهر وزر "حفظ" معطل
+- **الحقول تحتوي على بيانات صحيحة**: رسائل الخطأ تختفي وزر "حفظ" متاح
+- **تجربة مستخدم سلسة**: التحقق يعمل بشكل فوري عند ملء الحقول
+
 ## الصفحات المتبقية للتطبيق
 - [ ] المباني (buildings.vue)
 - [ ] الطلبات (requests.vue)

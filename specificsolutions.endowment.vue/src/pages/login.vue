@@ -308,19 +308,7 @@ function mapPermissionToSubject(permission) {
             {{ t('signInMessage') }}
           </p>
         </VCardText>
-        <VCardText>
-          <VAlert
-            color="primary"
-            variant="tonal"
-          >
-            <p class="text-sm mb-2">
-              {{ t('adminEmail') }}: <strong>admin@demo.com</strong> / {{ t('password') }}: <strong>admin</strong>
-            </p>
-            <p class="text-sm mb-0">
-              {{ t('clientEmail') }}: <strong>client@demo.com</strong> / {{ t('password') }}: <strong>client</strong>
-            </p>
-          </VAlert>
-        </VCardText>
+   
         <VCardText>
           <VForm
             ref="refVForm"
