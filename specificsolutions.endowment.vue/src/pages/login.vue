@@ -155,9 +155,32 @@ const login = async () => {
     rules.push(
       { action: 'read', subject: 'Auth' },
       { action: 'write', subject: 'Auth' },
-      { action: 'delete', subject: 'Auth' },
-      { action: 'View', subject: 'Dashboard' } // Allow all users to access dashboard
-    )
+      { action: 'delete', subject: 'Auth' }
+     )
+
+    // Add Dashboard permissions (required for email and other dashboard pages)
+    rules.push(
+      { action: 'View', subject: 'Dashboard' },
+      { action: 'read', subject: 'Dashboard' },
+      { action: 'write', subject: 'Dashboard' }
+     )
+
+    // Add permissions for all main entities (required for app pages)
+    rules.push(
+      { action: 'View', subject: 'Mosque' },
+      { action: 'View', subject: 'City' },
+      { action: 'View', subject: 'Region' },
+      { action: 'View', subject: 'Office' },
+      { action: 'View', subject: 'Building' },
+      { action: 'View', subject: 'Product' },
+      { action: 'View', subject: 'Decision' },
+      { action: 'View', subject: 'Account' },
+      { action: 'View', subject: 'User' },
+      { action: 'View', subject: 'Role' },
+      { action: 'View', subject: 'Request' },
+      { action: 'View', subject: 'Endowment' }
+     )
+  
 
     // Convert specific permissions from backend
     user.permissions.forEach(permission => {
@@ -174,7 +197,7 @@ const login = async () => {
     console.log('User permissions من Backend:', user.permissions)
 
     // حفظ قواعد الصلاحيات في الكوكيز لاستعادتها بعد إعادة التحميل
-    useCookie('userAbilityRules').value = rules
+    useCookie('user-ability-rules').value = rules
     ability.update(rules)
 
     const target = route.query.to ? String(route.query.to) : '/dashboard'

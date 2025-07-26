@@ -1,3 +1,5 @@
+import { createMongoAbility } from '@casl/ability'
+
 export const setupGuards = router => {
   // دالة لفك تشفير JWT Token محلياً
   const decodeJWT = (token) => {
@@ -37,6 +39,38 @@ export const setupGuards = router => {
       return true
     } catch (error) {
       console.warn('Local token validation failed:', error)
+      return false
+    }
+  }
+
+  // دالة للتحقق من الصلاحيات باستخدام CASL
+  const checkPermissions = (to) => {
+    try {
+      // إذا لم تكن هناك صلاحيات محددة في meta، اسمح بالوصول
+      if (!to.meta.action || !to.meta.subject) {
+        return true
+      }
+
+          // الحصول على قواعد الصلاحيات من الكوكيز
+    const userAbilityRules = useCookie('user-ability-rules').value
+      if (!userAbilityRules || !Array.isArray(userAbilityRules)) {
+        console.warn('No ability rules found')
+        return false
+      }
+
+      // إنشاء ability مؤقت للتحقق
+      const ability = createMongoAbility(userAbilityRules)
+
+      // التحقق من الصلاحية
+      const canAccess = ability.can(to.meta.action, to.meta.subject)
+      
+      if (!canAccess) {
+        console.warn(`Access denied: ${to.meta.action} on ${to.meta.subject}`)
+      }
+      
+      return canAccess
+    } catch (error) {
+      console.error('Permission check error:', error)
       return false
     }
   }
@@ -108,7 +142,17 @@ export const setupGuards = router => {
         return
       }
 
-      // User is logged in and token is valid, allow access
+      // التحقق من الصلاحيات
+      const hasPermission = checkPermissions(to)
+      if (!hasPermission) {
+        console.warn('Permission denied, redirecting to not-authorized...')
+        next({
+          name: 'not-authorized',
+        })
+        return
+      }
+
+      // User is logged in, token is valid, and has permissions, allow access
       next()
     } catch (error) {
       console.error('Navigation guard error:', error)

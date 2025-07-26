@@ -1,4 +1,11 @@
 <script setup>
+definePage({
+  meta: {
+    action: 'View',
+    subject: 'Dashboard',
+  },
+})
+
 import paperImg from '@images/svg/paper-send.svg?raw'
 import rocketImg from '@images/svg/rocket.svg?raw'
 import userInfoImg from '@images/svg/user-info.svg?raw'

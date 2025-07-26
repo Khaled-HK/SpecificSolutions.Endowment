@@ -28,12 +28,9 @@ export const useApi = createFetch({
       }
 
       // Add Accept-Language header based on current locale
-      const { locale } = useI18n()
-      const languageMap: Record<string, string> = {
-        'ar': 'ar-LY',
-        'en': 'en-US'
-      }
-      const currentLanguage = languageMap[locale.value] || 'ar-LY'
+      // Get language from localStorage or default to Arabic
+      const savedLanguage = typeof window !== 'undefined' ? localStorage.getItem('preferredLanguage') : null
+      const currentLanguage = savedLanguage === 'en' ? 'en-US' : 'ar-LY'
       
       options.headers = {
         ...options.headers,
@@ -46,16 +43,21 @@ export const useApi = createFetch({
       const { data, response } = ctx
 
       // Parse data if it's JSON
-
       let parsedData = null
       try {
         parsedData = destr(data)
       }
       catch (error) {
-        console.error(error)
+        console.error('Error parsing response data:', error)
+        // Return original data if parsing fails
+        parsedData = data
       }
 
       return { data: parsedData, response }
+    },
+    onFetchError(ctx) {
+      console.error('Fetch error:', ctx.error)
+      return ctx
     },
   },
 }) 
