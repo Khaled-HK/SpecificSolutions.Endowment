@@ -275,8 +275,8 @@ function mapPermissionToSubject(permission) {
         >
           <VImg
             max-width="613"
-            :src="authThemeImg"
-            class="auth-illustration mt-16 mb-2"
+            src="/Mosque.png"
+            class="auth-illustration mt-0 mb-2"
           />
         </div>
 
