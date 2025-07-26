@@ -197,8 +197,18 @@ const login = async () => {
     console.log('User permissions من Backend:', user.permissions)
 
     // حفظ قواعد الصلاحيات في الكوكيز لاستعادتها بعد إعادة التحميل
-    useCookie('user-ability-rules').value = rules
+    const abilityRulesCookie = useCookie('user-ability-rules', {
+      default: () => [],
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/',
+      secure: true,
+      sameSite: 'strict'
+    })
+    abilityRulesCookie.value = rules
+    console.log('🍪 Saved ability rules to cookie:', abilityRulesCookie.value)
+    
     ability.update(rules)
+    console.log('✅ Updated CASL ability with rules')
 
     const target = route.query.to ? String(route.query.to) : '/dashboard'
     console.log('Navigating to:', target)
