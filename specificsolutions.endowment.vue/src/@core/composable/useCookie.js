@@ -10,12 +10,24 @@ const CookieDefaults = {
 }
 
 export const useCookie = (name, _opts) => {
+  // Validate cookie name
+  if (!name || typeof name !== 'string') {
+    console.error('useCookie: Invalid cookie name provided:', name)
+    return ref(null)
+  }
+  
+  // Sanitize cookie name to ensure it's valid for cookies
+  const sanitizedName = name.replace(/[^a-zA-Z0-9_-]/g, '_')
+  if (sanitizedName !== name) {
+    console.warn(`useCookie: Cookie name "${name}" was sanitized to "${sanitizedName}"`)
+  }
+  
   const opts = { ...CookieDefaults, ..._opts || {} }
   const cookies = parse(document.cookie, opts)
-  const cookie = ref(cookies[name] ?? opts.default?.())
+  const cookie = ref(cookies[sanitizedName] ?? opts.default?.())
 
   watch(cookie, () => {
-    document.cookie = serializeCookie(name, cookie.value, opts)
+    document.cookie = serializeCookie(sanitizedName, cookie.value, opts)
   })
   
   return cookie

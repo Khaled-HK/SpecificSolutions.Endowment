@@ -98,5 +98,17 @@
   "eCommerce": "eCommerce",
   "Icons": "Icons",
   "Chip": "Chip",
-  "Dialog": "Dialog"
+  "Dialog": "Dialog",
+  "$vuetify": {
+    "input": {
+      "appendAction": "Append action",
+      "prependAction": "Prepend action"
+    },
+    "dataFooter": {
+      "itemsPerPageText": "Items per page:",
+      "itemsPerPageAll": "All",
+      "pageText": "{0}-{1} of {2}",
+      "noDataText": "No data available"
+    }
+  }
 }

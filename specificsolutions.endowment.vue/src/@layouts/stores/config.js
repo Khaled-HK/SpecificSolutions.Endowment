@@ -5,7 +5,12 @@ import { _setDirAttr } from '@layouts/utils'
 // ℹ️ We should not import themeConfig here but in urgency we are doing it for now
 import { layoutConfig } from '@themeConfig'
 
-export const namespaceConfig = str => `${layoutConfig.app.title}-${str}`
+export const namespaceConfig = str => {
+  // Sanitize the app title to create valid cookie names
+  // Cookie names can only contain ASCII letters, digits, hyphens, and underscores
+  const sanitizedTitle = 'endowment-app' // Use a safe ASCII name instead of Arabic title
+  return `${sanitizedTitle}-${str}`
+}
 export const cookieRef = (key, defaultValue) => {
   return useCookie(namespaceConfig(key), { default: () => defaultValue })
 }
