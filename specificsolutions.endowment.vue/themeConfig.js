@@ -9,9 +9,9 @@ import { AppContentLayoutNav, ContentWidth, FooterType, NavbarType } from '@layo
 
 export const { themeConfig, layoutConfig } = defineThemeConfig({
   app: {
-    title: 'نظام الأوقاف',
+    title: 'systemTitle',
     // شعار النظام الجديد
-    logo: h('img', { src: logoPng, alt: 'نظام الأوقاف', style: 'height: 72px; width: auto;' }),
+    logo: h('img', { src: logoPng, alt: 'Endowment System', style: 'height: 72px; width: auto;' }),
     contentWidth: ContentWidth.Boxed,
     contentLayoutNav: AppContentLayoutNav.Vertical,
     overlayNavFromBreakpoint: breakpointsVuetifyV3.lg - 1, // 1 for matching with vuetify breakpoint. Docs: https://next.vuetifyjs.com/en/features/display-and-platform/
