@@ -46,12 +46,8 @@ export const setupGuards = router => {
   // دالة للتحقق من الصلاحيات باستخدام CASL
   const checkPermissions = (to) => {
     try {
-      console.log('🔍 Checking permissions for route:', to.path)
-      console.log('🔍 Route meta:', to.meta)
-      
       // إذا لم تكن هناك صلاحيات محددة في meta، اسمح بالوصول
       if (!to.meta.action || !to.meta.subject) {
-        console.log('✅ No specific permissions required, allowing access')
         return true
       }
 
@@ -63,7 +59,6 @@ export const setupGuards = router => {
         secure: true,
         sameSite: 'strict'
       }).value
-      console.log('🔍 User ability rules from cookie:', userAbilityRules)
       
       if (!userAbilityRules || !Array.isArray(userAbilityRules)) {
         console.warn('❌ No ability rules found or invalid format')
@@ -76,14 +71,8 @@ export const setupGuards = router => {
       // التحقق من الصلاحية
       const canAccess = ability.can(to.meta.action, to.meta.subject)
       
-      console.log(`🔍 Checking: ${to.meta.action} on ${to.meta.subject}`)
-      console.log(`🔍 Can access: ${canAccess}`)
-      
       if (!canAccess) {
         console.warn(`❌ Access denied: ${to.meta.action} on ${to.meta.subject}`)
-        console.log('🔍 Available rules:', userAbilityRules)
-      } else {
-        console.log('✅ Permission granted')
       }
       
       return canAccess
@@ -144,8 +133,6 @@ export const setupGuards = router => {
       // التحقق المحلي من Token (بدون الاتصال بالباك إند)
       const isTokenValid = validateTokenLocally()
       if (!isTokenValid) {
-        console.warn('Invalid token detected locally, redirecting to login...')
-        
         // تنظيف الكوكيز
         userData.value = null
         accessToken.value = null
@@ -163,7 +150,6 @@ export const setupGuards = router => {
       // التحقق من الصلاحيات
       const hasPermission = checkPermissions(to)
       if (!hasPermission) {
-        console.warn('Permission denied, redirecting to not-authorized...')
         next({
           name: 'not-authorized',
         })

@@ -17,7 +17,7 @@ import AnalyticsTotalProfitLineCharts from '@/views/dashboard/AnalyticsTotalProf
 import AnalyticsTransactions from '@/views/dashboard/AnalyticsTransactions.vue'
 import AnalyticsUserTable from '@/views/dashboard/AnalyticsUserTable.vue'
 import AnalyticsWeeklyOverview from '@/views/dashboard/AnalyticsWeeklyOverview.vue'
-import CardStatisticsVertical from '@core/components/cards/CardStatisticsVertical.vue'
+import CardStatisticsVerticalSimple from '@core/components/CardStatisticsVerticalSimple.vue'
 
 const totalProfit = {
   title: 'Total Profit',
@@ -84,14 +84,14 @@ const newProject = {
           cols="12"
           sm="6"
         >
-          <CardStatisticsVertical v-bind="totalProfit" />
+          <CardStatisticsVerticalSimple v-bind="totalProfit" />
         </VCol>
 
         <VCol
           cols="12"
           sm="6"
         >
-          <CardStatisticsVertical v-bind="newProject" />
+          <CardStatisticsVerticalSimple v-bind="newProject" />
         </VCol>
 
         <VCol
