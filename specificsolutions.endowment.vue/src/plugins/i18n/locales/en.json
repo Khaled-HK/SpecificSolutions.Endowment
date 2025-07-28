@@ -99,6 +99,7 @@
   "Icons": "Icons",
   "Chip": "Chip",
   "Dialog": "Dialog",
+  "إدارة الأوقاف": "Endowment Management",
   "$vuetify": {
     "input": {
       "appendAction": "Append action",
