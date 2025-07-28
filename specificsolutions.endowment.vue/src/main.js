@@ -18,9 +18,10 @@ app.config.errorHandler = (err, vm, info) => {
 
 // Global warn handler
 app.config.warnHandler = (msg, vm, trace) => {
-  console.warn('Vue Warning:', msg)
-  console.warn('Component:', vm)
-  console.warn('Trace:', trace)
+  // Only log in development mode
+  if (import.meta.env.DEV) {
+    console.warn('Vue Warning:', msg)
+  }
 }
 
 // Register plugins
