@@ -290,8 +290,8 @@
       }
     }
   },
-<<<<<<< HEAD
-  // إضافة الترجمات للعناصر الجديدة
+  "endowmentManagement": "نظام الأوقاف",
+  "systemTitle": "نظام الأوقاف",
   "Endowment Management": "إدارة الأوقاف",
   "Academy": "الأكاديمية",
   "Ecommerce": "التجارة الإلكترونية",
@@ -317,8 +317,4 @@
   "Documentation": "التوثيق",
   "Category": "الفئة",
   "Details": "التفاصيل"
-=======
-  "endowmentManagement": "نظام الأوقاف",
-  "systemTitle": "نظام الأوقاف"
->>>>>>> cursor/handle-login-and-interface-access-eaf3
 }

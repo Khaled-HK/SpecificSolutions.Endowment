@@ -3,8 +3,6 @@ import { ofetch } from 'ofetch'
 // Create a base API instance without composables
 export const $api = ofetch.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
-<<<<<<< HEAD
-=======
   async onRequest({ options }) {
     const accessToken = useCookie('accessToken').value
     const userData = useCookie('userData').value
@@ -57,7 +55,6 @@ export const $api = ofetch.create({
       }
     }
   },
->>>>>>> cursor/handle-login-and-interface-access-eaf3
 })
 
 // Create a composable for API with proper Vue 3 setup

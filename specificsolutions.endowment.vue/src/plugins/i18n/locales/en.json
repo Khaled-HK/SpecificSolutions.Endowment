@@ -98,8 +98,6 @@
   "eCommerce": "eCommerce",
   "Icons": "Icons",
   "Chip": "Chip",
-  "Dialog": "Dialog",
-<<<<<<< HEAD
   "Expansion Panel": "Expansion Panel",
   "Combobox": "Combobox",
   "Textfield": "Textfield",
@@ -249,8 +247,6 @@
       "actions": "Actions"
     }
   },
-=======
->>>>>>> cursor/handle-login-and-interface-access-eaf3
   "$vuetify": {
     "input": {
       "appendAction": "Append action",
