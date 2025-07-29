@@ -14,6 +14,7 @@ import { ref, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAbility } from '@/plugins/casl/composables/useAbility'
 import { useFormValidation } from '@/composables/useFormValidation'
+import { useApi } from '@/utils/api'
 
 const authThemeImg = useGenerateImageVariant(authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
@@ -29,6 +30,7 @@ const isPasswordVisible = ref(false)
 const route = useRoute()
 const router = useRouter()
 const ability = useAbility()
+const api = useApi()
 
 // استخدام نظام التحقق الجديد
 const {
@@ -53,7 +55,7 @@ const rememberMe = ref(false)
 
 const login = async () => {
   try {
-    const res = await $api('/Auth/login', {
+    const res = await api('/Auth/login', {
       method: 'POST',
       body: {
         email: credentials.email,
