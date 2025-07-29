@@ -11,6 +11,11 @@
   "Mosques": "Mosques",
   "Cities": "Cities",
   "Regions": "Regions",
+  "Offices": "Offices",
+  "Products": "Products",
+  "Decisions": "Decisions",
+  "endowmentManagement": "Endowment Management",
+  "systemTitle": "Endowment System",
   "Advance": "Advance",
   "Widgets": "Widgets",
   "Components": "Components",
@@ -94,6 +99,7 @@
   "Icons": "Icons",
   "Chip": "Chip",
   "Dialog": "Dialog",
+<<<<<<< HEAD
   "Expansion Panel": "Expansion Panel",
   "Combobox": "Combobox",
   "Textfield": "Textfield",
@@ -243,51 +249,18 @@
       "actions": "Actions"
     }
   },
+=======
+>>>>>>> cursor/handle-login-and-interface-access-eaf3
   "$vuetify": {
-    "badge": "Badge",
-    "noDataText": "No data available",
-    "close": "Close",
-    "open": "open",
-    "loading": "loading",
-    "carousel": {
-      "ariaLabel": {
-        "delimiter": "delimiter"
-      }
+    "input": {
+      "appendAction": "Append action",
+      "prependAction": "Prepend action"
     },
     "dataFooter": {
       "itemsPerPageText": "Items per page:",
       "itemsPerPageAll": "All",
       "pageText": "{0}-{1} of {2}",
-      "firstPage": "First Page",
-      "prevPage": "Previous Page",
-      "nextPage": "Next Page",
-      "lastPage": "Last Page"
-    },
-    "pagination": {
-      "ariaLabel": {
-        "root": "root",
-        "previous": "previous",
-        "first": "first",
-        "last": "last",
-        "next": "next",
-        "currentPage": "currentPage",
-        "page": "page"
-      }
-    },
-    "input": {
-      "clear": "clear",
-      "appendAction": "appendAction",
-      "prependAction": "prependAction",
-      "counterSize": "counterSize",
-      "otp": "otp"
-    },
-    "fileInput": {
-      "counterSize": "counterSize"
-    },
-    "rating": {
-      "ariaLabel": {
-        "item": "item"
-      }
+      "noDataText": "No data available"
     }
   },
   "Endowment Management": "Endowment Management",

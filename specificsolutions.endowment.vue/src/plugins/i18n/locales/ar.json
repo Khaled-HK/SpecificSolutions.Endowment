@@ -290,6 +290,7 @@
       }
     }
   },
+<<<<<<< HEAD
   // إضافة الترجمات للعناصر الجديدة
   "Endowment Management": "إدارة الأوقاف",
   "Academy": "الأكاديمية",
@@ -316,4 +317,8 @@
   "Documentation": "التوثيق",
   "Category": "الفئة",
   "Details": "التفاصيل"
+=======
+  "endowmentManagement": "نظام الأوقاف",
+  "systemTitle": "نظام الأوقاف"
+>>>>>>> cursor/handle-login-and-interface-access-eaf3
 }

@@ -1,7 +1,7 @@
 export default [
   { heading: 'Apps & Pages' },
   {
-    title: 'Endowment Management',
+    title: 'endowmentManagement',
     icon: { icon: 'tabler-building-mosque' },
     children: [
       {
@@ -35,7 +35,7 @@ export default [
       {
         title: 'Offices',
         to: 'apps-offices',
-        icon: { icon: 'tabler-building-office' },
+        icon: { icon: 'tabler-building-community' },
         action: 'View',
         subject: 'Office',
       },

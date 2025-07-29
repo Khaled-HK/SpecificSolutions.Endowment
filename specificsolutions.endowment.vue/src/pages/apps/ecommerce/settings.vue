@@ -1,4 +1,11 @@
 <script setup>
+definePage({
+  meta: {
+    action: 'View',
+    subject: 'Dashboard',
+  },
+})
+
 import SettingsCheckout from '@/views/apps/ecommerce/settings/SettingsCheckout.vue'
 import SettingsLocations from '@/views/apps/ecommerce/settings/SettingsLocations.vue'
 import SettingsNotifications from '@/views/apps/ecommerce/settings/SettingsNotifications.vue'

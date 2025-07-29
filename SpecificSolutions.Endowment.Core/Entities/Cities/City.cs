@@ -1,4 +1,5 @@
 using SpecificSolutions.Endowment.Core.Entities.Regions;
+using SpecificSolutions.Endowment.Core.Models.Cities;
 
 namespace SpecificSolutions.Endowment.Core.Entities.Cities
 {
@@ -25,6 +26,16 @@ namespace SpecificSolutions.Endowment.Core.Entities.Cities
             };
         }
 
+        // Factory method using CreateCityCommand
+        public static City Create(ICreateCityCommand command)
+        {
+            return new City
+            {
+                Name = command.Name,
+                Country = command.Country
+            };
+        }
+
         // Seed method to create a new City
         public static City Seed(Guid id, string name, string country)
         {
@@ -35,6 +46,20 @@ namespace SpecificSolutions.Endowment.Core.Entities.Cities
                 Country = country
             };
             return city;
+        }
+
+        // Update method using UpdateCityCommand
+        public void Update(IUpdateCityCommand command)
+        {
+            Name = command.Name;
+            Country = command.Country;
+        }
+
+        // Update method for updating city data
+        public void Update(string name, string country)
+        {
+            Name = name;
+            Country = country;
         }
     }
 }

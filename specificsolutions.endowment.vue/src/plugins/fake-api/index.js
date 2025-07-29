@@ -21,12 +21,19 @@ import { handlerPagesProfile } from '@db/pages/profile/index'
 
 const worker = setupWorker(...handlerAppsEcommerce, ...handlerAppsAcademy, ...handlerAppsInvoice, ...handlerAppsUsers, ...handlerAppsEmail, ...handlerAppsCalendar, ...handlerAppsChat, ...handlerAppsPermission, ...handlerPagesHelpCenter, ...handlerPagesProfile, ...handlerPagesFaq, ...handlerPagesDatatable, ...handlerAppBarSearch, ...handlerAppLogistics, ...handlerAuth, ...handlerAppsKanban, ...handlerDashboard)
 export default function () {
-  const workerUrl = `${import.meta.env.BASE_URL ?? '/'}mockServiceWorker.js`
+  // Only start MSW in development
+  if (import.meta.env.DEV) {
+    const workerUrl = `${import.meta.env.BASE_URL ?? '/'}mockServiceWorker.js`
 
-  worker.start({
-    serviceWorker: {
-      url: workerUrl,
-    },
-    onUnhandledRequest: 'bypass',
-  })
+    worker.start({
+      serviceWorker: {
+        url: workerUrl,
+      },
+      onUnhandledRequest: 'bypass',
+    }).then(() => {
+      console.log('MSW started successfully')
+    }).catch((error) => {
+      console.error('MSW failed to start:', error)
+    })
+  }
 }

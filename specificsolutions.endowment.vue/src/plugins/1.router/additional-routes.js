@@ -49,6 +49,8 @@ export const routes = [
     meta: {
       navActiveLink: 'apps-email',
       layoutWrapperClasses: 'layout-content-height-fixed',
+      action: 'View',
+      subject: 'Dashboard',
     },
   },
 
@@ -61,21 +63,35 @@ export const routes = [
       // contentClass: 'email-application',
       navActiveLink: 'apps-email',
       layoutWrapperClasses: 'layout-content-height-fixed',
+      action: 'View',
+      subject: 'Dashboard',
     },
   },
   {
     path: '/dashboards/logistics',
     name: 'dashboards-logistics',
     component: () => import('@/pages/apps/logistics/dashboard.vue'),
+    meta: {
+      action: 'View',
+      subject: 'Dashboard',
+    },
   },
   {
     path: '/dashboards/academy',
     name: 'dashboards-academy',
     component: () => import('@/pages/apps/academy/dashboard.vue'),
+    meta: {
+      action: 'View',
+      subject: 'Dashboard',
+    },
   },
   {
     path: '/apps/ecommerce/dashboard',
     name: 'apps-ecommerce-dashboard',
     component: () => import('@/pages/dashboards/ecommerce.vue'),
+    meta: {
+      action: 'View',
+      subject: 'Dashboard',
+    },
   },
 ]

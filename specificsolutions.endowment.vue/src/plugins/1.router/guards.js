@@ -1,3 +1,5 @@
+import { createMongoAbility } from '@casl/ability'
+
 export const setupGuards = router => {
   // دالة لفك تشفير JWT Token محلياً
   const decodeJWT = (token) => {
@@ -37,6 +39,56 @@ export const setupGuards = router => {
       return true
     } catch (error) {
       console.warn('Local token validation failed:', error)
+      return false
+    }
+  }
+
+  // دالة للتحقق من الصلاحيات باستخدام CASL
+  const checkPermissions = (to) => {
+    try {
+      console.log('🔍 Checking permissions for route:', to.path)
+      console.log('🔍 Route meta:', to.meta)
+      
+      // إذا لم تكن هناك صلاحيات محددة في meta، اسمح بالوصول
+      if (!to.meta.action || !to.meta.subject) {
+        console.log('✅ No specific permissions required, allowing access')
+        return true
+      }
+
+      // الحصول على قواعد الصلاحيات من الكوكيز
+      const userAbilityRules = useCookie('user-ability-rules', {
+        default: () => [],
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+        path: '/',
+        secure: true,
+        sameSite: 'strict'
+      }).value
+      console.log('🔍 User ability rules from cookie:', userAbilityRules)
+      
+      if (!userAbilityRules || !Array.isArray(userAbilityRules)) {
+        console.warn('❌ No ability rules found or invalid format')
+        return false
+      }
+
+      // إنشاء ability مؤقت للتحقق
+      const ability = createMongoAbility(userAbilityRules)
+
+      // التحقق من الصلاحية
+      const canAccess = ability.can(to.meta.action, to.meta.subject)
+      
+      console.log(`🔍 Checking: ${to.meta.action} on ${to.meta.subject}`)
+      console.log(`🔍 Can access: ${canAccess}`)
+      
+      if (!canAccess) {
+        console.warn(`❌ Access denied: ${to.meta.action} on ${to.meta.subject}`)
+        console.log('🔍 Available rules:', userAbilityRules)
+      } else {
+        console.log('✅ Permission granted')
+      }
+      
+      return canAccess
+    } catch (error) {
+      console.error('❌ Permission check error:', error)
       return false
     }
   }
@@ -108,7 +160,17 @@ export const setupGuards = router => {
         return
       }
 
-      // User is logged in and token is valid, allow access
+      // التحقق من الصلاحيات
+      const hasPermission = checkPermissions(to)
+      if (!hasPermission) {
+        console.warn('Permission denied, redirecting to not-authorized...')
+        next({
+          name: 'not-authorized',
+        })
+        return
+      }
+
+      // User is logged in, token is valid, and has permissions, allow access
       next()
     } catch (error) {
       console.error('Navigation guard error:', error)

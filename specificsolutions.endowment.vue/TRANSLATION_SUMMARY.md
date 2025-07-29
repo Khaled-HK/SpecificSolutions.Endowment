@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Sidebar Menu Translation Summary
 
 ## Overview
@@ -261,3 +262,95 @@ Each table header includes translations for:
 - Action buttons
 - Status indicators
 - Navigation elements
+=======
+# 🌐 ملخص الترجمة - نظام الأوقاف
+
+## 📋 المفاتيح المستخدمة في النظام:
+
+### 1. **مفاتيح الترجمة الرئيسية:**
+
+#### العربية (`ar.json`):
+```json
+{
+  "endowmentManagement": "نظام الأوقاف",
+  "systemTitle": "نظام الأوقاف"
+}
+```
+
+#### الإنجليزية (`en.json`):
+```json
+{
+  "endowmentManagement": "Endowment Management",
+  "systemTitle": "Endowment System"
+}
+```
+
+### 2. **الاستخدام في الملفات:**
+
+#### في `themeConfig.js`:
+```javascript
+app: {
+  title: 'نظام الأوقاف', // عنوان ثابت للنظام
+  logo: h('img', { src: logoPng, alt: 'نظام الأوقاف' })
+}
+```
+
+#### في `navigation/vertical/apps-and-pages.js`:
+```javascript
+{
+  title: 'endowmentManagement', // يستخدم مفتاح الترجمة
+  icon: { icon: 'tabler-building-mosque' }
+}
+```
+
+#### في `index.html`:
+```html
+<title>نظام الأوقاف</title>
+<img src="..." alt="نظام الأوقاف" />
+```
+
+## ✅ الإجابة على سؤالك:
+
+**نعم، النظام يستحق الترجمة!** 
+
+### الأسباب:
+
+1. **اسم رسمي للنظام:** "نظام الأوقاف" هو الاسم الرسمي المستخدم في:
+   - عنوان الصفحة
+   - شعار النظام
+   - واجهة المستخدم
+
+2. **مفتاح ترجمة مهم:** `endowmentManagement` يستخدم في:
+   - قائمة التنقل الرئيسية
+   - ترجمة واجهة المستخدم
+
+3. **اتساق في الترجمة:** يجب أن يكون متسقاً بين:
+   - العربية: "نظام الأوقاف"
+   - الإنجليزية: "Endowment Management"
+
+## 🔧 التصحيحات المطبقة:
+
+### ✅ إضافة المفاتيح المفقودة في `en.json`:
+```json
+{
+  "endowmentManagement": "Endowment Management",
+  "systemTitle": "Endowment System"
+}
+```
+
+### ✅ تنظيف وترتيب ملف الترجمة:
+- حذف المفاتيح المكررة
+- ترتيب المفاتيح بشكل منطقي
+- إضافة المفاتيح المفقودة
+
+## 📝 ملاحظات مهمة:
+
+- **"نظام الأوقاف"** هو الاسم الرسمي للنظام
+- **"Endowment Management"** هو الترجمة الإنجليزية المناسبة
+- يجب الحفاظ على الاتساق في جميع الملفات
+- الترجمة ضرورية لدعم اللغات المتعددة
+
+## 🎯 النتيجة:
+
+النظام الآن يدعم الترجمة بشكل صحيح ومتسق! 🌐 
+>>>>>>> cursor/handle-login-and-interface-access-eaf3

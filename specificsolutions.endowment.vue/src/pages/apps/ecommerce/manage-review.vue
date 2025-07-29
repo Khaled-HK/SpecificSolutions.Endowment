@@ -1,4 +1,11 @@
 <script setup>
+definePage({
+  meta: {
+    action: 'View',
+    subject: 'Dashboard',
+  },
+})
+
 const selectedStatus = ref('All')
 const searchQuery = ref('')
 const itemsPerPage = ref(10)

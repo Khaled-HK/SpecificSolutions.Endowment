@@ -19,6 +19,8 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Cities.Commands.Updat
             if (city == null)
                 return Response.FailureResponse("City not found.");
 
+            // تحديث بيانات المدينة باستخدام UpdateCityCommand
+            city.Update(request);
 
             await _unitOfWork.Cities.UpdateAsync(city);
             await _unitOfWork.CompleteAsync(cancellationToken);

@@ -16,7 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Cities.Commands.Creat
 
         public async Task<EndowmentResponse> Handle(CreateCityCommand request, CancellationToken cancellationToken)
         {
-            var city = City.Create(request.Name, request.Country);
+            var city = City.Create(request);
 
             await _unitOfWork.Cities.AddAsync(city, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);

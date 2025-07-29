@@ -1,4 +1,11 @@
 <script setup>
+definePage({
+  meta: {
+    action: 'View',
+    subject: 'Dashboard',
+  },
+})
+
 import masterCardDark from '@images/icons/payments/img/master-dark.png'
 import masterCardLight from '@images/icons/payments/img/mastercard.png'
 import paypalDark from '@images/icons/payments/img/paypal-dark.png'

@@ -1,4 +1,11 @@
 <script setup>
+definePage({
+  meta: {
+    action: 'View',
+    subject: 'Dashboard',
+  },
+})
+
 import product21 from '@images/ecommerce-images/product-21.png'
 import product22 from '@images/ecommerce-images/product-22.png'
 import product23 from '@images/ecommerce-images/product-23.png'
