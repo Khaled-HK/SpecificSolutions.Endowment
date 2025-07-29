@@ -27,8 +27,18 @@ public static class JwtAuthExtensions
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = jwtSettings?.Issuer,
-                ValidAudience = jwtSettings?.Audience,
+                ValidIssuers = new[] { 
+                    jwtSettings?.Issuer, 
+                    "https://localhost:7128",  // Support old issuer for compatibility
+                    "https://localhost:7141",  // Current HTTPS port
+                    "http://localhost:7140"    // Current HTTP port
+                },
+                ValidAudiences = new[] { 
+                    jwtSettings?.Audience,
+                    "https://localhost:7104",  // Support old audience for compatibility  
+                    "https://localhost:7141",  // Current HTTPS port
+                    "http://localhost:7140"    // Current HTTP port
+                },
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings?.Key ?? string.Empty))
             };
 
