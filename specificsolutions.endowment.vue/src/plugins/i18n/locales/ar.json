@@ -289,5 +289,31 @@
         "item": "العنصر"
       }
     }
-  }
+  },
+  // إضافة الترجمات للعناصر الجديدة
+  "Endowment Management": "إدارة الأوقاف",
+  "Academy": "الأكاديمية",
+  "Ecommerce": "التجارة الإلكترونية",
+  "Logistics": "الخدمات اللوجستية",
+  "Course": "الدورة التدريبية",
+  "My Course": "دورتي",
+  "Course Details": "تفاصيل الدورة التدريبية",
+  "Product": "المنتج",
+  "Order": "الطلب",
+  "Customer": "العميل",
+  "Manage Review": "إدارة المراجعة",
+  "Referrals": "الإحالات",
+  "Settings": "الإعدادات",
+  "Fleet": "الأسطول",
+  "Dashboard": "لوحة القيادة",
+  "Disabled Menu": "القائمة المعطلة",
+  "Nav Levels": "مستويات التنقل",
+  "Level 2.1": "المستوى 2.1",
+  "Level 2.2": "المستوى 2.2",
+  "Level 3.1": "المستوى 3.1",
+  "Level 3.2": "المستوى 3.2",
+  "Raise Support": "رفع الدعم",
+  "Documentation": "التوثيق",
+  "Category": "الفئة",
+  "Details": "التفاصيل"
 }
