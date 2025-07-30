@@ -291,6 +291,7 @@ const loadMosques = async () => {
 
 const loadRegions = async () => {
   regionsLoading.value = true
+  console.log('🌍 تحميل المناطق...')
   try {
     const response = await $api('/Region/filter?PageSize=100')
     const rawList = response.data.items || []
@@ -298,8 +299,9 @@ const loadRegions = async () => {
       ...item,
       name: item.name || item.regionName || item.title || item.id // fallback
     }))
+    console.log('✅ تم تحميل المناطق:', regions.value.length, regions.value)
   } catch (error) {
-    console.error('Error loading regions:', error)
+    console.error('❌ خطأ في تحميل المناطق:', error)
     alertMessage.value = 'حدث خطأ أثناء تحميل المناطق'
     alertType.value = 'error'
     showAlert.value = true
@@ -310,6 +312,7 @@ const loadRegions = async () => {
 
 const loadOffices = async () => {
   officesLoading.value = true
+  console.log('🏢 تحميل المكاتب...')
   try {
     const response = await $api('/Office/filter?PageSize=100')
     const rawList = response.data.items || []
@@ -317,8 +320,9 @@ const loadOffices = async () => {
       ...item,
       name: item.name || item.officeName || item.title || item.id // fallback
     }))
+    console.log('✅ تم تحميل المكاتب:', offices.value.length, offices.value)
   } catch (error) {
-    console.error('Error loading offices:', error)
+    console.error('❌ خطأ في تحميل المكاتب:', error)
     alertMessage.value = 'حدث خطأ أثناء تحميل المكاتب'
     alertType.value = 'error'
     showAlert.value = true
@@ -331,45 +335,86 @@ const addMosque = async () => {
   // Clear previous errors
   clearErrors()
   
+  console.log('📋 بيانات المسجد الجديد:', newMosque.value)
+  
+  // تعيين جميع الحقول المطلوبة كملموسة لإظهار الأخطاء للمستخدم
+  setFieldTouched('name')
+  setFieldTouched('fileNumber')
+  setFieldTouched('regionId')
+  setFieldTouched('officeId')
+  
   // Validate required fields
   let isValid = true
   
+  console.log('🔍 التحقق من اسم المسجد:', newMosque.value.name)
   if (!validateRequired(newMosque.value.name, 'name', 'اسم المسجد مطلوب')) {
     isValid = false
+    console.log('❌ اسم المسجد فارغ')
   } else if (!validateLength(newMosque.value.name, 'name', 2, 100, 'اسم المسجد يجب أن يكون بين 2 و 100 حرف')) {
     isValid = false
+    console.log('❌ طول اسم المسجد غير صحيح')
+  } else {
+    console.log('✅ اسم المسجد صحيح')
   }
   
+  console.log('🔍 التحقق من رقم الملف:', newMosque.value.fileNumber)
   if (!validateRequired(newMosque.value.fileNumber, 'fileNumber', 'رقم الملف مطلوب')) {
     isValid = false
+    console.log('❌ رقم الملف فارغ')
+  } else {
+    console.log('✅ رقم الملف صحيح')
   }
   
+  console.log('🔍 التحقق من المنطقة:', newMosque.value.regionId)
   if (!validateRequired(newMosque.value.regionId, 'regionId', 'المنطقة مطلوبة')) {
     isValid = false
+    console.log('❌ المنطقة فارغة')
+  } else {
+    console.log('✅ المنطقة صحيحة')
   }
   
+  console.log('🔍 التحقق من المكتب:', newMosque.value.officeId)
   if (!validateRequired(newMosque.value.officeId, 'officeId', 'المكتب مطلوب')) {
     isValid = false
+    console.log('❌ المكتب فارغ')
+  } else {
+    console.log('✅ المكتب صحيح')
   }
   
   if (newMosque.value.totalCoveredArea < 0) {
     addError('totalCoveredArea', 'المساحة المغطاة لا يمكن أن تكون سالبة')
     isValid = false
+    console.log('❌ المساحة المغطاة سالبة')
   }
   
   if (newMosque.value.totalLandArea < 0) {
     addError('totalLandArea', 'المساحة الكلية لا يمكن أن تكون سالبة')
     isValid = false
+    console.log('❌ المساحة الكلية سالبة')
   }
   
   if (newMosque.value.numberOfFloors < 1) {
     addError('numberOfFloors', 'عدد الطوابق يجب أن يكون 1 على الأقل')
     isValid = false
+    console.log('❌ عدد الطوابق أقل من 1')
   }
   
+  console.log('📊 نتيجة التحقق النهائية:', isValid)
+  console.log('🔍 الأخطاء الحالية:', validationState.errors)
+  
   if (!isValid) {
+    console.log('🚫 التحقق فشل - لن يتم إرسال الطلب للباك اند')
+    console.log('💡 يرجى ملء جميع الحقول المطلوبة باللون الأحمر')
+    
+    // إظهار رسالة للمستخدم
+    alertMessage.value = 'يرجى ملء جميع الحقول المطلوبة المميزة باللون الأحمر'
+    alertType.value = 'warning'
+    showAlert.value = true
+    
     return
   }
+  
+  console.log('✅ التحقق نجح - سيتم إرسال الطلب للباك اند')
 
   try {
     // معالجة التواريخ - إجبارية
@@ -784,7 +829,25 @@ const openDeleteDialog = (mosque: Mosque) => {
   deleteDialog.value = true
 }
 
-const openAddDialog = () => {
+const openAddDialog = async () => {
+  console.log('📂 فتح dialog إضافة مسجد جديد')
+  
+  // تحميل البيانات إذا لم تكن محملة
+  if (regions.value.length === 0) {
+    console.log('🔄 تحميل المناطق...')
+    await loadRegions()
+  }
+  if (offices.value.length === 0) {
+    console.log('🔄 تحميل المكاتب...')
+    await loadOffices()
+  }
+  
+  console.log('📊 المناطق المتاحة:', regions.value.length)
+  console.log('📊 المكاتب المتاحة:', offices.value.length)
+  
+  // مسح الأخطاء السابقة
+  clearErrors()
+  
   // تعبئة التاريخ الحالي تلقائياً
   newMosque.value.openingDate = getCurrentDate()
   newMosque.value.constructionDate = getCurrentDate()
