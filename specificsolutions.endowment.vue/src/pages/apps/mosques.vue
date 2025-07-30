@@ -424,19 +424,43 @@ const addMosque = async () => {
       },
     })
     
+    console.log('📥 استجابة الباك اند:', response)
+    
     // Check if the response indicates success - response comes directly
     if (response && response.isSuccess === false) {
+      console.log('❌ الباك اند أرجع أخطاء في التحقق')
       // Handle backend validation errors
       if (response.errors && Array.isArray(response.errors)) {
-        setErrorsFromResponse(response)
+        console.log('🔍 أخطاء FluentValidation:', response.errors)
+        setErrorsFromResponse(response, 'add')
+        
+        // إظهار جميع الأخطاء الحالية في console للتأكد من الربط
+        console.log('🔍 الأخطاء بعد الربط:', validationState.errors)
+        
+        // التحقق من الحقول المحددة
+        console.log('🔍 تحقق من حقول محددة:')
+        console.log('- name error:', shouldShowFieldError('name'), getFieldErrors('name'))
+        console.log('- fileNumber error:', shouldShowFieldError('fileNumber'), getFieldErrors('fileNumber'))
+        console.log('- regionId error:', shouldShowFieldError('regionId'), getFieldErrors('regionId'))
+        console.log('- officeId error:', shouldShowFieldError('officeId'), getFieldErrors('officeId'))
+        
+        // إظهار رسالة للمستخدم
+        alertMessage.value = 'يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
+        alertType.value = 'warning'
+        showAlert.value = true
+        
+        console.log('✅ تم عرض أخطاء التحقق في الحقول')
       } else {
         const errorMsg = response.message || 'حدث خطأ أثناء إضافة المسجد'
+        console.log('❌ خطأ عام من الباك اند:', errorMsg)
         alertMessage.value = errorMsg
         alertType.value = 'error'
         showAlert.value = true
       }
       return
     }
+    
+    console.log('✅ تم إنشاء المسجد بنجاح في الباك اند')
     
     dialog.value = false
     resetNewMosque()
@@ -445,10 +469,38 @@ const addMosque = async () => {
     alertType.value = 'success'
     showAlert.value = true
   } catch (error) {
-    console.error('Error adding mosque:', error)
-    alertMessage.value = 'حدث خطأ أثناء إضافة المسجد'
-    alertType.value = 'error'
-    showAlert.value = true
+    console.error('❌ خطأ في الشبكة أو في الخادم:', error)
+    
+    // التحقق من أن الخطأ يحتوي على أخطاء FluentValidation
+    if (error?.data?.errors && Array.isArray(error.data.errors)) {
+      console.log('🔍 أخطاء FluentValidation من الـ catch:', error.data.errors)
+      setErrorsFromResponse(error.data, 'add')
+      
+      // إظهار جميع الأخطاء الحالية في console للتأكد من الربط
+      console.log('🔍 الأخطاء بعد الربط:', validationState.errors)
+      
+      // التحقق من الحقول المحددة
+      console.log('🔍 تحقق من حقول محددة:')
+      console.log('- name error:', shouldShowFieldError('name'), getFieldErrors('name'))
+      console.log('- fileNumber error:', shouldShowFieldError('fileNumber'), getFieldErrors('fileNumber'))
+      console.log('- regionId error:', shouldShowFieldError('regionId'), getFieldErrors('regionId'))
+      console.log('- officeId error:', shouldShowFieldError('officeId'), getFieldErrors('officeId'))
+      
+      alertMessage.value = 'يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
+      alertType.value = 'warning'
+      showAlert.value = true
+      console.log('✅ تم عرض أخطاء التحقق في الحقول')
+    } else if (error?.data?.message) {
+      console.log('❌ رسالة خطأ من الخادم:', error.data.message)
+      alertMessage.value = error.data.message
+      alertType.value = 'error'
+      showAlert.value = true
+    } else {
+      console.log('❌ خطأ غير متوقع:', error.message || error)
+      alertMessage.value = 'حدث خطأ أثناء إضافة المسجد'
+      alertType.value = 'error'
+      showAlert.value = true
+    }
   }
 }
 

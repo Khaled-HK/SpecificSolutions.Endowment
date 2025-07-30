@@ -41,12 +41,53 @@ export function useFormValidation() {
     }
   }
 
+  // mapping أسماء الحقول من الباك اند إلى الفرونت إند
+  const propertyNameMapping: Record<string, string> = {
+    // Mosque fields
+    'Name': 'name',
+    'FileNumber': 'fileNumber', 
+    'RegionId': 'regionId',
+    'OfficeId': 'officeId',
+    'TotalLandArea': 'totalLandArea',
+    'TotalCoveredArea': 'totalCoveredArea',
+    'NumberOfFloors': 'numberOfFloors',
+    'OpeningDate': 'openingDate',
+    'ConstructionDate': 'constructionDate',
+    'MosqueDefinition': 'mosqueDefinition',
+    'MosqueClassification': 'mosqueClassification',
+    'SourceFunds': 'sourceFunds',
+    'Definition': 'definition',
+    'Classification': 'classification',
+    'Unit': 'unit',
+    'NearestLandmark': 'nearestLandmark',
+    'MapLocation': 'mapLocation',
+    'Sanitation': 'sanitation',
+    'ElectricityMeter': 'electricityMeter',
+    'AlternativeEnergySource': 'alternativeEnergySource',
+    'WaterSource': 'waterSource',
+    'BriefDescription': 'briefDescription',
+    'LandDonorName': 'landDonorName',
+    'PrayerCapacity': 'prayerCapacity',
+    'ServicesSpecialNeeds': 'servicesSpecialNeeds',
+    'SpecialEntranceWomen': 'specialEntranceWomen',
+    'PicturePath': 'picturePath'
+  }
+
   // تعيين أخطاء من استجابة الباك إند
-  const setErrorsFromResponse = (response: any) => {
+  const setErrorsFromResponse = (response: any, context: 'add' | 'edit' = 'add') => {
     if (response?.errors && Array.isArray(response.errors)) {
+      console.log('🔄 معالجة أخطاء FluentValidation...')
       response.errors.forEach((error: ValidationError) => {
-        addError(error.propertyName, error.errorMessage)
+        // تحويل اسم الحقل من الباك اند إلى الفرونت إند
+        const baseFrontendFieldName = propertyNameMapping[error.propertyName] || error.propertyName.toLowerCase()
+        
+        // إضافة prefix للحقول حسب السياق (add/edit)
+        const frontendFieldName = context === 'edit' ? `edit${baseFrontendFieldName.charAt(0).toUpperCase()}${baseFrontendFieldName.slice(1)}` : baseFrontendFieldName
+        
+        console.log(`📍 ربط خطأ: ${error.propertyName} -> ${frontendFieldName} (${context}): ${error.errorMessage}`)
+        addError(frontendFieldName, error.errorMessage)
       })
+      console.log('✅ تم ربط جميع الأخطاء بالحقول')
     }
   }
 
