@@ -82,6 +82,7 @@ export const setupGuards = router => {
       if (!canAccess) {
         console.warn(`❌ Access denied: ${to.meta.action} on ${to.meta.subject}`)
         console.log('🔍 Available rules:', userAbilityRules)
+        return false
       } else {
         console.log('✅ Permission granted')
       }

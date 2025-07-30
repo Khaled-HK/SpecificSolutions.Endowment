@@ -167,7 +167,12 @@ const login = async () => {
       { action: 'write', subject: 'Dashboard' }
      )
 
-    // Add permissions for all main entities (required for app pages)
+    // Add otherview permission for all non-endowment elements
+    rules.push(
+      { action: 'View', subject: 'otherview' }
+     )
+
+    // Add permissions for endowment entities from backend
     rules.push(
       { action: 'View', subject: 'Mosque' },
       { action: 'View', subject: 'City' },

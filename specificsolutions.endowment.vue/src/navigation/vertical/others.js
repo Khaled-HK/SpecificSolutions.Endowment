@@ -4,8 +4,8 @@ export default [
     title: 'Access Control',
     icon: { icon: 'tabler-command' },
     to: 'access-control',
-    action: 'read',
-    subject: 'AclDemo',
+    action: 'View',
+    subject: 'otherview',
   },
   {
     title: 'Nav Levels',
@@ -14,6 +14,8 @@ export default [
       {
         title: 'Level 2.1',
         to: null,
+        action: 'View',
+        subject: 'otherview',
       },
       {
         title: 'Level 2.2',
@@ -21,10 +23,14 @@ export default [
           {
             title: 'Level 3.1',
             to: null,
+            action: 'View',
+            subject: 'otherview',
           },
           {
             title: 'Level 3.2',
             to: null,
+            action: 'View',
+            subject: 'otherview',
           },
         ],
       },
@@ -35,17 +41,23 @@ export default [
     to: null,
     icon: { icon: 'tabler-eye-off' },
     disable: true,
+    action: 'View',
+    subject: 'otherview',
   },
   {
     title: 'Raise Support',
     href: 'https://pixinvent.ticksy.com/',
     icon: { icon: 'tabler-headphones' },
     target: '_blank',
+    action: 'View',
+    subject: 'otherview',
   },
   {
     title: 'Documentation',
     href: 'https://demos.pixinvent.com/vuexy-vuejs-admin-template/documentation/',
     icon: { icon: 'tabler-file-text' },
     target: '_blank',
+    action: 'View',
+    subject: 'otherview',
   },
 ]

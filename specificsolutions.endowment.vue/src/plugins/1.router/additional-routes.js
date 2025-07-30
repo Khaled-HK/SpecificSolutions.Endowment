@@ -41,6 +41,16 @@ export const redirects = [
   },
 ]
 export const routes = [
+  // Debug Navigation
+  {
+    path: '/debug-nav',
+    name: 'debug-nav',
+    component: () => import('@/pages/debug-nav.vue'),
+    meta: {
+      action: 'View',
+      subject: 'Dashboard',
+    },
+  },
   // Email filter
   {
     path: '/apps/email/filter/:filter',

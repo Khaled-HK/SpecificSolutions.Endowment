@@ -4,5 +4,6 @@ import dashboard from './dashboard'
 import forms from './forms'
 import others from './others'
 import uiElements from './ui-elements'
+import debugNav from './debug-nav'
 
-export default [...dashboard, ...appsAndPages, ...uiElements, ...forms, ...charts, ...others]
+export default [...dashboard, ...appsAndPages, ...uiElements, ...forms, ...charts, ...others, ...debugNav]
