@@ -1,4 +1,5 @@
 import { createMongoAbility } from '@casl/ability'
+import { reloadAbilityFromCookie } from '../casl/ability'
 
 export const setupGuards = router => {
   // دالة لفك تشفير JWT Token محلياً
@@ -98,6 +99,9 @@ export const setupGuards = router => {
   // Docs: https://router.vuejs.org/guide/advanced/navigation-guards.html#global-before-guards
   router.beforeEach((to, from, next) => {
     try {
+      // إعادة تحميل الصلاحيات من الكوكيز في كل مرة
+      reloadAbilityFromCookie()
+      
       /*
        * If it's a public route, continue navigation. This kind of pages are allowed to visited by login & non-login users. Basically, without any restrictions.
        * Examples of public routes are, 404, under maintenance, etc.

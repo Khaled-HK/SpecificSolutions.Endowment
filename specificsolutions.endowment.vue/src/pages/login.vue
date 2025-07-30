@@ -167,6 +167,11 @@ const login = async () => {
       { action: 'write', subject: 'Dashboard' }
      )
 
+    // Add otherview permission for all users (required for non-endowment elements)
+   // rules.push(
+   //     { action: 'View', subject: 'otherview' }
+   //   )
+
     // Convert specific permissions from backend
     user.permissions.forEach(permission => {
       // Handle camelCase permissions from backend (e.g., "cityView", "accountAdd")
