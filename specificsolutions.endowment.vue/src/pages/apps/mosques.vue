@@ -331,45 +331,73 @@ const addMosque = async () => {
   // Clear previous errors
   clearErrors()
   
+  console.log('📋 بيانات المسجد الجديد:', newMosque.value)
+  
   // Validate required fields
   let isValid = true
   
+  console.log('🔍 التحقق من اسم المسجد:', newMosque.value.name)
   if (!validateRequired(newMosque.value.name, 'name', 'اسم المسجد مطلوب')) {
     isValid = false
+    console.log('❌ اسم المسجد فارغ')
   } else if (!validateLength(newMosque.value.name, 'name', 2, 100, 'اسم المسجد يجب أن يكون بين 2 و 100 حرف')) {
     isValid = false
+    console.log('❌ طول اسم المسجد غير صحيح')
+  } else {
+    console.log('✅ اسم المسجد صحيح')
   }
   
+  console.log('🔍 التحقق من رقم الملف:', newMosque.value.fileNumber)
   if (!validateRequired(newMosque.value.fileNumber, 'fileNumber', 'رقم الملف مطلوب')) {
     isValid = false
+    console.log('❌ رقم الملف فارغ')
+  } else {
+    console.log('✅ رقم الملف صحيح')
   }
   
+  console.log('🔍 التحقق من المنطقة:', newMosque.value.regionId)
   if (!validateRequired(newMosque.value.regionId, 'regionId', 'المنطقة مطلوبة')) {
     isValid = false
+    console.log('❌ المنطقة فارغة')
+  } else {
+    console.log('✅ المنطقة صحيحة')
   }
   
+  console.log('🔍 التحقق من المكتب:', newMosque.value.officeId)
   if (!validateRequired(newMosque.value.officeId, 'officeId', 'المكتب مطلوب')) {
     isValid = false
+    console.log('❌ المكتب فارغ')
+  } else {
+    console.log('✅ المكتب صحيح')
   }
   
   if (newMosque.value.totalCoveredArea < 0) {
     addError('totalCoveredArea', 'المساحة المغطاة لا يمكن أن تكون سالبة')
     isValid = false
+    console.log('❌ المساحة المغطاة سالبة')
   }
   
   if (newMosque.value.totalLandArea < 0) {
     addError('totalLandArea', 'المساحة الكلية لا يمكن أن تكون سالبة')
     isValid = false
+    console.log('❌ المساحة الكلية سالبة')
   }
   
   if (newMosque.value.numberOfFloors < 1) {
     addError('numberOfFloors', 'عدد الطوابق يجب أن يكون 1 على الأقل')
     isValid = false
+    console.log('❌ عدد الطوابق أقل من 1')
   }
   
+  console.log('📊 نتيجة التحقق النهائية:', isValid)
+  console.log('🔍 الأخطاء الحالية:', validationState.errors)
+  
   if (!isValid) {
+    console.log('🚫 التحقق فشل - لن يتم إرسال الطلب للباك اند')
     return
   }
+  
+  console.log('✅ التحقق نجح - سيتم إرسال الطلب للباك اند')
 
   try {
     // معالجة التواريخ - إجبارية
@@ -391,13 +419,13 @@ const addMosque = async () => {
       }
     };
 
-    const response = await $api('/Mosque', {
-      method: 'POST',
-      body: {
-        name: newMosque.value.name,
-        regionId: newMosque.value.regionId,
-        officeId: newMosque.value.officeId,
-        fileNumber: newMosque.value.fileNumber,
+    console.log('🚀 إرسال الطلب إلى الباك اند...')
+    
+    const requestBody = {
+      name: newMosque.value.name,
+      regionId: newMosque.value.regionId,
+      officeId: newMosque.value.officeId,
+      fileNumber: newMosque.value.fileNumber,
         definition: newMosque.value.definition,
         classification: newMosque.value.classification,
         unit: newMosque.value.unit,
@@ -421,8 +449,16 @@ const addMosque = async () => {
         servicesSpecialNeeds: newMosque.value.servicesSpecialNeeds,
         specialEntranceWomen: newMosque.value.specialEntranceWomen,
         picturePath: newMosque.value.picturePath,
-      },
+      }
+    
+    console.log('📤 بيانات الطلب المرسل:', requestBody)
+    
+    const response = await $api('/Mosque', {
+      method: 'POST',
+      body: requestBody,
     })
+    
+    console.log('📥 استجابة الباك اند:', response)
     
     // Check if the response indicates success - response comes directly
     if (response && response.isSuccess === false) {

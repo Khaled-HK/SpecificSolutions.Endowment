@@ -30,37 +30,39 @@ namespace SpecificSolutions.Endowment.Application.Handlers
 
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
-            //var errorCode = exception switch
-            //{
-            //    EntityNotFoundException => (int)HttpStatusCode.BadRequest + "01",
-            //    ValidationException => (int)HttpStatusCode.BadRequest + "02",
-            //    _ => (int)HttpStatusCode.InternalServerError + "00"
-            //};
-
             var exceptionType = exception.GetType();
 
             if (_exceptionHandlers.ContainsKey(exceptionType))
             {
                 await _exceptionHandlers[exceptionType].Invoke(httpContext, exception, cancellationToken);
-                return false;
+                return true; // إصلاح: يجب إرجاع true عندما يتم التعامل مع الـ exception
             }
 
-            return true;
+            return false; // إرجاع false فقط عندما لا يتم التعامل مع الـ exception
         }
 
         private async Task HandleValidationException(HttpContext httpContext, Exception ex, CancellationToken cancellationToken)
         {
             var exception = (ValidationException)ex;
 
+            _logger.LogWarning("🚨 GlobalExceptionHandler - معالجة أخطاء التحقق");
+            _logger.LogWarning("📋 عدد الأخطاء: {ErrorCount}", exception.Errors.Count);
+
             // تحويل Dictionary<string, string[]> إلى Errors
             var errors = exception.Errors
                 .SelectMany(kvp => kvp.Value.Select(errorMessage => new Error(kvp.Key, errorMessage)))
                 .ToArray();
 
+            foreach (var error in errors)
+            {
+                _logger.LogWarning("❌ خطأ في {PropertyName}: {ErrorMessage}", error.PropertyName, error.ErrorMessage);
+            }
+
             var response = new EndowmentResponse(state: ResponseState.BadRequest, "Validation failed", errors);
             httpContext.Response.ContentType = "application/json";
             httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
 
+            _logger.LogInformation("📤 إرسال استجابة التحقق إلى الـ Frontend: {@Response}", response);
             await httpContext.Response.WriteAsJsonAsync<EndowmentResponse>(response, cancellationToken);
         }
 
