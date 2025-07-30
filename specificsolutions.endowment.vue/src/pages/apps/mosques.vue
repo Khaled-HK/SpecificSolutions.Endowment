@@ -1473,7 +1473,7 @@ function showAlertMsg(msg, type = 'success') {
         <VCardText>
           <VForm @submit.prevent="addMosque">
             <VRow>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="newMosque.name"
                   label="اسم المسجد"
@@ -1484,7 +1484,7 @@ function showAlertMsg(msg, type = 'success') {
                   @blur="setFieldTouched('name')"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="newMosque.fileNumber"
                   label="رقم الملف"
@@ -1495,7 +1495,14 @@ function showAlertMsg(msg, type = 'success') {
                   @blur="setFieldTouched('fileNumber')"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
+                <VTextField
+                  v-model="newMosque.unit"
+                  label="الوحدة"
+                  variant="outlined"
+                />
+              </VCol>
+              <VCol cols="12" md="4">
                 <VAutocomplete
                   v-model="newMosque.regionId"
                   label="المنطقة"
@@ -1515,7 +1522,7 @@ function showAlertMsg(msg, type = 'success') {
                   hide-no-data
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VAutocomplete
                   v-model="newMosque.officeId"
                   label="المكتب"
@@ -1535,56 +1542,49 @@ function showAlertMsg(msg, type = 'success') {
                   hide-no-data
                 />
               </VCol>
-              <VCol cols="12" md="6">
-                <VTextField
-                  v-model="newMosque.unit"
-                  label="الوحدة"
-                  variant="outlined"
-                />
-              </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="newMosque.nearestLandmark"
                   label="أقرب معلم"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="newMosque.mapLocation"
                   label="موقع الخريطة"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="newMosque.electricityMeter"
                   label="عداد الكهرباء"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="newMosque.alternativeEnergySource"
                   label="مصدر الطاقة البديل"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="newMosque.waterSource"
                   label="مصدر المياه"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="newMosque.sanitation"
                   label="الصرف الصحي"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="newMosque.totalLandArea"
                   label="إجمالي مساحة الأرض"
@@ -1593,7 +1593,7 @@ function showAlertMsg(msg, type = 'success') {
                   step="0.01"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="newMosque.totalCoveredArea"
                   label="إجمالي المساحة المغطاة"
@@ -1602,7 +1602,7 @@ function showAlertMsg(msg, type = 'success') {
                   step="0.01"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="newMosque.numberOfFloors"
                   label="عدد الطوابق"
@@ -1611,7 +1611,7 @@ function showAlertMsg(msg, type = 'success') {
                   min="1"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="newMosque.openingDate"
                   label="تاريخ الافتتاح"
@@ -1621,7 +1621,7 @@ function showAlertMsg(msg, type = 'success') {
                   :rules="[v => !!v || 'تاريخ الافتتاح مطلوب']"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="newMosque.constructionDate"
                   label="تاريخ البناء"
@@ -1631,7 +1631,7 @@ function showAlertMsg(msg, type = 'success') {
                   :rules="[v => !!v || 'تاريخ البناء مطلوب']"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VSelect
                   v-model="newMosque.mosqueDefinition"
                   label="تعريف المسجد"
@@ -1643,7 +1643,7 @@ function showAlertMsg(msg, type = 'success') {
                   :rules="[v => v !== null || 'تعريف المسجد مطلوب']"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VSelect
                   v-model="newMosque.mosqueClassification"
                   label="تصنيف المسجد"
@@ -1655,7 +1655,7 @@ function showAlertMsg(msg, type = 'success') {
                   :rules="[v => v !== null || 'تصنيف المسجد مطلوب']"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VSelect
                   v-model="newMosque.sourceFunds"
                   label="مصدر التمويل"
@@ -1710,7 +1710,7 @@ function showAlertMsg(msg, type = 'success') {
         <VCardText>
           <VForm @submit.prevent="updateMosque">
             <VRow>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="editMosque.name"
                   label="اسم المسجد"
@@ -1721,7 +1721,7 @@ function showAlertMsg(msg, type = 'success') {
                   @blur="setFieldTouched('editName')"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="editMosque.fileNumber"
                   label="رقم الملف"
@@ -1732,7 +1732,14 @@ function showAlertMsg(msg, type = 'success') {
                   @blur="setFieldTouched('editFileNumber')"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
+                <VTextField
+                  v-model="editMosque.unit"
+                  label="الوحدة"
+                  variant="outlined"
+                />
+              </VCol>
+              <VCol cols="12" md="4">
                 <VAutocomplete
                   v-model="editMosque.regionId"
                   label="المنطقة"
@@ -1752,7 +1759,7 @@ function showAlertMsg(msg, type = 'success') {
                   hide-no-data
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VAutocomplete
                   v-model="editMosque.officeId"
                   label="المكتب"
@@ -1772,56 +1779,49 @@ function showAlertMsg(msg, type = 'success') {
                   hide-no-data
                 />
               </VCol>
-              <VCol cols="12" md="6">
-                <VTextField
-                  v-model="editMosque.unit"
-                  label="الوحدة"
-                  variant="outlined"
-                />
-              </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="editMosque.nearestLandmark"
                   label="أقرب معلم"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="editMosque.mapLocation"
                   label="موقع الخريطة"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="editMosque.electricityMeter"
                   label="عداد الكهرباء"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="editMosque.alternativeEnergySource"
                   label="مصدر الطاقة البديل"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="editMosque.waterSource"
                   label="مصدر المياه"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="editMosque.sanitation"
                   label="الصرف الصحي"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="editMosque.totalLandArea"
                   label="إجمالي مساحة الأرض"
@@ -1830,7 +1830,7 @@ function showAlertMsg(msg, type = 'success') {
                   step="0.01"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="editMosque.totalCoveredArea"
                   label="إجمالي المساحة المغطاة"
@@ -1839,7 +1839,7 @@ function showAlertMsg(msg, type = 'success') {
                   step="0.01"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="editMosque.numberOfFloors"
                   label="عدد الطوابق"
@@ -1848,7 +1848,7 @@ function showAlertMsg(msg, type = 'success') {
                   min="1"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="editMosque.openingDate"
                   label="تاريخ الافتتاح"
@@ -1858,7 +1858,7 @@ function showAlertMsg(msg, type = 'success') {
                   :rules="[v => !!v || 'تاريخ الافتتاح مطلوب']"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VTextField
                   v-model="editMosque.constructionDate"
                   label="تاريخ البناء"
@@ -1868,7 +1868,7 @@ function showAlertMsg(msg, type = 'success') {
                   :rules="[v => !!v || 'تاريخ البناء مطلوب']"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VSelect
                   v-model="editMosque.mosqueDefinition"
                   label="تعريف المسجد"
@@ -1880,7 +1880,7 @@ function showAlertMsg(msg, type = 'success') {
                   :rules="[v => v !== null || 'تعريف المسجد مطلوب']"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VSelect
                   v-model="editMosque.mosqueClassification"
                   label="تصنيف المسجد"
@@ -1892,7 +1892,7 @@ function showAlertMsg(msg, type = 'success') {
                   :rules="[v => v !== null || 'تصنيف المسجد مطلوب']"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="4">
                 <VSelect
                   v-model="editMosque.sourceFunds"
                   label="مصدر التمويل"
