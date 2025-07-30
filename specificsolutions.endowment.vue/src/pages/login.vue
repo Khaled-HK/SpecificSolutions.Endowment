@@ -167,28 +167,6 @@ const login = async () => {
       { action: 'write', subject: 'Dashboard' }
      )
 
-    // Add otherview permission for all non-endowment elements
-    rules.push(
-      { action: 'View', subject: 'otherview' }
-     )
-
-    // Add permissions for endowment entities from backend
-    rules.push(
-      { action: 'View', subject: 'Mosque' },
-      { action: 'View', subject: 'City' },
-      { action: 'View', subject: 'Region' },
-      { action: 'View', subject: 'Office' },
-      { action: 'View', subject: 'Building' },
-      { action: 'View', subject: 'Product' },
-      { action: 'View', subject: 'Decision' },
-      { action: 'View', subject: 'Account' },
-      { action: 'View', subject: 'User' },
-      { action: 'View', subject: 'Role' },
-      { action: 'View', subject: 'Request' },
-      { action: 'View', subject: 'Endowment' }
-     )
-  
-
     // Convert specific permissions from backend
     user.permissions.forEach(permission => {
       // Handle camelCase permissions from backend (e.g., "cityView", "accountAdd")
