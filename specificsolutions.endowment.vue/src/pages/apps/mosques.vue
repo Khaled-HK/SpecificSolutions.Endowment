@@ -336,85 +336,21 @@ const addMosque = async () => {
   clearErrors()
   
   console.log('📋 بيانات المسجد الجديد:', newMosque.value)
+  console.log('🚀 إرسال الطلب للباك اند دون تحقق في Frontend - سيعتمد على FluentValidation')
   
-  // تعيين جميع الحقول المطلوبة كملموسة لإظهار الأخطاء للمستخدم
+  // تعيين جميع الحقول كملموسة لإظهار الأخطاء من الباك اند
   setFieldTouched('name')
   setFieldTouched('fileNumber')
   setFieldTouched('regionId')
   setFieldTouched('officeId')
-  
-  // Validate required fields
-  let isValid = true
-  
-  console.log('🔍 التحقق من اسم المسجد:', newMosque.value.name)
-  if (!validateRequired(newMosque.value.name, 'name', 'اسم المسجد مطلوب')) {
-    isValid = false
-    console.log('❌ اسم المسجد فارغ')
-  } else if (!validateLength(newMosque.value.name, 'name', 2, 100, 'اسم المسجد يجب أن يكون بين 2 و 100 حرف')) {
-    isValid = false
-    console.log('❌ طول اسم المسجد غير صحيح')
-  } else {
-    console.log('✅ اسم المسجد صحيح')
-  }
-  
-  console.log('🔍 التحقق من رقم الملف:', newMosque.value.fileNumber)
-  if (!validateRequired(newMosque.value.fileNumber, 'fileNumber', 'رقم الملف مطلوب')) {
-    isValid = false
-    console.log('❌ رقم الملف فارغ')
-  } else {
-    console.log('✅ رقم الملف صحيح')
-  }
-  
-  console.log('🔍 التحقق من المنطقة:', newMosque.value.regionId)
-  if (!validateRequired(newMosque.value.regionId, 'regionId', 'المنطقة مطلوبة')) {
-    isValid = false
-    console.log('❌ المنطقة فارغة')
-  } else {
-    console.log('✅ المنطقة صحيحة')
-  }
-  
-  console.log('🔍 التحقق من المكتب:', newMosque.value.officeId)
-  if (!validateRequired(newMosque.value.officeId, 'officeId', 'المكتب مطلوب')) {
-    isValid = false
-    console.log('❌ المكتب فارغ')
-  } else {
-    console.log('✅ المكتب صحيح')
-  }
-  
-  if (newMosque.value.totalCoveredArea < 0) {
-    addError('totalCoveredArea', 'المساحة المغطاة لا يمكن أن تكون سالبة')
-    isValid = false
-    console.log('❌ المساحة المغطاة سالبة')
-  }
-  
-  if (newMosque.value.totalLandArea < 0) {
-    addError('totalLandArea', 'المساحة الكلية لا يمكن أن تكون سالبة')
-    isValid = false
-    console.log('❌ المساحة الكلية سالبة')
-  }
-  
-  if (newMosque.value.numberOfFloors < 1) {
-    addError('numberOfFloors', 'عدد الطوابق يجب أن يكون 1 على الأقل')
-    isValid = false
-    console.log('❌ عدد الطوابق أقل من 1')
-  }
-  
-  console.log('📊 نتيجة التحقق النهائية:', isValid)
-  console.log('🔍 الأخطاء الحالية:', validationState.errors)
-  
-  if (!isValid) {
-    console.log('🚫 التحقق فشل - لن يتم إرسال الطلب للباك اند')
-    console.log('💡 يرجى ملء جميع الحقول المطلوبة باللون الأحمر')
-    
-    // إظهار رسالة للمستخدم
-    alertMessage.value = 'يرجى ملء جميع الحقول المطلوبة المميزة باللون الأحمر'
-    alertType.value = 'warning'
-    showAlert.value = true
-    
-    return
-  }
-  
-  console.log('✅ التحقق نجح - سيتم إرسال الطلب للباك اند')
+  setFieldTouched('totalCoveredArea')
+  setFieldTouched('totalLandArea')
+  setFieldTouched('numberOfFloors')
+  setFieldTouched('openingDate')
+  setFieldTouched('constructionDate')
+  setFieldTouched('mosqueDefinition')
+  setFieldTouched('mosqueClassification')
+  setFieldTouched('sourceFunds')
 
   try {
     // معالجة التواريخ - إجبارية
@@ -436,52 +372,73 @@ const addMosque = async () => {
       }
     };
 
+    console.log('🚀 إرسال الطلب إلى الباك اند...')
+    
+    const requestBody = {
+      name: newMosque.value.name,
+      regionId: newMosque.value.regionId,
+      officeId: newMosque.value.officeId,
+      fileNumber: newMosque.value.fileNumber,
+      definition: newMosque.value.definition,
+      classification: newMosque.value.classification,
+      unit: newMosque.value.unit,
+      nearestLandmark: newMosque.value.nearestLandmark,
+      mapLocation: newMosque.value.mapLocation,
+      sanitation: newMosque.value.sanitation,
+      electricityMeter: newMosque.value.electricityMeter,
+      alternativeEnergySource: newMosque.value.alternativeEnergySource,
+      waterSource: newMosque.value.waterSource,
+      briefDescription: newMosque.value.briefDescription,
+      totalCoveredArea: newMosque.value.totalCoveredArea,
+      totalLandArea: newMosque.value.totalLandArea,
+      numberOfFloors: newMosque.value.numberOfFloors,
+      openingDate: processDate(newMosque.value.openingDate),
+      constructionDate: processDate(newMosque.value.constructionDate),
+      mosqueDefinition: newMosque.value.mosqueDefinition,
+      mosqueClassification: newMosque.value.mosqueClassification,
+      landDonorName: newMosque.value.landDonorName,
+      prayerCapacity: newMosque.value.prayerCapacity,
+      sourceFunds: newMosque.value.sourceFunds,
+      servicesSpecialNeeds: newMosque.value.servicesSpecialNeeds,
+      specialEntranceWomen: newMosque.value.specialEntranceWomen,
+      picturePath: newMosque.value.picturePath,
+    }
+    
+    console.log('📤 بيانات الطلب المرسل:', requestBody)
+    
     const response = await $api('/Mosque', {
       method: 'POST',
-      body: {
-        name: newMosque.value.name,
-        regionId: newMosque.value.regionId,
-        officeId: newMosque.value.officeId,
-        fileNumber: newMosque.value.fileNumber,
-        definition: newMosque.value.definition,
-        classification: newMosque.value.classification,
-        unit: newMosque.value.unit,
-        nearestLandmark: newMosque.value.nearestLandmark,
-        mapLocation: newMosque.value.mapLocation,
-        sanitation: newMosque.value.sanitation,
-        electricityMeter: newMosque.value.electricityMeter,
-        alternativeEnergySource: newMosque.value.alternativeEnergySource,
-        waterSource: newMosque.value.waterSource,
-        briefDescription: newMosque.value.briefDescription,
-        totalCoveredArea: newMosque.value.totalCoveredArea,
-        totalLandArea: newMosque.value.totalLandArea,
-        numberOfFloors: newMosque.value.numberOfFloors,
-        openingDate: processDate(newMosque.value.openingDate),
-        constructionDate: processDate(newMosque.value.constructionDate),
-        mosqueDefinition: newMosque.value.mosqueDefinition,
-        mosqueClassification: newMosque.value.mosqueClassification,
-        landDonorName: newMosque.value.landDonorName,
-        prayerCapacity: newMosque.value.prayerCapacity,
-        sourceFunds: newMosque.value.sourceFunds,
-        servicesSpecialNeeds: newMosque.value.servicesSpecialNeeds,
-        specialEntranceWomen: newMosque.value.specialEntranceWomen,
-        picturePath: newMosque.value.picturePath,
-      },
+      body: requestBody,
     })
+    
+    console.log('📥 استجابة الباك اند:', response)
     
     // Check if the response indicates success - response comes directly
     if (response && response.isSuccess === false) {
+      console.log('❌ الباك اند أرجع أخطاء في التحقق')
+      
       // Handle backend validation errors
       if (response.errors && Array.isArray(response.errors)) {
+        console.log('🔍 أخطاء FluentValidation:', response.errors)
         setErrorsFromResponse(response)
+        
+        // إظهار رسالة للمستخدم
+        alertMessage.value = 'يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
+        alertType.value = 'warning'
+        showAlert.value = true
+        
+        console.log('✅ تم عرض أخطاء التحقق في الحقول')
       } else {
         const errorMsg = response.message || 'حدث خطأ أثناء إضافة المسجد'
+        console.log('❌ خطأ عام من الباك اند:', errorMsg)
         alertMessage.value = errorMsg
         alertType.value = 'error'
         showAlert.value = true
       }
       return
     }
+    
+    console.log('✅ تم إنشاء المسجد بنجاح في الباك اند')
     
     dialog.value = false
     resetNewMosque()
@@ -490,10 +447,27 @@ const addMosque = async () => {
     alertType.value = 'success'
     showAlert.value = true
   } catch (error) {
-    console.error('Error adding mosque:', error)
-    alertMessage.value = 'حدث خطأ أثناء إضافة المسجد'
-    alertType.value = 'error'
-    showAlert.value = true
+    console.error('❌ خطأ في الشبكة أو في الخادم:', error)
+    
+    // التحقق من أن الخطأ يحتوي على أخطاء FluentValidation
+    if (error?.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+      console.log('🔍 أخطاء FluentValidation من الـ catch:', error.response.data.errors)
+      setErrorsFromResponse(error.response.data)
+      
+      alertMessage.value = 'يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
+      alertType.value = 'warning'
+      showAlert.value = true
+    } else if (error?.response?.data?.message) {
+      console.log('❌ رسالة خطأ من الخادم:', error.response.data.message)
+      alertMessage.value = error.response.data.message
+      alertType.value = 'error'
+      showAlert.value = true
+    } else {
+      console.log('❌ خطأ غير متوقع:', error.message || error)
+      alertMessage.value = 'حدث خطأ أثناء إضافة المسجد'
+      alertType.value = 'error'
+      showAlert.value = true
+    }
   }
 }
 
@@ -501,45 +475,22 @@ const updateMosque = async () => {
   // Clear previous errors
   clearErrors()
   
-  // Validate required fields
-  let isValid = true
+  console.log('📋 بيانات المسجد للتحديث:', editMosque.value)
+  console.log('🚀 إرسال طلب التحديث للباك اند دون تحقق في Frontend - سيعتمد على FluentValidation')
   
-  if (!validateRequired(editMosque.value.name, 'editName', 'اسم المسجد مطلوب')) {
-    isValid = false
-  } else if (!validateLength(editMosque.value.name, 'editName', 2, 100, 'اسم المسجد يجب أن يكون بين 2 و 100 حرف')) {
-    isValid = false
-  }
-  
-  if (!validateRequired(editMosque.value.fileNumber, 'editFileNumber', 'رقم الملف مطلوب')) {
-    isValid = false
-  }
-  
-  if (!validateRequired(editMosque.value.regionId, 'editRegionId', 'المنطقة مطلوبة')) {
-    isValid = false
-  }
-  
-  if (!validateRequired(editMosque.value.officeId, 'editOfficeId', 'المكتب مطلوب')) {
-    isValid = false
-  }
-  
-  if (editMosque.value.totalCoveredArea < 0) {
-    addError('editTotalCoveredArea', 'المساحة المغطاة لا يمكن أن تكون سالبة')
-    isValid = false
-  }
-  
-  if (editMosque.value.totalLandArea < 0) {
-    addError('editTotalLandArea', 'المساحة الكلية لا يمكن أن تكون سالبة')
-    isValid = false
-  }
-  
-  if (editMosque.value.numberOfFloors < 1) {
-    addError('editNumberOfFloors', 'عدد الطوابق يجب أن يكون 1 على الأقل')
-    isValid = false
-  }
-  
-  if (!isValid) {
-    return
-  }
+  // تعيين جميع الحقول كملموسة لإظهار الأخطاء من الباك اند
+  setFieldTouched('editName')
+  setFieldTouched('editFileNumber')
+  setFieldTouched('editRegionId')
+  setFieldTouched('editOfficeId')
+  setFieldTouched('editTotalCoveredArea')
+  setFieldTouched('editTotalLandArea')
+  setFieldTouched('editNumberOfFloors')
+  setFieldTouched('editOpeningDate')
+  setFieldTouched('editConstructionDate')
+  setFieldTouched('editMosqueDefinition')
+  setFieldTouched('editMosqueClassification')
+  setFieldTouched('editSourceFunds')
 
   try {
     // معالجة التواريخ - إجبارية
@@ -1754,7 +1705,6 @@ function showAlertMsg(msg, type = 'success') {
             color="primary"
             variant="flat"
             @click="addMosque"
-            :disabled="hasErrors"
           >
             حفظ
           </VBtn>
@@ -1991,7 +1941,6 @@ function showAlertMsg(msg, type = 'success') {
             color="primary"
             variant="flat"
             @click="updateMosque"
-            :disabled="hasErrors"
           >
             تحديث
           </VBtn>
