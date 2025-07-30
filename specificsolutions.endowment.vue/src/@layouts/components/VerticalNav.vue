@@ -119,7 +119,11 @@ const hideTitleAndIcon = configStore.isVerticalNavMini(isHovered)
           />
           <Component
             :is="layoutConfig.app.iconRenderer || 'div'"
-            class="d-lg-none"
+            class="nav-close-btn"
+            :class="{ 
+              'd-lg-none': !configStore.isLessThanOverlayNavBreakpoint && !isOverlayNavActive,
+              'd-block': configStore.isLessThanOverlayNavBreakpoint || isOverlayNavActive 
+            }"
             v-bind="layoutConfig.icons.close"
             @click="toggleIsOverlayNavActive(false)"
           />
@@ -191,6 +195,15 @@ const hideTitleAndIcon = configStore.isVerticalNavMini(isHovered)
 
     .header-action {
       cursor: pointer;
+
+      .nav-close-btn {
+        opacity: 0.8;
+        transition: opacity 0.2s ease;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
 
       @at-root {
         #{variables.$selector-vertical-nav-mini} .nav-header .header-action {
