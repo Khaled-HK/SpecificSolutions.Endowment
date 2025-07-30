@@ -331,45 +331,22 @@ const addMosque = async () => {
   // Clear previous errors
   clearErrors()
   
-  // Validate required fields
-  let isValid = true
+  console.log('📋 بيانات المسجد الجديد:', newMosque.value)
+  console.log('🚀 إرسال الطلب للباك اند دون تحقق في Frontend - سيعتمد على FluentValidation')
   
-  if (!validateRequired(newMosque.value.name, 'name', 'اسم المسجد مطلوب')) {
-    isValid = false
-  } else if (!validateLength(newMosque.value.name, 'name', 2, 100, 'اسم المسجد يجب أن يكون بين 2 و 100 حرف')) {
-    isValid = false
-  }
-  
-  if (!validateRequired(newMosque.value.fileNumber, 'fileNumber', 'رقم الملف مطلوب')) {
-    isValid = false
-  }
-  
-  if (!validateRequired(newMosque.value.regionId, 'regionId', 'المنطقة مطلوبة')) {
-    isValid = false
-  }
-  
-  if (!validateRequired(newMosque.value.officeId, 'officeId', 'المكتب مطلوب')) {
-    isValid = false
-  }
-  
-  if (newMosque.value.totalCoveredArea < 0) {
-    addError('totalCoveredArea', 'المساحة المغطاة لا يمكن أن تكون سالبة')
-    isValid = false
-  }
-  
-  if (newMosque.value.totalLandArea < 0) {
-    addError('totalLandArea', 'المساحة الكلية لا يمكن أن تكون سالبة')
-    isValid = false
-  }
-  
-  if (newMosque.value.numberOfFloors < 1) {
-    addError('numberOfFloors', 'عدد الطوابق يجب أن يكون 1 على الأقل')
-    isValid = false
-  }
-  
-  if (!isValid) {
-    return
-  }
+  // تعيين جميع الحقول كملموسة لإظهار الأخطاء من الباك اند
+  setFieldTouched('name')
+  setFieldTouched('fileNumber')
+  setFieldTouched('regionId')
+  setFieldTouched('officeId')
+  setFieldTouched('totalCoveredArea')
+  setFieldTouched('totalLandArea')
+  setFieldTouched('numberOfFloors')
+  setFieldTouched('openingDate')
+  setFieldTouched('constructionDate')
+  setFieldTouched('mosqueDefinition')
+  setFieldTouched('mosqueClassification')
+  setFieldTouched('sourceFunds')
 
   try {
     // معالجة التواريخ - إجبارية
@@ -391,13 +368,13 @@ const addMosque = async () => {
       }
     };
 
-    const response = await $api('/Mosque', {
-      method: 'POST',
-      body: {
-        name: newMosque.value.name,
-        regionId: newMosque.value.regionId,
-        officeId: newMosque.value.officeId,
-        fileNumber: newMosque.value.fileNumber,
+    console.log('🚀 إرسال الطلب إلى الباك اند...')
+    
+    const requestBody = {
+      name: newMosque.value.name,
+      regionId: newMosque.value.regionId,
+      officeId: newMosque.value.officeId,
+      fileNumber: newMosque.value.fileNumber,
         definition: newMosque.value.definition,
         classification: newMosque.value.classification,
         unit: newMosque.value.unit,
@@ -421,22 +398,43 @@ const addMosque = async () => {
         servicesSpecialNeeds: newMosque.value.servicesSpecialNeeds,
         specialEntranceWomen: newMosque.value.specialEntranceWomen,
         picturePath: newMosque.value.picturePath,
-      },
+      }
+    
+    console.log('📤 بيانات الطلب المرسل:', requestBody)
+    
+    const response = await $api('/Mosque', {
+      method: 'POST',
+      body: requestBody,
     })
+    
+    console.log('📥 استجابة الباك اند:', response)
     
     // Check if the response indicates success - response comes directly
     if (response && response.isSuccess === false) {
+      console.log('❌ الباك اند أرجع أخطاء في التحقق')
+      
       // Handle backend validation errors
       if (response.errors && Array.isArray(response.errors)) {
+        console.log('🔍 أخطاء FluentValidation:', response.errors)
         setErrorsFromResponse(response)
+        
+        // إظهار رسالة للمستخدم
+        alertMessage.value = 'يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
+        alertType.value = 'warning'
+        showAlert.value = true
+        
+        console.log('✅ تم عرض أخطاء التحقق في الحقول')
       } else {
         const errorMsg = response.message || 'حدث خطأ أثناء إضافة المسجد'
+        console.log('❌ خطأ عام من الباك اند:', errorMsg)
         alertMessage.value = errorMsg
         alertType.value = 'error'
         showAlert.value = true
       }
       return
     }
+    
+    console.log('✅ تم إنشاء المسجد بنجاح في الباك اند')
     
     dialog.value = false
     resetNewMosque()
@@ -445,10 +443,28 @@ const addMosque = async () => {
     alertType.value = 'success'
     showAlert.value = true
   } catch (error) {
-    console.error('Error adding mosque:', error)
-    alertMessage.value = 'حدث خطأ أثناء إضافة المسجد'
-    alertType.value = 'error'
-    showAlert.value = true
+    console.error('❌ خطأ في الشبكة أو في الخادم:', error)
+    
+    // التحقق من أن الخطأ يحتوي على أخطاء FluentValidation
+    if (error?.data?.errors && Array.isArray(error.data.errors)) {
+      console.log('🔍 أخطاء FluentValidation من الـ catch:', error.data.errors)
+      setErrorsFromResponse(error.data)
+      
+      alertMessage.value = 'يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
+      alertType.value = 'warning'
+      showAlert.value = true
+      console.log('✅ تم عرض أخطاء التحقق في الحقول')
+    } else if (error?.data?.message) {
+      console.log('❌ رسالة خطأ من الخادم:', error.data.message)
+      alertMessage.value = error.data.message
+      alertType.value = 'error'
+      showAlert.value = true
+    } else {
+      console.log('❌ خطأ غير متوقع:', error.message || error)
+      alertMessage.value = 'حدث خطأ أثناء إضافة المسجد'
+      alertType.value = 'error'
+      showAlert.value = true
+    }
   }
 }
 
