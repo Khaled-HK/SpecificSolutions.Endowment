@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using SpecificSolutions.Endowment.Application.Abstractions.Contracts;
 using SpecificSolutions.Endowment.Application.Abstractions.IRepositories;
 using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
@@ -11,35 +12,54 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Mosques.Commands.Crea
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserContext _userContext;
+        private readonly ILogger<CreateMosqueHandler> _logger;
 
-        public CreateMosqueHandler(IUnitOfWork unitOfWork, IUserContext userContext)
+        public CreateMosqueHandler(IUnitOfWork unitOfWork, IUserContext userContext, ILogger<CreateMosqueHandler> logger)
         {
             _unitOfWork = unitOfWork;
             _userContext = userContext;
+            _logger = logger;
         }
 
         public async Task<EndowmentResponse> Handle(CreateMosqueCommand request, CancellationToken cancellationToken)
         {
+            _logger.LogInformation("🏗️ معالج إنشاء المسجد - بدء المعالجة");
+            _logger.LogInformation("📋 بيانات الطلب: {@Request}", request);
+            
             // Get UserId from JWT token via IUserContext and set it in the command
             var userId = _userContext.GetUserIdOrDefault();
             if (!userId.HasValue)
             {
+                _logger.LogWarning("❌ فشل في الحصول على معرف المستخدم من الـ JWT token");
                 return Response.FailureResponse("User context is unavailable - Please log in again");
             }
             
+            _logger.LogInformation("👤 معرف المستخدم: {UserId}", userId.Value);
             request.UserId = userId.Value.ToString();
 
-            // Create the building first with UserId from token
-            var building = Building.Create(request);
-            await _unitOfWork.Buildings.AddAsync(building, cancellationToken);
-            
-            // Create the mosque with the existing building
-            var mosque = Mosque.Create(request, building);
-            await _unitOfWork.Mosques.AddAsync(mosque, cancellationToken);
-            
-            await _unitOfWork.CompleteAsync(cancellationToken);
+            try
+            {
+                // Create the building first with UserId from token
+                _logger.LogInformation("🏢 إنشاء مبنى جديد");
+                var building = Building.Create(request);
+                await _unitOfWork.Buildings.AddAsync(building, cancellationToken);
+                
+                // Create the mosque with the existing building
+                _logger.LogInformation("🕌 إنشاء مسجد جديد");
+                var mosque = Mosque.Create(request, building);
+                await _unitOfWork.Mosques.AddAsync(mosque, cancellationToken);
+                
+                _logger.LogInformation("💾 حفظ التغييرات في قاعدة البيانات");
+                await _unitOfWork.CompleteAsync(cancellationToken);
 
-            return Response.Added();
+                _logger.LogInformation("✅ تم إنشاء المسجد بنجاح");
+                return Response.Added();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "❌ خطأ أثناء إنشاء المسجد");
+                throw;
+            }
         }
     }
 }
