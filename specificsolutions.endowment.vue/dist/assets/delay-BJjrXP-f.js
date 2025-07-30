@@ -1,5 +1,0 @@
-<<<<<<<< HEAD:specificsolutions.endowment.vue/dist/assets/delay-B-71RVYE.js
-import{W as y,cC as m}from"./index-Cntplsxc.js";const f=y({closeDelay:[Number,String],openDelay:[Number,String]},"delay");function c(o,r){let e=()=>{};function t(n){e==null||e();const l=Number(n?o.openDelay:o.closeDelay);return new Promise(s=>{e=m(l,()=>{r==null||r(n),s(n)})})}function u(){return t(!0)}function a(){return t(!1)}return{clearDelay:e,runOpenDelay:u,runCloseDelay:a}}export{f as m,c as u};
-========
-import{W as y,cD as D}from"./index-CK1fpvPu.js";const f=y({closeDelay:[Number,String],openDelay:[Number,String]},"delay");function c(o,r){let e=()=>{};function t(n){e==null||e();const l=Number(n?o.openDelay:o.closeDelay);return new Promise(s=>{e=D(l,()=>{r==null||r(n),s(n)})})}function u(){return t(!0)}function a(){return t(!1)}return{clearDelay:e,runOpenDelay:u,runCloseDelay:a}}export{f as m,c as u};
->>>>>>>> cursor/handle-login-and-interface-access-eaf3:specificsolutions.endowment.vue/dist/assets/delay-BJjrXP-f.js

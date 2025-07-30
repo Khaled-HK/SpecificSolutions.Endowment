@@ -1,5 +1,0 @@
-<<<<<<<< HEAD:specificsolutions.endowment.vue/dist/assets/DialogCloseBtn-DMxwUaDS.js
-import{a as t,f as a,o as s,e as c,b as i,V as r}from"./index-Cntplsxc.js";const f={__name:"DialogCloseBtn",props:{icon:{type:String,required:!1,default:"tabler-x"},iconSize:{type:String,required:!1,default:"20"}},setup(o){const e=o;return(l,p)=>{const n=t("IconBtn");return s(),a(n,{variant:"elevated",size:"30",ripple:!1,class:"v-dialog-close-btn"},{default:c(()=>[i(r,{icon:e.icon,size:e.iconSize},null,8,["icon","size"])]),_:1})}}};export{f as _};
-========
-import{a as t,f as a,o as s,e as c,b as i,V as r}from"./index-CK1fpvPu.js";const f={__name:"DialogCloseBtn",props:{icon:{type:String,required:!1,default:"tabler-x"},iconSize:{type:String,required:!1,default:"20"}},setup(o){const e=o;return(l,p)=>{const n=t("IconBtn");return s(),a(n,{variant:"elevated",size:"30",ripple:!1,class:"v-dialog-close-btn"},{default:c(()=>[i(r,{icon:e.icon,size:e.iconSize},null,8,["icon","size"])]),_:1})}}};export{f as _};
->>>>>>>> cursor/handle-login-and-interface-access-eaf3:specificsolutions.endowment.vue/dist/assets/DialogCloseBtn-VqE2TsGb.js

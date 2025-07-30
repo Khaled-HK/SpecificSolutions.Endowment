@@ -1,5 +1,0 @@
-<<<<<<<< HEAD:specificsolutions.endowment.vue/dist/assets/VContainer-JLW0EqIv.js
-/* empty css              */import{ai as o,W as i,aA as r,am as l,a0 as m,b as c,as as u,ax as d,a2 as p}from"./index-Cntplsxc.js";const C=i({fluid:{type:Boolean,default:!1},...p(),...d(),...u()},"VContainer"),y=o()({name:"VContainer",props:C(),setup(a,e){let{slots:s}=e;const{rtlClasses:n}=r(),{dimensionStyles:t}=l(a);return m(()=>c(a.tag,{class:["v-container",{"v-container--fluid":a.fluid},n.value,a.class],style:[t.value,a.style]},s)),{}}});export{y as V};
-========
-/* empty css              */import{ai as o,W as i,aA as r,am as l,a0 as m,b as c,as as u,ax as d,a2 as p}from"./index-CK1fpvPu.js";const C=i({fluid:{type:Boolean,default:!1},...p(),...d(),...u()},"VContainer"),y=o()({name:"VContainer",props:C(),setup(a,e){let{slots:s}=e;const{rtlClasses:n}=r(),{dimensionStyles:t}=l(a);return m(()=>c(a.tag,{class:["v-container",{"v-container--fluid":a.fluid},n.value,a.class],style:[t.value,a.style]},s)),{}}});export{y as V};
->>>>>>>> cursor/handle-login-and-interface-access-eaf3:specificsolutions.endowment.vue/dist/assets/VContainer-D300hw9v.js

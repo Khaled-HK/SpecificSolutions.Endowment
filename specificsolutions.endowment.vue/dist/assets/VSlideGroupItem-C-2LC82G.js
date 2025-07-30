@@ -1,5 +1,0 @@
-<<<<<<<< HEAD:specificsolutions.endowment.vue/dist/assets/VSlideGroupItem-C-2LC82G.js
-import{ai as r,cm as a,cl as m}from"./index-Cntplsxc.js";import{a as p}from"./VSlideGroup-DA7CqE5d.js";const i=r()({name:"VSlideGroupItem",props:a(),emits:{"group:selected":s=>!0},setup(s,o){let{slots:t}=o;const e=m(s,p);return()=>{var l;return(l=t.default)==null?void 0:l.call(t,{isSelected:e.isSelected.value,select:e.select,toggle:e.toggle,selectedClass:e.selectedClass.value})}}});export{i as V};
-========
-import{ai as r,cn as a,cm as m}from"./index-CK1fpvPu.js";import{a as p}from"./VSlideGroup-CXxg8nxX.js";const i=r()({name:"VSlideGroupItem",props:a(),emits:{"group:selected":s=>!0},setup(s,o){let{slots:t}=o;const e=m(s,p);return()=>{var l;return(l=t.default)==null?void 0:l.call(t,{isSelected:e.isSelected.value,select:e.select,toggle:e.toggle,selectedClass:e.selectedClass.value})}}});export{i as V};
->>>>>>>> cursor/handle-login-and-interface-access-eaf3:specificsolutions.endowment.vue/dist/assets/VSlideGroupItem-BdotAdmp.js

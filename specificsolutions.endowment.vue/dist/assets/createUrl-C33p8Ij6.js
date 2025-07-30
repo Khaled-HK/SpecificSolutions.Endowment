@@ -1,1 +1,0 @@
-import{s as f}from"./api-BjArV0gv.js";import{P as q,cM as e}from"./index-Cntplsxc.js";const s=(c,r)=>q(()=>{if(!(r!=null&&r.query))return e(c);const t=e(c),a=e(r==null?void 0:r.query),u=Object.fromEntries(Object.entries(a).map(([m,y])=>[m,e(y)]));return`${t}${u?`?${f(u)}`:""}`});export{s as c};

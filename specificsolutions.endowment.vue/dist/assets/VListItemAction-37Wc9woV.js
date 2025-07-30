@@ -1,5 +1,0 @@
-<<<<<<<< HEAD:specificsolutions.endowment.vue/dist/assets/VListItemAction-BaY4F-UJ.js
-import{ai as a,W as o,a0 as n,b as i,as as m,a2 as c}from"./index-Cntplsxc.js";const r=o({start:Boolean,end:Boolean,...c(),...m()},"VListItemAction"),V=a()({name:"VListItemAction",props:r(),setup(t,e){let{slots:s}=e;return n(()=>i(t.tag,{class:["v-list-item-action",{"v-list-item-action--start":t.start,"v-list-item-action--end":t.end},t.class],style:t.style},s)),{}}});export{V};
-========
-import{ai as a,W as o,a0 as n,b as i,as as m,a2 as c}from"./index-CK1fpvPu.js";const r=o({start:Boolean,end:Boolean,...c(),...m()},"VListItemAction"),V=a()({name:"VListItemAction",props:r(),setup(t,e){let{slots:s}=e;return n(()=>i(t.tag,{class:["v-list-item-action",{"v-list-item-action--start":t.start,"v-list-item-action--end":t.end},t.class],style:t.style},s)),{}}});export{V};
->>>>>>>> cursor/handle-login-and-interface-access-eaf3:specificsolutions.endowment.vue/dist/assets/VListItemAction-37Wc9woV.js
