@@ -127,7 +127,12 @@ const getCurrentDate = (): string => {
   return today.toISOString().split('T')[0];
 }
 
-// Simple alert state
+// استخدام نظام التنبيهات الجديد
+import { useAlert } from '@/composables/useAlert'
+
+const { showSuccess, showError, showWarning, showInfo } = useAlert()
+
+// Simple alert state (للتوافق مع الكود الموجود)
 const showAlert = ref(false)
 const alertMessage = ref('')
 const alertType = ref<'success' | 'error' | 'warning' | 'info'>('success')
@@ -331,45 +336,19 @@ const addMosque = async () => {
   // Clear previous errors
   clearErrors()
   
-  // Validate required fields
-  let isValid = true
-  
-  if (!validateRequired(newMosque.value.name, 'name', 'اسم المسجد مطلوب')) {
-    isValid = false
-  } else if (!validateLength(newMosque.value.name, 'name', 2, 100, 'اسم المسجد يجب أن يكون بين 2 و 100 حرف')) {
-    isValid = false
-  }
-  
-  if (!validateRequired(newMosque.value.fileNumber, 'fileNumber', 'رقم الملف مطلوب')) {
-    isValid = false
-  }
-  
-  if (!validateRequired(newMosque.value.regionId, 'regionId', 'المنطقة مطلوبة')) {
-    isValid = false
-  }
-  
-  if (!validateRequired(newMosque.value.officeId, 'officeId', 'المكتب مطلوب')) {
-    isValid = false
-  }
-  
-  if (newMosque.value.totalCoveredArea < 0) {
-    addError('totalCoveredArea', 'المساحة المغطاة لا يمكن أن تكون سالبة')
-    isValid = false
-  }
-  
-  if (newMosque.value.totalLandArea < 0) {
-    addError('totalLandArea', 'المساحة الكلية لا يمكن أن تكون سالبة')
-    isValid = false
-  }
-  
-  if (newMosque.value.numberOfFloors < 1) {
-    addError('numberOfFloors', 'عدد الطوابق يجب أن يكون 1 على الأقل')
-    isValid = false
-  }
-  
-  if (!isValid) {
-    return
-  }
+  // Mark all fields as touched to ensure errors show immediately
+  setFieldTouched('name')
+  setFieldTouched('fileNumber')
+  setFieldTouched('regionId')
+  setFieldTouched('officeId')
+  setFieldTouched('totalCoveredArea')
+  setFieldTouched('totalLandArea')
+  setFieldTouched('numberOfFloors')
+  setFieldTouched('openingDate')
+  setFieldTouched('constructionDate')
+  setFieldTouched('mosqueDefinition')
+  setFieldTouched('mosqueClassification')
+  setFieldTouched('sourceFunds')
 
   try {
     // معالجة التواريخ - إجبارية
@@ -428,9 +407,26 @@ const addMosque = async () => {
     if (response && response.isSuccess === false) {
       // Handle backend validation errors
       if (response.errors && Array.isArray(response.errors)) {
-        setErrorsFromResponse(response)
+        setErrorsFromResponse(response, 'add')
+        
+        // إظهار رسالة للمستخدم باستخدام النظام الجديد
+        showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
+          timeout: 5000,
+          clickToDismiss: true
+        })
+        
+        // للتوافق مع الكود الموجود
+        alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
+        alertType.value = 'warning'
+        showAlert.value = true
       } else {
         const errorMsg = response.message || 'حدث خطأ أثناء إضافة المسجد'
+        showError(errorMsg, {
+          timeout: 0, // لا يختفي تلقائياً للأخطاء المهمة
+          clickToDismiss: true
+        })
+        
+        // للتوافق مع الكود الموجود
         alertMessage.value = errorMsg
         alertType.value = 'error'
         showAlert.value = true
@@ -441,14 +437,52 @@ const addMosque = async () => {
     dialog.value = false
     resetNewMosque()
     loadMosques()
+    showSuccess('تم إضافة المسجد بنجاح', {
+      timeout: 4000,
+      clickToDismiss: true
+    })
+    
+    // للتوافق مع الكود الموجود
     alertMessage.value = 'تم إضافة المسجد بنجاح'
     alertType.value = 'success'
     showAlert.value = true
-  } catch (error) {
-    console.error('Error adding mosque:', error)
-    alertMessage.value = 'حدث خطأ أثناء إضافة المسجد'
-    alertType.value = 'error'
-    showAlert.value = true
+  } catch (error: any) {
+    console.error('❌ خطأ في الشبكة أو في الخادم:', error)
+    
+    // التحقق من أن الخطأ يحتوي على أخطاء FluentValidation
+    if (error?.data?.errors && Array.isArray(error.data.errors)) {
+      setErrorsFromResponse(error.data, 'add')
+      
+      showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
+        timeout: 5000,
+        clickToDismiss: true
+      })
+      
+      // للتوافق مع الكود الموجود
+      alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
+      alertType.value = 'warning'
+      showAlert.value = true
+    } else if (error?.data?.message) {
+      showError(error.data.message, {
+        timeout: 0,
+        clickToDismiss: true
+      })
+      
+      // للتوافق مع الكود الموجود
+      alertMessage.value = error.data.message
+      alertType.value = 'error'
+      showAlert.value = true
+    } else {
+      showError('حدث خطأ أثناء إضافة المسجد', {
+        timeout: 0,
+        clickToDismiss: true
+      })
+      
+      // للتوافق مع الكود الموجود
+      alertMessage.value = 'حدث خطأ أثناء إضافة المسجد'
+      alertType.value = 'error'
+      showAlert.value = true
+    }
   }
 }
 
@@ -456,45 +490,19 @@ const updateMosque = async () => {
   // Clear previous errors
   clearErrors()
   
-  // Validate required fields
-  let isValid = true
-  
-  if (!validateRequired(editMosque.value.name, 'editName', 'اسم المسجد مطلوب')) {
-    isValid = false
-  } else if (!validateLength(editMosque.value.name, 'editName', 2, 100, 'اسم المسجد يجب أن يكون بين 2 و 100 حرف')) {
-    isValid = false
-  }
-  
-  if (!validateRequired(editMosque.value.fileNumber, 'editFileNumber', 'رقم الملف مطلوب')) {
-    isValid = false
-  }
-  
-  if (!validateRequired(editMosque.value.regionId, 'editRegionId', 'المنطقة مطلوبة')) {
-    isValid = false
-  }
-  
-  if (!validateRequired(editMosque.value.officeId, 'editOfficeId', 'المكتب مطلوب')) {
-    isValid = false
-  }
-  
-  if (editMosque.value.totalCoveredArea < 0) {
-    addError('editTotalCoveredArea', 'المساحة المغطاة لا يمكن أن تكون سالبة')
-    isValid = false
-  }
-  
-  if (editMosque.value.totalLandArea < 0) {
-    addError('editTotalLandArea', 'المساحة الكلية لا يمكن أن تكون سالبة')
-    isValid = false
-  }
-  
-  if (editMosque.value.numberOfFloors < 1) {
-    addError('editNumberOfFloors', 'عدد الطوابق يجب أن يكون 1 على الأقل')
-    isValid = false
-  }
-  
-  if (!isValid) {
-    return
-  }
+  // Mark all fields as touched to ensure errors show immediately
+  setFieldTouched('editName')
+  setFieldTouched('editFileNumber')
+  setFieldTouched('editRegionId')
+  setFieldTouched('editOfficeId')
+  setFieldTouched('editTotalCoveredArea')
+  setFieldTouched('editTotalLandArea')
+  setFieldTouched('editNumberOfFloors')
+  setFieldTouched('editOpeningDate')
+  setFieldTouched('editConstructionDate')
+  setFieldTouched('editMosqueDefinition')
+  setFieldTouched('editMosqueClassification')
+  setFieldTouched('editSourceFunds')
 
   try {
     // معالجة التواريخ - إجبارية
@@ -516,20 +524,7 @@ const updateMosque = async () => {
       }
     };
 
-    // طباعة البيانات المرسلة للتأكد
-    console.log('البيانات المرسلة للتحديث:', {
-      id: selectedMosque.value?.mosqueID,
-      name: editMosque.value.name,
-      regionId: editMosque.value.regionId,
-      officeId: editMosque.value.officeId,
-      openingDate: processDate(editMosque.value.openingDate),
-      constructionDate: processDate(editMosque.value.constructionDate),
-      // ... باقي الحقول
-    });
-    
-    // طباعة الـ ID المرسل للتأكد
-    console.log('ID المرسل:', selectedMosque.value?.mosqueID);
-    console.log('نوع الـ ID:', typeof selectedMosque.value?.mosqueID);
+
     
     const response = await $api(`/Mosque/${selectedMosque.value?.mosqueID}`, {
       method: 'PUT',
@@ -569,7 +564,7 @@ const updateMosque = async () => {
     if (response && response.isSuccess === false) {
       // Handle backend validation errors
       if (response.errors && Array.isArray(response.errors)) {
-        setErrorsFromResponse(response)
+        setErrorsFromResponse(response, 'edit')
       } else {
         const errorMsg = response.message || 'حدث خطأ أثناء تحديث المسجد'
         alertMessage.value = errorMsg
@@ -581,14 +576,52 @@ const updateMosque = async () => {
     
     editDialog.value = false
     loadMosques()
+    showSuccess('تم تحديث المسجد بنجاح', {
+      timeout: 4000,
+      clickToDismiss: true
+    })
+    
+    // للتوافق مع الكود الموجود
     alertMessage.value = 'تم تحديث المسجد بنجاح'
     alertType.value = 'success'
     showAlert.value = true
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error updating mosque:', error)
-    alertMessage.value = 'حدث خطأ أثناء تحديث المسجد'
-    alertType.value = 'error'
-    showAlert.value = true
+    
+    // التحقق من أن الخطأ يحتوي على أخطاء FluentValidation
+    if (error?.data?.errors && Array.isArray(error.data.errors)) {
+      setErrorsFromResponse(error.data, 'edit')
+      
+      showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
+        timeout: 5000,
+        clickToDismiss: true
+      })
+      
+      // للتوافق مع الكود الموجود
+      alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
+      alertType.value = 'warning'
+      showAlert.value = true
+    } else if (error?.data?.message) {
+      showError(error.data.message, {
+        timeout: 0,
+        clickToDismiss: true
+      })
+      
+      // للتوافق مع الكود الموجود
+      alertMessage.value = error.data.message
+      alertType.value = 'error'
+      showAlert.value = true
+    } else {
+      showError('حدث خطأ أثناء تحديث المسجد', {
+        timeout: 0,
+        clickToDismiss: true
+      })
+      
+      // للتوافق مع الكود الموجود
+      alertMessage.value = 'حدث خطأ أثناء تحديث المسجد'
+      alertType.value = 'error'
+      showAlert.value = true
+    }
   }
 }
 
@@ -596,18 +629,19 @@ const deleteMosque = async () => {
   if (!selectedMosque.value) return
   
   try {
-    console.log('Attempting to delete mosque:', selectedMosque.value.mosqueID)
     const response = await $api(`/Mosque/${selectedMosque.value.mosqueID}`, {
       method: 'DELETE',
     })
     
-    console.log('Delete response:', response)
-    console.log('Response data:', response.data)
-    
     // Check if the response indicates success - response comes directly
     if (response && response.isSuccess === false) {
       const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء حذف المسجد'
-      console.log('API returned error:', errorMsg)
+      showError(errorMsg, {
+        timeout: 0,
+        clickToDismiss: true
+      })
+      
+      // للتوافق مع الكود الموجود
       alertMessage.value = errorMsg
       alertType.value = 'error'
       showAlert.value = true
@@ -616,15 +650,27 @@ const deleteMosque = async () => {
     }
     
     // If we reach here, the deletion was successful
-    console.log('Mosque deleted successfully')
+
     deleteDialog.value = false
     loadMosques()
+    showSuccess('تم حذف المسجد بنجاح', {
+      timeout: 4000,
+      clickToDismiss: true
+    })
+    
+    // للتوافق مع الكود الموجود
     alertMessage.value = 'تم حذف المسجد بنجاح'
     alertType.value = 'success'
     showAlert.value = true
   } catch (error) {
     console.error('Error deleting mosque:', error)
     // ofetch doesn't throw for HTTP errors, so this is likely a network error
+    showError('حدث خطأ في الاتصال بالخادم', {
+      timeout: 0,
+      clickToDismiss: true
+    })
+    
+    // للتوافق مع الكود الموجود
     alertMessage.value = 'حدث خطأ في الاتصال بالخادم'
     alertType.value = 'error'
     showAlert.value = true
@@ -651,6 +697,12 @@ const deleteSelectedRows = async () => {
         response?.message || response?.errors?.[0]?.errorMessage || 'حدث خطأ أثناء العملية'
       )
       const errorMsg = `فشل في حذف ${failedOperations.length} عنصر: ${errorMessages.join(', ')}`
+      showError(errorMsg, {
+        timeout: 0,
+        clickToDismiss: true
+      })
+      
+      // للتوافق مع الكود الموجود
       alertMessage.value = errorMsg
       alertType.value = 'error'
       showAlert.value = true
@@ -660,12 +712,24 @@ const deleteSelectedRows = async () => {
     // If we reach here, all deletions were successful
     selectedRows.value = []
     loadMosques()
+    showSuccess('تم حذف المساجد المحددة بنجاح', {
+      timeout: 4000,
+      clickToDismiss: true
+    })
+    
+    // للتوافق مع الكود الموجود
     alertMessage.value = 'تم حذف المساجد المحددة بنجاح'
     alertType.value = 'success'
     showAlert.value = true
   } catch (error) {
     console.error('Error deleting selected mosques:', error)
     // ofetch doesn't throw for HTTP errors, so this is likely a network error
+    showError('حدث خطأ في الاتصال بالخادم', {
+      timeout: 0,
+      clickToDismiss: true
+    })
+    
+    // للتوافق مع الكود الموجود
     alertMessage.value = 'حدث خطأ في الاتصال بالخادم'
     alertType.value = 'error'
     showAlert.value = true
@@ -674,7 +738,7 @@ const deleteSelectedRows = async () => {
 
 const openEditDialog = async (mosque: Mosque) => {
   // طباعة بيانات المسجد القادمة من API
-  console.log('بيانات المسجد من API:', mosque);
+  
   
   // تأكد من تحميل القوائم قبل التعديل
   if (regions.value.length === 0) await loadRegions();
@@ -686,7 +750,7 @@ const openEditDialog = async (mosque: Mosque) => {
   // البحث عن officeId بناءً على اسم المكتب
   const officeId = offices.value.find(o => o.name === mosque.office)?.id || '';
   
-  console.log('تم العثور على:', { regionId, officeId, regionName: mosque.region, officeName: mosque.office });
+  
 
   // تحويل التواريخ من ISO string إلى YYYY-MM-DD
   const formatDate = (dateString: string | null | undefined): string => {
@@ -732,7 +796,7 @@ const openEditDialog = async (mosque: Mosque) => {
   selectedMosque.value = mosque;
   editDialog.value = true;
   // طباعة القيم للتأكد
-  console.log('editMosque.value عند التعديل:', editMosque.value);
+  
 }
 
 const openBuildingDetailsDialog = async (mosque: Mosque) => {
@@ -1240,7 +1304,7 @@ const updateFacilityDetail = async () => {
     if (response && response.isSuccess === false) {
       let errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء تعديل المادة';
       errorMsg = errorMsg.replace(/\n/g, '');
-      console.log('رسالة الخطأ:', errorMsg);
+  
       showAlertMsg(errorMsg, 'error');
       return;
     }
@@ -1282,16 +1346,7 @@ function showAlertMsg(msg, type = 'success') {
 
 <template>
   <div>
-    <!-- Simple VAlert - just like template examples -->
-    <VAlert
-      v-model="showAlert"
-      :type="alertType"
-      variant="tonal"
-      closable
-      class="mb-4"
-    >
-      {{ alertMessage }}
-    </VAlert>
+
 
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center pa-6">
@@ -1468,41 +1523,67 @@ function showAlertMsg(msg, type = 'success') {
       max-width="800px"
       persistent
     >
+      <!-- Alert for validation errors and success messages - Above VCard -->
+      <div class="d-flex justify-center mb-4" v-if="showAlert">
+        <VAlert
+          v-model="showAlert"
+          :type="alertType"
+          variant="tonal"
+          closable
+          @click="showAlert = false"
+          style="cursor: pointer;"
+          :style="{
+            position: 'relative',
+            zIndex: 9999,
+            maxWidth: '600px',
+            width: '100%',
+            borderRadius: alertType === 'success' ? '16px' : '8px',
+            boxShadow: alertType === 'success' ? '0 2px 4px rgba(76, 175, 80, 0.2)' : '0 2px 8px rgba(0,0,0,0.15)',
+            border: alertType === 'success' ? '1px solid #4caf50' : '1px solid',
+            borderColor: alertType === 'warning' ? '#ff9800' : alertType === 'error' ? '#f44336' : '#4caf50',
+            backgroundColor: alertType === 'success' ? '#e8f5e8' : alertType === 'warning' ? '#fff8e1' : alertType === 'error' ? '#ffebee' : '#e8f5e8',
+            padding: alertType === 'success' ? '12px 16px' : '16px'
+          }"
+        >
+          <div class="d-flex align-center">
+            <VIcon
+              :icon="alertType === 'warning' ? 'tabler-alert-triangle' : alertType === 'error' ? 'tabler-alert-circle' : 'tabler-check-circle'"
+              :color="alertType === 'warning' ? 'warning' : alertType === 'error' ? 'error' : 'success'"
+              class="me-2"
+            />
+            <span class="font-weight-medium" :style="{ color: alertType === 'success' ? '#2e7d32' : 'inherit' }">{{ alertMessage }}</span>
+          </div>
+        </VAlert>
+      </div>
+      
       <VCard>
-        <VCardTitle class="text-h6">إضافة مسجد جديد</VCardTitle>
-        <VCardText>
-          <VForm @submit.prevent="addMosque">
+          <VCardTitle class="text-h6">إضافة مسجد جديد</VCardTitle>
+          <VCardText>
+            <VForm @submit.prevent="addMosque">
             <VRow>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="newMosque.name"
                   label="اسم المسجد"
                   variant="outlined"
                   required
-                  :error="shouldShowFieldError('name')"
-                  :error-messages="getFieldErrors('name')"
+                  :error="validationState.errors.name && validationState.errors.name.length > 0 && validationState.touched.name"
+                  :error-messages="validationState.errors.name || []"
                   @blur="setFieldTouched('name')"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="newMosque.fileNumber"
                   label="رقم الملف"
                   variant="outlined"
                   required
-                  :error="shouldShowFieldError('fileNumber')"
-                  :error-messages="getFieldErrors('fileNumber')"
+                  :error="validationState.errors.fileNumber && validationState.errors.fileNumber.length > 0 && validationState.touched.fileNumber"
+                  :error-messages="validationState.errors.fileNumber || []"
                   @blur="setFieldTouched('fileNumber')"
                 />
               </VCol>
-              <VCol cols="12" md="4">
-                <VTextField
-                  v-model="newMosque.unit"
-                  label="الوحدة"
-                  variant="outlined"
-                />
-              </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VAutocomplete
                   v-model="newMosque.regionId"
                   label="المنطقة"
@@ -1514,15 +1595,15 @@ function showAlertMsg(msg, type = 'success') {
                   clearable
                   no-data-text="لا توجد مناطق متاحة"
                   required
-                  :error="shouldShowFieldError('regionId')"
-                  :error-messages="getFieldErrors('regionId')"
+                  :error="validationState.errors.regionId && validationState.errors.regionId.length > 0 && validationState.touched.regionId"
+                  :error-messages="validationState.errors.regionId || []"
                   @blur="setFieldTouched('regionId')"
                   prepend-inner-icon="mdi-map"
                   placeholder="اختر المنطقة..."
                   hide-no-data
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VAutocomplete
                   v-model="newMosque.officeId"
                   label="المكتب"
@@ -1534,75 +1615,86 @@ function showAlertMsg(msg, type = 'success') {
                   clearable
                   no-data-text="لا توجد مكاتب متاحة"
                   required
-                  :error="shouldShowFieldError('officeId')"
-                  :error-messages="getFieldErrors('officeId')"
+                  :error="validationState.errors.officeId && validationState.errors.officeId.length > 0 && validationState.touched.officeId"
+                  :error-messages="validationState.errors.officeId || []"
                   @blur="setFieldTouched('officeId')"
                   prepend-inner-icon="mdi-office-building"
                   placeholder="اختر المكتب..."
                   hide-no-data
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="newMosque.unit"
+                  label="الوحدة"
+                  variant="outlined"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="newMosque.nearestLandmark"
                   label="أقرب معلم"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="newMosque.mapLocation"
                   label="موقع الخريطة"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="newMosque.electricityMeter"
                   label="عداد الكهرباء"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="newMosque.alternativeEnergySource"
                   label="مصدر الطاقة البديل"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="newMosque.waterSource"
                   label="مصدر المياه"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="newMosque.sanitation"
                   label="الصرف الصحي"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="newMosque.totalLandArea"
                   label="إجمالي مساحة الأرض"
                   variant="outlined"
                   type="number"
                   step="0.01"
+                  :error="validationState.errors.totalLandArea && validationState.errors.totalLandArea.length > 0 && validationState.touched.totalLandArea"
+                  :error-messages="validationState.errors.totalLandArea || []"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="newMosque.totalCoveredArea"
                   label="إجمالي المساحة المغطاة"
                   variant="outlined"
                   type="number"
                   step="0.01"
+                  :error="validationState.errors.totalCoveredArea && validationState.errors.totalCoveredArea.length > 0 && validationState.touched.totalCoveredArea"
+                  :error-messages="validationState.errors.totalCoveredArea || []"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="newMosque.numberOfFloors"
                   label="عدد الطوابق"
@@ -1611,7 +1703,7 @@ function showAlertMsg(msg, type = 'success') {
                   min="1"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="newMosque.openingDate"
                   label="تاريخ الافتتاح"
@@ -1621,7 +1713,7 @@ function showAlertMsg(msg, type = 'success') {
                   :rules="[v => !!v || 'تاريخ الافتتاح مطلوب']"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="newMosque.constructionDate"
                   label="تاريخ البناء"
@@ -1631,7 +1723,7 @@ function showAlertMsg(msg, type = 'success') {
                   :rules="[v => !!v || 'تاريخ البناء مطلوب']"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VSelect
                   v-model="newMosque.mosqueDefinition"
                   label="تعريف المسجد"
@@ -1643,7 +1735,7 @@ function showAlertMsg(msg, type = 'success') {
                   :rules="[v => v !== null || 'تعريف المسجد مطلوب']"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VSelect
                   v-model="newMosque.mosqueClassification"
                   label="تصنيف المسجد"
@@ -1655,7 +1747,7 @@ function showAlertMsg(msg, type = 'success') {
                   :rules="[v => v !== null || 'تصنيف المسجد مطلوب']"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VSelect
                   v-model="newMosque.sourceFunds"
                   label="مصدر التمويل"
@@ -1691,7 +1783,6 @@ function showAlertMsg(msg, type = 'success') {
             color="primary"
             variant="flat"
             @click="addMosque"
-            :disabled="hasErrors"
           >
             حفظ
           </VBtn>
@@ -1710,36 +1801,29 @@ function showAlertMsg(msg, type = 'success') {
         <VCardText>
           <VForm @submit.prevent="updateMosque">
             <VRow>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="editMosque.name"
                   label="اسم المسجد"
                   variant="outlined"
                   required
-                  :error="shouldShowFieldError('editName')"
-                  :error-messages="getFieldErrors('editName')"
+                  :error="validationState.errors.editName && validationState.errors.editName.length > 0 && validationState.touched.editName"
+                  :error-messages="validationState.errors.editName || []"
                   @blur="setFieldTouched('editName')"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="editMosque.fileNumber"
                   label="رقم الملف"
                   variant="outlined"
                   required
-                  :error="shouldShowFieldError('editFileNumber')"
-                  :error-messages="getFieldErrors('editFileNumber')"
+                  :error="validationState.errors.editFileNumber && validationState.errors.editFileNumber.length > 0 && validationState.touched.editFileNumber"
+                  :error-messages="validationState.errors.editFileNumber || []"
                   @blur="setFieldTouched('editFileNumber')"
                 />
               </VCol>
-              <VCol cols="12" md="4">
-                <VTextField
-                  v-model="editMosque.unit"
-                  label="الوحدة"
-                  variant="outlined"
-                />
-              </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VAutocomplete
                   v-model="editMosque.regionId"
                   label="المنطقة"
@@ -1751,15 +1835,15 @@ function showAlertMsg(msg, type = 'success') {
                   clearable
                   no-data-text="لا توجد مناطق متاحة"
                   required
-                  :error="shouldShowFieldError('editRegionId')"
-                  :error-messages="getFieldErrors('editRegionId')"
+                  :error="validationState.errors.editRegionId && validationState.errors.editRegionId.length > 0 && validationState.touched.editRegionId"
+                  :error-messages="validationState.errors.editRegionId || []"
                   @blur="setFieldTouched('editRegionId')"
                   prepend-inner-icon="mdi-map"
                   placeholder="اختر المنطقة..."
                   hide-no-data
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VAutocomplete
                   v-model="editMosque.officeId"
                   label="المكتب"
@@ -1771,75 +1855,86 @@ function showAlertMsg(msg, type = 'success') {
                   clearable
                   no-data-text="لا توجد مكاتب متاحة"
                   required
-                  :error="shouldShowFieldError('editOfficeId')"
-                  :error-messages="getFieldErrors('editOfficeId')"
+                  :error="validationState.errors.editOfficeId && validationState.errors.editOfficeId.length > 0 && validationState.touched.editOfficeId"
+                  :error-messages="validationState.errors.editOfficeId || []"
                   @blur="setFieldTouched('editOfficeId')"
                   prepend-inner-icon="mdi-office-building"
                   placeholder="اختر المكتب..."
                   hide-no-data
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="editMosque.unit"
+                  label="الوحدة"
+                  variant="outlined"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="editMosque.nearestLandmark"
                   label="أقرب معلم"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="editMosque.mapLocation"
                   label="موقع الخريطة"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="editMosque.electricityMeter"
                   label="عداد الكهرباء"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="editMosque.alternativeEnergySource"
                   label="مصدر الطاقة البديل"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="editMosque.waterSource"
                   label="مصدر المياه"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="editMosque.sanitation"
                   label="الصرف الصحي"
                   variant="outlined"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="editMosque.totalLandArea"
                   label="إجمالي مساحة الأرض"
                   variant="outlined"
                   type="number"
                   step="0.01"
+                  :error="validationState.errors.editTotalLandArea && validationState.errors.editTotalLandArea.length > 0 && validationState.touched.editTotalLandArea"
+                  :error-messages="validationState.errors.editTotalLandArea || []"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="editMosque.totalCoveredArea"
                   label="إجمالي المساحة المغطاة"
                   variant="outlined"
                   type="number"
                   step="0.01"
+                  :error="validationState.errors.editTotalCoveredArea && validationState.errors.editTotalCoveredArea.length > 0 && validationState.touched.editTotalCoveredArea"
+                  :error-messages="validationState.errors.editTotalCoveredArea || []"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="editMosque.numberOfFloors"
                   label="عدد الطوابق"
@@ -1848,7 +1943,7 @@ function showAlertMsg(msg, type = 'success') {
                   min="1"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="editMosque.openingDate"
                   label="تاريخ الافتتاح"
@@ -1858,7 +1953,7 @@ function showAlertMsg(msg, type = 'success') {
                   :rules="[v => !!v || 'تاريخ الافتتاح مطلوب']"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="editMosque.constructionDate"
                   label="تاريخ البناء"
@@ -1868,7 +1963,7 @@ function showAlertMsg(msg, type = 'success') {
                   :rules="[v => !!v || 'تاريخ البناء مطلوب']"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VSelect
                   v-model="editMosque.mosqueDefinition"
                   label="تعريف المسجد"
@@ -1880,7 +1975,7 @@ function showAlertMsg(msg, type = 'success') {
                   :rules="[v => v !== null || 'تعريف المسجد مطلوب']"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VSelect
                   v-model="editMosque.mosqueClassification"
                   label="تصنيف المسجد"
@@ -1892,7 +1987,7 @@ function showAlertMsg(msg, type = 'success') {
                   :rules="[v => v !== null || 'تصنيف المسجد مطلوب']"
                 />
               </VCol>
-              <VCol cols="12" md="4">
+              <VCol cols="12" md="6">
                 <VSelect
                   v-model="editMosque.sourceFunds"
                   label="مصدر التمويل"
@@ -1928,7 +2023,6 @@ function showAlertMsg(msg, type = 'success') {
             color="primary"
             variant="flat"
             @click="updateMosque"
-            :disabled="hasErrors"
           >
             تحديث
           </VBtn>

@@ -1,6 +1,7 @@
-<script setup>
+image.png<script setup>
 import { useTheme } from 'vuetify'
 import ScrollToTop from '@core/components/ScrollToTop.vue'
+import GlobalAlert from '@/components/GlobalAlert.vue'
 import initCore from '@core/initCore'
 import {
   initConfigStore,
@@ -45,6 +46,7 @@ onBeforeMount(() => {
     <VApp :style="`--v-global-theme-primary: ${hexToRgb(global.current.value.colors.primary)}`">
       <RouterView />
       <ScrollToTop />
+      <GlobalAlert />
     </VApp>
   </VLocaleProvider>
 </template>
