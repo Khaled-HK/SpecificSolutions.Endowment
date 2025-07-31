@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using SpecificSolutions.Endowment.Application.Abstractions.Contracts;
 using SpecificSolutions.Endowment.Application.Abstractions.IRepositories;
 using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
@@ -11,11 +12,13 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Mosques.Commands.Crea
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserContext _userContext;
+        private readonly ILogger<CreateMosqueHandler> _logger;
 
-        public CreateMosqueHandler(IUnitOfWork unitOfWork, IUserContext userContext)
+        public CreateMosqueHandler(IUnitOfWork unitOfWork, IUserContext userContext, ILogger<CreateMosqueHandler> logger)
         {
             _unitOfWork = unitOfWork;
             _userContext = userContext;
+            _logger = logger;
         }
 
         public async Task<EndowmentResponse> Handle(CreateMosqueCommand request, CancellationToken cancellationToken)
@@ -29,17 +32,25 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Mosques.Commands.Crea
             
             request.UserId = userId.Value.ToString();
 
-            // Create the building first with UserId from token
-            var building = Building.Create(request);
-            await _unitOfWork.Buildings.AddAsync(building, cancellationToken);
-            
-            // Create the mosque with the existing building
-            var mosque = Mosque.Create(request, building);
-            await _unitOfWork.Mosques.AddAsync(mosque, cancellationToken);
-            
-            await _unitOfWork.CompleteAsync(cancellationToken);
+            try
+            {
+                // Create the building first with UserId from token
+                var building = Building.Create(request);
+                await _unitOfWork.Buildings.AddAsync(building, cancellationToken);
+                
+                // Create the mosque with the existing building
+                var mosque = Mosque.Create(request, building);
+                await _unitOfWork.Mosques.AddAsync(mosque, cancellationToken);
+                
+                await _unitOfWork.CompleteAsync(cancellationToken);
 
-            return Response.Added();
+                return Response.Added();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating mosque");
+                throw;
+            }
         }
     }
 }

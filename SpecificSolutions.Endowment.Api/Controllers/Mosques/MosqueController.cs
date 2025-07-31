@@ -13,15 +13,20 @@ namespace SpecificSolutions.Endowment.Api.Controllers.Mosques
     public class MosqueController : ApiController
     {
         private readonly IMediator _mediator;
+        private readonly ILogger<MosqueController> _logger;
 
-        public MosqueController(IMediator mediator)
+        public MosqueController(IMediator mediator, ILogger<MosqueController> logger)
         {
             _mediator = mediator;
+            _logger = logger;
         }
 
         [HttpPost]
         public async Task<EndowmentResponse> Create(CreateMosqueCommand command, CancellationToken cancellationToken)
-            => await _mediator.Send(command, cancellationToken);
+        {
+            var result = await _mediator.Send(command, cancellationToken);
+            return result;
+        }
 
         [HttpPut("{id}")]
         public async Task<EndowmentResponse> Update(Guid id, UpdateMosqueCommand command, CancellationToken cancellationToken)

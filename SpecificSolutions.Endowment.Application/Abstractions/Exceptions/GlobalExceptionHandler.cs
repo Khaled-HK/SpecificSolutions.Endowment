@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SpecificSolutions.Endowment.Application.Abstractions.Exceptions;
@@ -42,15 +41,17 @@ namespace SpecificSolutions.Endowment.Application.Handlers
             if (_exceptionHandlers.ContainsKey(exceptionType))
             {
                 await _exceptionHandlers[exceptionType].Invoke(httpContext, exception, cancellationToken);
-                return false;
+                return true; // إصلاح: يجب إرجاع true عندما يتم التعامل مع الـ exception
             }
 
-            return true;
+            return false; // إرجاع false فقط عندما لا يتم التعامل مع الـ exception
         }
 
         private async Task HandleValidationException(HttpContext httpContext, Exception ex, CancellationToken cancellationToken)
         {
             var exception = (ValidationException)ex;
+
+            _logger.LogWarning(exception, "Validation errors occurred.");
 
             // تحويل Dictionary<string, string[]> إلى Errors
             var errors = exception.Errors
@@ -58,58 +59,46 @@ namespace SpecificSolutions.Endowment.Application.Handlers
                 .ToArray();
 
             var response = new EndowmentResponse(state: ResponseState.BadRequest, "Validation failed", errors);
+
             httpContext.Response.ContentType = "application/json";
             httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
 
             await httpContext.Response.WriteAsJsonAsync<EndowmentResponse>(response, cancellationToken);
         }
 
-        private async Task<EndowmentResponse> HandleNotFoundException(HttpContext httpContext, Exception ex, CancellationToken cancellationToken)
+        private async Task HandleNotFoundException(HttpContext httpContext, Exception ex, CancellationToken cancellationToken)
         {
             var exception = (NotFoundException)ex;
+
+            _logger.LogWarning(exception, "Resource not found: {Message}", exception.Message);
 
             httpContext.Response.ContentType = "application/json";
             httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
 
-            await httpContext.Response.WriteAsJsonAsync(new ProblemDetails()
-            {
-                Status = StatusCodes.Status404NotFound,
-                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.4",
-                Title = "The specified resource was not found.",
-                Detail = exception.Message
-            });
-
-            return await Task.FromResult(new EndowmentResponse(ResponseState.NotFound, exception.Message, null));
+            var response = new EndowmentResponse(ResponseState.NotFound, exception.Message, null);
+            await httpContext.Response.WriteAsJsonAsync<EndowmentResponse>(response, cancellationToken);
         }
 
-        private async Task<EndowmentResponse> HandleUnauthorizedAccessException(HttpContext httpContext, Exception ex, CancellationToken cancellationToken)
+        private async Task HandleUnauthorizedAccessException(HttpContext httpContext, Exception ex, CancellationToken cancellationToken)
         {
+            _logger.LogWarning(ex, "Unauthorized access attempt.");
+
             httpContext.Response.ContentType = "application/json";
             httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
 
-            await httpContext.Response.WriteAsJsonAsync(new ProblemDetails
-            {
-                Status = StatusCodes.Status401Unauthorized,
-                Title = "Unauthorized",
-                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3"
-            });
-
-            return await Task.FromResult(new EndowmentResponse(ResponseState.Unauthorized, ex.Message, null));
+            var response = new EndowmentResponse(ResponseState.Unauthorized, ex.Message, null);
+            await httpContext.Response.WriteAsJsonAsync<EndowmentResponse>(response, cancellationToken);
         }
 
-        private async Task<EndowmentResponse> HandleForbiddenAccessException(HttpContext httpContext, Exception ex, CancellationToken cancellationToken)
+        private async Task HandleForbiddenAccessException(HttpContext httpContext, Exception ex, CancellationToken cancellationToken)
         {
+            _logger.LogWarning(ex, "Forbidden access attempt.");
+
             httpContext.Response.ContentType = "application/json";
             httpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
 
-            await httpContext.Response.WriteAsJsonAsync(new ProblemDetails
-            {
-                Status = StatusCodes.Status403Forbidden,
-                Title = "Forbidden",
-                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3"
-            });
-
-            return await Task.FromResult(new EndowmentResponse(ResponseState.Forbidden, ex.Message, null));
+            var response = new EndowmentResponse(ResponseState.Forbidden, ex.Message, null);
+            await httpContext.Response.WriteAsJsonAsync<EndowmentResponse>(response, cancellationToken);
         }
 
         private async Task HandleConcurrencyException(HttpContext httpContext, Exception ex, CancellationToken cancellationToken)
@@ -120,13 +109,9 @@ namespace SpecificSolutions.Endowment.Application.Handlers
 
             httpContext.Response.ContentType = "application/json";
             httpContext.Response.StatusCode = (int)HttpStatusCode.Conflict; // 409 Conflict
-            await httpContext.Response.WriteAsJsonAsync(new ProblemDetails
-            {
-                Status = (int)HttpStatusCode.Conflict,
-                Title = "Concurrency conflict",
-                Detail = "The data you are trying to update has been modified by another user. Please refresh and try again.",
-                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.8"
-            });
+
+            var response = new EndowmentResponse(ResponseState.BadRequest, "The data you are trying to update has been modified by another user. Please refresh and try again.", null);
+            await httpContext.Response.WriteAsJsonAsync<EndowmentResponse>(response, cancellationToken);
         }
     }
 }
