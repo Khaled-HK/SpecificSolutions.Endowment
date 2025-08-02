@@ -24,6 +24,8 @@ declare module 'vue-router/auto-routes' {
     'apps-academy-course-details': RouteRecordInfo<'apps-academy-course-details', '/apps/academy/course-details', Record<never, never>, Record<never, never>>,
     'apps-academy-dashboard': RouteRecordInfo<'apps-academy-dashboard', '/apps/academy/dashboard', Record<never, never>, Record<never, never>>,
     'apps-academy-my-course': RouteRecordInfo<'apps-academy-my-course', '/apps/academy/my-course', Record<never, never>, Record<never, never>>,
+    'apps-account-details': RouteRecordInfo<'apps-account-details', '/apps/account-details', Record<never, never>, Record<never, never>>,
+    'apps-accounts': RouteRecordInfo<'apps-accounts', '/apps/accounts', Record<never, never>, Record<never, never>>,
     'apps-buildings': RouteRecordInfo<'apps-buildings', '/apps/buildings', Record<never, never>, Record<never, never>>,
     'apps-calendar': RouteRecordInfo<'apps-calendar', '/apps/calendar', Record<never, never>, Record<never, never>>,
     'apps-change-requests': RouteRecordInfo<'apps-change-requests', '/apps/change-requests', Record<never, never>, Record<never, never>>,
