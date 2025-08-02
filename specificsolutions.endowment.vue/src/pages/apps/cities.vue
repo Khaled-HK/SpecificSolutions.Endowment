@@ -155,8 +155,8 @@ const addCity = async () => {
     const response = await $api('/City', {
       method: 'POST',
       body: {
-        name: newCity.value.name,
-        country: newCity.value.country,
+        name: newCity.value.name.trim(),
+        country: newCity.value.country.trim(),
       },
     })
     
@@ -165,6 +165,10 @@ const addCity = async () => {
       // Handle backend validation errors
       if (response.errors && Array.isArray(response.errors)) {
         setErrorsFromResponse(response, 'add')
+        
+        // Mark all fields as touched to ensure errors show immediately
+        setFieldTouched('name')
+        setFieldTouched('country')
         
         // إظهار رسالة للمستخدم باستخدام النظام الجديد
         showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
@@ -209,6 +213,10 @@ const addCity = async () => {
     // التحقق من أن الخطأ يحتوي على أخطاء FluentValidation
     if (error?.data?.errors && Array.isArray(error.data.errors)) {
       setErrorsFromResponse(error.data, 'add')
+      
+      // Mark all fields as touched to ensure errors show immediately
+      setFieldTouched('name')
+      setFieldTouched('country')
       
       showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
         timeout: 5000,
@@ -256,8 +264,8 @@ const updateCity = async () => {
       method: 'PUT',
       body: {
         id: editCity.value.id,
-        name: editCity.value.name,
-        country: editCity.value.country,
+        name: editCity.value.name.trim(),
+        country: editCity.value.country.trim(),
       },
     })
     
@@ -266,6 +274,10 @@ const updateCity = async () => {
       // Handle backend validation errors
       if (response.errors && Array.isArray(response.errors)) {
         setErrorsFromResponse(response, 'edit')
+        
+        // Mark all fields as touched to ensure errors show immediately
+        setFieldTouched('editName')
+        setFieldTouched('editCountry')
         
         // إظهار رسالة للمستخدم باستخدام النظام الجديد
         showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
@@ -309,6 +321,10 @@ const updateCity = async () => {
     // التحقق من أن الخطأ يحتوي على أخطاء FluentValidation
     if (error?.data?.errors && Array.isArray(error.data.errors)) {
       setErrorsFromResponse(error.data, 'edit')
+      
+      // Mark all fields as touched to ensure errors show immediately
+      setFieldTouched('editName')
+      setFieldTouched('editCountry')
       
       showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
         timeout: 5000,

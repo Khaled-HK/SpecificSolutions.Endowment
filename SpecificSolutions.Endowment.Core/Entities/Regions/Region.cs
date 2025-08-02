@@ -34,6 +34,7 @@ namespace SpecificSolutions.Endowment.Core.Entities.Regions
                 CityId = cityId,
             };
         }
+        
         // Seed method to create a new Region
         public static Region Seed(Guid id, Guid cityId, string name, string country)
         {
@@ -45,6 +46,14 @@ namespace SpecificSolutions.Endowment.Core.Entities.Regions
                 Country = country
             };
             return region;
+        }
+
+        // Update method for updating Region properties
+        public void Update(string name, string country, Guid cityId)
+        {
+            Name = name;
+            Country = country;
+            CityId = cityId;
         }
     }
 }

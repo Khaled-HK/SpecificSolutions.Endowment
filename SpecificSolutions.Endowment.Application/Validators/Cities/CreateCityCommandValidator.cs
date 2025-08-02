@@ -1,23 +1,22 @@
 using FluentValidation;
 using SpecificSolutions.Endowment.Application.Handlers.Cities.Commands.Create;
+using SpecificSolutions.Endowment.Core.Resources;
 
 namespace SpecificSolutions.Endowment.Application.Validators.Cities
 {
-    public class CreateCityCommandValidator : AbstractValidator<CreateCityCommand>
+    public class CreateCityCommandValidator : BaseValidator<CreateCityCommand>
     {
         public CreateCityCommandValidator()
         {
             RuleFor(x => x.Name)
-                .NotEmpty()
-                .WithMessage("City name is required.")
-                .MaximumLength(200)
-                .WithMessage("City name cannot exceed 200 characters.");
+                .NotEmpty().WithMessage(Messages.CityNameRequired)
+                .MaximumLength(200).WithMessage(Messages.CityNameMaxLength)
+                .Must(BeValidName).WithMessage(Messages.CityNameInvalidCharacters);
 
             RuleFor(x => x.Country)
-                .NotEmpty()
-                .WithMessage("Country is required.")
-                .MaximumLength(100)
-                .WithMessage("Country name cannot exceed 100 characters.");
+                .NotEmpty().WithMessage(Messages.CityCountryRequired)
+                .MaximumLength(100).WithMessage(Messages.CityCountryMaxLength)
+                .Must(BeValidName).WithMessage(Messages.CityCountryInvalidCharacters);
         }
     }
 } 

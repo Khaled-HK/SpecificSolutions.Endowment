@@ -1,5 +1,6 @@
 using FluentValidation;
 using SpecificSolutions.Endowment.Application.Handlers.Accounts.Commands.Create;
+using SpecificSolutions.Endowment.Core.Resources;
 
 namespace SpecificSolutions.Endowment.Application.Validators.Accounts
 {
@@ -8,81 +9,81 @@ namespace SpecificSolutions.Endowment.Application.Validators.Accounts
         public CreateAccountCommandValidator()
         {
             RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("اسم الحساب مطلوب")
-                .MaximumLength(200).WithMessage("اسم الحساب يجب أن لا يتجاوز 200 حرف")
-                .Must(BeValidName).WithMessage("اسم الحساب يحتوي على أحرف غير مسموحة");
+                .NotEmpty().WithMessage(Messages.AccountNameRequired)
+                .MaximumLength(200).WithMessage(Messages.AccountNameMaxLength)
+                .Must(BeValidName).WithMessage(Messages.AccountNameInvalidCharacters);
 
             RuleFor(x => x.MotherName)
-                .NotEmpty().WithMessage("اسم الأم مطلوب")
-                .MaximumLength(200).WithMessage("اسم الأم يجب أن لا يتجاوز 200 حرف")
-                .Must(BeValidName).WithMessage("اسم الأم يحتوي على أحرف غير مسموحة");
+                .NotEmpty().WithMessage(Messages.MotherNameRequired)
+                .MaximumLength(200).WithMessage(Messages.MotherNameMaxLength)
+                .Must(BeValidName).WithMessage(Messages.MotherNameInvalidCharacters);
 
             RuleFor(x => x.BirthDate)
-                .NotEmpty().WithMessage("تاريخ الميلاد مطلوب")
-                .Must(BeNotInFuture).WithMessage("تاريخ الميلاد لا يمكن أن يكون في المستقبل")
-                .Must(BeNotTooOld).WithMessage("تاريخ الميلاد غير صحيح");
+                .NotEmpty().WithMessage(Messages.BirthDateRequired)
+                .Must(BeNotInFuture).WithMessage(Messages.BirthDateNotInFuture)
+                .Must(BeNotTooOld).WithMessage(Messages.BirthDateInvalid);
 
             RuleFor(x => x.Gender)
-                .IsInEnum().WithMessage("الجنس غير صحيح");
+                .IsInEnum().WithMessage(Messages.GenderInvalid);
 
             RuleFor(x => x.Barcode)
-                .NotEmpty().WithMessage("الباركود مطلوب")
-                .MaximumLength(50).WithMessage("الباركود يجب أن لا يتجاوز 50 حرف");
+                .NotEmpty().WithMessage(Messages.BarcodeRequired)
+                .MaximumLength(50).WithMessage(Messages.BarcodeMaxLength);
 
             RuleFor(x => x.Status)
-                .IsInEnum().WithMessage("الحالة غير صحيحة");
+                .IsInEnum().WithMessage(Messages.StatusInvalid);
 
             RuleFor(x => x.LockerFileNumber)
-                .GreaterThan(0).WithMessage("رقم ملف الخزانة يجب أن يكون أكبر من صفر");
+                .GreaterThan(0).WithMessage(Messages.LockerFileNumberGreaterThanZero);
 
             RuleFor(x => x.SocialStatus)
-                .IsInEnum().WithMessage("الحالة الاجتماعية غير صحيحة");
+                .IsInEnum().WithMessage(Messages.SocialStatusInvalid);
 
             RuleFor(x => x.AccountNumber)
-                .NotEmpty().WithMessage("رقم الحساب مطلوب")
-                .MaximumLength(50).WithMessage("رقم الحساب يجب أن لا يتجاوز 50 حرف");
+                .NotEmpty().WithMessage(Messages.AccountNumberRequired)
+                .MaximumLength(50).WithMessage(Messages.AccountNumberMaxLength);
 
             RuleFor(x => x.Type)
-                .IsInEnum().WithMessage("نوع الحساب غير صحيح");
+                .IsInEnum().WithMessage(Messages.AccountTypeInvalid);
 
             RuleFor(x => x.NID)
-                .GreaterThan(0).WithMessage("الرقم الوطني يجب أن يكون أكبر من صفر");
+                .GreaterThan(0).WithMessage(Messages.NIDGreaterThanZero);
 
             RuleFor(x => x.Balance)
-                .GreaterThanOrEqualTo(0).WithMessage("الرصيد لا يمكن أن يكون سالب");
+                .GreaterThanOrEqualTo(0).WithMessage(Messages.BalanceNotNegative);
 
             RuleFor(x => x.Note)
                 .MaximumLength(1000).When(x => !string.IsNullOrWhiteSpace(x.Note))
-                .WithMessage("الملاحظة يجب أن لا تتجاوز 1000 حرف");
+                .WithMessage(Messages.NoteMaxLength);
 
             RuleFor(x => x.BookNumber)
-                .GreaterThanOrEqualTo(0).WithMessage("رقم الكتاب لا يمكن أن يكون سالب");
+                .GreaterThanOrEqualTo(0).WithMessage(Messages.BookNumberNotNegative);
 
             RuleFor(x => x.PaperNumber)
-                .GreaterThanOrEqualTo(0).WithMessage("رقم الورقة لا يمكن أن يكون سالب");
+                .GreaterThanOrEqualTo(0).WithMessage(Messages.PaperNumberNotNegative);
 
             RuleFor(x => x.RegistrationNumber)
-                .GreaterThanOrEqualTo(0).WithMessage("رقم التسجيل لا يمكن أن يكون سالب");
+                .GreaterThanOrEqualTo(0).WithMessage(Messages.RegistrationNumberNotNegative);
 
             RuleFor(x => x.Address)
                 .MaximumLength(500).When(x => !string.IsNullOrWhiteSpace(x.Address))
-                .WithMessage("العنوان يجب أن لا يتجاوز 500 حرف");
+                .WithMessage(Messages.AddressMaxLength);
 
             RuleFor(x => x.City)
                 .MaximumLength(100).When(x => !string.IsNullOrWhiteSpace(x.City))
-                .WithMessage("المدينة يجب أن لا تتجاوز 100 حرف");
+                .WithMessage(Messages.CityMaxLength);
 
             RuleFor(x => x.Country)
                 .MaximumLength(100).When(x => !string.IsNullOrWhiteSpace(x.Country))
-                .WithMessage("البلد يجب أن لا يتجاوز 100 حرف");
+                .WithMessage(Messages.CountryMaxLength);
 
             RuleFor(x => x.ContactNumber)
                 .Must(phoneNumber => BeValidPhoneNumber(phoneNumber!)).When(x => !string.IsNullOrWhiteSpace(x.ContactNumber))
-                .WithMessage("رقم الاتصال غير صحيح");
+                .WithMessage(Messages.ContactNumberInvalid);
 
             RuleFor(x => x.Floors)
-                .GreaterThanOrEqualTo(0).WithMessage("عدد الطوابق لا يمكن أن يكون سالب")
-                .LessThanOrEqualTo(100).WithMessage("عدد الطوابق لا يمكن أن يتجاوز 100");
+                .GreaterThanOrEqualTo(0).WithMessage(Messages.FloorsNotNegative)
+                .LessThanOrEqualTo(100).WithMessage(Messages.FloorsMaxValue);
         }
     }
 }

@@ -1,23 +1,26 @@
 using FluentValidation;
 using SpecificSolutions.Endowment.Application.Handlers.Offices.Commands.Create;
+using SpecificSolutions.Endowment.Core.Resources;
 
 namespace SpecificSolutions.Endowment.Application.Validators.Offices
 {
-    public class CreateOfficeCommandValidator : AbstractValidator<CreateOfficeCommand>
+    public class CreateOfficeCommandValidator : BaseValidator<CreateOfficeCommand>
     {
         public CreateOfficeCommandValidator()
         {
             RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Office name is required.")
-                .MaximumLength(100).WithMessage("Office name cannot exceed 100 characters.");
-
-            RuleFor(x => x.Location)
-                .NotEmpty().WithMessage("Location is required.")
-                .MaximumLength(200).WithMessage("Location cannot exceed 200 characters.");
+                .NotEmpty().WithMessage(Messages.OfficeNameRequired)
+                .MaximumLength(200).WithMessage(Messages.OfficeNameMaxLength)
+                .Must(BeValidName).WithMessage(Messages.OfficeNameInvalidCharacters);
 
             RuleFor(x => x.PhoneNumber)
-                .NotEmpty().WithMessage("Phone number is required.")
-                .Matches(@"^(09[1-5]|02[1-9])-?\d{7}$").WithMessage("Phone number must be a valid Libyan format (e.g., 091-1234567, 021-1234567).");
+                .NotEmpty().WithMessage(Messages.PhoneNumberRequired)
+                .Must(BeValidPhoneNumber).WithMessage(Messages.PhoneNumberInvalid);
+
+            RuleFor(x => x.Location)
+                .NotEmpty().WithMessage(Messages.OfficeLocationRequired)
+                .MaximumLength(500).WithMessage(Messages.OfficeLocationMaxLength)
+                .Must(BeValidName).WithMessage(Messages.OfficeLocationInvalidCharacters);
         }
     }
 } 

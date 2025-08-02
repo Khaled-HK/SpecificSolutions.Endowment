@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Create;
+using SpecificSolutions.Endowment.Core.Resources;
 
 namespace SpecificSolutions.Endowment.Application.Validators.Requests
 {
@@ -8,16 +9,18 @@ namespace SpecificSolutions.Endowment.Application.Validators.Requests
         public CreateRequestCommandValidator()
         {
             RuleFor(command => command.Title)
-                .NotEmpty().WithMessage("Title is required.")
-                .Length(1, 100).WithMessage("Title must be between 1 and 100 characters.");
+                .NotEmpty().WithMessage(Messages.RequestTitleRequired)
+                .Length(1, 100).WithMessage(Messages.RequestTitleLength)
+                .Must(BeValidName).WithMessage(Messages.RequestTitleInvalidCharacters);
 
             RuleFor(command => command.Description)
-                .NotEmpty().WithMessage("Description is required.")
-                .Length(1, 500).WithMessage("Description must be between 1 and 500 characters.");
+                .NotEmpty().WithMessage(Messages.RequestDescriptionRequired)
+                .Length(1, 500).WithMessage(Messages.RequestDescriptionLength)
+                .Must(BeValidName).WithMessage(Messages.RequestDescriptionInvalidCharacters);
 
             RuleFor(command => command.CreatedDate)
-                .NotEmpty().WithMessage("Created date is required.")
-                .LessThanOrEqualTo(DateTime.Now).WithMessage("Created date cannot be in the future.");
+                .NotEmpty().WithMessage(Messages.RequestCreatedDateRequired)
+                .LessThanOrEqualTo(DateTime.Now).WithMessage(Messages.RequestCreatedDateNotInFuture);
         }
     }
 }

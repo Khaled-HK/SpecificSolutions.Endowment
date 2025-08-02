@@ -3,14 +3,25 @@ using SpecificSolutions.Endowment.Application.Handlers.AccountDetails.Commands.C
 
 namespace SpecificSolutions.Endowment.Application.Validators.AccountDetails
 {
-    public class CreateAccountDetailCommandValidator : AbstractValidator<CreateAccountDetailCommand>
+    public class CreateAccountDetailCommandValidator : BaseValidator<CreateAccountDetailCommand>
     {
         public CreateAccountDetailCommandValidator()
         {
-            RuleFor(x => x.Id).NotEmpty().WithMessage("AccountId is required.");
-            RuleFor(x => x.Debtor).NotEmpty().WithMessage("Debtor is required.");
-            RuleFor(x => x.Creditor).NotEmpty().WithMessage("Creditor is required.");
-            RuleFor(x => x.Note).MaximumLength(500).WithMessage("Note cannot exceed 500 characters.");
+            RuleFor(x => x.Id)
+                .NotEmpty().WithMessage("معرف الحساب مطلوب")
+                .Must(BeValidGuid).WithMessage("معرف الحساب غير صحيح");
+
+            RuleFor(x => x.Debtor)
+                .NotEmpty().WithMessage("المدين مطلوب");
+
+            RuleFor(x => x.Creditor)
+                .NotEmpty().WithMessage("الدائن مطلوب");
+
+            RuleFor(x => x.Note)
+                .MaximumLength(500).When(x => !string.IsNullOrWhiteSpace(x.Note))
+                .WithMessage("الملاحظة يجب أن لا تتجاوز 500 حرف")
+                .Must(BeValidName).When(x => !string.IsNullOrWhiteSpace(x.Note))
+                .WithMessage("الملاحظة تحتوي على أحرف غير مسموحة");
         }
     }
 

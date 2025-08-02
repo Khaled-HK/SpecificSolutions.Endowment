@@ -20,6 +20,14 @@ namespace SpecificSolutions.Endowment.Application.Validators
         }
 
         /// <summary>
+        /// Validates if a Guid is not empty
+        /// </summary>
+        protected bool BeValidGuid(Guid guid)
+        {
+            return guid != Guid.Empty;
+        }
+
+        /// <summary>
         /// Validates if a string contains only Arabic and English letters, numbers, and spaces
         /// </summary>
         protected bool BeValidName(string name)

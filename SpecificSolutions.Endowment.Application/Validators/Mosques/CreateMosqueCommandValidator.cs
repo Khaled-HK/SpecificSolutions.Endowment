@@ -3,17 +3,19 @@ using SpecificSolutions.Endowment.Application.Handlers.Mosques.Commands.Create;
 
 namespace SpecificSolutions.Endowment.Application.Validators.Mosques
 {
-    public class CreateMosqueCommandValidator : AbstractValidator<CreateMosqueCommand>
+    public class CreateMosqueCommandValidator : BaseValidator<CreateMosqueCommand>
     {
         public CreateMosqueCommandValidator()
         {
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("اسم المسجد مطلوب")
-                .MaximumLength(200).WithMessage("اسم المسجد يجب أن لا يتجاوز 200 حرف");
+                .MaximumLength(200).WithMessage("اسم المسجد يجب أن لا يتجاوز 200 حرف")
+                .Must(BeValidName).WithMessage("اسم المسجد يحتوي على أحرف غير مسموحة");
 
             RuleFor(x => x.FileNumber)
                 .NotEmpty().WithMessage("رقم الملف مطلوب")
-                .MaximumLength(50).WithMessage("رقم الملف يجب أن لا يتجاوز 50 حرف");
+                .MaximumLength(50).WithMessage("رقم الملف يجب أن لا يتجاوز 50 حرف")
+                .Must(BeValidName).WithMessage("رقم الملف يحتوي على أحرف غير مسموحة");
 
             RuleFor(x => x.RegionId)
                 .NotEmpty().WithMessage("المنطقة مطلوبة")
@@ -25,43 +27,63 @@ namespace SpecificSolutions.Endowment.Application.Validators.Mosques
 
             RuleFor(x => x.Definition)
                 .MaximumLength(500).When(x => !string.IsNullOrWhiteSpace(x.Definition))
-                .WithMessage("التعريف يجب أن لا يتجاوز 500 حرف");
+                .WithMessage("التعريف يجب أن لا يتجاوز 500 حرف")
+                .Must(BeValidName).When(x => !string.IsNullOrWhiteSpace(x.Definition))
+                .WithMessage("التعريف يحتوي على أحرف غير مسموحة");
 
             RuleFor(x => x.Classification)
                 .MaximumLength(100).When(x => !string.IsNullOrWhiteSpace(x.Classification))
-                .WithMessage("التصنيف يجب أن لا يتجاوز 100 حرف");
+                .WithMessage("التصنيف يجب أن لا يتجاوز 100 حرف")
+                .Must(BeValidName).When(x => !string.IsNullOrWhiteSpace(x.Classification))
+                .WithMessage("التصنيف يحتوي على أحرف غير مسموحة");
 
             RuleFor(x => x.Unit)
                 .MaximumLength(100).When(x => !string.IsNullOrWhiteSpace(x.Unit))
-                .WithMessage("الوحدة يجب أن لا تتجاوز 100 حرف");
+                .WithMessage("الوحدة يجب أن لا تتجاوز 100 حرف")
+                .Must(BeValidName).When(x => !string.IsNullOrWhiteSpace(x.Unit))
+                .WithMessage("الوحدة تحتوي على أحرف غير مسموحة");
 
             RuleFor(x => x.NearestLandmark)
                 .MaximumLength(200).When(x => !string.IsNullOrWhiteSpace(x.NearestLandmark))
-                .WithMessage("أقرب معلم يجب أن لا يتجاوز 200 حرف");
+                .WithMessage("أقرب معلم يجب أن لا يتجاوز 200 حرف")
+                .Must(BeValidName).When(x => !string.IsNullOrWhiteSpace(x.NearestLandmark))
+                .WithMessage("أقرب معلم يحتوي على أحرف غير مسموحة");
 
             RuleFor(x => x.MapLocation)
                 .MaximumLength(500).When(x => !string.IsNullOrWhiteSpace(x.MapLocation))
-                .WithMessage("موقع الخريطة يجب أن لا يتجاوز 500 حرف");
+                .WithMessage("موقع الخريطة يجب أن لا يتجاوز 500 حرف")
+                .Must(BeValidName).When(x => !string.IsNullOrWhiteSpace(x.MapLocation))
+                .WithMessage("موقع الخريطة يحتوي على أحرف غير مسموحة");
 
             RuleFor(x => x.Sanitation)
                 .MaximumLength(200).When(x => !string.IsNullOrWhiteSpace(x.Sanitation))
-                .WithMessage("الصرف الصحي يجب أن لا يتجاوز 200 حرف");
+                .WithMessage("الصرف الصحي يجب أن لا يتجاوز 200 حرف")
+                .Must(BeValidName).When(x => !string.IsNullOrWhiteSpace(x.Sanitation))
+                .WithMessage("الصرف الصحي يحتوي على أحرف غير مسموحة");
 
             RuleFor(x => x.ElectricityMeter)
                 .MaximumLength(100).When(x => !string.IsNullOrWhiteSpace(x.ElectricityMeter))
-                .WithMessage("عداد الكهرباء يجب أن لا يتجاوز 100 حرف");
+                .WithMessage("عداد الكهرباء يجب أن لا يتجاوز 100 حرف")
+                .Must(BeValidName).When(x => !string.IsNullOrWhiteSpace(x.ElectricityMeter))
+                .WithMessage("عداد الكهرباء يحتوي على أحرف غير مسموحة");
 
             RuleFor(x => x.AlternativeEnergySource)
                 .MaximumLength(200).When(x => !string.IsNullOrWhiteSpace(x.AlternativeEnergySource))
-                .WithMessage("مصدر الطاقة البديل يجب أن لا يتجاوز 200 حرف");
+                .WithMessage("مصدر الطاقة البديل يجب أن لا يتجاوز 200 حرف")
+                .Must(BeValidName).When(x => !string.IsNullOrWhiteSpace(x.AlternativeEnergySource))
+                .WithMessage("مصدر الطاقة البديل يحتوي على أحرف غير مسموحة");
 
             RuleFor(x => x.WaterSource)
                 .MaximumLength(200).When(x => !string.IsNullOrWhiteSpace(x.WaterSource))
-                .WithMessage("مصدر المياه يجب أن لا يتجاوز 200 حرف");
+                .WithMessage("مصدر المياه يجب أن لا يتجاوز 200 حرف")
+                .Must(BeValidName).When(x => !string.IsNullOrWhiteSpace(x.WaterSource))
+                .WithMessage("مصدر المياه يحتوي على أحرف غير مسموحة");
 
             RuleFor(x => x.BriefDescription)
                 .MaximumLength(1000).When(x => !string.IsNullOrWhiteSpace(x.BriefDescription))
-                .WithMessage("الوصف المختصر يجب أن لا يتجاوز 1000 حرف");
+                .WithMessage("الوصف المختصر يجب أن لا يتجاوز 1000 حرف")
+                .Must(BeValidName).When(x => !string.IsNullOrWhiteSpace(x.BriefDescription))
+                .WithMessage("الوصف المختصر يحتوي على أحرف غير مسموحة");
 
             RuleFor(x => x.TotalLandArea)
                 .GreaterThan(0).WithMessage("إجمالي مساحة الأرض يجب أن تكون أكبر من صفر");
@@ -86,11 +108,15 @@ namespace SpecificSolutions.Endowment.Application.Validators.Mosques
 
             RuleFor(x => x.LandDonorName)
                 .MaximumLength(200).When(x => !string.IsNullOrWhiteSpace(x.LandDonorName))
-                .WithMessage("اسم متبرع الأرض يجب أن لا يتجاوز 200 حرف");
+                .WithMessage("اسم متبرع الأرض يجب أن لا يتجاوز 200 حرف")
+                .Must(BeValidName).When(x => !string.IsNullOrWhiteSpace(x.LandDonorName))
+                .WithMessage("اسم متبرع الأرض يحتوي على أحرف غير مسموحة");
 
             RuleFor(x => x.PrayerCapacity)
                 .MaximumLength(100).When(x => !string.IsNullOrWhiteSpace(x.PrayerCapacity))
-                .WithMessage("سعة الصلاة يجب أن لا تتجاوز 100 حرف");
+                .WithMessage("سعة الصلاة يجب أن لا تتجاوز 100 حرف")
+                .Must(BeValidName).When(x => !string.IsNullOrWhiteSpace(x.PrayerCapacity))
+                .WithMessage("سعة الصلاة تحتوي على أحرف غير مسموحة");
 
             // Validation for enum values
             RuleFor(x => x.MosqueDefinition)
@@ -101,13 +127,6 @@ namespace SpecificSolutions.Endowment.Application.Validators.Mosques
 
             RuleFor(x => x.SourceFunds)
                 .IsInEnum().WithMessage("مصدر التمويل غير صحيح");
-        }
-
-        private bool BeValidGuid(string guidString)
-        {
-            if (string.IsNullOrWhiteSpace(guidString))
-                return false;
-            return Guid.TryParse(guidString, out _);
         }
     }
 }

@@ -3,13 +3,14 @@ using SpecificSolutions.Endowment.Application.Handlers.BuildingDetails.Commands.
 
 namespace SpecificSolutions.Endowment.Application.Validators.BuildingDetails
 {
-    public class CreateBuildingDetailCommandValidator : AbstractValidator<CreateBuildingDetailCommand>
+    public class CreateBuildingDetailCommandValidator : BaseValidator<CreateBuildingDetailCommand>
     {
         public CreateBuildingDetailCommandValidator()
         {
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("اسم المبنى مطلوب")
-                .MaximumLength(200).WithMessage("اسم المبنى لا يمكن أن يتجاوز 200 حرف");
+                .MaximumLength(200).WithMessage("اسم المبنى لا يمكن أن يتجاوز 200 حرف")
+                .Must(BeValidName).WithMessage("اسم المبنى يحتوي على أحرف غير مسموحة");
 
             RuleFor(x => x.Floors)
                 .GreaterThan(0).WithMessage("عدد الطوابق يجب أن يكون أكبر من صفر")
@@ -19,7 +20,8 @@ namespace SpecificSolutions.Endowment.Application.Validators.BuildingDetails
                 .IsInEnum().WithMessage("نوع المبنى غير صحيح");
 
             RuleFor(x => x.BuildingId)
-                .NotEmpty().WithMessage("معرف المبنى مطلوب");
+                .NotEmpty().WithMessage("معرف المبنى مطلوب")
+                .Must(BeValidGuid).WithMessage("معرف المبنى غير صحيح");
         }
     }
 }

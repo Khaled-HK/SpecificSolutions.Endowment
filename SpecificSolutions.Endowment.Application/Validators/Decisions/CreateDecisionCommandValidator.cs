@@ -1,34 +1,30 @@
 using FluentValidation;
 using SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Create;
+using SpecificSolutions.Endowment.Core.Resources;
 
-public class CreateDecisionCommandValidator : AbstractValidator<CreateDecisionCommand>
+namespace SpecificSolutions.Endowment.Application.Validators.Decisions
 {
-    public CreateDecisionCommandValidator()
+    public class CreateDecisionCommandValidator : BaseValidator<CreateDecisionCommand>
     {
-        RuleFor(x => x.Title)
-            .NotEmpty()
-            .WithMessage("عنوان القرار مطلوب.")
-            .MaximumLength(200)
-            .WithMessage("عنوان القرار يجب أن لا يتجاوز 200 حرف.");
+        public CreateDecisionCommandValidator()
+        {
+            RuleFor(x => x.Title)
+                .NotEmpty().WithMessage(Messages.DecisionTitleRequired)
+                .MaximumLength(200).WithMessage(Messages.DecisionTitleMaxLength)
+                .Must(BeValidName).WithMessage(Messages.DecisionTitleInvalidCharacters);
 
-        RuleFor(x => x.Description)
-            .NotEmpty()
-            .WithMessage("وصف القرار مطلوب.")
-            .MaximumLength(1000)
-            .WithMessage("وصف القرار يجب أن لا يتجاوز 1000 حرف.");
+            RuleFor(x => x.Description)
+                .NotEmpty().WithMessage(Messages.DecisionDescriptionRequired)
+                .MaximumLength(1000).WithMessage(Messages.DecisionDescriptionMaxLength)
+                .Must(BeValidName).WithMessage(Messages.DecisionDescriptionInvalidCharacters);
 
-        RuleFor(x => x.CreatedDate)
-            .NotEmpty()
-            .WithMessage("تاريخ الإنشاء مطلوب.");
+            RuleFor(x => x.ReferenceNumber)
+                .NotEmpty().WithMessage(Messages.ReferenceNumberRequired)
+                .MaximumLength(50).WithMessage(Messages.ReferenceNumberMaxLength)
+                .Must(BeValidName).WithMessage(Messages.ReferenceNumberInvalidCharacters);
 
-        RuleFor(x => x.ReferenceNumber)
-            .NotEmpty()
-            .WithMessage("رقم المرجع مطلوب.")
-            .MaximumLength(50)
-            .WithMessage("رقم المرجع يجب أن لا يتجاوز 50 حرف.");
-
-        //RuleFor(x => x.UserId)
-        //    .NotEmpty()
-        //    .WithMessage("معرف المستخدم مطلوب.");
+            RuleFor(x => x.CreatedDate)
+                .NotEmpty().WithMessage(Messages.CreatedDateRequired);
+        }
     }
 }

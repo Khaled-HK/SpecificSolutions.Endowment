@@ -17,10 +17,9 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Regions.Commands.Upda
         {
             var region = await _unitOfWork.Regions.GetByIdAsync(request.Id, cancellationToken);
             if (region == null)
-                return Response.FailureResponse("Region not found.");
+                return Response.FailureResponse("المنطقة غير موجودة.");
 
-            //region.Name = request.Name;
-            //region.Country = request.Country;
+            region.Update(request.Name, request.Country, request.CityId);
 
             await _unitOfWork.Regions.UpdateAsync(region, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);

@@ -70,7 +70,11 @@ export function useFormValidation() {
     'PrayerCapacity': 'prayerCapacity',
     'ServicesSpecialNeeds': 'servicesSpecialNeeds',
     'SpecialEntranceWomen': 'specialEntranceWomen',
-    'PicturePath': 'picturePath'
+    'PicturePath': 'picturePath',
+    
+    // Region fields
+    'CityId': 'cityId',
+    'Country': 'country'
   }
 
   // تعيين أخطاء من استجابة الباك إند

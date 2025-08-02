@@ -1,35 +1,35 @@
-using SpecificSolutions.Endowment.Core.Resources;
+using System.Text.Json.Serialization;
 
 namespace SpecificSolutions.Endowment.Application.Models.Global
 {
     public class Response
     {
         public static EndowmentResponse SuccessLogin()
-            => SuccessResponse(ResponseState.Valid, Messages.LoggedinSuccess);
+            => SuccessResponse(ResponseState.Valid, "تم تسجيل الدخول بنجاح");
 
         public static EndowmentResponse<TValue> SuccessLogin<TValue>(TValue? tValue)
-            => Responsee(tValue, ResponseState.Valid, Messages.LoggedinSuccess);
+            => Responsee(tValue, ResponseState.Valid, "تم تسجيل الدخول بنجاح");
 
         public static EndowmentResponse FailureLogin()
-            => FailureResponse(errorMessage: Messages.LoggedinFailed);
+            => FailureResponse(errorMessage: "فشل في تسجيل الدخول");
 
         public static EndowmentResponse Added()
-            => SuccessResponse(ResponseState.Valid, Messages.Added);
+            => SuccessResponse(ResponseState.Valid, "تم الإضافة بنجاح");
 
         public static EndowmentResponse Updated()
-            => SuccessResponse(ResponseState.Valid, Messages.Updated);
+            => SuccessResponse(ResponseState.Valid, "تم التحديث بنجاح");
 
         public static EndowmentResponse Activated()
-            => SuccessResponse(ResponseState.Valid, Messages.Activated);
+            => SuccessResponse(ResponseState.Valid, "تم التفعيل بنجاح");
 
         public static EndowmentResponse Deactivated()
-            => SuccessResponse(ResponseState.Valid, Messages.Deactivated);
+            => SuccessResponse(ResponseState.Valid, "تم إلغاء التفعيل بنجاح");
 
         public static EndowmentResponse NoChanges()
-            => SuccessResponse(ResponseState.Valid, Messages.NoChanges);
+            => SuccessResponse(ResponseState.Valid, "لا توجد تغييرات");
 
         public static EndowmentResponse Deleted()
-            => SuccessResponse(ResponseState.Valid, Messages.Deleted);
+            => SuccessResponse(ResponseState.Valid, "تم الحذف بنجاح");
 
         public static EndowmentResponse FailureResponse(string propertyName = "", string errorMessage = "", params object[] args)
         {
@@ -78,7 +78,7 @@ namespace SpecificSolutions.Endowment.Application.Models.Global
         {
             return Responsee(ResponseState.Valid,
                 tValue,
-                "Messages.Success"
+                "تمت العملية بنجاح"
                 );
         }
 
@@ -86,7 +86,7 @@ namespace SpecificSolutions.Endowment.Application.Models.Global
         {
             return Responsee(ResponseState.Valid,
                 tValue,
-                "Messages.Success"
+                "تمت العملية بنجاح"
                 );
         }
 

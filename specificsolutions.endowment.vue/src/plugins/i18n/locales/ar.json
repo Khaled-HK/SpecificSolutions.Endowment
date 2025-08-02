@@ -242,6 +242,23 @@
       "productName": "اسم المادة",
       "quantity": "الكمية",
       "actions": "الإجراءات"
+    },
+    "buildings": {
+      "name": "اسم المبنى",
+      "address": "العنوان",
+      "city": "المدينة",
+      "region": "المنطقة",
+      "actions": "الإجراءات"
+    },
+    "requests": {
+      "title": "العنوان",
+      "description": "الوصف",
+      "priority": "الأولوية",
+      "location": "الموقع",
+      "referenceNumber": "رقم المرجع",
+      "requestStatus": "حالة الطلب",
+      "createdDate": "تاريخ الإنشاء",
+      "actions": "الإجراءات"
     }
   },
   "$vuetify": {
@@ -316,5 +333,43 @@
   "Raise Support": "رفع الدعم",
   "Documentation": "التوثيق",
   "Category": "الفئة",
-  "Details": "التفاصيل"
+  "Details": "التفاصيل",
+  "pages": {
+    "buildings": {
+      "title": "إدارة المباني",
+      "addBuilding": "إضافة مبنى",
+      "addNewBuilding": "إضافة مبنى جديد",
+      "editBuilding": "تعديل المبنى",
+      "buildingName": "اسم المبنى",
+      "address": "العنوان",
+      "city": "المدينة",
+      "region": "المنطقة",
+      "description": "الوصف",
+      "confirmDelete": "تأكيد الحذف",
+      "deleteConfirmation": "هل أنت متأكد من حذف هذا المبنى؟"
+    },
+    "requests": {
+      "title": "إدارة الطلبات",
+      "addRequest": "إضافة طلب",
+      "addNewRequest": "إضافة طلب جديد",
+      "editRequest": "تعديل الطلب",
+      "title": "العنوان",
+      "description": "الوصف",
+      "priority": "الأولوية",
+      "location": "الموقع",
+      "referenceNumber": "رقم المرجع",
+      "requestStatus": "حالة الطلب",
+      "confirmDelete": "تأكيد الحذف",
+      "deleteConfirmation": "هل أنت متأكد من حذف هذا الطلب؟"
+    }
+  },
+  "validation": {
+    "required": "حقل {field} مطلوب"
+  },
+  "common": {
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "update": "تحديث",
+    "delete": "حذف"
+  }
 }

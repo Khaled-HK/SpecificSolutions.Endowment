@@ -245,6 +245,23 @@
       "productName": "Product Name",
       "quantity": "Quantity",
       "actions": "Actions"
+    },
+    "buildings": {
+      "name": "Building Name",
+      "address": "Address",
+      "city": "City",
+      "region": "Region",
+      "actions": "Actions"
+    },
+    "requests": {
+      "title": "Title",
+      "description": "Description",
+      "priority": "Priority",
+      "location": "Location",
+      "referenceNumber": "Reference Number",
+      "requestStatus": "Request Status",
+      "createdDate": "Created Date",
+      "actions": "Actions"
     }
   },
   "$vuetify": {
@@ -283,5 +300,43 @@
   "Raise Support": "Raise Support",
   "Documentation": "Documentation",
   "Category": "Category",
-  "Details": "Details"
+  "Details": "Details",
+  "pages": {
+    "buildings": {
+      "title": "Buildings Management",
+      "addBuilding": "Add Building",
+      "addNewBuilding": "Add New Building",
+      "editBuilding": "Edit Building",
+      "buildingName": "Building Name",
+      "address": "Address",
+      "city": "City",
+      "region": "Region",
+      "description": "Description",
+      "confirmDelete": "Confirm Delete",
+      "deleteConfirmation": "Are you sure you want to delete this building?"
+    },
+    "requests": {
+      "title": "Requests Management",
+      "addRequest": "Add Request",
+      "addNewRequest": "Add New Request",
+      "editRequest": "Edit Request",
+      "title": "Title",
+      "description": "Description",
+      "priority": "Priority",
+      "location": "Location",
+      "referenceNumber": "Reference Number",
+      "requestStatus": "Request Status",
+      "confirmDelete": "Confirm Delete",
+      "deleteConfirmation": "Are you sure you want to delete this request?"
+    }
+  },
+  "validation": {
+    "required": "Field {field} is required"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "update": "Update",
+    "delete": "Delete"
+  }
 }

@@ -3,24 +3,26 @@ using SpecificSolutions.Endowment.Application.Handlers.Offices.Commands.Update;
 
 namespace SpecificSolutions.Endowment.Application.Validators.Offices
 {
-    public class UpdateOfficeCommandValidator : AbstractValidator<UpdateOfficeCommand>
+    public class UpdateOfficeCommandValidator : BaseValidator<UpdateOfficeCommand>
     {
         public UpdateOfficeCommandValidator()
         {
             RuleFor(x => x.Id)
-                .NotEmpty().WithMessage("Office ID is required.");
+                .NotEmpty().WithMessage("معرف المكتب مطلوب");
 
             RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Office name is required.")
-                .MaximumLength(100).WithMessage("Office name cannot exceed 100 characters.");
-
-            RuleFor(x => x.Location)
-                .NotEmpty().WithMessage("Location is required.")
-                .MaximumLength(200).WithMessage("Location cannot exceed 200 characters.");
+                .NotEmpty().WithMessage("اسم المكتب مطلوب")
+                .MaximumLength(200).WithMessage("اسم المكتب يجب أن لا يتجاوز 200 حرف")
+                .Must(BeValidName).WithMessage("اسم المكتب يحتوي على أحرف غير مسموحة");
 
             RuleFor(x => x.PhoneNumber)
-                .NotEmpty().WithMessage("Phone number is required.")
-                .Matches(@"^(09[1-5]|02[1-9])-?\d{7}$").WithMessage("Phone number must be a valid Libyan format (e.g., 091-1234567, 021-1234567).");
+                .NotEmpty().WithMessage("رقم الهاتف مطلوب")
+                .Must(BeValidPhoneNumber).WithMessage("رقم الهاتف غير صحيح");
+
+            RuleFor(x => x.Location)
+                .NotEmpty().WithMessage("موقع المكتب مطلوب")
+                .MaximumLength(500).WithMessage("موقع المكتب يجب أن لا يتجاوز 500 حرف")
+                .Must(BeValidName).WithMessage("موقع المكتب يحتوي على أحرف غير مسموحة");
         }
     }
 }

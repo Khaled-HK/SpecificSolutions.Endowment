@@ -114,6 +114,297 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  
+  <!-- رسائل عامة -->
+  <data name="IdRequired" xml:space="preserve">
+    <value>معرف مطلوب</value>
+  </data>
+  
+  <!-- رسائل المدن -->
+  <data name="CityNameRequired" xml:space="preserve">
+    <value>اسم المدينة مطلوب</value>
+  </data>
+  <data name="CityNameMaxLength" xml:space="preserve">
+    <value>اسم المدينة يجب أن لا يتجاوز 200 حرف</value>
+  </data>
+  <data name="CityNameInvalidCharacters" xml:space="preserve">
+    <value>اسم المدينة يحتوي على أحرف غير مسموحة</value>
+  </data>
+  <data name="CityCountryRequired" xml:space="preserve">
+    <value>اسم الدولة مطلوب</value>
+  </data>
+  <data name="CityCountryMaxLength" xml:space="preserve">
+    <value>اسم الدولة يجب أن لا يتجاوز 100 حرف</value>
+  </data>
+  <data name="CityCountryInvalidCharacters" xml:space="preserve">
+    <value>اسم الدولة يحتوي على أحرف غير مسموحة</value>
+  </data>
+  <data name="CityIdRequired" xml:space="preserve">
+    <value>معرف المدينة مطلوب</value>
+  </data>
+  
+  <!-- رسائل الحسابات -->
+  <data name="AccountNameRequired" xml:space="preserve">
+    <value>اسم الحساب مطلوب</value>
+  </data>
+  <data name="AccountNameMaxLength" xml:space="preserve">
+    <value>اسم الحساب يجب أن لا يتجاوز 200 حرف</value>
+  </data>
+  <data name="AccountNameInvalidCharacters" xml:space="preserve">
+    <value>اسم الحساب يحتوي على أحرف غير مسموحة</value>
+  </data>
+  <data name="MotherNameRequired" xml:space="preserve">
+    <value>اسم الأم مطلوب</value>
+  </data>
+  <data name="MotherNameMaxLength" xml:space="preserve">
+    <value>اسم الأم يجب أن لا يتجاوز 200 حرف</value>
+  </data>
+  <data name="MotherNameInvalidCharacters" xml:space="preserve">
+    <value>اسم الأم يحتوي على أحرف غير مسموحة</value>
+  </data>
+  <data name="BirthDateRequired" xml:space="preserve">
+    <value>تاريخ الميلاد مطلوب</value>
+  </data>
+  <data name="BirthDateNotInFuture" xml:space="preserve">
+    <value>تاريخ الميلاد لا يمكن أن يكون في المستقبل</value>
+  </data>
+  <data name="BirthDateInvalid" xml:space="preserve">
+    <value>تاريخ الميلاد غير صحيح</value>
+  </data>
+  <data name="GenderInvalid" xml:space="preserve">
+    <value>الجنس غير صحيح</value>
+  </data>
+  <data name="BarcodeRequired" xml:space="preserve">
+    <value>الباركود مطلوب</value>
+  </data>
+  <data name="BarcodeMaxLength" xml:space="preserve">
+    <value>الباركود يجب أن لا يتجاوز 50 حرف</value>
+  </data>
+  <data name="StatusInvalid" xml:space="preserve">
+    <value>الحالة غير صحيحة</value>
+  </data>
+  <data name="LockerFileNumberGreaterThanZero" xml:space="preserve">
+    <value>رقم ملف الخزانة يجب أن يكون أكبر من صفر</value>
+  </data>
+  <data name="SocialStatusInvalid" xml:space="preserve">
+    <value>الحالة الاجتماعية غير صحيحة</value>
+  </data>
+  <data name="AccountNumberRequired" xml:space="preserve">
+    <value>رقم الحساب مطلوب</value>
+  </data>
+  <data name="AccountNumberMaxLength" xml:space="preserve">
+    <value>رقم الحساب يجب أن لا يتجاوز 50 حرف</value>
+  </data>
+  <data name="AccountTypeInvalid" xml:space="preserve">
+    <value>نوع الحساب غير صحيح</value>
+  </data>
+  <data name="NIDGreaterThanZero" xml:space="preserve">
+    <value>الرقم الوطني يجب أن يكون أكبر من صفر</value>
+  </data>
+  <data name="BalanceNotNegative" xml:space="preserve">
+    <value>الرصيد لا يمكن أن يكون سالب</value>
+  </data>
+  <data name="NoteMaxLength" xml:space="preserve">
+    <value>الملاحظة يجب أن لا تتجاوز 1000 حرف</value>
+  </data>
+  <data name="BookNumberNotNegative" xml:space="preserve">
+    <value>رقم الكتاب لا يمكن أن يكون سالب</value>
+  </data>
+  <data name="PaperNumberNotNegative" xml:space="preserve">
+    <value>رقم الورقة لا يمكن أن يكون سالب</value>
+  </data>
+  <data name="RegistrationNumberNotNegative" xml:space="preserve">
+    <value>رقم التسجيل لا يمكن أن يكون سالب</value>
+  </data>
+  <data name="AddressMaxLength" xml:space="preserve">
+    <value>العنوان يجب أن لا يتجاوز 500 حرف</value>
+  </data>
+  <data name="CityMaxLength" xml:space="preserve">
+    <value>المدينة يجب أن لا تتجاوز 100 حرف</value>
+  </data>
+  <data name="CountryMaxLength" xml:space="preserve">
+    <value>البلد يجب أن لا يتجاوز 100 حرف</value>
+  </data>
+  <data name="ContactNumberInvalid" xml:space="preserve">
+    <value>رقم الاتصال غير صحيح</value>
+  </data>
+  <data name="FloorsNotNegative" xml:space="preserve">
+    <value>عدد الطوابق لا يمكن أن يكون سالب</value>
+  </data>
+  <data name="FloorsMaxValue" xml:space="preserve">
+    <value>عدد الطوابق لا يمكن أن يتجاوز 100</value>
+  </data>
+  
+  <!-- رسائل القرارات -->
+  <data name="DecisionTitleRequired" xml:space="preserve">
+    <value>عنوان القرار مطلوب</value>
+  </data>
+  <data name="DecisionTitleMaxLength" xml:space="preserve">
+    <value>عنوان القرار يجب أن لا يتجاوز 200 حرف</value>
+  </data>
+  <data name="DecisionTitleInvalidCharacters" xml:space="preserve">
+    <value>عنوان القرار يحتوي على أحرف غير مسموحة</value>
+  </data>
+  <data name="DecisionDescriptionRequired" xml:space="preserve">
+    <value>وصف القرار مطلوب</value>
+  </data>
+  <data name="DecisionDescriptionMaxLength" xml:space="preserve">
+    <value>وصف القرار يجب أن لا يتجاوز 1000 حرف</value>
+  </data>
+  <data name="DecisionDescriptionInvalidCharacters" xml:space="preserve">
+    <value>وصف القرار يحتوي على أحرف غير مسموحة</value>
+  </data>
+  <data name="ReferenceNumberRequired" xml:space="preserve">
+    <value>رقم المرجع مطلوب</value>
+  </data>
+  <data name="ReferenceNumberMaxLength" xml:space="preserve">
+    <value>رقم المرجع يجب أن لا يتجاوز 50 حرف</value>
+  </data>
+  <data name="ReferenceNumberInvalidCharacters" xml:space="preserve">
+    <value>رقم المرجع يحتوي على أحرف غير مسموحة</value>
+  </data>
+  <data name="CreatedDateRequired" xml:space="preserve">
+    <value>تاريخ الإنشاء مطلوب</value>
+  </data>
+  
+  <!-- رسائل المناطق -->
+  <data name="RegionNameRequired" xml:space="preserve">
+    <value>اسم المنطقة مطلوب</value>
+  </data>
+  <data name="RegionNameMaxLength" xml:space="preserve">
+    <value>اسم المنطقة يجب أن لا يتجاوز 200 حرف</value>
+  </data>
+  <data name="RegionNameInvalidCharacters" xml:space="preserve">
+    <value>اسم المنطقة يحتوي على أحرف غير مسموحة</value>
+  </data>
+  
+  <!-- رسائل المكاتب -->
+  <data name="OfficeNameRequired" xml:space="preserve">
+    <value>اسم المكتب مطلوب</value>
+  </data>
+  <data name="OfficeNameMaxLength" xml:space="preserve">
+    <value>اسم المكتب يجب أن لا يتجاوز 200 حرف</value>
+  </data>
+  <data name="OfficeNameInvalidCharacters" xml:space="preserve">
+    <value>اسم المكتب يحتوي على أحرف غير مسموحة</value>
+  </data>
+  <data name="PhoneNumberRequired" xml:space="preserve">
+    <value>رقم الهاتف مطلوب</value>
+  </data>
+  <data name="PhoneNumberInvalid" xml:space="preserve">
+    <value>رقم الهاتف غير صحيح</value>
+  </data>
+  <data name="OfficeLocationRequired" xml:space="preserve">
+    <value>موقع المكتب مطلوب</value>
+  </data>
+  <data name="OfficeLocationMaxLength" xml:space="preserve">
+    <value>موقع المكتب يجب أن لا يتجاوز 500 حرف</value>
+  </data>
+  <data name="OfficeLocationInvalidCharacters" xml:space="preserve">
+    <value>موقع المكتب يحتوي على أحرف غير مسموحة</value>
+  </data>
+  
+  <!-- رسائل الطلبات -->
+  <data name="RequestTitleRequired" xml:space="preserve">
+    <value>عنوان الطلب مطلوب</value>
+  </data>
+  <data name="RequestTitleLength" xml:space="preserve">
+    <value>عنوان الطلب يجب أن يكون بين 1 و 100 حرف</value>
+  </data>
+  <data name="RequestTitleInvalidCharacters" xml:space="preserve">
+    <value>عنوان الطلب يحتوي على أحرف غير مسموحة</value>
+  </data>
+  <data name="RequestDescriptionRequired" xml:space="preserve">
+    <value>وصف الطلب مطلوب</value>
+  </data>
+  <data name="RequestDescriptionLength" xml:space="preserve">
+    <value>وصف الطلب يجب أن يكون بين 1 و 500 حرف</value>
+  </data>
+  <data name="RequestDescriptionInvalidCharacters" xml:space="preserve">
+    <value>وصف الطلب يحتوي على أحرف غير مسموحة</value>
+  </data>
+  <data name="RequestCreatedDateRequired" xml:space="preserve">
+    <value>تاريخ إنشاء الطلب مطلوب</value>
+  </data>
+  <data name="RequestCreatedDateNotInFuture" xml:space="preserve">
+    <value>تاريخ إنشاء الطلب لا يمكن أن يكون في المستقبل</value>
+  </data>
+  
+  <!-- رسائل المصادقة -->
+  <data name="EmailRequired" xml:space="preserve">
+    <value>البريد الإلكتروني مطلوب</value>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>كلمة المرور مطلوبة</value>
+  </data>
+  <data name="EmailInvalid" xml:space="preserve">
+    <value>البريد الإلكتروني غير صحيح</value>
+  </data>
+  <data name="PasswordMinLength" xml:space="preserve">
+    <value>كلمة المرور يجب أن تكون 6 أحرف على الأقل</value>
+  </data>
+  <data name="PasswordMaxLength" xml:space="preserve">
+    <value>كلمة المرور يجب أن لا تتجاوز 100 حرف</value>
+  </data>
+  <data name="FirstNameRequired" xml:space="preserve">
+    <value>الاسم الأول مطلوب</value>
+  </data>
+  <data name="FirstNameMaxLength" xml:space="preserve">
+    <value>الاسم الأول يجب أن لا يتجاوز 50 حرف</value>
+  </data>
+  <data name="FirstNameInvalidCharacters" xml:space="preserve">
+    <value>الاسم الأول يحتوي على أحرف غير مسموحة</value>
+  </data>
+  <data name="LastNameRequired" xml:space="preserve">
+    <value>الاسم الأخير مطلوب</value>
+  </data>
+  <data name="LastNameMaxLength" xml:space="preserve">
+    <value>الاسم الأخير يجب أن لا يتجاوز 50 حرف</value>
+  </data>
+  <data name="LastNameInvalidCharacters" xml:space="preserve">
+    <value>الاسم الأخير يحتوي على أحرف غير مسموحة</value>
+  </data>
+  <data name="EmailMaxLength" xml:space="preserve">
+    <value>البريد الإلكتروني يجب أن لا يتجاوز 100 حرف</value>
+  </data>
+  <data name="UserNameRequired" xml:space="preserve">
+    <value>اسم المستخدم مطلوب</value>
+  </data>
+  <data name="UserNameMaxLength" xml:space="preserve">
+    <value>اسم المستخدم يجب أن لا يتجاوز 50 حرف</value>
+  </data>
+  <data name="UserNameInvalidCharacters" xml:space="preserve">
+    <value>اسم المستخدم يحتوي على أحرف غير مسموحة</value>
+  </data>
+  <data name="ConfirmPasswordRequired" xml:space="preserve">
+    <value>تأكيد كلمة المرور مطلوب</value>
+  </data>
+  <data name="PasswordsDoNotMatch" xml:space="preserve">
+    <value>كلمة المرور وتأكيدها غير متطابقين</value>
+  </data>
+  <data name="AddressRequired" xml:space="preserve">
+    <value>العنوان مطلوب</value>
+  </data>
+  <data name="AddressInvalidCharacters" xml:space="preserve">
+    <value>العنوان يحتوي على أحرف غير مسموحة</value>
+  </data>
+  <data name="CityRequired" xml:space="preserve">
+    <value>المدينة مطلوبة</value>
+  </data>
+  <data name="CityInvalidCharacters" xml:space="preserve">
+    <value>المدينة تحتوي على أحرف غير مسموحة</value>
+  </data>
+  <data name="CountryRequired" xml:space="preserve">
+    <value>الدولة مطلوبة</value>
+  </data>
+  <data name="CountryInvalidCharacters" xml:space="preserve">
+    <value>الدولة تحتوي على أحرف غير مسموحة</value>
+  </data>
+  <data name="OfficeRequired" xml:space="preserve">
+    <value>المكتب مطلوب</value>
+  </data>
+  
+  <!-- رسائل أخرى -->
   <data name="Activated" xml:space="preserve">
     <value>Activated</value>
   </data>
@@ -143,36 +434,5 @@
   </data>
   <data name="Updated" xml:space="preserve">
     <value>Updated</value>
-  </data>
-  <!-- رسائل القرارات -->
-  <data name="DecisionTitleRequired" xml:space="preserve">
-    <value>عنوان القرار مطلوب</value>
-  </data>
-  <data name="DecisionDescriptionRequired" xml:space="preserve">
-    <value>وصف القرار مطلوب</value>
-  </data>
-  <data name="DecisionReferenceNumberRequired" xml:space="preserve">
-    <value>رقم المرجع مطلوب</value>
-  </data>
-  <data name="DecisionNotFound" xml:space="preserve">
-    <value>القرار غير موجود</value>
-  </data>
-  <data name="DecisionCreatedSuccessfully" xml:space="preserve">
-    <value>تم إنشاء القرار بنجاح</value>
-  </data>
-  <data name="DecisionUpdatedSuccessfully" xml:space="preserve">
-    <value>تم تحديث القرار بنجاح</value>
-  </data>
-  <data name="DecisionDeletedSuccessfully" xml:space="preserve">
-    <value>تم حذف القرار بنجاح</value>
-  </data>
-  <data name="DecisionCreationError" xml:space="preserve">
-    <value>حدث خطأ أثناء إنشاء القرار</value>
-  </data>
-  <data name="DecisionUpdateError" xml:space="preserve">
-    <value>حدث خطأ أثناء تحديث القرار</value>
-  </data>
-  <data name="DecisionDeleteError" xml:space="preserve">
-    <value>حدث خطأ أثناء حذف القرار</value>
   </data>
 </root>

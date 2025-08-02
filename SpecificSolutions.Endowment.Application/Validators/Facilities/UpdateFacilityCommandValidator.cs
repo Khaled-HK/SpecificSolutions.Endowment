@@ -3,15 +3,35 @@ using SpecificSolutions.Endowment.Application.Handlers.Facilities.Commands.Updat
 
 namespace SpecificSolutions.Endowment.Application.Validators.Facilities
 {
-    public class UpdateFacilityCommandValidator : AbstractValidator<UpdateFacilityCommand>
+    public class UpdateFacilityCommandValidator : BaseValidator<UpdateFacilityCommand>
     {
         public UpdateFacilityCommandValidator()
         {
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(200);
-            RuleFor(x => x.Location).NotEmpty().MaximumLength(200);
-            RuleFor(x => x.ContactInfo).NotEmpty().MaximumLength(100);
-            RuleFor(x => x.Capacity).GreaterThanOrEqualTo(0);
-            RuleFor(x => x.Status).NotEmpty().MaximumLength(50);
+            RuleFor(x => x.Id)
+                .NotEmpty().WithMessage("معرف المنشأة مطلوب");
+
+            RuleFor(x => x.Name)
+                .NotEmpty().WithMessage("اسم المنشأة مطلوب")
+                .MaximumLength(200).WithMessage("اسم المنشأة يجب أن لا يتجاوز 200 حرف")
+                .Must(BeValidName).WithMessage("اسم المنشأة يحتوي على أحرف غير مسموحة");
+
+            RuleFor(x => x.Location)
+                .NotEmpty().WithMessage("موقع المنشأة مطلوب")
+                .MaximumLength(200).WithMessage("موقع المنشأة يجب أن لا يتجاوز 200 حرف")
+                .Must(BeValidName).WithMessage("موقع المنشأة يحتوي على أحرف غير مسموحة");
+
+            RuleFor(x => x.ContactInfo)
+                .NotEmpty().WithMessage("معلومات الاتصال مطلوبة")
+                .MaximumLength(100).WithMessage("معلومات الاتصال يجب أن لا تتجاوز 100 حرف")
+                .Must(BeValidName).WithMessage("معلومات الاتصال تحتوي على أحرف غير مسموحة");
+
+            RuleFor(x => x.Capacity)
+                .GreaterThanOrEqualTo(0).WithMessage("السعة يجب أن تكون أكبر من أو تساوي صفر");
+
+            RuleFor(x => x.Status)
+                .NotEmpty().WithMessage("حالة المنشأة مطلوبة")
+                .MaximumLength(50).WithMessage("حالة المنشأة يجب أن لا تتجاوز 50 حرف")
+                .Must(BeValidName).WithMessage("حالة المنشأة تحتوي على أحرف غير مسموحة");
         }
     }
 }

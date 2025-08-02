@@ -3,20 +3,29 @@ using SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Update;
 
 namespace SpecificSolutions.Endowment.Application.Validators.Requests
 {
-    public class UpdateRequestCommandValidator : AbstractValidator<UpdateRequestCommand>
+    public class UpdateRequestCommandValidator : BaseValidator<UpdateRequestCommand>
     {
         public UpdateRequestCommandValidator()
         {
+            RuleFor(x => x.Id)
+                .NotEmpty().WithMessage("معرف الطلب مطلوب")
+                .Must(BeValidGuid).WithMessage("معرف الطلب غير صحيح");
+
             RuleFor(x => x.Title)
-                .NotEmpty().WithMessage("Title is required.")
-                .MaximumLength(100).WithMessage("Title cannot exceed 100 characters.");
+                .NotEmpty().WithMessage("عنوان الطلب مطلوب")
+                .MaximumLength(100).WithMessage("عنوان الطلب لا يمكن أن يتجاوز 100 حرف")
+                .Must(BeValidName).WithMessage("عنوان الطلب يحتوي على أحرف غير مسموحة");
 
             RuleFor(x => x.Description)
-                .MaximumLength(500).WithMessage("Description cannot exceed 500 characters.");
+                .MaximumLength(500).When(x => !string.IsNullOrWhiteSpace(x.Description))
+                .WithMessage("وصف الطلب لا يمكن أن يتجاوز 500 حرف")
+                .Must(BeValidName).When(x => !string.IsNullOrWhiteSpace(x.Description))
+                .WithMessage("وصف الطلب يحتوي على أحرف غير مسموحة");
 
             RuleFor(x => x.ReferenceNumber)
-                .NotEmpty().WithMessage("Reference number is required.")
-                .MaximumLength(50).WithMessage("Reference number cannot exceed 50 characters.");
+                .NotEmpty().WithMessage("رقم المرجع مطلوب")
+                .MaximumLength(50).WithMessage("رقم المرجع لا يمكن أن يتجاوز 50 حرف")
+                .Must(BeValidName).WithMessage("رقم المرجع يحتوي على أحرف غير مسموحة");
         }
     }
 } 

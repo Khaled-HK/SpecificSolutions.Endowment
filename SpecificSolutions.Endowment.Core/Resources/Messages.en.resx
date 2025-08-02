@@ -115,8 +115,308 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Deleted" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
+  
+  <!-- General Messages -->
+  <data name="IdRequired" xml:space="preserve">
+    <value>ID is required</value>
+  </data>
+  
+  <!-- City Messages -->
+  <data name="CityNameRequired" xml:space="preserve">
+    <value>City name is required</value>
+  </data>
+  <data name="CityNameMaxLength" xml:space="preserve">
+    <value>City name must not exceed 200 characters</value>
+  </data>
+  <data name="CityNameInvalidCharacters" xml:space="preserve">
+    <value>City name contains invalid characters</value>
+  </data>
+  <data name="CityCountryRequired" xml:space="preserve">
+    <value>Country name is required</value>
+  </data>
+  <data name="CityCountryMaxLength" xml:space="preserve">
+    <value>Country name must not exceed 100 characters</value>
+  </data>
+  <data name="CityCountryInvalidCharacters" xml:space="preserve">
+    <value>Country name contains invalid characters</value>
+  </data>
+  <data name="CityIdRequired" xml:space="preserve">
+    <value>City ID is required</value>
+  </data>
+  
+  <!-- Account Messages -->
+  <data name="AccountNameRequired" xml:space="preserve">
+    <value>Account name is required</value>
+  </data>
+  <data name="AccountNameMaxLength" xml:space="preserve">
+    <value>Account name must not exceed 200 characters</value>
+  </data>
+  <data name="AccountNameInvalidCharacters" xml:space="preserve">
+    <value>Account name contains invalid characters</value>
+  </data>
+  <data name="MotherNameRequired" xml:space="preserve">
+    <value>Mother's name is required</value>
+  </data>
+  <data name="MotherNameMaxLength" xml:space="preserve">
+    <value>Mother's name must not exceed 200 characters</value>
+  </data>
+  <data name="MotherNameInvalidCharacters" xml:space="preserve">
+    <value>Mother's name contains invalid characters</value>
+  </data>
+  <data name="BirthDateRequired" xml:space="preserve">
+    <value>Birth date is required</value>
+  </data>
+  <data name="BirthDateNotInFuture" xml:space="preserve">
+    <value>Birth date cannot be in the future</value>
+  </data>
+  <data name="BirthDateInvalid" xml:space="preserve">
+    <value>Birth date is invalid</value>
+  </data>
+  <data name="GenderInvalid" xml:space="preserve">
+    <value>Gender is invalid</value>
+  </data>
+  <data name="BarcodeRequired" xml:space="preserve">
+    <value>Barcode is required</value>
+  </data>
+  <data name="BarcodeMaxLength" xml:space="preserve">
+    <value>Barcode must not exceed 50 characters</value>
+  </data>
+  <data name="StatusInvalid" xml:space="preserve">
+    <value>Status is invalid</value>
+  </data>
+  <data name="LockerFileNumberGreaterThanZero" xml:space="preserve">
+    <value>Locker file number must be greater than zero</value>
+  </data>
+  <data name="SocialStatusInvalid" xml:space="preserve">
+    <value>Social status is invalid</value>
+  </data>
+  <data name="AccountNumberRequired" xml:space="preserve">
+    <value>Account number is required</value>
+  </data>
+  <data name="AccountNumberMaxLength" xml:space="preserve">
+    <value>Account number must not exceed 50 characters</value>
+  </data>
+  <data name="AccountTypeInvalid" xml:space="preserve">
+    <value>Account type is invalid</value>
+  </data>
+  <data name="NIDGreaterThanZero" xml:space="preserve">
+    <value>National ID must be greater than zero</value>
+  </data>
+  <data name="BalanceNotNegative" xml:space="preserve">
+    <value>Balance cannot be negative</value>
+  </data>
+  <data name="NoteMaxLength" xml:space="preserve">
+    <value>Note must not exceed 1000 characters</value>
+  </data>
+  <data name="BookNumberNotNegative" xml:space="preserve">
+    <value>Book number cannot be negative</value>
+  </data>
+  <data name="PaperNumberNotNegative" xml:space="preserve">
+    <value>Paper number cannot be negative</value>
+  </data>
+  <data name="RegistrationNumberNotNegative" xml:space="preserve">
+    <value>Registration number cannot be negative</value>
+  </data>
+  <data name="AddressMaxLength" xml:space="preserve">
+    <value>Address must not exceed 500 characters</value>
+  </data>
+  <data name="CityMaxLength" xml:space="preserve">
+    <value>City must not exceed 100 characters</value>
+  </data>
+  <data name="CountryMaxLength" xml:space="preserve">
+    <value>Country must not exceed 100 characters</value>
+  </data>
+  <data name="ContactNumberInvalid" xml:space="preserve">
+    <value>Contact number is invalid</value>
+  </data>
+  <data name="FloorsNotNegative" xml:space="preserve">
+    <value>Number of floors cannot be negative</value>
+  </data>
+  <data name="FloorsMaxValue" xml:space="preserve">
+    <value>Number of floors cannot exceed 100</value>
+  </data>
+  
+  <!-- Decision Messages -->
+  <data name="DecisionTitleRequired" xml:space="preserve">
+    <value>Decision title is required</value>
+  </data>
+  <data name="DecisionTitleMaxLength" xml:space="preserve">
+    <value>Decision title must not exceed 200 characters</value>
+  </data>
+  <data name="DecisionTitleInvalidCharacters" xml:space="preserve">
+    <value>Decision title contains invalid characters</value>
+  </data>
+  <data name="DecisionDescriptionRequired" xml:space="preserve">
+    <value>Decision description is required</value>
+  </data>
+  <data name="DecisionDescriptionMaxLength" xml:space="preserve">
+    <value>Decision description must not exceed 1000 characters</value>
+  </data>
+  <data name="DecisionDescriptionInvalidCharacters" xml:space="preserve">
+    <value>Decision description contains invalid characters</value>
+  </data>
+  <data name="ReferenceNumberRequired" xml:space="preserve">
+    <value>Reference number is required</value>
+  </data>
+  <data name="ReferenceNumberMaxLength" xml:space="preserve">
+    <value>Reference number must not exceed 50 characters</value>
+  </data>
+  <data name="ReferenceNumberInvalidCharacters" xml:space="preserve">
+    <value>Reference number contains invalid characters</value>
+  </data>
+  <data name="CreatedDateRequired" xml:space="preserve">
+    <value>Creation date is required</value>
+  </data>
+  
+  <!-- Region Messages -->
+  <data name="RegionNameRequired" xml:space="preserve">
+    <value>Region name is required</value>
+  </data>
+  <data name="RegionNameMaxLength" xml:space="preserve">
+    <value>Region name must not exceed 200 characters</value>
+  </data>
+  <data name="RegionNameInvalidCharacters" xml:space="preserve">
+    <value>Region name contains invalid characters</value>
+  </data>
+  
+  <!-- Office Messages -->
+  <data name="OfficeNameRequired" xml:space="preserve">
+    <value>Office name is required</value>
+  </data>
+  <data name="OfficeNameMaxLength" xml:space="preserve">
+    <value>Office name must not exceed 200 characters</value>
+  </data>
+  <data name="OfficeNameInvalidCharacters" xml:space="preserve">
+    <value>Office name contains invalid characters</value>
+  </data>
+  <data name="PhoneNumberRequired" xml:space="preserve">
+    <value>Phone number is required</value>
+  </data>
+  <data name="PhoneNumberInvalid" xml:space="preserve">
+    <value>Phone number is invalid</value>
+  </data>
+  <data name="OfficeLocationRequired" xml:space="preserve">
+    <value>Office location is required</value>
+  </data>
+  <data name="OfficeLocationMaxLength" xml:space="preserve">
+    <value>Office location must not exceed 500 characters</value>
+  </data>
+  <data name="OfficeLocationInvalidCharacters" xml:space="preserve">
+    <value>Office location contains invalid characters</value>
+  </data>
+  
+  <!-- Request Messages -->
+  <data name="RequestTitleRequired" xml:space="preserve">
+    <value>Request title is required</value>
+  </data>
+  <data name="RequestTitleLength" xml:space="preserve">
+    <value>Request title must be between 1 and 100 characters</value>
+  </data>
+  <data name="RequestTitleInvalidCharacters" xml:space="preserve">
+    <value>Request title contains invalid characters</value>
+  </data>
+  <data name="RequestDescriptionRequired" xml:space="preserve">
+    <value>Request description is required</value>
+  </data>
+  <data name="RequestDescriptionLength" xml:space="preserve">
+    <value>Request description must be between 1 and 500 characters</value>
+  </data>
+  <data name="RequestDescriptionInvalidCharacters" xml:space="preserve">
+    <value>Request description contains invalid characters</value>
+  </data>
+  <data name="RequestCreatedDateRequired" xml:space="preserve">
+    <value>Request creation date is required</value>
+  </data>
+  <data name="RequestCreatedDateNotInFuture" xml:space="preserve">
+    <value>Request creation date cannot be in the future</value>
+  </data>
+  
+  <!-- Authentication Messages -->
+  <data name="EmailRequired" xml:space="preserve">
+    <value>Email is required</value>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>Password is required</value>
+  </data>
+  <data name="EmailInvalid" xml:space="preserve">
+    <value>Email is invalid</value>
+  </data>
+  <data name="PasswordMinLength" xml:space="preserve">
+    <value>Password must be at least 6 characters</value>
+  </data>
+  <data name="PasswordMaxLength" xml:space="preserve">
+    <value>Password must not exceed 100 characters</value>
+  </data>
+  <data name="FirstNameRequired" xml:space="preserve">
+    <value>First name is required</value>
+  </data>
+  <data name="FirstNameMaxLength" xml:space="preserve">
+    <value>First name must not exceed 50 characters</value>
+  </data>
+  <data name="FirstNameInvalidCharacters" xml:space="preserve">
+    <value>First name contains invalid characters</value>
+  </data>
+  <data name="LastNameRequired" xml:space="preserve">
+    <value>Last name is required</value>
+  </data>
+  <data name="LastNameMaxLength" xml:space="preserve">
+    <value>Last name must not exceed 50 characters</value>
+  </data>
+  <data name="LastNameInvalidCharacters" xml:space="preserve">
+    <value>Last name contains invalid characters</value>
+  </data>
+  <data name="EmailMaxLength" xml:space="preserve">
+    <value>Email must not exceed 100 characters</value>
+  </data>
+  <data name="UserNameRequired" xml:space="preserve">
+    <value>Username is required</value>
+  </data>
+  <data name="UserNameMaxLength" xml:space="preserve">
+    <value>Username must not exceed 50 characters</value>
+  </data>
+  <data name="UserNameInvalidCharacters" xml:space="preserve">
+    <value>Username contains invalid characters</value>
+  </data>
+  <data name="ConfirmPasswordRequired" xml:space="preserve">
+    <value>Password confirmation is required</value>
+  </data>
+  <data name="PasswordsDoNotMatch" xml:space="preserve">
+    <value>Password and confirmation do not match</value>
+  </data>
+  <data name="AddressRequired" xml:space="preserve">
+    <value>Address is required</value>
+  </data>
+  <data name="AddressInvalidCharacters" xml:space="preserve">
+    <value>Address contains invalid characters</value>
+  </data>
+  <data name="CityRequired" xml:space="preserve">
+    <value>City is required</value>
+  </data>
+  <data name="CityInvalidCharacters" xml:space="preserve">
+    <value>City contains invalid characters</value>
+  </data>
+  <data name="CountryRequired" xml:space="preserve">
+    <value>Country is required</value>
+  </data>
+  <data name="CountryInvalidCharacters" xml:space="preserve">
+    <value>Country contains invalid characters</value>
+  </data>
+  <data name="OfficeRequired" xml:space="preserve">
+    <value>Office is required</value>
+  </data>
+  
+  <!-- Other Messages -->
+  <data name="Activated" xml:space="preserve">
+    <value>Activated</value>
+  </data>
+  <data name="Added" xml:space="preserve">
+    <value>Added</value>
+  </data>
+  <data name="Deactivated" xml:space="preserve">
+    <value>Deactivated</value>
+  </data>
+  <data name="Deleted" xml:space="preserve">
+    <value>Deleted</value>
   </data>
   <data name="InvalidPhoneNumber" xml:space="preserve">
     <value>Invalid phone number</value>
@@ -127,41 +427,13 @@
   <data name="LoggedinSuccess" xml:space="preserve">
     <value>LoggedinSuccess</value>
   </data>
-  <data name="NoChanges" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
+  <data name="NoChanges" xml:space="preserve">
+    <value>NoChanges</value>
   </data>
   <data name="PasswordMustMore6Characters" xml:space="preserve">
     <value>Password must be at least 6 characters.</value>
   </data>
-  <!-- Decision Messages in English -->
-  <data name="DecisionTitleRequired" xml:space="preserve">
-    <value>Decision title is required</value>
-  </data>
-  <data name="DecisionDescriptionRequired" xml:space="preserve">
-    <value>Decision description is required</value>
-  </data>
-  <data name="DecisionReferenceNumberRequired" xml:space="preserve">
-    <value>Reference number is required</value>
-  </data>
-  <data name="DecisionNotFound" xml:space="preserve">
-    <value>Decision not found</value>
-  </data>
-  <data name="DecisionCreatedSuccessfully" xml:space="preserve">
-    <value>Decision created successfully</value>
-  </data>
-  <data name="DecisionUpdatedSuccessfully" xml:space="preserve">
-    <value>Decision updated successfully</value>
-  </data>
-  <data name="DecisionDeletedSuccessfully" xml:space="preserve">
-    <value>Decision deleted successfully</value>
-  </data>
-  <data name="DecisionCreationError" xml:space="preserve">
-    <value>Error occurred while creating decision</value>
-  </data>
-  <data name="DecisionUpdateError" xml:space="preserve">
-    <value>Error occurred while updating decision</value>
-  </data>
-  <data name="DecisionDeleteError" xml:space="preserve">
-    <value>Error occurred while deleting decision</value>
+  <data name="Updated" xml:space="preserve">
+    <value>Updated</value>
   </data>
 </root>
