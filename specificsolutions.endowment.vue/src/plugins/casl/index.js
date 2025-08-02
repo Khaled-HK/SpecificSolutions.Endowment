@@ -1,16 +1,21 @@
 import { createMongoAbility } from '@casl/ability'
 import { abilitiesPlugin } from '@casl/vue'
-import { reloadAbilityFromCookie } from './ability'
+import { reloadAbilityFromLocalStorage } from './ability'
 
 export default function (app) {
-  const userAbilityRules = useCookie('user-ability-rules', {
-    default: () => [],
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-    path: '/',
-    secure: true,
-    sameSite: 'strict'
-  })
-  const initialAbility = createMongoAbility(userAbilityRules.value ?? [])
+  // قراءة الصلاحيات من localStorage
+  let userAbilityRules = []
+  try {
+    const storedRules = localStorage.getItem('user-ability-rules')
+    if (storedRules) {
+      userAbilityRules = JSON.parse(storedRules)
+    }
+  } catch (error) {
+    console.error('❌ Error reading from localStorage in index.js:', error)
+    userAbilityRules = []
+  }
+  
+  const initialAbility = createMongoAbility(userAbilityRules ?? [])
 
   app.use(abilitiesPlugin, initialAbility, {
     useGlobalProperties: true,
@@ -18,9 +23,9 @@ export default function (app) {
 
   // إعادة تحميل الصلاحيات عند تحميل التطبيق
   if (typeof window !== 'undefined') {
-    // تأخير قليل للتأكد من تحميل الكوكيز
+    // تأخير قليل للتأكد من تحميل localStorage
     setTimeout(() => {
-      reloadAbilityFromCookie()
+      reloadAbilityFromLocalStorage()
     }, 100)
   }
 }

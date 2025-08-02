@@ -56,20 +56,37 @@ export const setupGuards = router => {
         return true
       }
 
-      // الحصول على قواعد الصلاحيات من الكوكيز
-      const userAbilityRules = useCookie('user-ability-rules', {
-        default: () => [],
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-        path: '/',
-        secure: true,
-        sameSite: 'strict'
-      }).value
-      console.log('🔍 User ability rules from cookie:', userAbilityRules)
-      
-      if (!userAbilityRules || !Array.isArray(userAbilityRules)) {
-        console.warn('❌ No ability rules found or invalid format')
-        return false
+      // Get user ability rules from localStorage
+      let userAbilityRules = []
+      try {
+        const storedRules = localStorage.getItem('user-ability-rules')
+        if (storedRules) {
+          userAbilityRules = JSON.parse(storedRules)
+        }
+      } catch (error) {
+        console.error('❌ Error reading from localStorage:', error)
+        userAbilityRules = []
       }
+      
+      // إضافة debugging لمعرفة الصلاحيات المقروءة من localStorage
+      console.log('🔍 Reading permissions from localStorage:', userAbilityRules.length, 'rules')
+      console.log('🔍 LocalStorage permissions details:')
+      userAbilityRules.forEach((rule, index) => {
+        console.log(`  ${index + 1}. Action: ${rule.action}, Subject: ${rule.subject}`)
+      })
+      
+      // إضافة debugging لمعرفة ما إذا كان هناك مشكلة في قراءة localStorage
+      console.log('🔍 LocalStorage reading check:')
+      const storageString = JSON.stringify(userAbilityRules)
+      console.log('🔍 LocalStorage string length:', storageString.length, 'characters')
+      console.log('🔍 LocalStorage string preview:', storageString.substring(0, 200) + '...')
+      
+      // فحص الصلاحيات المفقودة
+      const missingSubjects = ['AccountDetail', 'ConstructionRequest', 'MaintenanceRequest', 'ChangeRequest']
+      missingSubjects.forEach(subject => {
+        const found = userAbilityRules.filter(rule => rule.subject === subject)
+        console.log(`🔍 ${subject} rules in guards:`, found.length)
+      })
 
       // إنشاء ability مؤقت للتحقق
       const ability = createMongoAbility(userAbilityRules)

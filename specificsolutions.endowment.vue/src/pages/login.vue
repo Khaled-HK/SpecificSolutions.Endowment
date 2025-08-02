@@ -186,16 +186,51 @@ const login = async () => {
     console.log('CASL Rules المحدثة:', rules)
     console.log('User permissions من Backend:', user.permissions)
 
-    // حفظ قواعد الصلاحيات في الكوكيز لاستعادتها بعد إعادة التحميل
-    const abilityRulesCookie = useCookie('user-ability-rules', {
-      default: () => [],
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: '/',
-      secure: true,
-      sameSite: 'strict'
+    // حفظ قواعد الصلاحيات في localStorage بدلاً من الكوكيز لتجنب مشكلة الحجم
+    console.log('🔍 Rules before saving to localStorage:', rules.length, 'rules')
+    console.log('🔍 Rules details before saving:')
+    rules.forEach((rule, index) => {
+      console.log(`  ${index + 1}. Action: ${rule.action}, Subject: ${rule.subject}`)
     })
-    abilityRulesCookie.value = rules
-    console.log('🍪 Saved ability rules to cookie:', abilityRulesCookie.value)
+    
+    // حفظ الصلاحيات في localStorage
+    try {
+      localStorage.setItem('user-ability-rules', JSON.stringify(rules))
+      console.log('✅ Saved ability rules to localStorage:', rules.length, 'rules')
+      
+      // إضافة debugging إضافي لمعرفة الصلاحيات المحفوظة
+      console.log('🔍 ConstructionRequest permissions in localStorage:')
+      const constructionRequestInStorage = rules.filter(rule => 
+        rule.subject === 'ConstructionRequest'
+      )
+      console.log('ConstructionRequest rules in localStorage:', constructionRequestInStorage)
+      
+      // إضافة debugging لمعرفة جميع الصلاحيات في localStorage
+      console.log('🔍 All permissions in localStorage:')
+      rules.forEach((rule, index) => {
+        console.log(`  ${index + 1}. Action: ${rule.action}, Subject: ${rule.subject}`)
+      })
+      
+      // إضافة debugging لمعرفة حجم البيانات
+      const storageString = JSON.stringify(rules)
+      console.log('🔍 LocalStorage size:', storageString.length, 'characters')
+      console.log('🔍 LocalStorage string preview:', storageString.substring(0, 200) + '...')
+      
+      // إضافة debugging لمعرفة ما إذا كان هناك مشكلة في الترميز
+      console.log('🔍 LocalStorage encoding check:')
+      const decodedStorage = JSON.parse(storageString)
+      console.log('✅ LocalStorage can be parsed successfully')
+      console.log('🔍 Decoded localStorage length:', decodedStorage.length, 'rules')
+      
+      // فحص الصلاحيات المفقودة
+      const missingSubjects = ['AccountDetail', 'ConstructionRequest', 'MaintenanceRequest', 'ChangeRequest']
+      missingSubjects.forEach(subject => {
+        const found = decodedStorage.filter(rule => rule.subject === subject)
+        console.log(`🔍 ${subject} rules in decoded localStorage:`, found.length)
+      })
+    } catch (error) {
+      console.error('❌ Error saving to localStorage:', error)
+    }
     
     ability.update(rules)
     console.log('✅ Updated CASL ability with rules')
