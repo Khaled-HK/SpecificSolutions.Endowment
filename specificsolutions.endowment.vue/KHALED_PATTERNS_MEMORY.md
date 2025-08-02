@@ -451,11 +451,13 @@ const updateCity = async () => {
 6. **المكاتب (offices.vue)** - مطبق
 7. **المباني (buildings.vue)** - مطبق ✅
 8. **الطلبات (requests.vue)** - مطبق ✅
+9. **طلبات البناء (construction-requests.vue)** - مطبق ✅
+10. **طلبات الصيانة (maintenance-requests.vue)** - مطبق ✅
 
 ### ❌ الصفحات المتبقية
-- طلبات البناء (construction-requests.vue) - غير موجودة
-- طلبات الصيانة (maintenance-requests.vue) - غير موجودة
-- طلبات التغيير (change-requests.vue) - غير موجودة
+- طلبات البناء (construction-requests.vue) - مطبق ✅
+- طلبات الصيانة (maintenance-requests.vue) - مطبق ✅
+- طلبات التغيير (change-requests.vue) - مطبق ✅
 - الحسابات (accounts.vue) - غير موجودة
 - تفاصيل الحسابات (account-details.vue) - غير موجودة
 
