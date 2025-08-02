@@ -114,6 +114,9 @@ const headers = computed(() => [
   },
 ])
 
+// Get API instance
+const api = useApi()
+
 const loadRegions = async () => {
   loading.value = true
   try {
@@ -123,7 +126,7 @@ const loadRegions = async () => {
       SearchTerm: search.value || ''
     })
     
-    const response = await $api(`/Region/filter?${params}`)
+    const response = await api(`/Region/filter?${params}`)
     regions.value = response.data.items || []
     
     // Update total count for pagination
@@ -158,7 +161,7 @@ const loadRegions = async () => {
 const loadCities = async () => {
   citiesLoading.value = true
   try {
-    const response = await $api('/City/filter?PageSize=100')
+    const response = await api('/City/filter?PageSize=100')
     cities.value = response.data.items || []
     
     // Extract unique countries from cities for searchable dropdown
@@ -228,7 +231,7 @@ const addRegion = async () => {
   }
 
   try {
-    const response = await $api('/Region', {
+    const response = await api('/Region', {
       method: 'POST',
       body: {
         name: newRegion.value.name,
@@ -376,7 +379,7 @@ const updateRegion = async () => {
   }
 
   try {
-    const response = await $api(`/Region/${editRegion.value.id}`, {
+    const response = await api(`/Region/${editRegion.value.id}`, {
       method: 'PUT',
       body: {
         id: editRegion.value.id,
@@ -483,7 +486,7 @@ const deleteRegion = async () => {
   
   try {
     console.log('Attempting to delete region:', selectedRegion.value.id)
-    const response = await $api(`/Region/${selectedRegion.value.id}`, {
+    const response = await api(`/Region/${selectedRegion.value.id}`, {
       method: 'DELETE',
     })
     
@@ -571,7 +574,7 @@ const deleteSelectedRows = async () => {
   
   try {
     const deletePromises = selectedRows.value.map(region => 
-      $api(`/Region/${region.id}`, { method: 'DELETE' })
+      api(`/Region/${region.id}`, { method: 'DELETE' })
     )
     const responses = await Promise.all(deletePromises)
     

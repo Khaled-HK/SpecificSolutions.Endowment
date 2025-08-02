@@ -402,7 +402,8 @@ import { useFormValidation } from '@/composables/useFormValidation'
 import { useI18n } from 'vue-i18n'
 
 const { t, locale } = useI18n()
-const { $api } = useNuxtApp()
+// Get API instance
+const api = useApi()
 
 // Form validation
 const {
@@ -548,14 +549,19 @@ const getAccountTypeText = (type: number) => {
 const loadAccounts = async () => {
   loading.value = true
   try {
-    const response = await $api('/Accounts/filter', {
+    const params = new URLSearchParams({
+      PageNumber: currentPage.value.toString(),
+      PageSize: itemsPerPage.value.toString(),
+      SearchTerm: searchQuery.value || '',
+    }).toString()
+    
+    const response = await api('/Accounts/filter', {
       headers: {
         'Accept-Language': locale.value
       }
     })
-    if (response && response.data) {
-      accounts.value = response.data.items || []
-    }
+    accounts.value = response.data.items || []
+    totalItems.value = response.totalCount || 0
   } catch (error) {
     console.error('Error loading accounts:', error)
   } finally {
@@ -681,7 +687,7 @@ const addAccount = async () => {
   }
 
   try {
-    await $api('/Accounts', {
+    await api('/Accounts', {
       method: 'POST',
       body: newAccount.value,
       headers: {
@@ -796,7 +802,7 @@ const updateAccount = async () => {
   }
 
   try {
-    await $api(`/Accounts/${selectedAccount.value.id}`, {
+    await api(`/Accounts/${selectedAccount.value.id}`, {
       method: 'PUT',
       body: newAccount.value,
       headers: {
@@ -847,7 +853,7 @@ const confirmDelete = (account: any) => {
 
 const deleteAccount = async () => {
   try {
-    await $api(`/Accounts/${selectedAccount.value.id}`, {
+    await api(`/Accounts/${selectedAccount.value.id}`, {
       method: 'DELETE',
       headers: {
         'Accept-Language': locale.value

@@ -2,6 +2,7 @@
 import { ref, onMounted, watch, computed } from 'vue'
 import { useFormValidation } from '@/composables/useFormValidation'
 import { useI18n } from 'vue-i18n'
+import { useApi } from '@/composables/useApi'
 
 // Define interfaces for better type safety
 interface Mosque {
@@ -259,6 +260,9 @@ const buildingDetailHeaders = computed(() => [
   { title: t('tableHeaders.buildingDetails.actions'), key: 'actions', sortable: false, width: '80px' },
 ])
 
+// Get API instance
+const api = useApi()
+
 const loadMosques = async () => {
   loading.value = true
   try {
@@ -266,9 +270,9 @@ const loadMosques = async () => {
       PageNumber: options.value.page.toString(),
       PageSize: options.value.itemsPerPage.toString(),
       SearchTerm: search.value || ''
-    })
+    }).toString()
     
-    const response = await $api(`/Mosque/filter?${params}`)
+    const response = await api(`/Mosque/filter?${params}`)
     mosques.value = response.data.items || []
     
     // Update total count for pagination
@@ -297,7 +301,7 @@ const loadMosques = async () => {
 const loadRegions = async () => {
   regionsLoading.value = true
   try {
-    const response = await $api('/Region/filter?PageSize=100')
+    const response = await api('/Region/filter?PageSize=100')
     const rawList = response.data.items || []
     regions.value = rawList.map(item => ({
       ...item,
@@ -316,7 +320,7 @@ const loadRegions = async () => {
 const loadOffices = async () => {
   officesLoading.value = true
   try {
-    const response = await $api('/Office/filter?PageSize=100')
+    const response = await api('/Office/filter?PageSize=100')
     const rawList = response.data.items || []
     offices.value = rawList.map(item => ({
       ...item,
@@ -350,6 +354,20 @@ const addMosque = async () => {
   setFieldTouched('mosqueClassification')
   setFieldTouched('sourceFunds')
 
+  if (!validateRequired(newMosque.value.name, 'name')) {
+    addError('name', t('validation.required', { field: t('pages.mosques.name') }))
+  }
+  if (!validateRequired(newMosque.value.regionId, 'regionId')) {
+    addError('regionId', t('validation.required', { field: t('pages.mosques.region') }))
+  }
+  if (!validateRequired(newMosque.value.officeId, 'officeId')) {
+    addError('officeId', t('validation.required', { field: t('pages.mosques.office') }))
+  }
+
+  if (hasErrors.value) {
+    return
+  }
+
   try {
     // معالجة التواريخ - إجبارية
     const processDate = (dateString: string): string => {
@@ -370,7 +388,7 @@ const addMosque = async () => {
       }
     };
 
-    const response = await $api('/Mosque', {
+    const response = await api('/Mosque', {
       method: 'POST',
       body: {
         name: newMosque.value.name,
@@ -401,6 +419,9 @@ const addMosque = async () => {
         specialEntranceWomen: newMosque.value.specialEntranceWomen,
         picturePath: newMosque.value.picturePath,
       },
+      headers: {
+        'Accept-Language': locale.value
+      }
     })
     
     // Check if the response indicates success - response comes directly
@@ -526,7 +547,7 @@ const updateMosque = async () => {
 
 
     
-    const response = await $api(`/Mosque/${selectedMosque.value?.mosqueID}`, {
+    const response = await api(`/Mosque/${selectedMosque.value?.mosqueID}`, {
       method: 'PUT',
       body: {
         id: selectedMosque.value?.mosqueID,
@@ -558,6 +579,9 @@ const updateMosque = async () => {
         specialEntranceWomen: editMosque.value.specialEntranceWomen,
         picturePath: editMosque.value.picturePath,
       },
+      headers: {
+        'Accept-Language': locale.value
+      }
     })
     
     // Check if the response indicates success - response comes directly
@@ -629,7 +653,7 @@ const deleteMosque = async () => {
   if (!selectedMosque.value) return
   
   try {
-    const response = await $api(`/Mosque/${selectedMosque.value.mosqueID}`, {
+    const response = await api(`/Mosque/${selectedMosque.value.mosqueID}`, {
       method: 'DELETE',
     })
     
@@ -683,7 +707,7 @@ const deleteSelectedRows = async () => {
   
   try {
     const deletePromises = selectedRows.value.map(mosque => 
-      $api(`/Mosque/${mosque.mosqueID}`, { method: 'DELETE' })
+      api(`/Mosque/${mosque.mosqueID}`, { method: 'DELETE' })
     )
     const responses = await Promise.all(deletePromises)
     
@@ -815,12 +839,12 @@ const loadBuildingDetails = async (mosqueId: string) => {
   buildingDetailsLoading.value = true
   try {
     // نحتاج إلى الحصول على BuildingId من Mosque أولاً
-    const mosqueResponse = await $api(`/Mosque/${mosqueId}`)
+    const mosqueResponse = await api(`/Mosque/${mosqueId}`)
     if (mosqueResponse && mosqueResponse.data) {
       const buildingId = mosqueResponse.data.buildingId
       if (buildingId) {
         // استخدام filter endpoint مع BuildingId
-        const response = await $api(`/BuildingDetail/filter?BuildingId=${buildingId}&PageSize=100&PageNumber=1`)
+        const response = await api(`/BuildingDetail/filter?BuildingId=${buildingId}&PageSize=100&PageNumber=1`)
         if (response && response.data) {
           buildingDetails.value = response.data.items || []
         } else {
@@ -900,7 +924,7 @@ const addBuildingDetail = async () => {
 
   try {
     // نحتاج إلى الحصول على BuildingId من Mosque أولاً
-    const mosqueResponse = await $api(`/Mosque/${selectedMosque.value?.mosqueID}`)
+    const mosqueResponse = await api(`/Mosque/${selectedMosque.value?.mosqueID}`)
     if (!mosqueResponse || !mosqueResponse.data) {
       alertMessage.value = 'لم يتم العثور على المسجد'
       alertType.value = 'error'
@@ -916,7 +940,7 @@ const addBuildingDetail = async () => {
       return
     }
 
-    const response = await $api('/BuildingDetail', {
+    const response = await api('/BuildingDetail', {
       method: 'POST',
       body: {
         name: newBuildingDetail.value.name,
@@ -954,7 +978,7 @@ const addBuildingDetail = async () => {
 
 const deleteBuildingDetail = async (buildingDetailId: string) => {
   try {
-    const response = await $api(`/BuildingDetail/${buildingDetailId}`, {
+    const response = await api(`/BuildingDetail/${buildingDetailId}`, {
       method: 'DELETE',
     })
     
@@ -1001,12 +1025,12 @@ const searchBuildingDetails = async () => {
   
   buildingDetailsLoading.value = true
   try {
-    const mosqueResponse = await $api(`/Mosque/${selectedMosque.value.mosqueID}`)
+    const mosqueResponse = await api(`/Mosque/${selectedMosque.value.mosqueID}`)
     if (mosqueResponse && mosqueResponse.data) {
       const buildingId = mosqueResponse.data.buildingId
       if (buildingId) {
         // استخدام filter endpoint مع BuildingId و SearchTerm
-        const response = await $api(`/BuildingDetail/filter?BuildingId=${buildingId}&SearchTerm=${buildingDetailsSearch.value}&PageSize=100&PageNumber=1`)
+        const response = await api(`/BuildingDetail/filter?BuildingId=${buildingId}&SearchTerm=${buildingDetailsSearch.value}&PageSize=100&PageNumber=1`)
         if (response && response.data) {
           buildingDetails.value = response.data.items || []
         } else {
@@ -1080,7 +1104,7 @@ const updateBuildingDetail = async () => {
   }
 
   try {
-    const response = await $api(`/BuildingDetail/${editBuildingDetail.value.id}`, {
+    const response = await api(`/BuildingDetail/${editBuildingDetail.value.id}`, {
       method: 'PUT',
       body: {
         id: editBuildingDetail.value.id,
@@ -1126,13 +1150,13 @@ const loadFacilityDetailsByBuildingDetailId = async (buildingDetail) => {
   facilityDetailsLoading.value = true
   try {
     // جلب تفاصيل المبنى (نفس نمط جلب المسجد)
-    const buildingDetailResponse = await $api(`/BuildingDetail/${buildingDetail.id}`)
+    const buildingDetailResponse = await api(`/BuildingDetail/${buildingDetail.id}`)
     if (!buildingDetailResponse || !buildingDetailResponse.data) {
       facilityDetailsList.value = []
       return
     }
     // جلب FacilityDetail المرتبطة بهذا المبنى
-    const response = await $api(`/FacilityDetail/filter?BuildingDetailId=${buildingDetail.id}&PageSize=100&searchTerm=`)
+    const response = await api(`/FacilityDetail/filter?BuildingDetailId=${buildingDetail.id}&PageSize=100&searchTerm=`)
     if (response && response.data && response.data.items) {
       facilityDetailsList.value = response.data.items
     } else {
@@ -1179,7 +1203,7 @@ const productsLoading = ref(false)
 const fetchProductsList = async () => {
   productsLoading.value = true
   try {
-    const response = await $api('/Product/GetProducts')
+    const response = await api('/Product/GetProducts')
     if (response && response.data) {
       // معالجة: تأكد أن كل عنصر له خاصية name
       const rawList = response.data.data || response.data || []
@@ -1211,7 +1235,7 @@ const addFacilityDetail = async () => {
   if (!selectedBuildingDetail.value) return
   addFacilityDetailLoading.value = true
   try {
-    const response = await $api('/FacilityDetail', {
+    const response = await api('/FacilityDetail', {
       method: 'POST',
       body: {
         buildingDetailId: selectedBuildingDetail.value.id || selectedBuildingDetail.value.Id,
@@ -1253,7 +1277,7 @@ const deleteFacilityDetail = async () => {
   if (!facilityDetailToDelete.value) return
   deleteFacilityDetailLoading.value = true
   try {
-    await $api(`/FacilityDetail/${facilityDetailToDelete.value.id || facilityDetailToDelete.value.Id}`, { method: 'DELETE' })
+    await api(`/FacilityDetail/${facilityDetailToDelete.value.id || facilityDetailToDelete.value.Id}`, { method: 'DELETE' })
     deleteFacilityDetailDialog.value = false
     await loadFacilityDetailsByBuildingDetailId(selectedFacilityDetail.value)
     showAlertMsg('تم حذف المادة بنجاح', 'success')
@@ -1293,7 +1317,7 @@ const closeEditFacilityDetailDialog = () => {
 const updateFacilityDetail = async () => {
   editFacilityDetailLoading.value = true
   try {
-    const response = await $api(`/FacilityDetail/${editFacilityDetail.value.id}`, {
+    const response = await api(`/FacilityDetail/${editFacilityDetail.value.id}`, {
       method: 'PUT',
       body: {
         id: editFacilityDetail.value.id,

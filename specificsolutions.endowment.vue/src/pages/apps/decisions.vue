@@ -111,6 +111,9 @@ const headers = computed(() => [
   },
 ])
 
+// Get API instance
+const api = useApi()
+
 const loadDecisions = async () => {
   loading.value = true
   try {
@@ -120,7 +123,7 @@ const loadDecisions = async () => {
       SearchTerm: search.value || ''
     })
     
-    const response = await $api(`/Decision/filter?${params}`, {
+    const response = await api(`/Decision/filter?${params}`, {
       headers: {
         'Accept-Language': locale.value
       }
@@ -212,7 +215,7 @@ const addDecision = async () => {
     
     console.log('Sending decision data:', requestBody)
     
-    const response = await $api('/Decision', {
+    const response = await api('/Decision', {
       method: 'POST',
       body: requestBody,
       headers: {
@@ -329,7 +332,7 @@ const updateDecision = async () => {
   }
 
   try {
-    const response = await $api(`/Decision/${editDecision.value.id}`, {
+    const response = await api(`/Decision/${editDecision.value.id}`, {
       method: 'PUT',
       body: {
         id: editDecision.value.id,
@@ -405,7 +408,7 @@ const deleteDecision = async () => {
   if (!selectedDecision.value) return
   
   try {
-    const response = await $api(`/Decision/${selectedDecision.value.id}`, {
+    const response = await api(`/Decision/${selectedDecision.value.id}`, {
       method: 'DELETE',
       headers: {
         'Accept-Language': locale.value
@@ -491,7 +494,7 @@ const deleteSelectedRows = async () => {
   
   try {
     const deletePromises = selectedRows.value.map(decision => 
-      $api(`/Decision/${decision.id}`, {
+      api(`/Decision/${decision.id}`, {
         method: 'DELETE',
         headers: {
           'Accept-Language': locale.value

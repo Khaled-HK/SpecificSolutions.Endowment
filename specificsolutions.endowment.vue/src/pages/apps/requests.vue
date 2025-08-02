@@ -24,6 +24,9 @@ const {
 // استخدام i18n للترجمة
 const { t, locale } = useI18n()
 
+// Get API instance
+const api = useApi()
+
 const requests = ref([])
 const loading = ref(false)
 const dialog = ref(false)
@@ -66,12 +69,12 @@ const headers = computed(() => [
 const loadRequests = async () => {
   loading.value = true
   try {
-    const response = await $api('/Requests/requests', {
+    const response = await api('/Requests/requests', {
       headers: {
         'Accept-Language': locale.value
       }
     })
-    requests.value = response
+    requests.value = response.data || []
   } catch (error) {
     console.error('Error loading requests:', error)
   } finally {
@@ -85,10 +88,8 @@ const addRequest = async () => {
   // التحقق من الحقول المطلوبة
   setFieldTouched('title')
   setFieldTouched('description')
+  setFieldTouched('requestType')
   setFieldTouched('priority')
-  setFieldTouched('location')
-  setFieldTouched('referenceNumber')
-  setFieldTouched('requestStatus')
   
   if (!validateRequired(newRequest.value.title, 'title')) {
     addError('title', t('validation.required', { field: t('pages.requests.title') }))
@@ -98,20 +99,12 @@ const addRequest = async () => {
     addError('description', t('validation.required', { field: t('pages.requests.description') }))
   }
   
+  if (!validateRequired(newRequest.value.requestType, 'requestType')) {
+    addError('requestType', t('validation.required', { field: t('pages.requests.requestType') }))
+  }
+  
   if (!validateRequired(newRequest.value.priority, 'priority')) {
     addError('priority', t('validation.required', { field: t('pages.requests.priority') }))
-  }
-  
-  if (!validateRequired(newRequest.value.location, 'location')) {
-    addError('location', t('validation.required', { field: t('pages.requests.location') }))
-  }
-  
-  if (!validateRequired(newRequest.value.referenceNumber, 'referenceNumber')) {
-    addError('referenceNumber', t('validation.required', { field: t('pages.requests.referenceNumber') }))
-  }
-  
-  if (!validateRequired(newRequest.value.requestStatus, 'requestStatus')) {
-    addError('requestStatus', t('validation.required', { field: t('pages.requests.requestStatus') }))
   }
   
   if (hasErrors.value) {
@@ -119,7 +112,7 @@ const addRequest = async () => {
   }
   
   try {
-    await $api('/Requests', {
+    await api('/Requests', {
       method: 'POST',
       body: newRequest.value,
       headers: {
@@ -136,10 +129,8 @@ const addRequest = async () => {
       setErrorsFromResponse(error.response.data.errors, {
         Title: 'title',
         Description: 'description',
+        RequestType: 'requestType',
         Priority: 'priority',
-        Location: 'location',
-        ReferenceNumber: 'referenceNumber',
-        RequestStatus: 'requestStatus',
       })
     }
   }
@@ -185,7 +176,7 @@ const updateRequest = async () => {
   }
   
   try {
-    await $api(`/Requests/${editRequest.value.id}`, {
+    await api(`/Requests/${editRequest.value.id}`, {
       method: 'PUT',
       body: editRequest.value,
       headers: {
@@ -212,7 +203,7 @@ const updateRequest = async () => {
 
 const deleteRequest = async () => {
   try {
-    await $api(`/Requests/${selectedRequest.value.id}`, {
+    await api(`/Requests/${selectedRequest.value.id}`, {
       method: 'DELETE',
       headers: {
         'Accept-Language': locale.value

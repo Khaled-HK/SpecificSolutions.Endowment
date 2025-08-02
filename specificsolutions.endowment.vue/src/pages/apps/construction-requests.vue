@@ -21,6 +21,9 @@ const {
 
 const { t, locale } = useI18n()
 
+// Get API instance
+const api = useApi()
+
 const constructionRequests = ref([])
 const loading = ref(false)
 const dialog = ref(false)
@@ -77,7 +80,7 @@ const headers = computed(() => [
 const loadConstructionRequests = async () => {
   loading.value = true
   try {
-    const response = await $api('/ConstructionRequests/GetConstructionRequests', {
+    const response = await api('/ConstructionRequests/GetConstructionRequests', {
       headers: {
         'Accept-Language': locale.value
       }
@@ -137,7 +140,7 @@ const addConstructionRequest = async () => {
   }
 
   try {
-    await $api('/ConstructionRequests', {
+    await api('/ConstructionRequests', {
       method: 'POST',
       body: newRequest.value,
       headers: {
@@ -214,7 +217,7 @@ const updateConstructionRequest = async () => {
   }
 
   try {
-    await $api(`/ConstructionRequests/${editRequest.value.id}`, {
+    await api(`/ConstructionRequests/${editRequest.value.id}`, {
       method: 'PUT',
       body: editRequest.value,
       headers: {
@@ -245,7 +248,7 @@ const updateConstructionRequest = async () => {
 
 const deleteConstructionRequest = async () => {
   try {
-    await $api(`/ConstructionRequests/${selectedRequest.value.id}`, {
+    await api(`/ConstructionRequests/${selectedRequest.value.id}`, {
       method: 'DELETE',
       headers: {
         'Accept-Language': locale.value

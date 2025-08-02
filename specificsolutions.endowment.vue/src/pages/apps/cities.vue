@@ -100,7 +100,8 @@ const headers = computed(() => [
   },
 ])
 
-
+// Get API instance
+const api = useApi()
 
 const loadCities = async () => {
   loading.value = true
@@ -111,7 +112,7 @@ const loadCities = async () => {
       SearchTerm: search.value || ''
     })
     
-    const response = await $api(`/City/filter?${params}`)
+    const response = await api(`/City/filter?${params}`)
     cities.value = response.data.items || []
     
     // Update total count for pagination
@@ -152,7 +153,7 @@ const addCity = async () => {
   setFieldTouched('country')
 
   try {
-    const response = await $api('/City', {
+    const response = await api('/City', {
       method: 'POST',
       body: {
         name: newCity.value.name.trim(),
@@ -260,7 +261,7 @@ const updateCity = async () => {
   setFieldTouched('editCountry')
 
   try {
-    const response = await $api(`/City/${editCity.value.id}`, {
+    const response = await api(`/City/${editCity.value.id}`, {
       method: 'PUT',
       body: {
         id: editCity.value.id,
@@ -364,7 +365,7 @@ const deleteCity = async () => {
   
   try {
     console.log('Attempting to delete city:', selectedCity.value.id)
-    const response = await $api(`/City/${selectedCity.value.id}`, {
+    const response = await api(`/City/${selectedCity.value.id}`, {
       method: 'DELETE',
     })
     
@@ -447,7 +448,7 @@ const deleteSelectedRows = async () => {
   
   try {
     const deletePromises = selectedRows.value.map(city => 
-      $api(`/City/${city.id}`, { method: 'DELETE' })
+      api(`/City/${city.id}`, { method: 'DELETE' })
     )
     const responses = await Promise.all(deletePromises)
     
