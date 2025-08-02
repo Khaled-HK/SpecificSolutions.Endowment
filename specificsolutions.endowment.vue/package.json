@@ -32,6 +32,7 @@
     "cookie-es": "1.2.2",
     "destr": "2.0.3",
     "eslint-plugin-regexp": "2.7.0",
+    "js-cookie": "^3.0.5",
     "jwt-decode": "4.0.0",
     "mapbox-gl": "3.5.2",
     "ofetch": "1.4.1",

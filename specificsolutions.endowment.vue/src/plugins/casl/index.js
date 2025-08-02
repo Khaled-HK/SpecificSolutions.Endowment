@@ -1,16 +1,22 @@
 import { createMongoAbility } from '@casl/ability'
 import { abilitiesPlugin } from '@casl/vue'
 import { reloadAbilityFromCookie } from './ability'
+import Cookies from 'js-cookie'
 
 export default function (app) {
-  const userAbilityRules = useCookie('user-ability-rules', {
-    default: () => [],
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-    path: '/',
-    secure: true,
-    sameSite: 'strict'
-  })
-  const initialAbility = createMongoAbility(userAbilityRules.value ?? [])
+  // قراءة الصلاحيات من الكوكيز
+  let userAbilityRules = []
+  try {
+    const storedRules = Cookies.get('user-ability-rules')
+    if (storedRules) {
+      userAbilityRules = JSON.parse(storedRules)
+    }
+  } catch (error) {
+    console.error('❌ Error reading from cookie in index.js:', error)
+    userAbilityRules = []
+  }
+  
+  const initialAbility = createMongoAbility(userAbilityRules ?? [])
 
   app.use(abilitiesPlugin, initialAbility, {
     useGlobalProperties: true,

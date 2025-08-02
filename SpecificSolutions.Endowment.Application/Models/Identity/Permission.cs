@@ -53,6 +53,36 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
         public bool ChangeRequestEdit { get; set; }
         public bool ChangeRequestDelete { get; set; }
 
+        // DemolitionRequest Permissions
+        public bool DemolitionRequestView { get; set; }
+        public bool DemolitionRequestAdd { get; set; }
+        public bool DemolitionRequestEdit { get; set; }
+        public bool DemolitionRequestDelete { get; set; }
+
+        // NameChangeRequest Permissions
+        public bool NameChangeRequestView { get; set; }
+        public bool NameChangeRequestAdd { get; set; }
+        public bool NameChangeRequestEdit { get; set; }
+        public bool NameChangeRequestDelete { get; set; }
+
+        // NeedsRequest Permissions
+        public bool NeedsRequestView { get; set; }
+        public bool NeedsRequestAdd { get; set; }
+        public bool NeedsRequestEdit { get; set; }
+        public bool NeedsRequestDelete { get; set; }
+
+        // ExpenditureChangeRequest Permissions
+        public bool ExpenditureChangeRequestView { get; set; }
+        public bool ExpenditureChangeRequestAdd { get; set; }
+        public bool ExpenditureChangeRequestEdit { get; set; }
+        public bool ExpenditureChangeRequestDelete { get; set; }
+
+        // ChangeOfPathRequest Permissions
+        public bool ChangeOfPathRequestView { get; set; }
+        public bool ChangeOfPathRequestAdd { get; set; }
+        public bool ChangeOfPathRequestEdit { get; set; }
+        public bool ChangeOfPathRequestDelete { get; set; }
+
         public bool OfficeView { get; set; }
         public bool OfficeAdd { get; set; }
         public bool OfficeEdit { get; set; }
@@ -102,6 +132,11 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
             bool constructionRequestView, bool constructionRequestAdd, bool constructionRequestEdit, bool constructionRequestDelete,
             bool maintenanceRequestView, bool maintenanceRequestAdd, bool maintenanceRequestEdit, bool maintenanceRequestDelete,
             bool changeRequestView, bool changeRequestAdd, bool changeRequestEdit, bool changeRequestDelete,
+            bool demolitionRequestView, bool demolitionRequestAdd, bool demolitionRequestEdit, bool demolitionRequestDelete,
+            bool nameChangeRequestView, bool nameChangeRequestAdd, bool nameChangeRequestEdit, bool nameChangeRequestDelete,
+            bool needsRequestView, bool needsRequestAdd, bool needsRequestEdit, bool needsRequestDelete,
+            bool expenditureChangeRequestView, bool expenditureChangeRequestAdd, bool expenditureChangeRequestEdit, bool expenditureChangeRequestDelete,
+            bool changeOfPathRequestView, bool changeOfPathRequestAdd, bool changeOfPathRequestEdit, bool changeOfPathRequestDelete,
             bool officeView, bool officeAdd, bool officeEdit, bool officeDelete,
             bool endowmentView, bool endowmentAdd, bool endowmentEdit, bool endowmentDelete,
             bool cityView, bool cityAdd, bool cityEdit, bool cityDelete,
@@ -155,6 +190,31 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
             ChangeRequestEdit = changeRequestEdit;
             ChangeRequestDelete = changeRequestDelete;
 
+            DemolitionRequestView = demolitionRequestView;
+            DemolitionRequestAdd = demolitionRequestAdd;
+            DemolitionRequestEdit = demolitionRequestEdit;
+            DemolitionRequestDelete = demolitionRequestDelete;
+
+            NameChangeRequestView = nameChangeRequestView;
+            NameChangeRequestAdd = nameChangeRequestAdd;
+            NameChangeRequestEdit = nameChangeRequestEdit;
+            NameChangeRequestDelete = nameChangeRequestDelete;
+
+            NeedsRequestView = needsRequestView;
+            NeedsRequestAdd = needsRequestAdd;
+            NeedsRequestEdit = needsRequestEdit;
+            NeedsRequestDelete = needsRequestDelete;
+
+            ExpenditureChangeRequestView = expenditureChangeRequestView;
+            ExpenditureChangeRequestAdd = expenditureChangeRequestAdd;
+            ExpenditureChangeRequestEdit = expenditureChangeRequestEdit;
+            ExpenditureChangeRequestDelete = expenditureChangeRequestDelete;
+
+            ChangeOfPathRequestView = changeOfPathRequestView;
+            ChangeOfPathRequestAdd = changeOfPathRequestAdd;
+            ChangeOfPathRequestEdit = changeOfPathRequestEdit;
+            ChangeOfPathRequestDelete = changeOfPathRequestDelete;
+
             OfficeView = officeView;
             OfficeAdd = officeAdd;
             OfficeEdit = officeEdit;
@@ -196,6 +256,11 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
             bool constructionRequestView, bool constructionRequestAdd, bool constructionRequestEdit, bool constructionRequestDelete,
             bool maintenanceRequestView, bool maintenanceRequestAdd, bool maintenanceRequestEdit, bool maintenanceRequestDelete,
             bool changeRequestView, bool changeRequestAdd, bool changeRequestEdit, bool changeRequestDelete,
+            bool demolitionRequestView, bool demolitionRequestAdd, bool demolitionRequestEdit, bool demolitionRequestDelete,
+            bool nameChangeRequestView, bool nameChangeRequestAdd, bool nameChangeRequestEdit, bool nameChangeRequestDelete,
+            bool needsRequestView, bool needsRequestAdd, bool needsRequestEdit, bool needsRequestDelete,
+            bool expenditureChangeRequestView, bool expenditureChangeRequestAdd, bool expenditureChangeRequestEdit, bool expenditureChangeRequestDelete,
+            bool changeOfPathRequestView, bool changeOfPathRequestAdd, bool changeOfPathRequestEdit, bool changeOfPathRequestDelete,
             bool officeView, bool officeAdd, bool officeEdit, bool officeDelete,
             bool endowmentView, bool endowmentAdd, bool endowmentEdit, bool endowmentDelete,
             bool cityView, bool cityAdd, bool cityEdit, bool cityDelete,
@@ -213,6 +278,11 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
                 constructionRequestView, constructionRequestAdd, constructionRequestEdit, constructionRequestDelete,
                 maintenanceRequestView, maintenanceRequestAdd, maintenanceRequestEdit, maintenanceRequestDelete,
                 changeRequestView, changeRequestAdd, changeRequestEdit, changeRequestDelete,
+                demolitionRequestView, demolitionRequestAdd, demolitionRequestEdit, demolitionRequestDelete,
+                nameChangeRequestView, nameChangeRequestAdd, nameChangeRequestEdit, nameChangeRequestDelete,
+                needsRequestView, needsRequestAdd, needsRequestEdit, needsRequestDelete,
+                expenditureChangeRequestView, expenditureChangeRequestAdd, expenditureChangeRequestEdit, expenditureChangeRequestDelete,
+                changeOfPathRequestView, changeOfPathRequestAdd, changeOfPathRequestEdit, changeOfPathRequestDelete,
                 officeView, officeAdd, officeEdit, officeDelete,
                 endowmentView, endowmentAdd, endowmentEdit, endowmentDelete,
                 cityView, cityAdd, cityEdit, cityDelete,
@@ -233,6 +303,11 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
                 constructionRequestView: true, constructionRequestAdd: true, constructionRequestEdit: true, constructionRequestDelete: true,
                 maintenanceRequestView: true, maintenanceRequestAdd: true, maintenanceRequestEdit: true, maintenanceRequestDelete: true,
                 changeRequestView: true, changeRequestAdd: true, changeRequestEdit: true, changeRequestDelete: true,
+                demolitionRequestView: true, demolitionRequestAdd: true, demolitionRequestEdit: true, demolitionRequestDelete: true,
+                nameChangeRequestView: true, nameChangeRequestAdd: true, nameChangeRequestEdit: true, nameChangeRequestDelete: true,
+                needsRequestView: true, needsRequestAdd: true, needsRequestEdit: true, needsRequestDelete: true,
+                expenditureChangeRequestView: true, expenditureChangeRequestAdd: true, expenditureChangeRequestEdit: true, expenditureChangeRequestDelete: true,
+                changeOfPathRequestView: true, changeOfPathRequestAdd: true, changeOfPathRequestEdit: true, changeOfPathRequestDelete: true,
                 officeView: true, officeAdd: true, officeEdit: true, officeDelete: true,
                 endowmentView: true, endowmentAdd: true, endowmentEdit: true, endowmentDelete: true,
                 cityView: true, cityAdd: true, cityEdit: true, cityDelete: true,
@@ -289,6 +364,31 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
             if (ChangeRequestAdd) permissions.Add("ChangeRequest_Add");
             if (ChangeRequestEdit) permissions.Add("ChangeRequest_Edit");
             if (ChangeRequestDelete) permissions.Add("ChangeRequest_Delete");
+            
+            if (DemolitionRequestView) permissions.Add("DemolitionRequest_View");
+            if (DemolitionRequestAdd) permissions.Add("DemolitionRequest_Add");
+            if (DemolitionRequestEdit) permissions.Add("DemolitionRequest_Edit");
+            if (DemolitionRequestDelete) permissions.Add("DemolitionRequest_Delete");
+            
+            if (NameChangeRequestView) permissions.Add("NameChangeRequest_View");
+            if (NameChangeRequestAdd) permissions.Add("NameChangeRequest_Add");
+            if (NameChangeRequestEdit) permissions.Add("NameChangeRequest_Edit");
+            if (NameChangeRequestDelete) permissions.Add("NameChangeRequest_Delete");
+            
+            if (NeedsRequestView) permissions.Add("NeedsRequest_View");
+            if (NeedsRequestAdd) permissions.Add("NeedsRequest_Add");
+            if (NeedsRequestEdit) permissions.Add("NeedsRequest_Edit");
+            if (NeedsRequestDelete) permissions.Add("NeedsRequest_Delete");
+            
+            if (ExpenditureChangeRequestView) permissions.Add("ExpenditureChangeRequest_View");
+            if (ExpenditureChangeRequestAdd) permissions.Add("ExpenditureChangeRequest_Add");
+            if (ExpenditureChangeRequestEdit) permissions.Add("ExpenditureChangeRequest_Edit");
+            if (ExpenditureChangeRequestDelete) permissions.Add("ExpenditureChangeRequest_Delete");
+            
+            if (ChangeOfPathRequestView) permissions.Add("ChangeOfPathRequest_View");
+            if (ChangeOfPathRequestAdd) permissions.Add("ChangeOfPathRequest_Add");
+            if (ChangeOfPathRequestEdit) permissions.Add("ChangeOfPathRequest_Edit");
+            if (ChangeOfPathRequestDelete) permissions.Add("ChangeOfPathRequest_Delete");
             
             if (OfficeView) permissions.Add("Office_View");
             if (OfficeAdd) permissions.Add("Office_Add");

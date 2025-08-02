@@ -1,28 +1,37 @@
 <script setup>
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { useAbility } from '@/plugins/casl/composables/useAbility'
+import Cookies from 'js-cookie'
 
 const router = useRouter()
 const ability = useAbility()
 
-// TODO: Get type from backend
-const userData = useCookie('userData')
+// قراءة بيانات المستخدم من الكوكيز
+const getUserData = () => {
+  const userDataString = Cookies.get('userData')
+  if (userDataString) {
+    try {
+      return JSON.parse(userDataString)
+    } catch (error) {
+      console.error('Error parsing userData from cookie:', error)
+      return null
+    }
+  }
+  return null
+}
+
+const userData = getUserData()
 
 const logout = async () => {
-
-  // Remove "accessToken" from cookie
-  useCookie('accessToken').value = null
-
-  // Remove "userData" from cookie
-  userData.value = null
+  // تنظيف الكوكيز
+  Cookies.remove('accessToken')
+  Cookies.remove('userData')
+  Cookies.remove('user-ability-rules')
 
   // Redirect to login page
   await router.push('/login')
 
   // ℹ️ We had to remove abilities in then block because if we don't nav menu items mutation is visible while redirecting user to login page
-
-  // Remove "userAbilities" from cookie
-  useCookie('userAbilityRules').value = null
 
   // Reset ability to initial ability
   ability.update([])

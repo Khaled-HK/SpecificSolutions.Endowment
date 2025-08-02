@@ -1,4 +1,5 @@
 const emailRouteComponent = () => import('@/pages/apps/email/index.vue')
+import Cookies from 'js-cookie'
 
 // 👉 Redirects
 export const redirects = [
@@ -7,27 +8,27 @@ export const redirects = [
   {
     path: '/',
     name: 'index',
-    redirect: to => {
-      try {
-        // Check if user is logged in
-        const userData = useCookie('userData')
-        const accessToken = useCookie('accessToken')
-        
-        const isLoggedIn = !!(userData.value && accessToken.value)
-        
-        if (isLoggedIn) {
-          // User is logged in, redirect to dashboard
-          return { name: 'dashboard' }
-        } else {
-          // User is not logged in, redirect to login
-          return { name: 'login', query: to.query }
-        }
-      } catch (error) {
-        console.error('Redirect error:', error)
-        // Fallback to login page
-        return { name: 'login', query: to.query }
-      }
-    },
+                redirect: to => {
+              try {
+                // Check if user is logged in using cookie
+                const userData = Cookies.get('userData')
+                const accessToken = Cookies.get('accessToken')
+                
+                const isLoggedIn = !!(userData && accessToken)
+                
+                if (isLoggedIn) {
+                  // User is logged in, redirect to dashboard
+                  return { name: 'dashboard' }
+                } else {
+                  // User is not logged in, redirect to login
+                  return { name: 'login', query: to.query }
+                }
+              } catch (error) {
+                console.error('Redirect error:', error)
+                // Fallback to login page
+                return { name: 'login', query: to.query }
+              }
+            },
   },
   {
     path: '/pages/user-profile',

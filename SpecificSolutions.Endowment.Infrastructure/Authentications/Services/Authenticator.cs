@@ -96,7 +96,16 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
             // Get permissions from user roles using Identity APIs
             var permissions = await GetUserPermissionsAsync(user);
             //var permissions1 = await GetUserPermissionsAsync1(user);
+
+            // إضافة logging لمعرفة الصلاحيات المرسلة
+            Console.WriteLine($"🔍 Backend - User permissions count: {permissions.Count}");
+            Console.WriteLine($"🔍 Backend - User permissions: {string.Join(", ", permissions)}");
             
+            // فحص الصلاحيات الجديدة
+            var newPermissions = permissions.Where(p => p.Contains("DemolitionRequest") || p.Contains("NameChangeRequest") || p.Contains("NeedsRequest") || p.Contains("ExpenditureChangeRequest") || p.Contains("ChangeOfPathRequest")).ToList();
+            Console.WriteLine($"🔍 Backend - New request permissions found: {newPermissions.Count}");
+            Console.WriteLine($"🔍 Backend - New request permissions: {string.Join(", ", newPermissions)}");
+
             // Clear any existing permissions to avoid duplicates from previous sessions
             user.AddPermissions(permissions);
 
@@ -257,6 +266,10 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
                         {
                             // Get detailed permissions for this role group
                             var permissionList = userRole.Permissions.ToPermissionList();
+                            
+                            // إضافة logging لمعرفة الصلاحيات من كل دور
+                            Console.WriteLine($"🔍 Backend - Role {userRole.RoleName} permissions count: {permissionList.Count}");
+                            Console.WriteLine($"🔍 Backend - Role {userRole.RoleName} permissions: {string.Join(", ", permissionList)}");
 
                             // Add permissions without context for general use
                             permissions.AddRange(permissionList);
@@ -264,6 +277,10 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
                     }
                 }
 
+                // إضافة logging نهائي لمعرفة جميع الصلاحيات
+                Console.WriteLine($"🔍 Backend - Total permissions returned: {permissions.Count}");
+                Console.WriteLine($"🔍 Backend - All permissions: {string.Join(", ", permissions)}");
+                
                 return permissions;
             }
             catch (Exception ex)
@@ -271,8 +288,6 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
                 throw new InvalidOperationException($"Failed to get role permissions for user {userId}", ex);
             }
         }
-
-
 
         public async Task<bool> IsUserInRoleAsync(string roleName)
         {
@@ -292,12 +307,6 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
         {
             await _signInManager.SignOutAsync();
             await _sessionService.EndSessionAsync();
-        }
-
-        public async Task<IUserLogin> RefreshTokenAsync(string refreshToken)
-        {
-            // Implementation of RefreshTokenAsync method
-            throw new NotImplementedException();
         }
     }
 }

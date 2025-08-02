@@ -15,6 +15,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useAbility } from '@/plugins/casl/composables/useAbility'
 import { useFormValidation } from '@/composables/useFormValidation'
 import { useApi } from '@/utils/api'
+import Cookies from 'js-cookie'
 
 const authThemeImg = useGenerateImageVariant(authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
@@ -125,7 +126,7 @@ onMounted(() => {
 
 const login = async () => {
   try {
-    const res = await api('/Auth/login', {
+    const res = await api('/auth/login', {
       method: 'POST',
       body: {
         email: credentials.email,
@@ -141,12 +142,16 @@ const login = async () => {
       },
     })
 
-    const user = res.data
-    useCookie('accessToken').value = user.token
-    useCookie('userData').value = user
+         const user = res.data
+     // حفظ بيانات المستخدم في الكوكيز
+     Cookies.set('accessToken', user.token)
+     Cookies.set('userData', JSON.stringify(user))
 
-    if (!user.permissions) {
-      console.error('User object does not have permissions:', user)
+    // Check if user has abilityRules (from fake API) or permissions (from real API)
+    const userPermissions = user.permissions || user.userAbilityRules || []
+    
+    if (!userPermissions || userPermissions.length === 0) {
+      console.error('User object does not have permissions or abilityRules:', user)
       addError('email', t('noPermissions'))
       return
     }
@@ -173,7 +178,7 @@ const login = async () => {
    //   )
 
     // Convert specific permissions from backend
-    user.permissions.forEach(permission => {
+    userPermissions.forEach(permission => {
       // Handle camelCase permissions from backend (e.g., "cityView", "accountAdd")
       const action = mapPermissionToAction(permission)
       const subject = mapPermissionToSubject(permission)
@@ -183,25 +188,25 @@ const login = async () => {
       }
     })
 
-    console.log('CASL Rules المحدثة:', rules)
-    console.log('User permissions من Backend:', user.permissions)
-
-    // حفظ قواعد الصلاحيات في الكوكيز لاستعادتها بعد إعادة التحميل
-    const abilityRulesCookie = useCookie('user-ability-rules', {
-      default: () => [],
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: '/',
-      secure: true,
-      sameSite: 'strict'
-    })
-    abilityRulesCookie.value = rules
-    console.log('🍪 Saved ability rules to cookie:', abilityRulesCookie.value)
+    // حفظ قواعد الصلاحيات في الكوكيز
+    try {
+      Cookies.set('user-ability-rules', JSON.stringify(rules), { 
+        expires: 7, // 7 days
+        path: '/',
+        secure: false, // Set to true in production with HTTPS
+        sameSite: 'lax'
+      })
+    } catch (error) {
+      console.error('❌ Error saving to cookie:', error)
+    }
     
     ability.update(rules)
-    console.log('✅ Updated CASL ability with rules')
+
+    // Immediately reload abilities to ensure they are available
+    const { reloadAbilityFromCookie } = await import('@/plugins/casl/ability')
+    reloadAbilityFromCookie()
 
     const target = route.query.to ? String(route.query.to) : '/dashboard'
-    console.log('Navigating to:', target)
     await nextTick(() => {
       router.replace(target)
     })
@@ -241,11 +246,26 @@ function mapPermissionToAction(permission) {
   if (permission.endsWith('_Add')) return 'Add'
   if (permission.endsWith('_Edit')) return 'Edit'
   if (permission.endsWith('_Delete')) return 'Delete'
+  
+  // Handle fake API format (e.g., { action: 'manage', subject: 'all' })
+  if (typeof permission === 'object' && permission.action) {
+    return permission.action
+  }
+  
   return null // Return null for unknown permissions
 }
 
 function mapPermissionToSubject(permission) {
   // Handle underscore format from backend (e.g., "City_View", "Account_Add")
+  if (permission.startsWith('AccountDetail_')) return 'AccountDetail'
+  if (permission.startsWith('ConstructionRequest_')) return 'ConstructionRequest'
+  if (permission.startsWith('MaintenanceRequest_')) return 'MaintenanceRequest'
+  if (permission.startsWith('ChangeRequest_')) return 'ChangeRequest'
+  if (permission.startsWith('DemolitionRequest_')) return 'DemolitionRequest'
+  if (permission.startsWith('NameChangeRequest_')) return 'NameChangeRequest'
+  if (permission.startsWith('NeedsRequest_')) return 'NeedsRequest'
+  if (permission.startsWith('ExpenditureChangeRequest_')) return 'ExpenditureChangeRequest'
+  if (permission.startsWith('ChangeOfPathRequest_')) return 'ChangeOfPathRequest'
   if (permission.startsWith('Account_')) return 'Account'
   if (permission.startsWith('User_')) return 'User'
   if (permission.startsWith('Role_')) return 'Role'
@@ -257,6 +277,12 @@ function mapPermissionToSubject(permission) {
   if (permission.startsWith('Region_')) return 'Region'
   if (permission.startsWith('Building_')) return 'Building'
   if (permission.startsWith('Mosque_')) return 'Mosque'
+  
+  // Handle fake API format (e.g., { action: 'manage', subject: 'all' })
+  if (typeof permission === 'object' && permission.subject) {
+    return permission.subject
+  }
+  
   return null // Return null for unknown permissions
 }
 </script>

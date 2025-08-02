@@ -9,6 +9,7 @@ import {
 } from '@core/stores/config'
 import { hexToRgb } from '@core/utils/colorConverter'
 import { reloadAbilityFromCookie } from '@/plugins/casl/ability'
+import Cookies from 'js-cookie'
 
 const { global } = useTheme()
 
@@ -18,26 +19,26 @@ initConfigStore()
 
 const configStore = useConfigStore()
 
-// إعادة تحميل الصلاحيات عند تحميل التطبيق
-onMounted(() => {
-  // تأخير قليل للتأكد من تحميل الكوكيز
-  setTimeout(() => {
-    reloadAbilityFromCookie()
-  }, 200)
-})
+  // إعادة تحميل الصلاحيات عند تحميل التطبيق
+  onMounted(() => {
+    // تأخير قليل للتأكد من تحميل الكوكيز
+    setTimeout(() => {
+      reloadAbilityFromCookie()
+    }, 200)
+  })
 
-// إعادة تحميل الصلاحيات عند تحديث الصفحة
-onBeforeMount(() => {
-  if (typeof window !== 'undefined') {
-    window.addEventListener('beforeunload', () => {
-      // حفظ الصلاحيات قبل إغلاق الصفحة
-      const userAbilityRules = useCookie('user-ability-rules')
-      if (userAbilityRules.value) {
-        console.log('💾 Saving ability rules before page unload')
-      }
-    })
-  }
-})
+  // إعادة تحميل الصلاحيات عند تحديث الصفحة
+  onBeforeMount(() => {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('beforeunload', () => {
+        // حفظ الصلاحيات قبل إغلاق الصفحة
+        const userAbilityRules = Cookies.get('user-ability-rules')
+        if (userAbilityRules) {
+          console.log('💾 Saving ability rules before page unload')
+        }
+      })
+    }
+  })
 </script>
 
 <template>
