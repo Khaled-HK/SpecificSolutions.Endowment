@@ -2,27 +2,31 @@ import { createMongoAbility } from '@casl/ability'
 
 export const ability = createMongoAbility()
 
-// دالة لإعادة تحميل الصلاحيات من الكوكيز
-export const reloadAbilityFromCookie = () => {
+// دالة لإعادة تحميل الصلاحيات من localStorage
+export const reloadAbilityFromLocalStorage = () => {
   try {
-    const userAbilityRules = useCookie('user-ability-rules', {
-      default: () => [],
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: '/',
-      secure: true,
-      sameSite: 'strict'
-    }).value
-
-    if (userAbilityRules && Array.isArray(userAbilityRules)) {
-      ability.update(userAbilityRules)
-      console.log('✅ Reloaded ability from cookie:', userAbilityRules)
-      return true
+    const storedRules = localStorage.getItem('user-ability-rules')
+    
+    if (storedRules) {
+      const userAbilityRules = JSON.parse(storedRules)
+      
+      if (userAbilityRules && Array.isArray(userAbilityRules)) {
+        ability.update(userAbilityRules)
+        console.log('✅ Reloaded ability from localStorage:', userAbilityRules)
+        return true
+      } else {
+        console.warn('❌ Invalid ability rules format in localStorage')
+        return false
+      }
     } else {
-      console.warn('❌ No valid ability rules found in cookie')
+      console.warn('❌ No ability rules found in localStorage')
       return false
     }
   } catch (error) {
-    console.error('❌ Error reloading ability from cookie:', error)
+    console.error('❌ Error reloading ability from localStorage:', error)
     return false
   }
 }
+
+// Keep the old function name for backward compatibility but use localStorage
+export const reloadAbilityFromCookie = reloadAbilityFromLocalStorage

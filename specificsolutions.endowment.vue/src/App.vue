@@ -31,8 +31,8 @@ onBeforeMount(() => {
   if (typeof window !== 'undefined') {
     window.addEventListener('beforeunload', () => {
       // حفظ الصلاحيات قبل إغلاق الصفحة
-      const userAbilityRules = useCookie('user-ability-rules')
-      if (userAbilityRules.value) {
+      const userAbilityRules = localStorage.getItem('user-ability-rules')
+      if (userAbilityRules) {
         console.log('💾 Saving ability rules before page unload')
       }
     })
