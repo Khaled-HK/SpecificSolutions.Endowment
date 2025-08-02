@@ -1,5 +1,5 @@
 import { createMongoAbility } from '@casl/ability'
-import { reloadAbilityFromCookie } from '../casl/ability'
+import { reloadAbilityFromCookie, ability } from '../casl/ability'
 import Cookies from 'js-cookie'
 
 export const setupGuards = router => {
@@ -47,85 +47,7 @@ export const setupGuards = router => {
 
   // دالة للتحقق من الصلاحيات باستخدام CASL
   const checkPermissions = (to) => {
-    try {
-      // إذا لم تكن هناك صلاحيات محددة في meta، اسمح بالوصول
-      if (!to.meta.action || !to.meta.subject) {
-        return true
-      }
-
-      // Get user ability rules from cookie
-      let userAbilityRules = []
-      try {
-        const storedRules = Cookies.get('user-ability-rules')
-        if (storedRules) {
-          userAbilityRules = JSON.parse(storedRules)
-        } else {
-          // إذا لم تكن الصلاحيات محفوظة، حاول تحميلها من userData
-          const userData = Cookies.get('userData')
-          if (userData) {
-            const user = JSON.parse(userData)
-            
-            if (user.permissions && user.permissions.length > 0) {
-              // تحويل الصلاحيات من real API إلى تنسيق CASL
-              const rules = []
-              
-              // Add general permissions for Auth subject (required for page access)
-              rules.push(
-                { action: 'read', subject: 'Auth' },
-                { action: 'write', subject: 'Auth' },
-                { action: 'delete', subject: 'Auth' }
-              )
-
-              // Add Dashboard permissions (required for email and other dashboard pages)
-              rules.push(
-                { action: 'View', subject: 'Dashboard' },
-                { action: 'read', subject: 'Dashboard' },
-                { action: 'write', subject: 'Dashboard' }
-              )
-
-              // Convert specific permissions from backend
-              user.permissions.forEach(permission => {
-                const action = mapPermissionToAction(permission)
-                const subject = mapPermissionToSubject(permission)
-                
-                if (action && subject) {
-                  rules.push({ action, subject })
-                }
-              })
-
-              // حفظ الصلاحيات في الكوكيز
-              Cookies.set('user-ability-rules', JSON.stringify(rules), { 
-                expires: 7,
-                path: '/',
-                secure: false,
-                sameSite: 'lax'
-              })
-              
-              userAbilityRules = rules
-            }
-          }
-        }
-      } catch (error) {
-        console.error('❌ Error reading from cookie:', error)
-        userAbilityRules = []
-      }
-
-      // إنشاء ability مؤقت للتحقق
-      const ability = createMongoAbility(userAbilityRules)
-
-      // التحقق من الصلاحية
-      const canAccess = ability.can(to.meta.action, to.meta.subject)
-      
-      if (!canAccess) {
-        console.warn(`❌ Access denied: ${to.meta.action} on ${to.meta.subject}`)
-        return false
-      }
-      
-      return canAccess
-    } catch (error) {
-      console.error('❌ Permission check error:', error)
-      return false
-    }
+    return ability.can(to.meta.action, to.meta.subject)
   }
 
   // Helper functions to map backend permissions to CASL actions/subjects
@@ -180,7 +102,17 @@ export const setupGuards = router => {
   router.beforeEach(async (to, from, next) => {
     try {
       // إعادة تحميل الصلاحيات من الكوكيز في كل مرة
-      reloadAbilityFromCookie()
+      const permissionsLoaded = reloadAbilityFromCookie()
+      
+      // التأكد من أن الصلاحيات محملة
+      if (ability.rules.length === 0) {
+        const basicRules = [
+          { action: 'View', subject: 'Dashboard' },
+          { action: 'read', subject: 'Auth' }
+        ]
+        ability.update(basicRules)
+        console.log('⚠️ No rules in guards, adding basic permissions')
+      }
       
       // Add a small delay to ensure cookies are properly loaded
       await new Promise(resolve => setTimeout(resolve, 100))
@@ -256,7 +188,8 @@ export const setupGuards = router => {
       // التحقق من الصلاحيات
       const hasPermission = checkPermissions(to)
       if (!hasPermission) {
-        console.warn('Permission denied, redirecting to not-authorized...')
+        console.warn('❌ Permission denied for:', to.path, 'Action:', to.meta.action, 'Subject:', to.meta.subject)
+        console.warn('🔍 Current ability rules count:', ability.rules.length)
         next({
           name: 'not-authorized',
         })

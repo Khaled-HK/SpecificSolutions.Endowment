@@ -3,6 +3,37 @@ import Cookies from 'js-cookie'
 
 export const ability = createMongoAbility()
 
+// دالة لضمان تحميل الصلاحيات عند بدء التطبيق
+const initializePermissions = () => {
+  // محاولة تحميل الصلاحيات من الكوكيز
+  const loaded = reloadAbilityFromCookie()
+  
+  // إذا لم يتم تحميل الصلاحيات، إضافة صلاحيات أساسية محدودة
+  if (!loaded) {
+    const basicRules = [
+      { action: 'View', subject: 'Dashboard' },
+      { action: 'read', subject: 'Auth' }
+    ]
+    ability.update(basicRules)
+    console.log('⚠️ Using basic permissions as fallback')
+  }
+  
+  // التأكد من أن الصلاحيات محملة
+  if (ability.rules.length === 0) {
+    const basicRules = [
+      { action: 'View', subject: 'Dashboard' },
+      { action: 'read', subject: 'Auth' }
+    ]
+    ability.update(basicRules)
+    console.log('⚠️ No rules found, adding basic permissions')
+  }
+}
+
+// تحميل الصلاحيات تلقائياً عند بدء التطبيق
+setTimeout(() => {
+  initializePermissions()
+}, 100)
+
 // دالة لإعادة تحميل الصلاحيات من الكوكيز
 export const reloadAbilityFromCookie = () => {
   try {
@@ -12,67 +43,80 @@ export const reloadAbilityFromCookie = () => {
       const userAbilityRules = JSON.parse(storedRules)
       
       if (userAbilityRules && Array.isArray(userAbilityRules) && userAbilityRules.length > 0) {
-        ability.update(userAbilityRules)
+        // إضافة الصلاحيات الأساسية إلى الصلاحيات المحملة
+        const rulesWithBasics = [
+          // صلاحيات أساسية مطلوبة
+          { action: 'View', subject: 'Dashboard' },
+          { action: 'read', subject: 'Auth' },
+          // الصلاحيات المحملة من الكوكيز
+          ...userAbilityRules
+        ]
+        
+        ability.update(rulesWithBasics)
+        console.log('✅ Permissions loaded successfully:', rulesWithBasics.length, 'rules')
         return true
-      } else {
-        return false
       }
-    } else {
-      // إذا لم تكن الصلاحيات محفوظة، حاول تحميلها من userData
-      const userData = Cookies.get('userData')
-      if (userData) {
-        try {
-          const user = JSON.parse(userData)
-          
-          if (user.permissions && user.permissions.length > 0) {
-            // تحويل الصلاحيات من real API إلى تنسيق CASL
-            const rules = []
-            
-            // Add general permissions for Auth subject (required for page access)
-            rules.push(
-              { action: 'read', subject: 'Auth' },
-              { action: 'write', subject: 'Auth' },
-              { action: 'delete', subject: 'Auth' }
-            )
-
-            // Add Dashboard permissions (required for email and other dashboard pages)
-            rules.push(
-              { action: 'View', subject: 'Dashboard' },
-              { action: 'read', subject: 'Dashboard' },
-              { action: 'write', subject: 'Dashboard' }
-            )
-
-            // Convert specific permissions from backend
-            user.permissions.forEach(permission => {
-              const action = mapPermissionToAction(permission)
-              const subject = mapPermissionToSubject(permission)
-              
-              if (action && subject) {
-                rules.push({ action, subject })
-              }
-            })
-            
-            // حفظ الصلاحيات في الكوكيز
-            Cookies.set('user-ability-rules', JSON.stringify(rules), { 
-              expires: 7,
-              path: '/',
-              secure: false,
-              sameSite: 'lax'
-            })
-            
-            ability.update(rules)
-            return true
-          }
-        } catch (error) {
-          console.error('❌ Error loading from userData:', error)
-        }
-      }
-      
-      return false
     }
+    
+    // Fallback: تحميل من userData إذا لم تكن الصلاحيات محفوظة
+    const userData = Cookies.get('userData')
+    if (userData) {
+      try {
+        const user = JSON.parse(userData)
+        
+        if (user.permissions && user.permissions.length > 0) {
+          // تحويل الصلاحيات من real API إلى تنسيق CASL
+          const rules = []
+          
+          // إضافة صلاحيات أساسية مطلوبة
+          rules.push(
+            { action: 'View', subject: 'Dashboard' },
+            { action: 'read', subject: 'Auth' }
+          )
+          
+          // تحويل صلاحيات المستخدم المحددة
+          user.permissions.forEach(permission => {
+            const action = mapPermissionToAction(permission)
+            const subject = mapPermissionToSubject(permission)
+            
+            if (action && subject) {
+              rules.push({ action, subject })
+            }
+          })
+          
+          // حفظ الصلاحيات في الكوكيز
+          Cookies.set('user-ability-rules', JSON.stringify(rules), { 
+            expires: 7,
+            path: '/',
+            secure: false,
+            sameSite: 'lax'
+          })
+          
+          ability.update(rules)
+          return true
+        }
+      } catch (error) {
+        // Silent error handling
+      }
+    }
+    
+    // إذا لم تكن هناك صلاحيات، إضافة صلاحيات أساسية محدودة
+    const basicRules = [
+      { action: 'View', subject: 'Dashboard' },
+      { action: 'read', subject: 'Auth' }
+    ]
+    ability.update(basicRules)
+    console.log('⚠️ No permissions found, using basic fallback')
+    return true
   } catch (error) {
-    console.error('❌ Error reloading ability from cookie:', error)
-    return false
+    console.error('❌ Error loading permissions:', error)
+    // في حالة الخطأ، إضافة صلاحيات أساسية
+    const basicRules = [
+      { action: 'View', subject: 'Dashboard' },
+      { action: 'read', subject: 'Auth' }
+    ]
+    ability.update(basicRules)
+    return true
   }
 }
 
@@ -102,18 +146,15 @@ function mapPermissionToSubject(permission) {
   if (permission.startsWith('NameChangeRequest_')) return 'NameChangeRequest'
   if (permission.startsWith('NeedsRequest_')) return 'NeedsRequest'
   if (permission.startsWith('ExpenditureChangeRequest_')) return 'ExpenditureChangeRequest'
-  if (permission.startsWith('ChangeOfPathRequest_')) return 'ChangeOfPathRequest'
   if (permission.startsWith('Account_')) return 'Account'
-  if (permission.startsWith('User_')) return 'User'
-  if (permission.startsWith('Role_')) return 'Role'
-  if (permission.startsWith('Decision_')) return 'Decision'
-  if (permission.startsWith('Request_')) return 'Request'
-  if (permission.startsWith('Office_')) return 'Office'
-  if (permission.startsWith('Endowment_')) return 'Endowment'
-  if (permission.startsWith('City_')) return 'City'
-  if (permission.startsWith('Region_')) return 'Region'
   if (permission.startsWith('Building_')) return 'Building'
   if (permission.startsWith('Mosque_')) return 'Mosque'
+  if (permission.startsWith('City_')) return 'City'
+  if (permission.startsWith('Region_')) return 'Region'
+  if (permission.startsWith('Office_')) return 'Office'
+  if (permission.startsWith('Product_')) return 'Product'
+  if (permission.startsWith('Decision_')) return 'Decision'
+  if (permission.startsWith('Request_')) return 'Request'
   
   // Handle fake API format (e.g., { action: 'manage', subject: 'all' })
   if (typeof permission === 'object' && permission.subject) {
@@ -123,5 +164,5 @@ function mapPermissionToSubject(permission) {
   return null // Return null for unknown permissions
 }
 
-// Keep the old function name for backward compatibility but use cookie
+// Export for backward compatibility
 export const reloadAbilityFromLocalStorage = reloadAbilityFromCookie
