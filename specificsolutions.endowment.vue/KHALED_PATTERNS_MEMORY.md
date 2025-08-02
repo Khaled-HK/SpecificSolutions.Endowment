@@ -133,6 +133,22 @@ if (response && response.isSuccess === false) {
 - **التحقق من رقم الهاتف**: تنسيق ليبي صحيح (091-1234567 أو 021-1234567)
 - **إدارة المناطق**: اختيار المنطقة من قائمة المناطق المتاحة
 
+### 7. المباني (buildings.vue) ✅
+- **التحقق من صحة النماذج**: اسم المبنى، العنوان، المدينة، المنطقة
+- **دعم الترجمة**: العربية والإنجليزية
+- **إدارة الأخطاء**: عرض أخطاء الباك إند
+- **تحسين UX**: تعطيل الأزرار عند وجود أخطاء
+- **التحقق من الطول**: اسم المبنى (2-200 حرف)، العنوان (5-500 حرف)
+- **إدارة المدن والمناطق**: اختيار المدينة والمنطقة من القوائم المتاحة
+
+### 8. الطلبات (requests.vue) ✅
+- **التحقق من صحة النماذج**: العنوان، الوصف، الأولوية، الموقع، رقم المرجع، حالة الطلب
+- **دعم الترجمة**: العربية والإنجليزية
+- **إدارة الأخطاء**: عرض أخطاء الباك إند
+- **تحسين UX**: تعطيل الأزرار عند وجود أخطاء
+- **التحقق من الحقول المطلوبة**: جميع الحقول مطلوبة
+- **إدارة الطلبات**: إضافة وتعديل وحذف الطلبات
+
 ## ملفات الترجمة
 
 ### العربية (ar.json)
@@ -175,6 +191,23 @@ if (response && response.isSuccess === false) {
       "name": "المكتب",
       "regionName": "المنطقة",
       "phoneNumber": "رقم الهاتف",
+      "actions": "الإجراءات"
+    },
+    "buildings": {
+      "name": "اسم المبنى",
+      "address": "العنوان",
+      "city": "المدينة",
+      "region": "المنطقة",
+      "actions": "الإجراءات"
+    },
+    "requests": {
+      "title": "العنوان",
+      "description": "الوصف",
+      "priority": "الأولوية",
+      "location": "الموقع",
+      "referenceNumber": "رقم المرجع",
+      "requestStatus": "حالة الطلب",
+      "createdDate": "تاريخ الإنشاء",
       "actions": "الإجراءات"
     }
   }
@@ -221,6 +254,23 @@ if (response && response.isSuccess === false) {
       "name": "Office",
       "regionName": "Region",
       "phoneNumber": "Phone Number",
+      "actions": "Actions"
+    },
+    "buildings": {
+      "name": "Building Name",
+      "address": "Address",
+      "city": "City",
+      "region": "Region",
+      "actions": "Actions"
+    },
+    "requests": {
+      "title": "Title",
+      "description": "Description",
+      "priority": "Priority",
+      "location": "Location",
+      "referenceNumber": "Reference Number",
+      "requestStatus": "Request Status",
+      "createdDate": "Created Date",
       "actions": "Actions"
     }
   }
@@ -390,14 +440,24 @@ const updateCity = async () => {
 - **الحقول تحتوي على بيانات صحيحة**: رسائل الخطأ تختفي وزر "حفظ" متاح
 - **تجربة مستخدم سلسة**: التحقق يعمل بشكل فوري عند ملء الحقول
 
-## الصفحات المتبقية للتطبيق
-- [ ] المباني (buildings.vue)
-- [ ] الطلبات (requests.vue)
-- [ ] طلبات البناء (construction-requests.vue)
-- [ ] طلبات الصيانة (maintenance-requests.vue)
-- [ ] طلبات التغيير (change-requests.vue)
-- [ ] الحسابات (accounts.vue)
-- [ ] تفاصيل الحسابات (account-details.vue)
+## الصفحات المطبقة
+
+### ✅ الصفحات المكتملة
+1. **المنتجات (products.vue)** - مطبق
+2. **المدن (cities.vue)** - مطبق
+3. **المناطق (regions.vue)** - مطبق
+4. **المساجد (mosques.vue)** - مطبق
+5. **القرارات (decisions.vue)** - مطبق
+6. **المكاتب (offices.vue)** - مطبق
+7. **المباني (buildings.vue)** - مطبق ✅
+8. **الطلبات (requests.vue)** - مطبق ✅
+
+### ❌ الصفحات المتبقية
+- طلبات البناء (construction-requests.vue) - غير موجودة
+- طلبات الصيانة (maintenance-requests.vue) - غير موجودة
+- طلبات التغيير (change-requests.vue) - غير موجودة
+- الحسابات (accounts.vue) - غير موجودة
+- تفاصيل الحسابات (account-details.vue) - غير موجودة
 
 ## ملاحظات التطوير
 - جميع الصفحات تطبق نفس النمط الموحد
