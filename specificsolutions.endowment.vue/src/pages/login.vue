@@ -10,7 +10,7 @@ import authV2MaskDark from '@images/pages/misc-mask-dark.png'
 import authV2MaskLight from '@images/pages/misc-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed, onMounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAbility } from '@/plugins/casl/composables/useAbility'
 import { useFormValidation } from '@/composables/useFormValidation'
@@ -36,9 +36,7 @@ const api = useApi()
 // استخدام نظام التحقق الجديد
 const {
   validationState,
-  setErrorsFromResponse,
   clearErrors,
-  hasErrors,
   setFieldTouched,
   validateRequired,
   validateEmail,
@@ -56,7 +54,7 @@ const rememberMe = ref(false)
 const isLoading = ref(false)
 
 // متغيرات اللغة
-const currentLanguage = ref('ar') // ar للعربية، en للإنجليزية
+const currentLanguage = ref('ar')
 const isRTL = computed(() => currentLanguage.value === 'ar')
 
 // نصوص متعددة اللغات
@@ -64,8 +62,6 @@ const texts = {
   ar: {
     welcome: 'مرحباً بك في',
     signInMessage: 'يرجى تسجيل الدخول إلى حسابك وابدأ المغامرة',
-    adminEmail: 'بريد المدير',
-    clientEmail: 'بريد العميل',
     password: 'كلمة المرور',
     email: 'البريد الإلكتروني',
     passwordField: 'كلمة المرور',
@@ -75,7 +71,6 @@ const texts = {
     newUser: 'جديد على منصتنا؟',
     createAccount: 'إنشاء حساب',
     or: 'أو',
-    loginFailed: 'فشل تسجيل الدخول. يرجى التحقق من بيانات الاعتماد.',
     noPermissions: 'فشل تسجيل الدخول: لم يتم العثور على صلاحيات.',
     emailRequired: 'البريد الإلكتروني مطلوب',
     invalidEmail: 'البريد الإلكتروني غير صحيح',
@@ -85,8 +80,6 @@ const texts = {
   en: {
     welcome: 'Welcome to',
     signInMessage: 'Please sign-in to your account and start the adventure',
-    adminEmail: 'Admin Email',
-    clientEmail: 'Client Email',
     password: 'Password',
     email: 'Email',
     passwordField: 'Password',
@@ -96,7 +89,6 @@ const texts = {
     newUser: 'New on our platform?',
     createAccount: 'Create an account',
     or: 'or',
-    loginFailed: 'Login failed. Please check your credentials.',
     noPermissions: 'Login failed: No permissions found.',
     emailRequired: 'Email is required',
     invalidEmail: 'Invalid email format',
@@ -108,7 +100,6 @@ const texts = {
 // دالة تبديل اللغة
 const toggleLanguage = () => {
   currentLanguage.value = currentLanguage.value === 'ar' ? 'en' : 'ar'
-  // حفظ اللغة في localStorage
   localStorage.setItem('preferredLanguage', currentLanguage.value)
 }
 
@@ -134,54 +125,50 @@ const login = async () => {
         email: credentials.email,
         password: credentials.password,
       },
-      onResponseError({ response }) {
-        if (response._data.errors) {
-          setErrorsFromResponse(response._data)
-        } else {
-          // إضافة خطأ عام إذا لم تكن هناك أخطاء محددة
-          addError('email', t('loginFailed'))
-        }
-      },
     })
 
-         const user = res.data
-     // حفظ بيانات المستخدم في الكوكيز
-     Cookies.set('accessToken', user.token)
-     Cookies.set('userData', JSON.stringify(user))
+    // التحقق من حالة الاستجابة أولاً
+    if (res.isSuccess === false) {
+      if (res.message?.trim()) {
+        addError('general', res.message)
+      } else {
+        addError('general', t('tryAgain'))
+      }
+      return
+    }
+    
+    const user = res.data
+    
+    // التحقق من أن الاستجابة تحتوي على بيانات صحيحة
+    if (!user?.token) {
+      addError('general', t('tryAgain'))
+      return
+    }
+    
+    // حفظ بيانات المستخدم في الكوكيز
+    Cookies.set('accessToken', user.token)
+    Cookies.set('userData', JSON.stringify(user))
 
-    // Check if user has abilityRules (from fake API) or permissions (from real API)
+    // التحقق من صلاحيات المستخدم
     const userPermissions = user.permissions || user.userAbilityRules || []
     
-    if (!userPermissions || userPermissions.length === 0) {
-      console.error('User object does not have permissions or abilityRules:', user)
+    if (!userPermissions.length) {
       addError('email', t('noPermissions'))
       return
     }
     
-    const rules = []
-
-    // Add general permissions for Auth subject (required for page access)
-    rules.push(
+    const rules = [
+      // صلاحيات عامة مطلوبة
       { action: 'read', subject: 'Auth' },
       { action: 'write', subject: 'Auth' },
-      { action: 'delete', subject: 'Auth' }
-     )
-
-    // Add Dashboard permissions (required for email and other dashboard pages)
-    rules.push(
+      { action: 'delete', subject: 'Auth' },
       { action: 'View', subject: 'Dashboard' },
       { action: 'read', subject: 'Dashboard' },
       { action: 'write', subject: 'Dashboard' }
-     )
+    ]
 
-    // Add otherview permission for all users (required for non-endowment elements)
-   // rules.push(
-   //     { action: 'View', subject: 'otherview' }
-   //   )
-
-    // Convert specific permissions from backend
+    // تحويل صلاحيات المستخدم من الباك إند
     userPermissions.forEach(permission => {
-      // Handle camelCase permissions from backend (e.g., "cityView", "accountAdd")
       const action = mapPermissionToAction(permission)
       const subject = mapPermissionToSubject(permission)
       
@@ -193,18 +180,18 @@ const login = async () => {
     // حفظ قواعد الصلاحيات في الكوكيز
     try {
       Cookies.set('user-ability-rules', JSON.stringify(rules), { 
-        expires: 7, // 7 days
+        expires: 7,
         path: '/',
-        secure: false, // Set to true in production with HTTPS
+        secure: false,
         sameSite: 'lax'
       })
     } catch (error) {
-      console.error('❌ Error saving to cookie:', error)
+      console.error('Error saving to cookie:', error)
     }
     
     ability.update(rules)
 
-    // Immediately reload abilities to ensure they are available
+    // إعادة تحميل الصلاحيات
     const { reloadAbilityFromCookie } = await import('@/plugins/casl/ability')
     reloadAbilityFromCookie()
 
@@ -212,21 +199,22 @@ const login = async () => {
     await nextTick(() => {
       router.replace(target)
     })
-  } catch (err) {
+  } catch (err: any) {
     console.error('Login error:', err)
     
-    // إذا كان هناك استجابة من الخادم مع أخطاء محددة
-    if (err.response?.data?.errors && err.response.data.errors.length > 0) {
-      const errorMessage = err.response.data.errors[0].errorMessage
-      if (errorMessage) {
-        addError('general', errorMessage)
-      } else {
-        addError('general', t('tryAgain'))
+    if (err.response?.data) {
+      const responseData = err.response.data
+      
+      if (!responseData.isSuccess) {
+        if (responseData.message?.trim()) {
+          addError('general', responseData.message)
+        } else if (responseData.errors?.length) {
+          addError('general', responseData.errors[0])
+        } else {
+          addError('general', t('tryAgain'))
+        }
       }
-    } else if (err.response?.data?.message) {
-      addError('general', err.response.data.message)
     } else {
-      // خطأ عام إذا لم تكن هناك استجابة محددة
       addError('general', t('tryAgain'))
     }
   } finally {
@@ -258,50 +246,38 @@ const onSubmit = async () => {
 }
 
 // Helper functions to map backend permissions to CASL actions/subjects
-function mapPermissionToAction(permission) {
-  // Handle underscore format from backend (e.g., "City_View", "Account_Add")
+function mapPermissionToAction(permission: any) {
   if (permission.endsWith('_View')) return 'View'
   if (permission.endsWith('_Add')) return 'Add'
   if (permission.endsWith('_Edit')) return 'Edit'
   if (permission.endsWith('_Delete')) return 'Delete'
   
-  // Handle fake API format (e.g., { action: 'manage', subject: 'all' })
   if (typeof permission === 'object' && permission.action) {
     return permission.action
   }
   
-  return null // Return null for unknown permissions
+  return null
 }
 
-function mapPermissionToSubject(permission) {
-  // Handle underscore format from backend (e.g., "City_View", "Account_Add")
-  if (permission.startsWith('AccountDetail_')) return 'AccountDetail'
-  if (permission.startsWith('ConstructionRequest_')) return 'ConstructionRequest'
-  if (permission.startsWith('MaintenanceRequest_')) return 'MaintenanceRequest'
-  if (permission.startsWith('ChangeRequest_')) return 'ChangeRequest'
-  if (permission.startsWith('DemolitionRequest_')) return 'DemolitionRequest'
-  if (permission.startsWith('NameChangeRequest_')) return 'NameChangeRequest'
-  if (permission.startsWith('NeedsRequest_')) return 'NeedsRequest'
-  if (permission.startsWith('ExpenditureChangeRequest_')) return 'ExpenditureChangeRequest'
-  if (permission.startsWith('ChangeOfPathRequest_')) return 'ChangeOfPathRequest'
-  if (permission.startsWith('Account_')) return 'Account'
-  if (permission.startsWith('User_')) return 'User'
-  if (permission.startsWith('Role_')) return 'Role'
-  if (permission.startsWith('Decision_')) return 'Decision'
-  if (permission.startsWith('Request_')) return 'Request'
-  if (permission.startsWith('Office_')) return 'Office'
-  if (permission.startsWith('Endowment_')) return 'Endowment'
-  if (permission.startsWith('City_')) return 'City'
-  if (permission.startsWith('Region_')) return 'Region'
-  if (permission.startsWith('Building_')) return 'Building'
-  if (permission.startsWith('Mosque_')) return 'Mosque'
+function mapPermissionToSubject(permission: any) {
+  const subjects = [
+    'AccountDetail', 'ConstructionRequest', 'MaintenanceRequest', 'ChangeRequest',
+    'DemolitionRequest', 'NameChangeRequest', 'NeedsRequest', 'ExpenditureChangeRequest',
+    'ChangeOfPathRequest', 'Account', 'User', 'Role', 'Decision', 'Request',
+    'Office', 'Endowment', 'City', 'Region', 'Building', 'Mosque'
+  ]
   
-  // Handle fake API format (e.g., { action: 'manage', subject: 'all' })
+  for (const subject of subjects) {
+    if (permission.startsWith(`${subject}_`)) {
+      return subject
+    }
+  }
+  
   if (typeof permission === 'object' && permission.subject) {
     return permission.subject
   }
   
-  return null // Return null for unknown permissions
+  return null
 }
 </script>
 

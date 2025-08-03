@@ -68,37 +68,37 @@ namespace SpecificSolutions.Endowment.Application.Models.Global
     {
         public TData? Data { get; set; }
 
-        public EndowmentResponse(TData? data) : base(null, null)
+        public EndowmentResponse(TData? data) : base(null, Array.Empty<Error>())
         {
             Data = data;
         }
 
-        public EndowmentResponse(TData? data, ResponseState state) : base(state, null, null)
+        public EndowmentResponse(TData? data, ResponseState state) : base(state, null, Array.Empty<Error>())
         {
             Data = data;
         }
 
-        public EndowmentResponse(TData? data, ResponseState state, string? message) : base(state, message, null)
+        public EndowmentResponse(TData? data, ResponseState state, string? message) : base(state, message, Array.Empty<Error>())
         {
             Data = data;
         }
 
-        public EndowmentResponse(Error[]? errors) : base(null, errors) { }
+        public EndowmentResponse(Error[]? errors) : base(null, errors ?? Array.Empty<Error>()) { }
 
         public EndowmentResponse(TData? data, ResponseState state, Error[]? errors, string? message)
-            : base(state, message, errors)
+            : base(state, message, errors ?? Array.Empty<Error>())
         {
             Data = data;
         }
 
         public EndowmentResponse(TData? data, Error[]? errors, string? message)
-            : base(message, errors)
+            : base(message, errors ?? Array.Empty<Error>())
         {
             Data = data;
         }
 
         public EndowmentResponse(ResponseState state, string? message)
-            : base(state, message)
+            : base(state, message, Array.Empty<Error>())
         {
         }
     }

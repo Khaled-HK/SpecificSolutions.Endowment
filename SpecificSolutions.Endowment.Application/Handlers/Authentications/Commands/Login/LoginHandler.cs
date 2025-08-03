@@ -32,7 +32,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Authentications.Comma
                 var user = await _authenticator.LoginAsync(command);
                 if (user == null)
                 {
-                    return Response.FailureResponse<IUserLogin>("", "بيانات الاعتماد غير صحيحة. يرجى التحقق من البريد الإلكتروني وكلمة المرور.");
+                    return new EndowmentResponse<IUserLogin>(ResponseState.BadRequest, "بيانات الاعتماد غير صحيحة. يرجى التحقق من البريد الإلكتروني وكلمة المرور.");
                 }
 
             var refreshToken = Models.Identity.Entities.RefreshToken.Create(user.Id, user.RefreshToken, DateTime.Now.AddHours(1));
@@ -48,11 +48,11 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Authentications.Comma
             }
             catch (UnauthorizedAccessException)
             {
-                return Response.FailureResponse<IUserLogin>("", "بيانات الاعتماد غير صحيحة. يرجى التحقق من البريد الإلكتروني وكلمة المرور.");
+                return new EndowmentResponse<IUserLogin>(ResponseState.BadRequest, "بيانات الاعتماد غير صحيحة. يرجى التحقق من البريد الإلكتروني وكلمة المرور.");
             }
             catch (Exception)
             {
-                return Response.FailureResponse<IUserLogin>("", "حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.");
+                return new EndowmentResponse<IUserLogin>(ResponseState.BadRequest, "حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.");
             }
         }
     }

@@ -90,12 +90,12 @@ namespace SpecificSolutions.Endowment.Application.Models.Global
 
         public static EndowmentResponse<TValue> Responsee<TValue>(TValue? tValue, string errorMessage = "", params Error[]? errors)
         {
-            return new EndowmentResponse<TValue>(tValue, errors, errorMessage);
+            return new EndowmentResponse<TValue>(tValue, errors ?? Array.Empty<Error>(), errorMessage);
         }
 
         public static EndowmentResponse<TValue> Responsee<TValue>(ResponseState state, TValue? tValue, string errorMessage = "", params Error[]? errors)
         {
-            return new EndowmentResponse<TValue>(tValue, state, errors, errorMessage);
+            return new EndowmentResponse<TValue>(tValue, state, errors ?? Array.Empty<Error>(), errorMessage);
         }
 
         public static EndowmentResponse<TValue> Responsee<TValue>(TValue? tValue, ResponseState state, string message = "")
