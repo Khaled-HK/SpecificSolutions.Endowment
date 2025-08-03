@@ -16,20 +16,9 @@ namespace SpecificSolutions.Endowment.Application.Handlers.QuranicSchools.Querie
 
         public async Task<EndowmentResponse<PagedList<QuranicSchoolDTO>>> Handle(FilterQuranicSchoolQuery request, CancellationToken cancellationToken)
         {
-            var quranicSchools = await _unitOfWork.QuranicSchools.GetAllAsync(cancellationToken);
-
-            var filteredQuranicSchools = quranicSchools
-                .Where(q => q.Building.Name.Contains(request.SearchTerm))
-                .Select(q => new QuranicSchoolDTO
-                {
-                    Name = q.Building.Name
-                }
-                );
-
-            var pagedList = await PagedList<QuranicSchoolDTO>.CreateAsync(filteredQuranicSchools.AsQueryable(), request.PageNumber, request.PageSize, cancellationToken);
+            var pagedList = await _unitOfWork.QuranicSchools.GetByFilterAsync(request, cancellationToken);
 
             return Response.FilterResponse(pagedList);
-
         }
     }
 }

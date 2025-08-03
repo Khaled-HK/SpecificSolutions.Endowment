@@ -49,23 +49,26 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Fa
 
         public async Task<PagedList<FacilityDTO>> GetByFilterAsync(FilterFacilityQuery query, CancellationToken cancellationToken)
         {
-            var citiesQuery = _context.Cities.AsQueryable();
+            var facilitiesQuery = _context.Facilities.AsQueryable();
 
             if (!string.IsNullOrEmpty(query.SearchTerm))
             {
-                citiesQuery = citiesQuery.Where(c =>
-                    c.Name.Contains(query.SearchTerm) ||
-                    c.Country.Contains(query.SearchTerm));
+                facilitiesQuery = facilitiesQuery.Where(f =>
+                    f.Name.Contains(query.SearchTerm) ||
+                    f.Description.Contains(query.SearchTerm));
             }
 
-            var dtos = citiesQuery.Select(c => new FacilityDTO
+            var dtos = facilitiesQuery.Select(f => new FacilityDTO
             {
-                Id = c.Id,
-                Name = c.Name,
+                Id = f.Id,
+                Name = f.Name,
+                Description = f.Description,
+                Location = f.Location,
+                Capacity = f.Capacity,
+                Status = f.Status
             });
 
             return await PagedList<FacilityDTO>.CreateAsync(dtos, query.PageNumber, query.PageSize, cancellationToken);
         }
-
     }
 }

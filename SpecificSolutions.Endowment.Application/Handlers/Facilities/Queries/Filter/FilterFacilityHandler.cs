@@ -16,20 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Facilities.Queries.Fi
 
         public async Task<EndowmentResponse<PagedList<FacilityDTO>>> Handle(FilterFacilityQuery request, CancellationToken cancellationToken)
         {
-            var facilities = await _unitOfWork.Facilities.GetAllAsync(cancellationToken);
-            var filteredFacilities = facilities
-                .Where(f => f.Name.Contains(request.SearchTerm) || f.Location.Contains(request.SearchTerm))
-                .Select(f => new FacilityDTO
-                {
-                    Id = f.Id,
-                    Name = f.Name,
-                    Location = f.Location,
-                    ContactInfo = f.ContactInfo,
-                    Capacity = f.Capacity,
-                    Status = f.Status
-                });
-
-            var pagedList = await PagedList<FacilityDTO>.CreateAsync(filteredFacilities.AsQueryable(), request.PageNumber, request.PageSize, cancellationToken);
+            var pagedList = await _unitOfWork.Facilities.GetByFilterAsync(request, cancellationToken);
 
             return Response.FilterResponse(pagedList);
         }
