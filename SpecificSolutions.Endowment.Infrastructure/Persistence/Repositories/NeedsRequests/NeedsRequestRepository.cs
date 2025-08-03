@@ -54,17 +54,19 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Ne
             if (!string.IsNullOrWhiteSpace(query.SearchTerm))
             {
                 needsRequests = needsRequests.Where(nr => 
-                    nr.Description.Contains(query.SearchTerm) || 
-                    nr.Priority.ToString().Contains(query.SearchTerm));
+                    nr.NeedsType.Contains(query.SearchTerm) || 
+                    nr.Location.Contains(query.SearchTerm) ||
+                    nr.Provider.Contains(query.SearchTerm));
             }
 
             var needsRequestDTOs = needsRequests.Select(nr => new NeedsRequestDTO
             {
                 Id = nr.Id,
-                Description = nr.Description,
-                Priority = nr.Priority,
+                NeedsType = nr.NeedsType,
+                Location = nr.Location,
                 EstimatedCost = nr.EstimatedCost,
-                RequestDate = nr.RequestDate
+                Provider = nr.Provider,
+                RequestId = nr.RequestId
             });
 
             return await PagedList<NeedsRequestDTO>.CreateAsync(needsRequestDTOs, query.PageNumber, query.PageSize, cancellationToken);

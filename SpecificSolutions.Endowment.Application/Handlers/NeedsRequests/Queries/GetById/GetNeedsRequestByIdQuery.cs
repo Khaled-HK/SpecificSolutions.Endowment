@@ -4,5 +4,5 @@ using SpecificSolutions.Endowment.Application.Models.Global;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.NeedsRequests.Queries.GetById
 {
-    public record GetNeedsRequestByIdQuery(Guid NeedsRequestID) : IRequest<EndowmentResponse<FilterNeedsRequestDTO>>;
+    public record GetNeedsRequestByIdQuery(Guid NeedsRequestID) : IRequest<EndowmentResponse<NeedsRequestDTO>>;
 } 

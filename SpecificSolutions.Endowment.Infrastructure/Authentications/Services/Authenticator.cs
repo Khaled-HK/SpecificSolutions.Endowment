@@ -63,7 +63,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
             var result = await _signInManager.PasswordSignInAsync(user, command.Password, isPersistent: false, lockoutOnFailure: false);
             if (!result.Succeeded)
             {
-                throw new Exception("Invalid login attempt.");
+                throw new UnauthorizedAccessException("Invalid login attempt. Please check your credentials.");
             }
 
             // Check if HttpContext is available

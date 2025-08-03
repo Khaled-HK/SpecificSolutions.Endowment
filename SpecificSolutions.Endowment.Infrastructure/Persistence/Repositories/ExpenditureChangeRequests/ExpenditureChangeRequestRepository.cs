@@ -1,5 +1,5 @@
 using SpecificSolutions.Endowment.Application.Abstractions.IRepositories;
-using SpecificSolutions.Endowment.Application.Handlers.ExpenditureChangeRequests.Queries.Filter;
+using SpecificSolutions.Endowment.Application.Handlers.EndowmentExpenditureChangeRequests.Queries.Filter;
 using SpecificSolutions.Endowment.Application.Models.DTOs.ExpenditureChangeRequests;
 using SpecificSolutions.Endowment.Application.Models.Global;
 using SpecificSolutions.Endowment.Core.Entities.EndowmentExpenditureChangeRequests;
@@ -60,8 +60,8 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.En
             var expenditureChangeRequestDTOs = expenditureChangeRequests.Select(ecr => new ExpenditureChangeRequestDTO
             {
                 Id = ecr.Id,
-                CurrentExpenditureBranchId = ecr.CurrentExpenditureBranchId,
-                NewExpenditureBranchId = ecr.NewExpenditureBranchId,
+                CurrentExpenditure = ecr.CurrentExpenditureBranch != null ? ecr.CurrentExpenditureBranch.Name : string.Empty,
+                NewExpenditure = ecr.NewExpenditureBranch != null ? ecr.NewExpenditureBranch.Name : string.Empty,
                 Reason = ecr.Reason
             });
 

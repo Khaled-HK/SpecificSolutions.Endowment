@@ -53,6 +53,7 @@ const credentials = reactive({
 })
 
 const rememberMe = ref(false)
+const isLoading = ref(false)
 
 // متغيرات اللغة
 const currentLanguage = ref('ar') // ar للعربية، en للإنجليزية
@@ -125,6 +126,7 @@ onMounted(() => {
 })
 
 const login = async () => {
+  isLoading.value = true
   try {
     const res = await api('/auth/login', {
       method: 'POST',
@@ -212,7 +214,23 @@ const login = async () => {
     })
   } catch (err) {
     console.error('Login error:', err)
-    addError('email', t('tryAgain'))
+    
+    // إذا كان هناك استجابة من الخادم مع أخطاء محددة
+    if (err.response?.data?.errors && err.response.data.errors.length > 0) {
+      const errorMessage = err.response.data.errors[0].errorMessage
+      if (errorMessage) {
+        addError('general', errorMessage)
+      } else {
+        addError('general', t('tryAgain'))
+      }
+    } else if (err.response?.data?.message) {
+      addError('general', err.response.data.message)
+    } else {
+      // خطأ عام إذا لم تكن هناك استجابة محددة
+      addError('general', t('tryAgain'))
+    }
+  } finally {
+    isLoading.value = false
   }
 }
 
@@ -406,10 +424,20 @@ function mapPermissionToSubject(permission) {
                   </RouterLink>
                 </div>
 
+                <!-- عرض الأخطاء العامة -->
+                <div v-if="validationState.errors.general && validationState.errors.general.length > 0" class="mb-4">
+                  <VAlert
+                    type="error"
+                    variant="tonal"
+                    :text="validationState.errors.general[0]"
+                    class="mb-4"
+                  />
+                </div>
+
                 <VBtn
                   block
                   type="submit"
-                  :disabled="hasErrors"
+                  :loading="isLoading"
                 >
                   {{ t('signIn') }}
                 </VBtn>

@@ -4,6 +4,6 @@ namespace SpecificSolutions.Endowment.Application.Handlers.NeedsRequests.Command
 {
     public class DeleteNeedsRequestCommand : ICommand
     {
-        public Guid NeedsRequestID { get; set; }
+        public Guid Id { get; set; }
     }
 }

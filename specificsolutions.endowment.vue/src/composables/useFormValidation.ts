@@ -81,6 +81,13 @@ export function useFormValidation() {
   const setErrorsFromResponse = (response: any, context: 'add' | 'edit' = 'add') => {
     if (response?.errors && Array.isArray(response.errors)) {
       response.errors.forEach((error: ValidationError) => {
+        // إذا كان propertyName فارغاً، فهذا خطأ عام
+        if (!error.propertyName || error.propertyName.trim() === '') {
+          // إضافة الخطأ كرسالة عامة
+          addError('general', error.errorMessage)
+          return
+        }
+        
         // تحويل اسم الحقل من الباك اند إلى الفرونت إند
         const baseFrontendFieldName = propertyNameMapping[error.propertyName] || error.propertyName.toLowerCase()
         

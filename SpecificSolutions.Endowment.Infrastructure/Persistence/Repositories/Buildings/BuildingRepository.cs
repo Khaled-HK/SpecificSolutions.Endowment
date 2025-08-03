@@ -55,22 +55,36 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Bu
             {
                 buildingsQuery = buildingsQuery.Where(b =>
                     b.Name.Contains(query.SearchTerm) ||
-                    b.Description.Contains(query.SearchTerm) ||
-                    b.Location.Contains(query.SearchTerm));
+                    b.Definition.Contains(query.SearchTerm) ||
+                    b.BriefDescription.Contains(query.SearchTerm));
             }
 
             var buildingDTOs = buildingsQuery.Select(b => new BuildingDTO
             {
                 Id = b.Id,
                 Name = b.Name,
-                Description = b.Description,
-                Location = b.Location,
-                NumberOfFloors = b.NumberOfFloors,
-                TotalCoveredArea = b.TotalCoveredArea,
-                TotalLandArea = b.TotalLandArea,
+                FileNumber = b.FileNumber,
+                Definition = b.Definition,
+                Classification = b.Classification,
+                Office = b.Office != null ? b.Office.Name : string.Empty,
+                Unit = b.Unit,
+                Region = b.Region != null ? b.Region.Name : string.Empty,
+                NearestLandmark = b.NearestLandmark,
                 ConstructionDate = b.ConstructionDate,
                 OpeningDate = b.OpeningDate,
-                Status = b.Status
+                MapLocation = b.MapLocation,
+                TotalLandArea = b.TotalLandArea,
+                TotalCoveredArea = b.TotalCoveredArea,
+                NumberOfFloors = b.NumberOfFloors,
+                ElectricityMeter = b.ElectricityMeter,
+                AlternativeEnergySource = b.AlternativeEnergySource,
+                WaterSource = b.WaterSource,
+                Sanitation = b.Sanitation,
+                BriefDescription = b.BriefDescription,
+                UserId = b.UserId,
+                PicturePath = b.PicturePath,
+                LandDonorName = b.LandDonorName,
+                PrayerCapacity = b.PrayerCapacity
             });
 
             return await PagedList<BuildingDTO>.CreateAsync(buildingDTOs, query.PageNumber, query.PageSize, cancellationToken);

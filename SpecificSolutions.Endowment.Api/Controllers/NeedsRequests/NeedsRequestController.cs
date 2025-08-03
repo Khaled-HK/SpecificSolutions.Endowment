@@ -32,7 +32,7 @@ namespace SpecificSolutions.Endowment.Api.Controllers
 
         [HttpDelete("{id}")]
         public async Task<EndowmentResponse> Delete(Guid id, CancellationToken cancellationToken = default) =>
-            await _mediator.Send(new DeleteNeedsRequestCommand { NeedsRequestID = id }, cancellationToken);
+            await _mediator.Send(new DeleteNeedsRequestCommand { Id = id }, cancellationToken);
 
         [HttpGet("filter")]
         public async Task<EndowmentResponse> Filter([FromQuery] string searchTerm, CancellationToken cancellationToken = default) =>

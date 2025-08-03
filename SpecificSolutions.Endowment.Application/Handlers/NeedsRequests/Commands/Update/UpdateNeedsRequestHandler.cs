@@ -1,6 +1,7 @@
 using SpecificSolutions.Endowment.Application.Abstractions.IRepositories;
 using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
 using SpecificSolutions.Endowment.Application.Models.Global;
+using SpecificSolutions.Endowment.Core.Entities.NeedsRequests;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.NeedsRequests.Commands.Update
 {
@@ -15,20 +16,24 @@ namespace SpecificSolutions.Endowment.Application.Handlers.NeedsRequests.Command
 
         public async Task<EndowmentResponse> Handle(UpdateNeedsRequestCommand request, CancellationToken cancellationToken)
         {
-            //var needsRequest = await _needsRequestRepository.GetByIdAsync(request.NeedsRequest.NeedsRequestID);
-            //if (needsRequest == null) throw new NeedsRequestNotFoundException();
+            var needsRequest = await _unitOfWork.NeedsRequests.GetByIdAsync(request.Id);
+            if (needsRequest == null)
+            {
+                return Response.FailureResponse("NeedsRequest not found");
+            }
 
-            //needsRequest.RequestType = request.NeedsRequest.RequestType;
-            //needsRequest.SubmissionDate = request.NeedsRequest.SubmissionDate;
-            //needsRequest.RequestStatus = request.NeedsRequest.RequestStatus;
-            //needsRequest.Attachments = request.NeedsRequest.Attachments;
-            //needsRequest.Description = request.NeedsRequest.Description;
-            //needsRequest.Priority = request.NeedsRequest.Priority;
+            // تحديث خصائص NeedsRequest
+            needsRequest.UpdateDetails(
+                needsType: request.NeedsType,
+                location: request.Location,
+                estimatedCost: (double)request.EstimatedCost,
+                provider: request.Provider
+            );
 
-            //await _needsRequestRepository.UpdateAsync(needsRequest);
-            //await _unitOfWork.CompleteAsync(cancellationToken);
+            await _unitOfWork.NeedsRequests.UpdateAsync(needsRequest);
+            await _unitOfWork.CompleteAsync(cancellationToken);
 
-            return Response.Added();
+            return Response.Updated();
         }
     }
 }

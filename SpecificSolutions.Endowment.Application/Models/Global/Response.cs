@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using SpecificSolutions.Endowment.Application.Models.DTOs.Users;
 
 namespace SpecificSolutions.Endowment.Application.Models.Global
 {
@@ -9,9 +10,6 @@ namespace SpecificSolutions.Endowment.Application.Models.Global
 
         public static EndowmentResponse<TValue> SuccessLogin<TValue>(TValue? tValue)
             => Responsee(tValue, ResponseState.Valid, "تم تسجيل الدخول بنجاح");
-
-        public static EndowmentResponse FailureLogin()
-            => FailureResponse(errorMessage: "فشل في تسجيل الدخول");
 
         public static EndowmentResponse Added()
             => SuccessResponse(ResponseState.Valid, "تم الإضافة بنجاح");
@@ -68,7 +66,7 @@ namespace SpecificSolutions.Endowment.Application.Models.Global
 
             return Responsee<TValue>(
                 default,
-                string.Empty,
+                localizedMessage,
                 new Error[] { new(propertyName, localizedMessage) }
                 );
 

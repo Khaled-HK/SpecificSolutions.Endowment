@@ -7,9 +7,10 @@ namespace SpecificSolutions.Endowment.Application.Validators.NeedsRequests
     {
         public CreateNeedsRequestCommandValidator()
         {
-            RuleFor(x => x.RequestStatus).NotEmpty().MaximumLength(50);
-            RuleFor(x => x.Description).NotEmpty().MaximumLength(500);
-            RuleFor(x => x.Priority).NotEmpty().MaximumLength(50);
+            RuleFor(x => x.NeedsType).NotEmpty().MaximumLength(100);
+            RuleFor(x => x.Location).NotEmpty().MaximumLength(200);
+            RuleFor(x => x.EstimatedCost).GreaterThan(0);
+            RuleFor(x => x.Provider).NotEmpty().MaximumLength(100);
         }
     }
 }

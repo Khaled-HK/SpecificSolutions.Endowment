@@ -23,5 +23,8 @@ namespace SpecificSolutions.Endowment.Application.Models.DTOs.Buildings
         public string Sanitation { get; set; }
         public string BriefDescription { get; set; }
         public string UserId { get; set; }
+        public string PicturePath { get; set; }
+        public string LandDonorName { get; set; }
+        public string PrayerCapacity { get; set; }
     }
 }

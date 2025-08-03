@@ -15,11 +15,14 @@ namespace SpecificSolutions.Endowment.Application.Handlers.NeedsRequests.Command
 
         public async Task<EndowmentResponse> Handle(DeleteNeedsRequestCommand request, CancellationToken cancellationToken)
         {
-            //var needsRequest = await _needsRequestRepository.GetByIdAsync(request.NeedsRequestID);
-            //if (needsRequest == null) throw new NeedsRequestNotFoundException();
+            var needsRequest = await _unitOfWork.NeedsRequests.GetByIdAsync(request.Id);
+            if (needsRequest == null)
+            {
+                return Response.FailureResponse("NeedsRequest not found");
+            }
 
-            //await _needsRequestRepository.DeleteAsync(request.NeedsRequestID);
-            //return Unit.Value;
+            await _unitOfWork.NeedsRequests.DeleteAsync(request.Id);
+            await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Deleted();
         }

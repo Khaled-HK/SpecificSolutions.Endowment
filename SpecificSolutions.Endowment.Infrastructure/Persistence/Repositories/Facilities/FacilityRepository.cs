@@ -55,15 +55,16 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Fa
             {
                 facilitiesQuery = facilitiesQuery.Where(f =>
                     f.Name.Contains(query.SearchTerm) ||
-                    f.Description.Contains(query.SearchTerm));
+                    f.Location.Contains(query.SearchTerm) ||
+                    f.ContactInfo.Contains(query.SearchTerm));
             }
 
             var dtos = facilitiesQuery.Select(f => new FacilityDTO
             {
                 Id = f.Id,
                 Name = f.Name,
-                Description = f.Description,
                 Location = f.Location,
+                ContactInfo = f.ContactInfo,
                 Capacity = f.Capacity,
                 Status = f.Status
             });

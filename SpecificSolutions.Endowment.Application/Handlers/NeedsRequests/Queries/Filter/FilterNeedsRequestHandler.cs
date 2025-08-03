@@ -5,7 +5,7 @@ using SpecificSolutions.Endowment.Application.Models.Global;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.NeedsRequests.Queries.Filter
 {
-    public class FilterNeedsRequestHandler : IQueryHandler<FilterNeedsRequestQuery, PagedList<FilterNeedsRequestDTO>>
+    public class FilterNeedsRequestHandler : IQueryHandler<FilterNeedsRequestQuery, PagedList<NeedsRequestDTO>>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -14,7 +14,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.NeedsRequests.Queries
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<EndowmentResponse<PagedList<FilterNeedsRequestDTO>>> Handle(FilterNeedsRequestQuery request, CancellationToken cancellationToken)
+        public async Task<EndowmentResponse<PagedList<NeedsRequestDTO>>> Handle(FilterNeedsRequestQuery request, CancellationToken cancellationToken)
         {
             var pagedList = await _unitOfWork.NeedsRequests.GetByFilterAsync(request, cancellationToken);
 

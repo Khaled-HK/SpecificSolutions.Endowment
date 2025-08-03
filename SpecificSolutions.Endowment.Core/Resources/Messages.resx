@@ -421,10 +421,13 @@
     <value>رقم الهاتف غير صحيح</value>
   </data>
   <data name="LoggedinFailed" xml:space="preserve">
-    <value>LoggedinFailed</value>
+    <value>فشل تسجيل الدخول. يرجى التحقق من بيانات الاعتماد.</value>
   </data>
   <data name="LoggedinSuccess" xml:space="preserve">
-    <value>LoggedinSuccess</value>
+    <value>تم تسجيل الدخول بنجاح</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>بيانات الاعتماد غير صحيحة. يرجى التحقق من البريد الإلكتروني وكلمة المرور.</value>
   </data>
   <data name="NoChanges" xml:space="preserve">
     <value>NoChanges</value>
