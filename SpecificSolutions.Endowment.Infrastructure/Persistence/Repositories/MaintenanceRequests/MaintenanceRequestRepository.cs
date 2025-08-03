@@ -1,4 +1,7 @@
 using SpecificSolutions.Endowment.Application.Abstractions.IRepositories;
+using SpecificSolutions.Endowment.Application.Handlers.MaintenanceRequests.Queries.Filter;
+using SpecificSolutions.Endowment.Application.Models.DTOs.MaintenanceRequests;
+using SpecificSolutions.Endowment.Application.Models.Global;
 using SpecificSolutions.Endowment.Core.Entities.MaintenanceRequests;
 
 namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.MaintenanceRequests
@@ -42,6 +45,28 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Ma
                 _context.MaintenanceRequests.Remove(maintenanceRequest);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<PagedList<MaintenanceRequestDTO>> GetByFilterAsync(FilterMaintenanceRequestQuery query, CancellationToken cancellationToken)
+        {
+            var maintenanceRequests = _context.MaintenanceRequests.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+            {
+                maintenanceRequests = maintenanceRequests.Where(mr => mr.Location.Contains(query.SearchTerm));
+            }
+
+            var maintenanceRequestDTOs = maintenanceRequests.Select(mr => new MaintenanceRequestDTO
+            {
+                Id = mr.Id,
+                MaintenanceType = mr.MaintenanceType,
+                Location = mr.Location,
+                EstimatedCost = mr.EstimatedCost,
+                ExpectedStartDate = mr.ExpectedStartDate,
+                ExpectedEndDate = mr.ExpectedEndDate
+            });
+
+            return await PagedList<MaintenanceRequestDTO>.CreateAsync(maintenanceRequestDTOs, query.PageNumber, query.PageSize, cancellationToken);
         }
     }
 }

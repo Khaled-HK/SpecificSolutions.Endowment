@@ -16,16 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.EndowmentExpenditureC
 
         public async Task<EndowmentResponse<PagedList<ExpenditureChangeRequestDTO>>> Handle(FilterExpenditureChangeRequestQuery request, CancellationToken cancellationToken)
         {
-            var expenditureChangeRequests = await _unitOfWork.ExpenditureChangeRequests.GetAllAsync(cancellationToken);
-            var filteredRequests = expenditureChangeRequests
-                .Where(ecr => ecr.Reason.Contains(request.SearchTerm))
-                .Select(ecr => new ExpenditureChangeRequestDTO
-                {
-                    Id = ecr.Id,
-                    Reason = ecr.Reason,
-                });
-
-            var pagedList = await PagedList<ExpenditureChangeRequestDTO>.CreateAsync(filteredRequests.AsQueryable(), request.PageNumber, request.PageSize, cancellationToken);
+            var pagedList = await _unitOfWork.ExpenditureChangeRequests.GetByFilterAsync(request, cancellationToken);
 
             return Response.FilterResponse(pagedList);
         }

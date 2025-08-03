@@ -16,16 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.DemolitionRequests.Qu
 
         public async Task<EndowmentResponse<PagedList<FilterDemolitionRequestDTO>>> Handle(FilterDemolitionRequestQuery request, CancellationToken cancellationToken)
         {
-            var DemolitionRequests = await _unitOfWork.DemolitionRequests.GetAllAsync(cancellationToken);
-            var filteDemolitionRequests = DemolitionRequests
-                .Where(drr => drr.ContractorName.Contains(request.SearchTerm))
-                .Select(drr => new FilterDemolitionRequestDTO
-                {
-                    Id = drr.Id,
-                    Reason = drr.Reason,
-                });
-
-            var pagedList = await PagedList<FilterDemolitionRequestDTO>.CreateAsync(filteDemolitionRequests.AsQueryable(), request.PageNumber, request.PageSize, cancellationToken);
+            var pagedList = await _unitOfWork.DemolitionRequests.GetByFilterAsync(request, cancellationToken);
 
             return Response.FilterResponse(pagedList);
         }

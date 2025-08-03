@@ -16,15 +16,8 @@ namespace SpecificSolutions.Endowment.Application.Handlers.NeedsRequests.Queries
 
         public async Task<EndowmentResponse<PagedList<FilterNeedsRequestDTO>>> Handle(FilterNeedsRequestQuery request, CancellationToken cancellationToken)
         {
-            var needsRequests = await _unitOfWork.NeedsRequests.GetAllAsync(cancellationToken);
-            var filteredRequests = needsRequests
-                .Where(nr => nr.NeedsType.Contains(request.SearchTerm))
-                .Select(nr => new FilterNeedsRequestDTO
-                {
-                    Id = nr.Id,
-                });
+            var pagedList = await _unitOfWork.NeedsRequests.GetByFilterAsync(request, cancellationToken);
 
-            var pagedList = await PagedList<FilterNeedsRequestDTO>.CreateAsync(filteredRequests.AsQueryable(), request.PageNumber, request.PageSize, cancellationToken);
             return Response.FilterResponse(pagedList);
         }
     }

@@ -1,4 +1,7 @@
 using SpecificSolutions.Endowment.Application.Abstractions.IRepositories;
+using SpecificSolutions.Endowment.Application.Handlers.ExpenditureChangeRequests.Queries.Filter;
+using SpecificSolutions.Endowment.Application.Models.DTOs.ExpenditureChangeRequests;
+using SpecificSolutions.Endowment.Application.Models.Global;
 using SpecificSolutions.Endowment.Core.Entities.EndowmentExpenditureChangeRequests;
 
 namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.EndowmentExpenditureChangeRequests
@@ -36,12 +39,33 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.En
 
         public async Task DeleteAsync(Guid id)
         {
-            var endowmentExpenditureChangeRequest = await _context.ExpenditureChangeRequests.FindAsync(id);
-            if (endowmentExpenditureChangeRequest != null)
+            var expenditureChangeRequest = await _context.ExpenditureChangeRequests.FindAsync(id);
+            if (expenditureChangeRequest != null)
             {
-                _context.ExpenditureChangeRequests.Remove(endowmentExpenditureChangeRequest);
+                _context.ExpenditureChangeRequests.Remove(expenditureChangeRequest);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<PagedList<ExpenditureChangeRequestDTO>> GetByFilterAsync(FilterExpenditureChangeRequestQuery query, CancellationToken cancellationToken)
+        {
+            var expenditureChangeRequests = _context.ExpenditureChangeRequests.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+            {
+                expenditureChangeRequests = expenditureChangeRequests.Where(ecr => 
+                    ecr.Reason.Contains(query.SearchTerm));
+            }
+
+            var expenditureChangeRequestDTOs = expenditureChangeRequests.Select(ecr => new ExpenditureChangeRequestDTO
+            {
+                Id = ecr.Id,
+                CurrentExpenditureBranchId = ecr.CurrentExpenditureBranchId,
+                NewExpenditureBranchId = ecr.NewExpenditureBranchId,
+                Reason = ecr.Reason
+            });
+
+            return await PagedList<ExpenditureChangeRequestDTO>.CreateAsync(expenditureChangeRequestDTOs, query.PageNumber, query.PageSize, cancellationToken);
         }
     }
 }

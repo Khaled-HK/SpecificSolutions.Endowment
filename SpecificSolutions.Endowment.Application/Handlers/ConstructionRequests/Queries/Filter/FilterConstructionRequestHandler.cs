@@ -16,19 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.ConstructionRequests.
 
         public async Task<EndowmentResponse<PagedList<ConstructionRequestDTO>>> Handle(FilterConstructionRequestQuery request, CancellationToken cancellationToken)
         {
-            var constructionRequests = await _unitOfWork.ConstructionRequests.GetAllAsync(cancellationToken);
-            var filteredRequests = constructionRequests
-                .Where(cr => cr.ProposedLocation.Contains(request.SearchTerm))
-                .Select(cr => new ConstructionRequestDTO
-                {
-                    Id = cr.Id,
-                    ProposedLocation = cr.ProposedLocation,
-                    ProposedArea = cr.ProposedArea,
-                    EstimatedCost = cr.EstimatedCost,
-                    ContractorName = cr.ContractorName
-                });
-
-            var pagedList = await PagedList<ConstructionRequestDTO>.CreateAsync(filteredRequests.AsQueryable(), request.PageNumber, request.PageSize, cancellationToken);
+            var pagedList = await _unitOfWork.ConstructionRequests.GetByFilterAsync(request, cancellationToken);
 
             return Response.FilterResponse(pagedList);
         }

@@ -1,4 +1,7 @@
 using SpecificSolutions.Endowment.Application.Abstractions.IRepositories;
+using SpecificSolutions.Endowment.Application.Handlers.NameChangeRequests.Queries.Filter;
+using SpecificSolutions.Endowment.Application.Models.DTOs.NameChangeRequests;
+using SpecificSolutions.Endowment.Application.Models.Global;
 using SpecificSolutions.Endowment.Core.Entities.NameChangeRequests;
 
 namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.NameChangeRequests
@@ -42,6 +45,29 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Na
                 _context.NameChangeRequests.Remove(nameChangeRequest);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<PagedList<NameChangeRequestDTO>> GetByFilterAsync(FilterNameChangeRequestQuery query, CancellationToken cancellationToken)
+        {
+            var nameChangeRequests = _context.NameChangeRequests.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+            {
+                nameChangeRequests = nameChangeRequests.Where(ncr => 
+                    ncr.CurrentName.Contains(query.SearchTerm) || 
+                    ncr.NewName.Contains(query.SearchTerm) || 
+                    ncr.Reason.Contains(query.SearchTerm));
+            }
+
+            var nameChangeRequestDTOs = nameChangeRequests.Select(ncr => new NameChangeRequestDTO
+            {
+                Id = ncr.Id,
+                CurrentName = ncr.CurrentName,
+                NewName = ncr.NewName,
+                Reason = ncr.Reason
+            });
+
+            return await PagedList<NameChangeRequestDTO>.CreateAsync(nameChangeRequestDTOs, query.PageNumber, query.PageSize, cancellationToken);
         }
     }
 }

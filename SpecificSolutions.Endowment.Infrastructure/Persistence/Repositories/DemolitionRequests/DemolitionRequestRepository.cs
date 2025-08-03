@@ -1,4 +1,7 @@
 using SpecificSolutions.Endowment.Application.Abstractions.IRepositories;
+using SpecificSolutions.Endowment.Application.Handlers.DemolitionRequests.Queries.Filter;
+using SpecificSolutions.Endowment.Application.Models.DTOs.DemolitionRequests;
+using SpecificSolutions.Endowment.Application.Models.Global;
 using SpecificSolutions.Endowment.Core.Entities.DemolitionRequests;
 
 namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.DemolitionRequests
@@ -42,6 +45,24 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.De
                 _context.DemolitionRequests.Remove(DemolitionRequest);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<PagedList<FilterDemolitionRequestDTO>> GetByFilterAsync(FilterDemolitionRequestQuery query, CancellationToken cancellationToken)
+        {
+            var demolitionRequests = _context.DemolitionRequests.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+            {
+                demolitionRequests = demolitionRequests.Where(dr => dr.ContractorName.Contains(query.SearchTerm));
+            }
+
+            var demolitionRequestDTOs = demolitionRequests.Select(dr => new FilterDemolitionRequestDTO
+            {
+                Id = dr.Id,
+                Reason = dr.Reason
+            });
+
+            return await PagedList<FilterDemolitionRequestDTO>.CreateAsync(demolitionRequestDTOs, query.PageNumber, query.PageSize, cancellationToken);
         }
     }
 }
