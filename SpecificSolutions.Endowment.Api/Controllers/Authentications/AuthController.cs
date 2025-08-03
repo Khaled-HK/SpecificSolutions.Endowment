@@ -23,7 +23,7 @@ namespace SpecificSolutions.Endowment.Api.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<EndowmentResponse<IUserLogin>> Login(LoginCommand command, CancellationToken cancellationToken = default) =>
+        public async Task<EndowmentResponse<IUserLogin>> Login(LoginCommand command, CancellationToken cancellationToken) =>
             await _mediator.Send(command, cancellationToken);
 
         [HttpPost("logout")]
@@ -33,11 +33,11 @@ namespace SpecificSolutions.Endowment.Api.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<EndowmentResponse> Register(RegisterCommand command, CancellationToken cancellationToken = default) =>
+        public async Task<EndowmentResponse> Register(RegisterCommand command, CancellationToken cancellationToken) =>
             await _mediator.Send(command, cancellationToken);
 
         [HttpPost("refresh-token")]
-        public async Task<EndowmentResponse<RefreshTokenResponse>> RefreshToken(RefreshTokenCommand command, CancellationToken cancellationToken = default) =>
+        public async Task<EndowmentResponse<RefreshTokenResponse>> RefreshToken(RefreshTokenCommand command, CancellationToken cancellationToken) =>
             await _mediator.Send(command, cancellationToken);
 
         // [HttpPost("forgot-password")]

@@ -10,16 +10,11 @@ import authV2MaskDark from '@images/pages/misc-mask-dark.png'
 import authV2MaskLight from '@images/pages/misc-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
-import { ref, reactive, computed, onMounted, nextTick } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { useAbility } from '@/plugins/casl/composables/useAbility'
-import { useFormValidation } from '@/composables/useFormValidation'
-import { useApi } from '@/utils/api'
-import Cookies from 'js-cookie'
+import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useLogin } from '@/composables/useLogin'
 
-const authThemeImg = useGenerateImageVariant(authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
-const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
-
+// تكوين الصفحة
 definePage({
   meta: {
     layout: 'blank',
@@ -27,258 +22,30 @@ definePage({
   },
 })
 
+// المتغيرات الأساسية
 const isPasswordVisible = ref(false)
-const route = useRoute()
-const router = useRouter()
-const ability = useAbility()
-const api = useApi()
-
-// استخدام نظام التحقق الجديد
-const {
-  validationState,
-  clearErrors,
-  setFieldTouched,
-  validateRequired,
-  validateEmail,
-  addError,
-} = useFormValidation()
-
 const refVForm = ref()
 
-const credentials = reactive({
-  email: 'admin@demo.com',
-  password: 'admin',
-})
+// إدارة اللغة باستخدام النظام المدمج
+const { t, locale } = useI18n()
 
-const rememberMe = ref(false)
-const isLoading = ref(false)
+// إدارة تسجيل الدخول
+const { credentials, rememberMe, isLoading, validationState, onSubmit } = useLogin()
 
-// متغيرات اللغة
-const currentLanguage = ref('ar')
-const isRTL = computed(() => currentLanguage.value === 'ar')
-
-// نصوص متعددة اللغات
-const texts = {
-  ar: {
-    welcome: 'مرحباً بك في',
-    signInMessage: 'يرجى تسجيل الدخول إلى حسابك وابدأ المغامرة',
-    password: 'كلمة المرور',
-    email: 'البريد الإلكتروني',
-    passwordField: 'كلمة المرور',
-    rememberMe: 'تذكرني',
-    forgotPassword: 'نسيت كلمة المرور؟',
-    signIn: 'تسجيل الدخول',
-    newUser: 'جديد على منصتنا؟',
-    createAccount: 'إنشاء حساب',
-    or: 'أو',
-    noPermissions: 'فشل تسجيل الدخول: لم يتم العثور على صلاحيات.',
-    emailRequired: 'البريد الإلكتروني مطلوب',
-    invalidEmail: 'البريد الإلكتروني غير صحيح',
-    passwordRequired: 'كلمة المرور مطلوبة',
-    tryAgain: 'فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.'
-  },
-  en: {
-    welcome: 'Welcome to',
-    signInMessage: 'Please sign-in to your account and start the adventure',
-    password: 'Password',
-    email: 'Email',
-    passwordField: 'Password',
-    rememberMe: 'Remember me',
-    forgotPassword: 'Forgot Password?',
-    signIn: 'Sign In',
-    newUser: 'New on our platform?',
-    createAccount: 'Create an account',
-    or: 'or',
-    noPermissions: 'Login failed: No permissions found.',
-    emailRequired: 'Email is required',
-    invalidEmail: 'Invalid email format',
-    passwordRequired: 'Password is required',
-    tryAgain: 'Login failed. Please try again.'
-  }
+// دالة إرسال النموذج
+const handleSubmit = async () => {
+  await onSubmit(t)
 }
 
-// دالة تبديل اللغة
-const toggleLanguage = () => {
-  currentLanguage.value = currentLanguage.value === 'ar' ? 'en' : 'ar'
-  localStorage.setItem('preferredLanguage', currentLanguage.value)
-}
-
-// دالة الحصول على النص الحالي
-const t = (key: string) => {
-  return texts[currentLanguage.value][key] || key
-}
-
-// تحميل اللغة المحفوظة عند تحميل الصفحة
-onMounted(() => {
-  const savedLanguage = localStorage.getItem('preferredLanguage')
-  if (savedLanguage) {
-    currentLanguage.value = savedLanguage
-  }
-})
-
-const login = async () => {
-  isLoading.value = true
-  try {
-    const res = await api('/auth/login', {
-      method: 'POST',
-      body: {
-        email: credentials.email,
-        password: credentials.password,
-      },
-    })
-
-    // التحقق من حالة الاستجابة أولاً
-    if (res.isSuccess === false) {
-      if (res.message?.trim()) {
-        addError('general', res.message)
-      } else {
-        addError('general', t('tryAgain'))
-      }
-      return
-    }
-    
-    const user = res.data
-    
-    // التحقق من أن الاستجابة تحتوي على بيانات صحيحة
-    if (!user?.token) {
-      addError('general', t('tryAgain'))
-      return
-    }
-    
-    // حفظ بيانات المستخدم في الكوكيز
-    Cookies.set('accessToken', user.token)
-    Cookies.set('userData', JSON.stringify(user))
-
-    // التحقق من صلاحيات المستخدم
-    const userPermissions = user.permissions || user.userAbilityRules || []
-    
-    if (!userPermissions.length) {
-      addError('email', t('noPermissions'))
-      return
-    }
-    
-    const rules = [
-      // صلاحيات عامة مطلوبة
-      { action: 'read', subject: 'Auth' },
-      { action: 'write', subject: 'Auth' },
-      { action: 'delete', subject: 'Auth' },
-      { action: 'View', subject: 'Dashboard' },
-      { action: 'read', subject: 'Dashboard' },
-      { action: 'write', subject: 'Dashboard' }
-    ]
-
-    // تحويل صلاحيات المستخدم من الباك إند
-    userPermissions.forEach(permission => {
-      const action = mapPermissionToAction(permission)
-      const subject = mapPermissionToSubject(permission)
-      
-      if (action && subject) {
-        rules.push({ action, subject })
-      }
-    })
-
-    // حفظ قواعد الصلاحيات في الكوكيز
-    try {
-      Cookies.set('user-ability-rules', JSON.stringify(rules), { 
-        expires: 7,
-        path: '/',
-        secure: false,
-        sameSite: 'lax'
-      })
-    } catch (error) {
-      console.error('Error saving to cookie:', error)
-    }
-    
-    ability.update(rules)
-
-    // إعادة تحميل الصلاحيات
-    const { reloadAbilityFromCookie } = await import('@/plugins/casl/ability')
-    reloadAbilityFromCookie()
-
-    const target = route.query.to ? String(route.query.to) : '/dashboard'
-    await nextTick(() => {
-      router.replace(target)
-    })
-  } catch (err: any) {
-    console.error('Login error:', err)
-    
-    if (err.response?.data) {
-      const responseData = err.response.data
-      
-      if (!responseData.isSuccess) {
-        if (responseData.message?.trim()) {
-          addError('general', responseData.message)
-        } else if (responseData.errors?.length) {
-          addError('general', responseData.errors[0])
-        } else {
-          addError('general', t('tryAgain'))
-        }
-      }
-    } else {
-      addError('general', t('tryAgain'))
-    }
-  } finally {
-    isLoading.value = false
-  }
-}
-
-const onSubmit = async () => {
-  clearErrors()
-  
-  let isValid = true
-  
-  if (!validateRequired(credentials.email, 'email', t('emailRequired'))) {
-    isValid = false
-  } else if (!validateEmail(credentials.email, 'email', t('invalidEmail'))) {
-    isValid = false
-  }
-  
-  if (!validateRequired(credentials.password, 'password', t('passwordRequired'))) {
-    isValid = false
-  }
-  
-  setFieldTouched('email')
-  setFieldTouched('password')
-  
-  if (!isValid) return
-  
-  await login()
-}
-
-// Helper functions to map backend permissions to CASL actions/subjects
-function mapPermissionToAction(permission: any) {
-  if (permission.endsWith('_View')) return 'View'
-  if (permission.endsWith('_Add')) return 'Add'
-  if (permission.endsWith('_Edit')) return 'Edit'
-  if (permission.endsWith('_Delete')) return 'Delete'
-  
-  if (typeof permission === 'object' && permission.action) {
-    return permission.action
-  }
-  
-  return null
-}
-
-function mapPermissionToSubject(permission: any) {
-  const subjects = [
-    'AccountDetail', 'ConstructionRequest', 'MaintenanceRequest', 'ChangeRequest',
-    'DemolitionRequest', 'NameChangeRequest', 'NeedsRequest', 'ExpenditureChangeRequest',
-    'ChangeOfPathRequest', 'Account', 'User', 'Role', 'Decision', 'Request',
-    'Office', 'Endowment', 'City', 'Region', 'Building', 'Mosque'
-  ]
-  
-  for (const subject of subjects) {
-    if (permission.startsWith(`${subject}_`)) {
-      return subject
-    }
-  }
-  
-  if (typeof permission === 'object' && permission.subject) {
-    return permission.subject
-  }
-  
-  return null
-}
+// إعداد الصور
+const authThemeImg = useGenerateImageVariant(
+  authV2LoginIllustrationLight, 
+  authV2LoginIllustrationDark, 
+  authV2LoginIllustrationBorderedLight, 
+  authV2LoginIllustrationBorderedDark, 
+  true
+)
+const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
 </script>
 
 <template>
@@ -287,10 +54,10 @@ function mapPermissionToSubject(permission: any) {
     <VBtn
       variant="text"
       size="small"
-      @click="toggleLanguage"
+      @click="locale = locale === 'ar' ? 'en' : 'ar'"
       class="language-btn"
     >
-      {{ currentLanguage === 'ar' ? 'English' : 'العربية' }}
+      {{ locale === 'ar' ? 'English' : 'العربية' }}
     </VBtn>
   </div>
 
@@ -355,7 +122,7 @@ function mapPermissionToSubject(permission: any) {
         <VCardText>
           <VForm
             ref="refVForm"
-            @submit.prevent="onSubmit"
+            @submit.prevent="handleSubmit"
           >
             <VRow>
               <!-- email -->
@@ -368,7 +135,7 @@ function mapPermissionToSubject(permission: any) {
                   autofocus
                   :error="validationState.errors.email && validationState.errors.email.length > 0 && validationState.touched.email"
                   :error-messages="validationState.errors.email || []"
-                  @blur="setFieldTouched('email')"
+                  @blur="() => {}"
                 />
               </VCol>
 
@@ -376,7 +143,7 @@ function mapPermissionToSubject(permission: any) {
               <VCol cols="12">
                 <AppTextField
                   v-model="credentials.password"
-                  :label="t('passwordField')"
+                  :label="t('password')"
                   placeholder="············"
                   :type="isPasswordVisible ? 'text' : 'password'"
                   autocomplete="password"
@@ -384,7 +151,7 @@ function mapPermissionToSubject(permission: any) {
                   :error-messages="validationState.errors.password || []"
                   :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
-                  @blur="setFieldTouched('password')"
+                  @blur="() => {}"
                 />
 
                 <div class="d-flex align-center flex-wrap justify-space-between my-6">

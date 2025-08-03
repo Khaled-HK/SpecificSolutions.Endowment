@@ -52,51 +52,22 @@ namespace SpecificSolutions.EndowmentVue.Controllers
             }
         }
 
-        public class BodyObject
-        {
-            [Required(ErrorMessage = "Email is required")]
-            [EmailAddress(ErrorMessage = "Invalid email format")]
-            public string Email { get; set; }
 
-            [Required(ErrorMessage = "Password is required")]
-            [DataType(DataType.Password)]
-            public string Password { get; set; }
-
-            public bool RememberMe { get; set; }
-        }
 
         [HttpPost("login")]
         [AllowAnonymous]
-        public async Task<ActionResult<EndowmentResponse<IUserLogin>>> loginUser([FromBody] BodyObject bodyObject, CancellationToken cancellationToken)
+        public async Task<ActionResult<EndowmentResponse<IUserLogin>>> loginUser([FromBody] LoginCommand command, CancellationToken cancellationToken)
         {
             try
             {
-                if (bodyObject == null)
+                if (command == null)
                     return StatusCode(BackMessages.StatusCode, BackMessages.EmptyBodyObject);
-
-                if (string.IsNullOrWhiteSpace(bodyObject.Email))
-                    return StatusCode(BackMessages.StatusCode, BackMessages.EnterEmailandUserName);
-
-                if (string.IsNullOrWhiteSpace(bodyObject.Password))
-                    return StatusCode(BackMessages.StatusCode, BackMessages.EnterPassword);
-
-                //if (!ModelState.IsValid)
-                //{
-                //    return BadRequest(ModelState);
-                //}
-
-                var command = new LoginCommand
-                {
-                    Email = bodyObject.Email,
-                    Password = bodyObject.Password
-                };
 
                 var response = await _mediator.Send(command, cancellationToken);
 
                 if (!response.IsSuccess)
                 {
-                    ModelState.AddModelError(string.Empty, response.Message);
-                    return StatusCode(statusCode: ((int)response.State), response.Message);
+                    return StatusCode(statusCode: ((int)response.State), response);
                 }
 
                 var claims = new List<Claim>
@@ -114,8 +85,8 @@ namespace SpecificSolutions.EndowmentVue.Controllers
 
                 var authProperties = new AuthenticationProperties
                 {
-                    IsPersistent = bodyObject.RememberMe,
-                    ExpiresUtc = bodyObject.RememberMe
+                    IsPersistent = command.RememberMe,
+                    ExpiresUtc = command.RememberMe
                         ? DateTime.UtcNow.AddDays(30)
                         : DateTime.UtcNow.AddMinutes(_jwtSettings.Value.DurationInMinutes),
                     AllowRefresh = true,

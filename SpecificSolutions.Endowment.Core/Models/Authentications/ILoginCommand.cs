@@ -4,5 +4,6 @@
     {
         string Password { get; set; }
         string Email { get; set; }
+        bool RememberMe { get; set; }
     }
 }

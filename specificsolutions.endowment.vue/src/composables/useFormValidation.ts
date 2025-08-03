@@ -1,4 +1,5 @@
 import { ref, reactive, computed } from 'vue'
+import { propertyNameMapping } from './fieldMapping'
 
 export interface ValidationError {
   propertyName: string
@@ -41,49 +42,12 @@ export function useFormValidation() {
     }
   }
 
-  // mapping أسماء الحقول من الباك اند إلى الفرونت إند
-  const propertyNameMapping: Record<string, string> = {
-    // Mosque fields
-    'Name': 'name',
-    'FileNumber': 'fileNumber', 
-    'RegionId': 'regionId',
-    'OfficeId': 'officeId',
-    'TotalLandArea': 'totalLandArea',
-    'TotalCoveredArea': 'totalCoveredArea',
-    'NumberOfFloors': 'numberOfFloors',
-    'OpeningDate': 'openingDate',
-    'ConstructionDate': 'constructionDate',
-    'MosqueDefinition': 'mosqueDefinition',
-    'MosqueClassification': 'mosqueClassification',
-    'SourceFunds': 'sourceFunds',
-    'Definition': 'definition',
-    'Classification': 'classification',
-    'Unit': 'unit',
-    'NearestLandmark': 'nearestLandmark',
-    'MapLocation': 'mapLocation',
-    'Sanitation': 'sanitation',
-    'ElectricityMeter': 'electricityMeter',
-    'AlternativeEnergySource': 'alternativeEnergySource',
-    'WaterSource': 'waterSource',
-    'BriefDescription': 'briefDescription',
-    'LandDonorName': 'landDonorName',
-    'PrayerCapacity': 'prayerCapacity',
-    'ServicesSpecialNeeds': 'servicesSpecialNeeds',
-    'SpecialEntranceWomen': 'specialEntranceWomen',
-    'PicturePath': 'picturePath',
-    
-    // Region fields
-    'CityId': 'cityId',
-    'Country': 'country'
-  }
-
   // تعيين أخطاء من استجابة الباك إند
   const setErrorsFromResponse = (response: any, context: 'add' | 'edit' = 'add') => {
     if (response?.errors && Array.isArray(response.errors)) {
       response.errors.forEach((error: ValidationError) => {
         // إذا كان propertyName فارغاً، فهذا خطأ عام
         if (!error.propertyName || error.propertyName.trim() === '') {
-          // إضافة الخطأ كرسالة عامة
           addError('general', error.errorMessage)
           return
         }
@@ -117,8 +81,7 @@ export function useFormValidation() {
 
   // الحصول على أخطاء حقل معين
   const getFieldErrors = (fieldName: string) => {
-    const errors = validationState.errors[fieldName] || []
-    return errors
+    return validationState.errors[fieldName] || []
   }
 
   // الحصول على أول خطأ لحقل معين
@@ -144,7 +107,7 @@ export function useFormValidation() {
     return hasError && isTouched
   }
 
-  // دالة مساعدة للتحقق من الحقول المطلوبة
+  // دوال التحقق المساعدة
   const validateRequired = (value: any, fieldName: string, message = 'هذا الحقل مطلوب') => {
     if (!value || (typeof value === 'string' && value.trim() === '')) {
       addError(fieldName, message)
@@ -154,7 +117,6 @@ export function useFormValidation() {
     return true
   }
 
-  // دالة مساعدة للتحقق من البريد الإلكتروني
   const validateEmail = (email: string, fieldName: string, message = 'البريد الإلكتروني غير صحيح') => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (email && !emailRegex.test(email)) {
@@ -165,7 +127,6 @@ export function useFormValidation() {
     return true
   }
 
-  // دالة مساعدة للتحقق من الطول
   const validateLength = (value: string, fieldName: string, min: number, max: number, message?: string) => {
     if (!value) return true
     

@@ -7,7 +7,9 @@
 export {}
 declare global {
   const $api: typeof import('./src/utils/api.js')['$api']
+  const BASE_PERMISSIONS: typeof import('./src/composables/authPermissions')['BASE_PERMISSIONS']
   const EffectScope: typeof import('vue')['EffectScope']
+  const SUBJECTS: typeof import('./src/composables/authPermissions')['SUBJECTS']
   const acceptHMRUpdate: typeof import('pinia')['acceptHMRUpdate']
   const alphaDashValidator: typeof import('./src/@core/utils/validators.js')['alphaDashValidator']
   const alphaValidator: typeof import('./src/@core/utils/validators.js')['alphaValidator']
@@ -72,9 +74,12 @@ declare global {
   const logicAnd: typeof import('@vueuse/math')['logicAnd']
   const logicNot: typeof import('@vueuse/math')['logicNot']
   const logicOr: typeof import('@vueuse/math')['logicOr']
+  const loginTexts: typeof import('./src/composables/loginTexts')['loginTexts']
   const makeDestructurable: typeof import('@vueuse/core')['makeDestructurable']
   const mapActions: typeof import('pinia')['mapActions']
   const mapGetters: typeof import('pinia')['mapGetters']
+  const mapPermissionToAction: typeof import('./src/composables/authPermissions')['mapPermissionToAction']
+  const mapPermissionToSubject: typeof import('./src/composables/authPermissions')['mapPermissionToSubject']
   const mapState: typeof import('pinia')['mapState']
   const mapStores: typeof import('pinia')['mapStores']
   const mapWritableState: typeof import('pinia')['mapWritableState']
@@ -104,6 +109,7 @@ declare global {
   const passwordValidator: typeof import('./src/@core/utils/validators.js')['passwordValidator']
   const pausableWatch: typeof import('@vueuse/core')['pausableWatch']
   const prefixWithPlus: typeof import('./src/@core/utils/formatters.js')['prefixWithPlus']
+  const propertyNameMapping: typeof import('./src/composables/fieldMapping')['propertyNameMapping']
   const provide: typeof import('vue')['provide']
   const provideLocal: typeof import('@vueuse/core')['provideLocal']
   const reactify: typeof import('@vueuse/core')['reactify']
@@ -238,8 +244,10 @@ declare global {
   const useInterval: typeof import('@vueuse/core')['useInterval']
   const useIntervalFn: typeof import('@vueuse/core')['useIntervalFn']
   const useKeyModifier: typeof import('@vueuse/core')['useKeyModifier']
+  const useLanguage: typeof import('./src/composables/useLanguage')['useLanguage']
   const useLastChanged: typeof import('@vueuse/core')['useLastChanged']
   const useLocalStorage: typeof import('@vueuse/core')['useLocalStorage']
+  const useLogin: typeof import('./src/composables/useLogin')['useLogin']
   const useMagicKeys: typeof import('@vueuse/core')['useMagicKeys']
   const useManualRefHistory: typeof import('@vueuse/core')['useManualRefHistory']
   const useMath: typeof import('@vueuse/math')['useMath']
@@ -365,7 +373,9 @@ declare module 'vue' {
   interface GlobalComponents {}
   interface ComponentCustomProperties {
     readonly $api: UnwrapRef<typeof import('./src/utils/api.js')['$api']>
+    readonly BASE_PERMISSIONS: UnwrapRef<typeof import('./src/composables/authPermissions')['BASE_PERMISSIONS']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
+    readonly SUBJECTS: UnwrapRef<typeof import('./src/composables/authPermissions')['SUBJECTS']>
     readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
     readonly alphaDashValidator: UnwrapRef<typeof import('./src/@core/utils/validators.js')['alphaDashValidator']>
     readonly alphaValidator: UnwrapRef<typeof import('./src/@core/utils/validators.js')['alphaValidator']>
@@ -433,6 +443,8 @@ declare module 'vue' {
     readonly makeDestructurable: UnwrapRef<typeof import('@vueuse/core')['makeDestructurable']>
     readonly mapActions: UnwrapRef<typeof import('pinia')['mapActions']>
     readonly mapGetters: UnwrapRef<typeof import('pinia')['mapGetters']>
+    readonly mapPermissionToAction: UnwrapRef<typeof import('./src/composables/authPermissions')['mapPermissionToAction']>
+    readonly mapPermissionToSubject: UnwrapRef<typeof import('./src/composables/authPermissions')['mapPermissionToSubject']>
     readonly mapState: UnwrapRef<typeof import('pinia')['mapState']>
     readonly mapStores: UnwrapRef<typeof import('pinia')['mapStores']>
     readonly mapWritableState: UnwrapRef<typeof import('pinia')['mapWritableState']>
@@ -463,6 +475,7 @@ declare module 'vue' {
     readonly passwordValidator: UnwrapRef<typeof import('./src/@core/utils/validators.js')['passwordValidator']>
     readonly pausableWatch: UnwrapRef<typeof import('@vueuse/core')['pausableWatch']>
     readonly prefixWithPlus: UnwrapRef<typeof import('./src/@core/utils/formatters.js')['prefixWithPlus']>
+    readonly propertyNameMapping: UnwrapRef<typeof import('./src/composables/fieldMapping')['propertyNameMapping']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
     readonly provideLocal: UnwrapRef<typeof import('@vueuse/core')['provideLocal']>
     readonly reactify: UnwrapRef<typeof import('@vueuse/core')['reactify']>
@@ -602,6 +615,7 @@ declare module 'vue' {
     readonly useKeyModifier: UnwrapRef<typeof import('@vueuse/core')['useKeyModifier']>
     readonly useLastChanged: UnwrapRef<typeof import('@vueuse/core')['useLastChanged']>
     readonly useLocalStorage: UnwrapRef<typeof import('@vueuse/core')['useLocalStorage']>
+    readonly useLogin: UnwrapRef<typeof import('./src/composables/useLogin')['useLogin']>
     readonly useMagicKeys: UnwrapRef<typeof import('@vueuse/core')['useMagicKeys']>
     readonly useManualRefHistory: UnwrapRef<typeof import('@vueuse/core')['useManualRefHistory']>
     readonly useMath: UnwrapRef<typeof import('@vueuse/math')['useMath']>

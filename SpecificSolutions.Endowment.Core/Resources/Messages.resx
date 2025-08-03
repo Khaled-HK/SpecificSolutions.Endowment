@@ -277,6 +277,21 @@
   <data name="RegionNameInvalidCharacters" xml:space="preserve">
     <value>اسم المنطقة يحتوي على أحرف غير مسموحة</value>
   </data>
+  <data name="RegionCountryRequired" xml:space="preserve">
+    <value>الدولة مطلوبة</value>
+  </data>
+  <data name="RegionCountryMaxLength" xml:space="preserve">
+    <value>اسم الدولة يجب أن لا يتجاوز 100 حرف</value>
+  </data>
+  <data name="RegionCountryInvalidCharacters" xml:space="preserve">
+    <value>اسم الدولة يحتوي على أحرف غير مسموحة</value>
+  </data>
+  <data name="RegionCityIdRequired" xml:space="preserve">
+    <value>المدينة مطلوبة</value>
+  </data>
+  <data name="RegionCityIdInvalid" xml:space="preserve">
+    <value>معرف المدينة غير صحيح</value>
+  </data>
   
   <!-- رسائل المكاتب -->
   <data name="OfficeNameRequired" xml:space="preserve">
@@ -342,6 +357,9 @@
   </data>
   <data name="PasswordMinLength" xml:space="preserve">
     <value>كلمة المرور يجب أن تكون 6 أحرف على الأقل</value>
+  </data>
+  <data name="PasswordMinLength3" xml:space="preserve">
+    <value>كلمة المرور يجب أن تكون 3 أحرف على الأقل</value>
   </data>
   <data name="PasswordMaxLength" xml:space="preserve">
     <value>كلمة المرور يجب أن لا تتجاوز 100 حرف</value>

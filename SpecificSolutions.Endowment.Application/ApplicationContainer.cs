@@ -20,8 +20,8 @@ namespace SpecificSolutions.Endowment.Application
             services.AddMediatR(m =>
             {
                 m.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly());
-                m.AddOpenBehavior(typeof(AuthorizationPipelineBehavior<,>));
                 m.AddOpenBehavior(typeof(ValidationPipelineBehavior<,>));
+                m.AddOpenBehavior(typeof(AuthorizationPipelineBehavior<,>));
                 m.AddOpenBehavior(typeof(LoggingPipelineBehaviour<,>));
                 m.AddOpenBehavior(typeof(UnhandledExceptionBehaviour<,>));
                 m.AddOpenBehavior(typeof(RetryBehavior<,>));

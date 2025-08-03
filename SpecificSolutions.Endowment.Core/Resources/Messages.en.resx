@@ -278,6 +278,21 @@
   <data name="RegionNameInvalidCharacters" xml:space="preserve">
     <value>Region name contains invalid characters</value>
   </data>
+  <data name="RegionCountryRequired" xml:space="preserve">
+    <value>Country is required</value>
+  </data>
+  <data name="RegionCountryMaxLength" xml:space="preserve">
+    <value>Country name must not exceed 100 characters</value>
+  </data>
+  <data name="RegionCountryInvalidCharacters" xml:space="preserve">
+    <value>Country name contains invalid characters</value>
+  </data>
+  <data name="RegionCityIdRequired" xml:space="preserve">
+    <value>City is required</value>
+  </data>
+  <data name="RegionCityIdInvalid" xml:space="preserve">
+    <value>City ID is invalid</value>
+  </data>
   
   <!-- Office Messages -->
   <data name="OfficeNameRequired" xml:space="preserve">
@@ -343,6 +358,9 @@
   </data>
   <data name="PasswordMinLength" xml:space="preserve">
     <value>Password must be at least 6 characters</value>
+  </data>
+  <data name="PasswordMinLength3" xml:space="preserve">
+    <value>Password must be at least 3 characters</value>
   </data>
   <data name="PasswordMaxLength" xml:space="preserve">
     <value>Password must not exceed 100 characters</value>

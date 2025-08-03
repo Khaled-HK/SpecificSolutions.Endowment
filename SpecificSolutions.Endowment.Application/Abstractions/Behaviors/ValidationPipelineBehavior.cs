@@ -23,19 +23,26 @@ public class ValidationPipelineBehavior<TRequest, TResponse> :
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
+        _logger.LogInformation($"ValidationPipelineBehavior: Processing request of type {typeof(TRequest).Name}");
+
         // إذا لم يكن الطلب command، تابع العملية بدون validation
-        if (!(request is ICommand))
+        if (!(request is IBaseCommand))
         {
+            _logger.LogInformation($"ValidationPipelineBehavior: Request is not IBaseCommand, skipping validation");
             return await next();
         }
 
         // إذا لم يوجد validators، تابع العملية
         if (!_validators.Any())
         {
+            _logger.LogInformation($"ValidationPipelineBehavior: No validators found for {typeof(TRequest).Name}");
             return await next();
         }
 
+        _logger.LogInformation($"ValidationPipelineBehavior: Found {_validators.Count()} validators for {typeof(TRequest).Name}");
+
         // تنفيذ الـ validation
+        _logger.LogInformation($"ValidationPipelineBehavior: Running validation for {typeof(TRequest).Name}");
         var context = new ValidationContext<TRequest>(request);
 
         var validationResults = await Task.WhenAll(
@@ -47,17 +54,20 @@ public class ValidationPipelineBehavior<TRequest, TResponse> :
             .SelectMany(r => r.Errors)
             .ToList();
 
-        //var errors = _validators
-        //    .Select(validator => validator.Validate(request))
-        //    .SelectMany(validationResult => validationResult.Errors)
-        //    .Where(validationFailure => validationFailure != null)
-        //    .Select(failure => new Error(failure.PropertyName, failure.ErrorMessage))
-        //    .Distinct()
-        //    .ToArray();
         if (failures.Any())
         {
-            throw new SpecificSolutions.Endowment.Application.Abstractions.Exceptions.ValidationException(failures);
+            _logger.LogWarning($"ValidationPipelineBehavior: Validation failed with {failures.Count} errors");
+            foreach (var failure in failures)
+            {
+                _logger.LogWarning($"Validation error: {failure.PropertyName} - {failure.ErrorMessage}");
+            }
+
+            var validationException = new SpecificSolutions.Endowment.Application.Abstractions.Exceptions.ValidationException(failures);
+            _logger.LogWarning($"ValidationPipelineBehavior: Throwing ValidationException with {failures.Count} errors");
+            throw validationException;
         }
+
+        _logger.LogInformation($"ValidationPipelineBehavior: Validation passed for {typeof(TRequest).Name}");
 
         // تابع العملية إذا لم توجد أخطاء
         return await next();

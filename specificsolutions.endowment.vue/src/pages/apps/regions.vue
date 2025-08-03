@@ -10,8 +10,8 @@ interface Region {
   value: string
   name: string
   description: string
-  country?: string
-  cityId?: string
+  country: string
+  cityId: string
 }
 
 interface NewRegion {
@@ -84,6 +84,7 @@ const editRegion = ref<Region>({
   value: '',
   name: '',
   description: '',
+  country: '',
   cityId: '',
 })
 
@@ -384,7 +385,7 @@ const updateRegion = async () => {
       body: {
         id: editRegion.value.id,
         name: editRegion.value.name,
-        country: editRegion.value.country || editRegion.value.description,
+        country: editRegion.value.country,
         cityId: editRegion.value.cityId,
       },
     })

@@ -58,6 +58,12 @@ namespace SpecificSolutions.Endowment.Application.Handlers
                 .SelectMany(kvp => kvp.Value.Select(errorMessage => new Error(kvp.Key, errorMessage)))
                 .ToArray();
 
+            _logger.LogInformation($"Validation errors: {errors.Length} errors found");
+            foreach (var error in errors)
+            {
+                _logger.LogInformation($"Validation error: {error.PropertyName} - {error.ErrorMessage}");
+            }
+
             var response = new EndowmentResponse(state: ResponseState.BadRequest, "Validation failed", errors);
 
             httpContext.Response.ContentType = "application/json";

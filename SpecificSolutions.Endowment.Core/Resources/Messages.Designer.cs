@@ -538,6 +538,51 @@ namespace SpecificSolutions.Endowment.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to الدولة مطلوبة.
+        /// </summary>
+        public static string RegionCountryRequired {
+            get {
+                return ResourceManager.GetString("RegionCountryRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to اسم الدولة يجب أن لا يتجاوز 100 حرف.
+        /// </summary>
+        public static string RegionCountryMaxLength {
+            get {
+                return ResourceManager.GetString("RegionCountryMaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to اسم الدولة يحتوي على أحرف غير مسموحة.
+        /// </summary>
+        public static string RegionCountryInvalidCharacters {
+            get {
+                return ResourceManager.GetString("RegionCountryInvalidCharacters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to المدينة مطلوبة.
+        /// </summary>
+        public static string RegionCityIdRequired {
+            get {
+                return ResourceManager.GetString("RegionCityIdRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to معرف المدينة غير صحيح.
+        /// </summary>
+        public static string RegionCityIdInvalid {
+            get {
+                return ResourceManager.GetString("RegionCityIdInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to اسم المكتب مطلوب.
         /// </summary>
         public static string OfficeNameRequired {
@@ -786,6 +831,15 @@ namespace SpecificSolutions.Endowment.Core.Resources {
         public static string PasswordMinLength {
             get {
                 return ResourceManager.GetString("PasswordMinLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to كلمة المرور يجب أن تكون 3 أحرف على الأقل.
+        /// </summary>
+        public static string PasswordMinLength3 {
+            get {
+                return ResourceManager.GetString("PasswordMinLength3", resourceCulture);
             }
         }
         

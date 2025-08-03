@@ -367,6 +367,14 @@
     "isNetworkError": true,
     "isValidationError": true,
     "processBackendErrors": true,
-    "useFormValidation": true
+    "useFormValidation": true,
+    "propertyNameMapping": true,
+    "BASE_PERMISSIONS": true,
+    "SUBJECTS": true,
+    "mapPermissionToAction": true,
+    "mapPermissionToSubject": true,
+    "loginTexts": true,
+    "useLanguage": true,
+    "useLogin": true
   }
 }
