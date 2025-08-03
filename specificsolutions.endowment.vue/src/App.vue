@@ -19,26 +19,38 @@ initConfigStore()
 
 const configStore = useConfigStore()
 
-  // إعادة تحميل الصلاحيات عند تحميل التطبيق
-  onMounted(() => {
-    // تأخير قليل للتأكد من تحميل الكوكيز
+// إعادة تحميل الصلاحيات عند تحميل التطبيق
+onMounted(() => {
+  // تأخير قليل للتأكد من تحميل الكوكيز
+  setTimeout(() => {
+    reloadAbilityFromCookie()
+    
+    // إعادة تحميل إضافي بعد فترة قصيرة للتأكد
     setTimeout(() => {
       reloadAbilityFromCookie()
-    }, 200)
-  })
+    }, 500)
+  }, 200)
+})
 
-  // إعادة تحميل الصلاحيات عند تحديث الصفحة
-  onBeforeMount(() => {
-    if (typeof window !== 'undefined') {
-      window.addEventListener('beforeunload', () => {
-        // حفظ الصلاحيات قبل إغلاق الصفحة
-        const userAbilityRules = Cookies.get('user-ability-rules')
-        if (userAbilityRules) {
-          console.log('💾 Saving ability rules before page unload')
-        }
-      })
-    }
-  })
+// إعادة تحميل الصلاحيات عند تحديث الصفحة
+onBeforeMount(() => {
+  if (typeof window !== 'undefined') {
+    window.addEventListener('beforeunload', () => {
+      // حفظ الصلاحيات قبل إغلاق الصفحة
+      const userAbilityRules = Cookies.get('user-ability-rules')
+      if (userAbilityRules) {
+        console.log('💾 Saving ability rules before page unload')
+      }
+    })
+    
+    // إضافة مستمع لحدث load للتأكد من تحميل الصلاحيات
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        reloadAbilityFromCookie()
+      }, 100)
+    })
+  }
+})
 </script>
 
 <template>

@@ -1,4 +1,5 @@
 import { useAbility } from '@casl/vue'
+import { ability } from '@/plugins/casl/ability'
 
 /**
  * Returns ability result if ACL is configured or else just return true
@@ -11,12 +12,18 @@ import { useAbility } from '@casl/vue'
  * @param {string} subject CASL Subject // https://casl.js.org/v4/en/guide/intro#basics
  */
 export const can = (action, subject) => {
-  const vm = getCurrentInstance()
-  if (!vm)
+  // إذا لم يتم تحديد action أو subject، إرجاع false
+  if (!action || !subject) {
     return false
-  const localCan = vm.proxy && '$can' in vm.proxy
-    
-  return localCan ? vm.proxy?.$can(action, subject) : false
+  }
+  
+  // استخدام ability مباشرة بدلاً من الاعتماد على vm.proxy
+  try {
+    return ability.can(action, subject)
+  } catch (error) {
+    console.warn('Error checking permission:', error)
+    return false
+  }
 }
 
 /**
@@ -34,6 +41,7 @@ export const canViewNavMenuGroup = item => {
   
   return can(item.action, item.subject) && hasAnyVisibleChild
 }
+
 export const canNavigate = to => {
   const ability = useAbility()
 

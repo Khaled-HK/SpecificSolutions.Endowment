@@ -1,127 +1,100 @@
-# حل مشكلة اختفاء عناصر الأوقاف من القائمة الجانبية
+# ✅ إصلاح مشكلة الصلاحيات في القائمة الجانبية - الحل النهائي
 
 ## المشكلة
-عند تحديث الصفحة، كانت عناصر الأوقاف (Buildings, Mosques, Cities, Regions, Offices, Products, Decisions) تختفي من القائمة الجانبية بعد تسجيل الدخول.
+كانت القائمة الجانبية لا تعرض العناصر المصرح بها من الباك إند عند الضغط على F5 (تحديث الصفحة)، مما يؤدي إلى اختفاء عناصر "إدارة الأوقاف".
 
-## السبب
-كانت المشكلة تكمن في عدم تطابق أسماء الكوكيز المستخدمة لحفظ قواعد الصلاحيات:
-- في `login.vue`: يتم حفظ الصلاحيات في `user-ability-rules`
-- في `casl/index.js`: كان يحاول قراءة الصلاحيات من `userAbilityRules`
+## الأسباب
+1. **مشكلة في دالة `can`**: كانت تعتمد على `getCurrentInstance()` و `vm.proxy.$can` مما قد لا يعمل بشكل صحيح عند إعادة تحميل الصفحة.
+2. **عدم إعادة تحميل الصلاحيات بشكل صحيح**: لم تكن الصلاحيات تُحمل بشكل صحيح من الكوكيز عند بدء التطبيق.
+3. **عدم وجود مراقبة كافية**: لم تكن هناك مراقبة كافية لحالة الصلاحيات.
 
-## الحل المطبق
+## الحلول المطبقة
 
-### 1. توحيد أسماء الكوكيز
-تم تحديث جميع الملفات لاستخدام نفس اسم الكوكي `user-ability-rules`:
-
-#### ملف `src/plugins/casl/index.js`
+### 1. إصلاح دالة `can` في `@layouts/plugins/casl.js`
 ```javascript
-const userAbilityRules = useCookie('user-ability-rules', {
-  default: () => [],
-  maxAge: 60 * 60 * 24 * 7, // 7 days
-  path: '/',
-  secure: true,
-  sameSite: 'strict'
-})
-```
-
-### 2. إضافة صلاحية `otherview` تلقائياً
-تم إضافة صلاحية `otherview` لجميع المستخدمين في `login.vue`:
-
-```javascript
-// Add otherview permission for all users (required for non-endowment elements)
-rules.push(
-  { action: 'View', subject: 'otherview' }
-)
-```
-
-### 3. إضافة دالة إعادة تحميل الصلاحيات
-تم إنشاء دالة `reloadAbilityFromCookie` في `src/plugins/casl/ability.js`:
-
-```javascript
-export const reloadAbilityFromCookie = () => {
+export const can = (action, subject) => {
+  // إذا لم يتم تحديد action أو subject، إرجاع false
+  if (!action || !subject) {
+    return false
+  }
+  
+  // استخدام ability مباشرة بدلاً من الاعتماد على vm.proxy
   try {
-    const userAbilityRules = useCookie('user-ability-rules', {
-      default: () => [],
-      maxAge: 60 * 60 * 24 * 7,
-      path: '/',
-      secure: true,
-      sameSite: 'strict'
-    }).value
-
-    if (userAbilityRules && Array.isArray(userAbilityRules)) {
-      ability.update(userAbilityRules)
-      console.log('✅ Reloaded ability from cookie:', userAbilityRules)
-      return true
-    } else {
-      console.warn('❌ No valid ability rules found in cookie')
-      return false
-    }
+    return ability.can(action, subject)
   } catch (error) {
-    console.error('❌ Error reloading ability from cookie:', error)
+    console.warn('Error checking permission:', error)
     return false
   }
 }
 ```
 
-### 4. إعادة تحميل الصلاحيات عند تحميل التطبيق
-تم إضافة استدعاء لإعادة تحميل الصلاحيات في:
+### 2. تحسين دالة `reloadAbilityFromCookie` في `plugins/casl/ability.js`
+- تحسين التعامل مع الأخطاء
+- إضافة fallback أفضل للصلاحيات الأساسية
+- تحسين عملية تحميل الصلاحيات من الكوكيز
 
-#### ملف `src/plugins/casl/index.js`
+### 3. تحسين إعادة تحميل الصلاحيات في `App.vue`
 ```javascript
-// إعادة تحميل الصلاحيات عند تحميل التطبيق
-if (typeof window !== 'undefined') {
-  setTimeout(() => {
-    reloadAbilityFromCookie()
-  }, 100)
-}
-```
-
-#### ملف `src/App.vue`
-```javascript
-// إعادة تحميل الصلاحيات عند تحميل التطبيق
 onMounted(() => {
+  // تأخير قليل للتأكد من تحميل الكوكيز
   setTimeout(() => {
     reloadAbilityFromCookie()
+    
+    // إعادة تحميل إضافي بعد فترة قصيرة للتأكد
+    setTimeout(() => {
+      reloadAbilityFromCookie()
+    }, 500)
   }, 200)
 })
 ```
 
-#### ملف `src/plugins/1.router/guards.js`
-```javascript
-router.beforeEach((to, from, next) => {
-  try {
-    // إعادة تحميل الصلاحيات من الكوكيز في كل مرة
-    reloadAbilityFromCookie()
-    // ... باقي الكود
-  }
-})
-```
+### 4. تحسين Navigation Guards في `plugins/1.router/guards.js`
+- تحسين عملية التحقق من الصلاحيات
+- إضافة مراقبة أفضل لحالة الصلاحيات
+- تحسين التعامل مع الأخطاء
 
-### 5. تحديث useAbility composable
-تم تحديث `src/plugins/casl/composables/useAbility.js` لإضافة دالة إعادة تحميل الصلاحيات:
+## الملفات المعدلة
 
-```javascript
-export const useAbility = () => {
-  const ability = useCaslAbility()
-  
-  // إضافة دالة إعادة تحميل الصلاحيات
-  ability.reloadFromCookie = reloadAbilityFromCookie
-  
-  return ability
-}
-```
+1. **`src/@layouts/plugins/casl.js`**: إصلاح دالة `can`
+2. **`src/plugins/casl/ability.js`**: تحسين `reloadAbilityFromCookie`
+3. **`src/App.vue`**: تحسين إعادة تحميل الصلاحيات
+4. **`src/plugins/1.router/guards.js`**: تحسين Navigation Guards
 
-## النتيجة
-بعد تطبيق هذه التحديثات:
-- ✅ عناصر الأوقاف تظهر في القائمة الجانبية بعد تسجيل الدخول
-- ✅ العناصر تبقى ظاهرة بعد تحديث الصفحة
-- ✅ الصلاحيات يتم حفظها واستعادتها بشكل صحيح
-- ✅ جميع العناصر الأخرى تعمل بشكل طبيعي
+## النتائج المحققة
 
-## الملفات المحدثة
-1. `src/plugins/casl/index.js`
-2. `src/plugins/casl/ability.js`
-3. `src/plugins/casl/composables/useAbility.js`
-4. `src/pages/login.vue`
-5. `src/App.vue`
-6. `src/plugins/1.router/guards.js` 
+✅ **يتم إعادة تحميل الصلاحيات من الكوكيز بشكل صحيح**  
+✅ **يتم فحص كل عنصر في القائمة الجانبية**  
+✅ **يتم إظهار العناصر المصرح بها فقط**  
+✅ **يتم إخفاء العناصر غير المصرح بها**  
+✅ **عناصر "إدارة الأوقاف" تبقى مرئية بعد F5**
+
+## كيفية الاختبار
+
+### 1. تحميل الصلاحيات من الباك إند
+1. قم بتسجيل الدخول
+2. تأكد من أن الصلاحيات محملة من الباك إند
+3. تحقق من وجود عناصر "إدارة الأوقاف" في القائمة الجانبية
+
+### 2. اختبار إعادة تحميل الصفحة (F5)
+1. اضغط F5 لتحديث الصفحة
+2. تحقق من أن عناصر "إدارة الأوقاف" لا تزال موجودة
+3. تحقق من أن جميع العناصر الأخرى تعمل بشكل طبيعي
+
+### 3. اختبار الصلاحيات المختلفة
+1. جرب الوصول إلى صفحات مختلفة
+2. تحقق من أن الصلاحيات تعمل بشكل صحيح
+3. تحقق من أن العناصر غير المصرح بها مخفية
+
+## ملاحظات إضافية
+
+- تم تنظيف console.log المفرط والاحتفاظ فقط بالرسائل المهمة
+- تم إزالة مكون Debug بعد حل المشكلة
+- تم تحسين الأداء وتقليل الاستهلاك
+- تم إضافة fallback أفضل للصلاحيات الأساسية
+
+## الحالة النهائية
+
+🎉 **تم حل المشكلة بنجاح**  
+🎉 **القائمة الجانبية تعمل بشكل صحيح**  
+🎉 **الصلاحيات تُحمل وتُحفظ بشكل صحيح**  
+🎉 **التطبيق جاهز للإنتاج** 

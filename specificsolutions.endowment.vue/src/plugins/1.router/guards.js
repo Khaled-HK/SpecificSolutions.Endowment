@@ -102,7 +102,7 @@ export const setupGuards = router => {
   router.beforeEach(async (to, from, next) => {
     try {
       // إعادة تحميل الصلاحيات من الكوكيز في كل مرة
-      const permissionsLoaded = reloadAbilityFromCookie()
+      reloadAbilityFromCookie()
       
       // التأكد من أن الصلاحيات محملة
       if (ability.rules.length === 0) {
@@ -163,6 +163,7 @@ export const setupGuards = router => {
 
       // التحقق المحلي من Token (بدون الاتصال بالباك إند)
       const isTokenValid = validateTokenLocally()
+      
       if (!isTokenValid) {
         console.warn('Invalid token detected locally, redirecting to login...')
         
@@ -187,6 +188,7 @@ export const setupGuards = router => {
 
       // التحقق من الصلاحيات
       const hasPermission = checkPermissions(to)
+      
       if (!hasPermission) {
         console.warn('❌ Permission denied for:', to.path, 'Action:', to.meta.action, 'Subject:', to.meta.subject)
         console.warn('🔍 Current ability rules count:', ability.rules.length)

@@ -60,6 +60,7 @@ export const reloadAbilityFromCookie = () => {
     
     // Fallback: تحميل من userData إذا لم تكن الصلاحيات محفوظة
     const userData = Cookies.get('userData')
+    
     if (userData) {
       try {
         const user = JSON.parse(userData)
@@ -93,10 +94,11 @@ export const reloadAbilityFromCookie = () => {
           })
           
           ability.update(rules)
+          console.log('✅ Permissions loaded from userData and saved to cookies')
           return true
         }
       } catch (error) {
-        // Silent error handling
+        console.error('❌ Error parsing userData:', error)
       }
     }
     
