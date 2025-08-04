@@ -21,7 +21,7 @@ export const useApi = () => {
   const router = useRouter()
 
   return createFetch({
-    baseUrl: import.meta.env.VITE_API_BASE_URL || '/api',
+    baseUrl: 'http://localhost:5173/api',
     fetchOptions: {
       headers: {
         Accept: 'application/json',
