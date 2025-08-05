@@ -456,6 +456,7 @@
     }
   },
   "$vuetify": {
+    "badge": "Badge",
     "input": {
       "appendAction": "Append action",
       "prependAction": "Prepend action"
