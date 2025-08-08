@@ -90,6 +90,34 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
 
         }
 
+        public async Task<bool> ForgotPasswordAsync(string email)
+        {
+            // For WPF application, this might not be needed or could be implemented differently
+            // For now, we'll throw a NotImplementedException
+            throw new NotImplementedException("ForgotPasswordAsync is not implemented for WPF application.");
+        }
+
+        public async Task<bool> ResetPasswordAsync(string email, string token, string newPassword)
+        {
+            // For WPF application, this might not be needed or could be implemented differently
+            // For now, we'll throw a NotImplementedException
+            throw new NotImplementedException("ResetPasswordAsync is not implemented for WPF application.");
+        }
+
+        public async Task<bool> ChangePasswordAsync(string currentPassword, string newPassword)
+        {
+            // For WPF application, this might not be needed or could be implemented differently
+            // For now, we'll throw a NotImplementedException
+            throw new NotImplementedException("ChangePasswordAsync is not implemented for WPF application.");
+        }
+
+        public async Task<bool> ConfirmEmailAsync(string email, string token)
+        {
+            // For WPF application, this might not be needed or could be implemented differently
+            // For now, we'll throw a NotImplementedException
+            throw new NotImplementedException("ConfirmEmailAsync is not implemented for WPF application.");
+        }
+
         // Implement other methods as needed
     }
 }

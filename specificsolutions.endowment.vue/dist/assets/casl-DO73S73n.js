@@ -1,0 +1,1 @@
+import{b9 as s}from"./index-Cg54d_P4.js";const a=(r,n)=>{if(!r||!n)return!1;try{return s.can(r,n)}catch(c){return console.warn("Error checking permission:",c),!1}},o=r=>{const n=r.children.some(c=>a(c.action,c.subject));return r.action&&r.subject?a(r.action,r.subject)&&n:n};export{a,o as c};

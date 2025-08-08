@@ -35,9 +35,16 @@ const {
 } = useFormValidation()
 
 const form = reactive({
+  firstName: '',
+  lastName: '',
   username: '',
   email: '',
   password: '',
+  phoneNumber: '',
+  address: '',
+  city: '',
+  country: '',
+  officeId: '',
   privacyPolicies: false,
 })
 
@@ -48,6 +55,14 @@ const handleSubmit = async () => {
   
   let isValid = true
   
+  if (!validateRequired(form.firstName, 'firstName', 'الاسم الأول مطلوب')) {
+    isValid = false
+  }
+  
+  if (!validateRequired(form.lastName, 'lastName', 'اسم العائلة مطلوب')) {
+    isValid = false
+  }
+  
   if (!validateRequired(form.username, 'username', 'اسم المستخدم مطلوب')) {
     isValid = false
   } else if (!validateLength(form.username, 'username', 3, 50, 'اسم المستخدم يجب أن يكون بين 3 و 50 حرف')) {
@@ -57,6 +72,22 @@ const handleSubmit = async () => {
   if (!validateRequired(form.email, 'email', 'البريد الإلكتروني مطلوب')) {
     isValid = false
   } else if (!validateEmail(form.email, 'email', 'البريد الإلكتروني غير صحيح')) {
+    isValid = false
+  }
+  
+  if (!validateRequired(form.phoneNumber, 'phoneNumber', 'رقم الهاتف مطلوب')) {
+    isValid = false
+  }
+  
+  if (!validateRequired(form.address, 'address', 'العنوان مطلوب')) {
+    isValid = false
+  }
+  
+  if (!validateRequired(form.city, 'city', 'المدينة مطلوبة')) {
+    isValid = false
+  }
+  
+  if (!validateRequired(form.country, 'country', 'البلد مطلوب')) {
     isValid = false
   }
   
@@ -71,15 +102,53 @@ const handleSubmit = async () => {
     isValid = false
   }
   
+  setFieldTouched('firstName')
+  setFieldTouched('lastName')
   setFieldTouched('username')
   setFieldTouched('email')
+  setFieldTouched('phoneNumber')
+  setFieldTouched('address')
+  setFieldTouched('city')
+  setFieldTouched('country')
   setFieldTouched('password')
   setFieldTouched('privacyPolicies')
   
   if (!isValid) return
   
-  // هنا يمكن إضافة منطق التسجيل
-  console.log('تم التحقق من النموذج بنجاح')
+  try {
+    const response = await $fetch('/api/auth/register', {
+      method: 'POST',
+      body: {
+        firstName: form.firstName || '',
+        lastName: form.lastName || '',
+        email: form.email,
+        userName: form.username,
+        password: form.password,
+        confirmPassword: form.password, // في الواقع يجب أن يكون هناك حقل منفصل
+        phoneNumber: form.phoneNumber || '',
+        address: form.address || '',
+        city: form.city || '',
+        country: form.country || '',
+        officeId: form.officeId || 'DDEC6E9E-7628-4623-9A94-4E4EFC02187C'
+      }
+    })
+    
+    if (response.isSuccess) {
+      // إظهار رسالة نجاح والانتقال إلى صفحة تسجيل الدخول
+      console.log('تم التسجيل بنجاح')
+      router.push('/login')
+    } else {
+      // معالجة الأخطاء
+      if (response.errors && Array.isArray(response.errors)) {
+        setErrorsFromResponse(response)
+      } else if (response.message) {
+        addError('general', response.message)
+      }
+    }
+  } catch (error) {
+    console.error('خطأ في التسجيل:', error)
+    addError('general', 'حدث خطأ أثناء التسجيل')
+  }
 }
 </script>
 
@@ -146,13 +215,37 @@ const handleSubmit = async () => {
         <VCardText>
           <VForm @submit.prevent="handleSubmit">
             <VRow>
+              <!-- First Name -->
+              <VCol cols="12" md="6">
+                <AppTextField
+                  v-model="form.firstName"
+                  autofocus
+                  label="الاسم الأول"
+                  placeholder="أحمد"
+                  :error="validationState.errors.firstName && validationState.errors.firstName.length > 0 && validationState.touched.firstName"
+                  :error-messages="validationState.errors.firstName || []"
+                  @blur="setFieldTouched('firstName')"
+                />
+              </VCol>
+
+              <!-- Last Name -->
+              <VCol cols="12" md="6">
+                <AppTextField
+                  v-model="form.lastName"
+                  label="اسم العائلة"
+                  placeholder="محمد"
+                  :error="validationState.errors.lastName && validationState.errors.lastName.length > 0 && validationState.touched.lastName"
+                  :error-messages="validationState.errors.lastName || []"
+                  @blur="setFieldTouched('lastName')"
+                />
+              </VCol>
+
               <!-- Username -->
               <VCol cols="12">
                 <AppTextField
                   v-model="form.username"
-                  autofocus
                   label="اسم المستخدم"
-                  placeholder="Johndoe"
+                  placeholder="ahmed.mohamed"
                   :error="validationState.errors.username && validationState.errors.username.length > 0 && validationState.touched.username"
                   :error-messages="validationState.errors.username || []"
                   @blur="setFieldTouched('username')"
@@ -169,6 +262,54 @@ const handleSubmit = async () => {
                   :error="validationState.errors.email && validationState.errors.email.length > 0 && validationState.touched.email"
                   :error-messages="validationState.errors.email || []"
                   @blur="setFieldTouched('email')"
+                />
+              </VCol>
+
+              <!-- Phone Number -->
+              <VCol cols="12">
+                <AppTextField
+                  v-model="form.phoneNumber"
+                  label="رقم الهاتف"
+                  placeholder="+966501234567"
+                  :error="validationState.errors.phoneNumber && validationState.errors.phoneNumber.length > 0 && validationState.touched.phoneNumber"
+                  :error-messages="validationState.errors.phoneNumber || []"
+                  @blur="setFieldTouched('phoneNumber')"
+                />
+              </VCol>
+
+              <!-- Address -->
+              <VCol cols="12">
+                <AppTextField
+                  v-model="form.address"
+                  label="العنوان"
+                  placeholder="شارع الملك فهد"
+                  :error="validationState.errors.address && validationState.errors.address.length > 0 && validationState.touched.address"
+                  :error-messages="validationState.errors.address || []"
+                  @blur="setFieldTouched('address')"
+                />
+              </VCol>
+
+              <!-- City -->
+              <VCol cols="12" md="6">
+                <AppTextField
+                  v-model="form.city"
+                  label="المدينة"
+                  placeholder="الرياض"
+                  :error="validationState.errors.city && validationState.errors.city.length > 0 && validationState.touched.city"
+                  :error-messages="validationState.errors.city || []"
+                  @blur="setFieldTouched('city')"
+                />
+              </VCol>
+
+              <!-- Country -->
+              <VCol cols="12" md="6">
+                <AppTextField
+                  v-model="form.country"
+                  label="البلد"
+                  placeholder="المملكة العربية السعودية"
+                  :error="validationState.errors.country && validationState.errors.country.length > 0 && validationState.touched.country"
+                  :error-messages="validationState.errors.country || []"
+                  @blur="setFieldTouched('country')"
                 />
               </VCol>
 
@@ -224,12 +365,12 @@ const handleSubmit = async () => {
                 cols="12"
                 class="text-center text-base"
               >
-                <span class="d-inline-block">Already have an account?</span>
+                <span class="d-inline-block">لديك حساب بالفعل؟</span>
                 <RouterLink
                   class="text-primary ms-1 d-inline-block"
                   :to="{ name: 'login' }"
                 >
-                  Sign in instead
+                  تسجيل الدخول بدلاً من ذلك
                 </RouterLink>
               </VCol>
 

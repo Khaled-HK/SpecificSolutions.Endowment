@@ -14,5 +14,11 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.Contracts
         Task LogoutAsync();
         Task<List<string>> GetUserRolesAsync(string userId);
         Task<bool> IsUserInRoleAsync(string roleName);
+        
+        // New methods for password management and email confirmation
+        Task<bool> ForgotPasswordAsync(string email);
+        Task<bool> ResetPasswordAsync(string email, string token, string newPassword);
+        Task<bool> ChangePasswordAsync(string currentPassword, string newPassword);
+        Task<bool> ConfirmEmailAsync(string email, string token);
     }
 }

@@ -7,7 +7,7 @@ using SpecificSolutions.Endowment.Application.Models.Global;
 using System.Net;
 using ValidationException = SpecificSolutions.Endowment.Application.Abstractions.Exceptions.ValidationException;
 
-namespace SpecificSolutions.Endowment.Application.Handlers
+namespace SpecificSolutions.Endowment.Application.Abstractions.Exceptions
 {
     public sealed class GlobalExceptionHandler : IExceptionHandler
     {

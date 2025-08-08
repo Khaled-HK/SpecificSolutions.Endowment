@@ -16,6 +16,8 @@ const {
   setFieldTouched,
   validateRequired,
   validateEmail,
+  addError,
+  setErrorsFromResponse,
 } = useFormValidation()
 
 const email = ref('')
@@ -35,8 +37,29 @@ const handleSubmit = async () => {
   
   if (!isValid) return
   
-  // هنا يمكن إضافة منطق إرسال رابط إعادة تعيين كلمة المرور
-  console.log('تم التحقق من النموذج بنجاح')
+  try {
+    const response = await $fetch('/api/auth/forgot-password', {
+      method: 'POST',
+      body: {
+        email: email.value
+      }
+    })
+    
+    if (response.isSuccess) {
+      // إظهار رسالة نجاح
+      console.log('تم إرسال رابط إعادة تعيين كلمة المرور بنجاح')
+    } else {
+      // معالجة الأخطاء
+      if (response.errors && Array.isArray(response.errors)) {
+        setErrorsFromResponse(response)
+      } else if (response.message) {
+        addError('general', response.message)
+      }
+    }
+  } catch (error) {
+    console.error('خطأ في إرسال طلب إعادة تعيين كلمة المرور:', error)
+    addError('general', 'حدث خطأ أثناء إرسال الطلب')
+  }
 }
 const authThemeImg = useGenerateImageVariant(authV2ForgotPasswordIllustrationLight, authV2ForgotPasswordIllustrationDark)
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)

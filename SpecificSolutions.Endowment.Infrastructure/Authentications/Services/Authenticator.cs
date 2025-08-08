@@ -308,5 +308,76 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
             await _signInManager.SignOutAsync();
             await _sessionService.EndSessionAsync();
         }
+
+        public async Task<bool> ForgotPasswordAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                throw new Exception("User not found with this email address.");
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            
+            // TODO: Send email with reset token
+            // For now, we'll just return true to indicate the process started
+            // In a real implementation, you would send an email with the token
+            
+            return true;
+        }
+
+        public async Task<bool> ResetPasswordAsync(string email, string token, string newPassword)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                throw new Exception("User not found with this email address.");
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new Exception($"Password reset failed: {errors}");
+            }
+
+            return true;
+        }
+
+        public async Task<bool> ChangePasswordAsync(string currentPassword, string newPassword)
+        {
+            var user = await _sessionService.GetUser();
+            if (user == null)
+            {
+                throw new Exception("User not authenticated.");
+            }
+
+            var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new Exception($"Password change failed: {errors}");
+            }
+
+            return true;
+        }
+
+        public async Task<bool> ConfirmEmailAsync(string email, string token)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                throw new Exception("User not found with this email address.");
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new Exception($"Email confirmation failed: {errors}");
+            }
+
+            return true;
+        }
     }
 }

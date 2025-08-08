@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.RateLimiting;
 using SpecificSolutions.Endowment.Api;
 using SpecificSolutions.Endowment.Application.Handlers;
 using SpecificSolutions.Endowment.Application.Middlewares;
+using Microsoft.AspNetCore.Diagnostics;
+using SpecificSolutions.Endowment.Application.Abstractions.Exceptions;
 
 var CorsPolicyName = "CorsPolicy";
 
@@ -14,7 +16,7 @@ builder.Services.AddApiServices(builder.Configuration);
 builder.Services.AddCustomJwtAuth(builder.Configuration);
 
 // Register the global exception handler
-//builder.Services.AddSingleton<IExceptionHandler, GlobalExceptionHandler>();
+builder.Services.AddSingleton<IExceptionHandler, GlobalExceptionHandler>();
 
 builder.Services.AddProblemDetails(option =>
 {
