@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useFormValidation } from '@/composables/useFormValidation'
+import { useI18n } from 'vue-i18n'
+import { useApi } from '@/composables/useApi'
 
 definePage({
   meta: {
@@ -61,10 +63,13 @@ const headers = computed(() => [
   { title: t('tableHeaders.buildings.actions'), key: 'actions', sortable: false },
 ])
 
+// Get API instance
+const api = useApi()
+
 const loadBuildings = async () => {
   loading.value = true
   try {
-    const response = await $api('/Buildings', {
+    const response = await api('/Buildings', {
       headers: {
         'Accept-Language': locale.value
       }
@@ -79,7 +84,7 @@ const loadBuildings = async () => {
 
 const loadCities = async () => {
   try {
-    const response = await $api('/Cities', {
+    const response = await api('/Cities', {
       headers: {
         'Accept-Language': locale.value
       }
@@ -92,7 +97,7 @@ const loadCities = async () => {
 
 const loadRegions = async () => {
   try {
-    const response = await $api('/Regions', {
+    const response = await api('/Regions', {
       headers: {
         'Accept-Language': locale.value
       }
@@ -143,7 +148,7 @@ const addBuilding = async () => {
   }
   
   try {
-    const response = await $api('/Buildings', {
+    const response = await api('/Buildings', {
       method: 'POST',
       body: newBuilding.value,
       headers: {
@@ -211,7 +216,7 @@ const updateBuilding = async () => {
   }
   
   try {
-    const response = await $api(`/Buildings/${editBuilding.value.id}`, {
+    const response = await api(`/Buildings/${editBuilding.value.id}`, {
       method: 'PUT',
       body: editBuilding.value,
       headers: {
@@ -240,7 +245,7 @@ const updateBuilding = async () => {
 
 const deleteBuilding = async () => {
   try {
-    await $api(`/Buildings/${selectedBuilding.value.id}`, {
+    await api(`/Buildings/${selectedBuilding.value.id}`, {
       method: 'DELETE',
       headers: {
         'Accept-Language': locale.value

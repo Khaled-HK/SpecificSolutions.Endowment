@@ -1,7 +1,7 @@
 import { ref, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAbility } from '@/plugins/casl/composables/useAbility'
-import { useApi } from '@/utils/api'
+import { useApi } from '@/composables/useApi'
 import { BASE_PERMISSIONS, mapPermissionToAction, mapPermissionToSubject } from './authPermissions'
 import { useFormValidation } from './useFormValidation'
 import Cookies from 'js-cookie'
@@ -32,7 +32,7 @@ export function useLogin() {
     isLoading.value = true
     
     try {
-      const res = await api('/auth/login', {
+      const res: any = await api('/auth/login', {
         method: 'POST',
         body: {
           email: credentials.email,
@@ -57,14 +57,15 @@ export function useLogin() {
       
       const user = res.data
       
-      // التحقق من وجود token
-      if (!user?.token) {
+      // التحقق من وجود token أو accessToken من الخادم
+      const token = user?.token || user?.Token || user?.accessToken
+      if (!token) {
         addError('general', t('login.tryAgain'))
         return
       }
       
       // حفظ بيانات المستخدم
-      Cookies.set('accessToken', user.token)
+      Cookies.set('accessToken', token)
       Cookies.set('userData', JSON.stringify(user))
 
       // معالجة الصلاحيات
@@ -77,7 +78,7 @@ export function useLogin() {
       
       // إنشاء قواعد الصلاحيات
       const rules = [...BASE_PERMISSIONS]
-      userPermissions.forEach(permission => {
+      userPermissions.forEach((permission: string) => {
         const action = mapPermissionToAction(permission)
         const subject = mapPermissionToSubject(permission)
         

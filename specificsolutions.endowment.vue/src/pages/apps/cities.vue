@@ -2,6 +2,7 @@
 import { ref, onMounted, watch, computed } from 'vue'
 import { useFormValidation } from '@/composables/useFormValidation'
 import { useI18n } from 'vue-i18n'
+import { useApi } from '@/composables/useApi'
 
 // Define interfaces for better type safety
 interface City {

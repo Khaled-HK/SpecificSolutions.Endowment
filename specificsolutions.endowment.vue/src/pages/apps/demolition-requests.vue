@@ -11,6 +11,7 @@ definePage({
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useFormValidation } from '@/composables/useFormValidation'
+import { useApi } from '@/composables/useApi'
 
 const { t } = useI18n()
 

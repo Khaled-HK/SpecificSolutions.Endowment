@@ -2,6 +2,7 @@
 import { ref, onMounted, watch, computed } from 'vue'
 import { useFormValidation } from '@/composables/useFormValidation'
 import { useI18n } from 'vue-i18n'
+import { useApi } from '@/composables/useApi'
 
 // Define interfaces for better type safety
 interface Office {
@@ -122,7 +123,7 @@ const loadOffices = async () => {
       SearchTerm: search.value || ''
     })
     
-    const response = await $api(`/Office/filter?${params}`, {
+    const response = await useApi()(`/Office/filter?${params}`, {
       headers: {
         'Accept-Language': locale.value
       }
@@ -161,7 +162,7 @@ const loadOffices = async () => {
 const loadRegions = async () => {
   regionsLoading.value = true
   try {
-    const response = await $api('/Region/filter?PageSize=100', {
+    const response = await useApi()('/Region/filter?PageSize=100', {
       headers: {
         'Accept-Language': locale.value
       }
@@ -240,7 +241,7 @@ const addOffice = async () => {
   }
 
   try {
-    const response = await $api('/Office', {
+    const response = await useApi()('/Office', {
       method: 'POST',
       body: {
         name: newOffice.value.name.trim(),
@@ -365,7 +366,7 @@ const updateOffice = async () => {
   }
 
   try {
-    const response = await $api(`/Office/${editOffice.value.id}`, {
+    const response = await useApi()(`/Office/${editOffice.value.id}`, {
       method: 'PUT',
       body: {
         id: editOffice.value.id,
@@ -441,7 +442,7 @@ const deleteOffice = async () => {
   if (!selectedOffice.value) return
   
   try {
-    const response = await $api(`/Office/${selectedOffice.value.id}`, {
+    const response = await useApi()(`/Office/${selectedOffice.value.id}`, {
       method: 'DELETE',
       headers: {
         'Accept-Language': locale.value
@@ -496,7 +497,7 @@ const deleteSelectedRows = async () => {
   
   try {
     const deletePromises = selectedRows.value.map(office => 
-      $api(`/Office/${office.id}`, { 
+      useApi()(`/Office/${office.id}`, { 
         method: 'DELETE',
         headers: {
           'Accept-Language': locale.value

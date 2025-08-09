@@ -269,6 +269,7 @@ const {
 } = useFormValidation()
 
 const { t, locale } = useI18n()
+const api = useApi()
 
 const maintenanceRequests = ref([])
 const loading = ref(false)
@@ -323,7 +324,7 @@ const headers = computed(() => [
 const loadMaintenanceRequests = async () => {
   loading.value = true
   try {
-    const response = await $api('/MaintenanceRequests/GetMaintenanceRequests', {
+    const response = await api('/MaintenanceRequests/GetMaintenanceRequests', {
       headers: { 'Accept-Language': locale.value }
     })
     maintenanceRequests.value = response
@@ -380,7 +381,7 @@ const addMaintenanceRequest = async () => {
   }
 
   try {
-    await $api('/MaintenanceRequests', {
+    await api('/MaintenanceRequests', {
       method: 'POST',
       body: newRequest.value,
       headers: { 'Accept-Language': locale.value }
@@ -453,7 +454,7 @@ const updateMaintenanceRequest = async () => {
   }
 
   try {
-    await $api(`/MaintenanceRequests/${editRequest.value.id}`, {
+    await api(`/MaintenanceRequests/${editRequest.value.id}`, {
       method: 'PUT',
       body: editRequest.value,
       headers: { 'Accept-Language': locale.value }
@@ -481,7 +482,7 @@ const updateMaintenanceRequest = async () => {
 
 const deleteMaintenanceRequest = async () => {
   try {
-    await $api(`/MaintenanceRequests/${selectedRequest.value.id}`, {
+    await api(`/MaintenanceRequests/${selectedRequest.value.id}`, {
       method: 'DELETE',
       headers: { 'Accept-Language': locale.value }
     })

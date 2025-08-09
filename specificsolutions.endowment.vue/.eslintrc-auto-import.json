@@ -375,6 +375,7 @@
     "mapPermissionToSubject": true,
     "loginTexts": true,
     "useLanguage": true,
-    "useLogin": true
+    "useLogin": true,
+    "useAlert": true
   }
 }

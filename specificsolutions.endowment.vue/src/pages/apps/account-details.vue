@@ -202,9 +202,11 @@
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useFormValidation } from '@/composables/useFormValidation'
+import { useApi } from '@/composables/useApi'
 
 // Composables
 const { t, locale } = useI18n()
+const api = useApi()
 const {
   validationState,
   clearErrors,
@@ -286,7 +288,7 @@ const operationTypeOptions = computed(() => [
 const loadAccountDetails = async () => {
   loading.value = true
   try {
-    const response = await $api('/AccountDetails/filter', {
+    const response = await api('/AccountDetails/filter', {
       method: 'GET',
       headers: {
         'Accept-Language': locale.value
@@ -370,7 +372,7 @@ const addAccountDetail = async () => {
   }
 
   try {
-    await $api('/AccountDetails', {
+    await api('/AccountDetails', {
       method: 'POST',
       body: newAccountDetail.value,
       headers: {
@@ -423,7 +425,7 @@ const updateAccountDetail = async () => {
   }
 
   try {
-    await $api(`/AccountDetails/${selectedItem.value.id}`, {
+    await api(`/AccountDetails/${selectedItem.value.id}`, {
       method: 'PUT',
       body: newAccountDetail.value,
       headers: {
@@ -456,7 +458,7 @@ const confirmDelete = (item: any) => {
 
 const deleteAccountDetail = async () => {
   try {
-    await $api(`/AccountDetails/${selectedItem.value.id}`, {
+    await api(`/AccountDetails/${selectedItem.value.id}`, {
       method: 'DELETE',
       headers: {
         'Accept-Language': locale.value

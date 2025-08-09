@@ -1,63 +1,51 @@
-import { createFetch } from '@vueuse/core'
-import { destr } from 'destr'
+import { ofetch } from 'ofetch'
+import Cookies from 'js-cookie'
 
-export const useApi = createFetch({
-  baseUrl: import.meta.env.VITE_API_BASE_URL || '/api',
-  fetchOptions: {
-    headers: {
-      Accept: 'application/json',
-    },
-  },
-  options: {
-    refetch: true,
-    async beforeFetch({ options }) {
-      const accessToken = useCookie('accessToken').value
-      const userData = useCookie('userData').value
+export const useApi = () => {
+  const client = ofetch.create({
+    baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+    async onRequest({ options }) {
+      const accessTokenCookie = useCookie('accessToken').value as string | null | undefined
+      const accessToken = accessTokenCookie || Cookies.get('accessToken')
+      const userDataCookie = useCookie('userData').value as any
+      let userData = userDataCookie
+      if (!userData && typeof document !== 'undefined') {
+        const userDataString = Cookies.get('userData')
+        try { userData = userDataString ? JSON.parse(userDataString) : null } catch { userData = null }
+      }
+
+      // Merge headers as plain object
+      const currentHeaders: Record<string, string> = {}
+      const hdrs: any = options.headers as any
+      if (hdrs && typeof hdrs.forEach === 'function') {
+        hdrs.forEach((v: string, k: string) => { currentHeaders[k] = v })
+      } else if (Array.isArray(hdrs)) {
+        hdrs.forEach(([k, v]: [string, string]) => { currentHeaders[k] = v })
+      } else if (hdrs && typeof hdrs === 'object') {
+        Object.assign(currentHeaders, hdrs as Record<string, string>)
+      }
+      currentHeaders['Accept'] = 'application/json'
 
       if (accessToken) {
-        options.headers = {
-          ...options.headers,
-          Authorization: `Bearer ${accessToken}`,
-        }
-      } else if (userData && userData.id) {
-        // فقط إذا لم يوجد توكن
-        options.headers = {
-          ...options.headers,
-          'X-User-Id': userData.id,
-        }
+        currentHeaders['Authorization'] = `Bearer ${accessToken}`
+      } else if (userData && (userData.id || userData.Id)) {
+        currentHeaders['X-User-Id'] = String(userData.id ?? userData.Id)
       }
 
-      // Add Accept-Language header based on current locale
-      // Get language from localStorage or default to Arabic
       const savedLanguage = typeof window !== 'undefined' ? localStorage.getItem('preferredLanguage') : null
       const currentLanguage = savedLanguage === 'en' ? 'en-US' : 'ar-LY'
-      
-      options.headers = {
-        ...options.headers,
-        'Accept-Language': currentLanguage,
-      }
-
-      return { options }
+      currentHeaders['Accept-Language'] = currentLanguage
+      options.headers = currentHeaders as any
     },
-    afterFetch(ctx) {
-      const { data, response } = ctx
-
-      // Parse data if it's JSON
-      let parsedData = null
-      try {
-        parsedData = destr(data)
+    async onResponseError({ response }) {
+      if (response && (response.status === 401 || response.status === 403)) {
+        Cookies.remove('accessToken')
+        Cookies.remove('userData')
+        Cookies.remove('user-ability-rules')
+        if (typeof window !== 'undefined') window.location.href = '/login'
       }
-      catch (error) {
-        console.error('Error parsing response data:', error)
-        // Return original data if parsing fails
-        parsedData = data
-      }
+    },
+  })
 
-      return { data: parsedData, response }
-    },
-    onFetchError(ctx) {
-      console.error('Fetch error:', ctx.error)
-      return ctx
-    },
-  },
-}) 
+  return client
+}

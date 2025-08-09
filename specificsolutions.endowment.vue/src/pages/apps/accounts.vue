@@ -400,6 +400,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useFormValidation } from '@/composables/useFormValidation'
 import { useI18n } from 'vue-i18n'
+import { useApi } from '@/composables/useApi'
 
 const { t, locale } = useI18n()
 // Get API instance

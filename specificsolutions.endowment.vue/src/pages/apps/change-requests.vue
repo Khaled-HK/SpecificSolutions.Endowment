@@ -198,9 +198,10 @@
 import { ref, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useFormValidation } from '@/composables/useFormValidation'
+import { useApi } from '@/composables/useApi'
 
 const { t, locale } = useI18n()
-const { $api } = useNuxtApp()
+const api = useApi()
 
 // Form validation
 const {
@@ -266,7 +267,7 @@ const headers = computed(() => [
 const loadChangeRequests = async () => {
   loading.value = true
   try {
-    const response = await $api('/ChangeOfPathRequests/filter', {
+    const response = await api('/ChangeOfPathRequests/filter', {
       headers: {
         'Accept-Language': locale.value
       }
@@ -363,7 +364,7 @@ const addChangeRequest = async () => {
   }
 
   try {
-    await $api('/ChangeOfPathRequests', {
+    await api('/ChangeOfPathRequests', {
       method: 'POST',
       body: newRequest.value,
       headers: {
@@ -439,7 +440,7 @@ const updateChangeRequest = async () => {
   }
 
   try {
-    await $api(`/ChangeOfPathRequests/${selectedId.value}`, {
+    await api(`/ChangeOfPathRequests/${selectedId.value}`, {
       method: 'PUT',
       body: newRequest.value,
       headers: {
@@ -475,7 +476,7 @@ const deleteChangeRequest = (id: string) => {
 
 const confirmDelete = async () => {
   try {
-    await $api(`/ChangeOfPathRequests/${selectedId.value}`, {
+    await api(`/ChangeOfPathRequests/${selectedId.value}`, {
       method: 'DELETE',
       headers: {
         'Accept-Language': locale.value

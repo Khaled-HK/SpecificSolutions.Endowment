@@ -19,21 +19,46 @@ import { handlerPagesFaq } from '@db/pages/faq/index'
 import { handlerPagesHelpCenter } from '@db/pages/help-center/index'
 import { handlerPagesProfile } from '@db/pages/profile/index'
 
-const worker = setupWorker(...handlerAppsEcommerce, ...handlerAppsAcademy, ...handlerAppsInvoice, ...handlerAppsUsers, ...handlerAppsEmail, ...handlerAppsCalendar, ...handlerAppsChat, ...handlerAppsPermission, ...handlerPagesHelpCenter, ...handlerPagesProfile, ...handlerPagesFaq, ...handlerPagesDatatable, ...handlerAppBarSearch, ...handlerAppLogistics, ...handlerAuth, ...handlerAppsKanban, ...handlerDashboard)
+const worker = setupWorker(
+  ...handlerAppsEcommerce,
+  ...handlerAppsAcademy,
+  ...handlerAppsInvoice,
+  ...handlerAppsUsers,
+  ...handlerAppsEmail,
+  ...handlerAppsCalendar,
+  ...handlerAppsChat,
+  ...handlerAppsPermission,
+  ...handlerPagesHelpCenter,
+  ...handlerPagesProfile,
+  ...handlerPagesFaq,
+  ...handlerPagesDatatable,
+  ...handlerAppBarSearch,
+  ...handlerAppLogistics,
+  ...handlerAuth,
+  ...handlerAppsKanban,
+  ...handlerDashboard,
+)
+
 export default function () {
-  // Only start MSW in development
-  if (import.meta.env.DEV) {
+  // Only start MSW in development AND when explicitly enabled
+  const shouldUseFakeApi = import.meta.env?.VITE_USE_FAKE_API === 'true'
+  if (import.meta.env.DEV && shouldUseFakeApi) {
     const workerUrl = `${import.meta.env.BASE_URL ?? '/'}mockServiceWorker.js`
 
-    worker.start({
-      serviceWorker: {
-        url: workerUrl,
-      },
-      onUnhandledRequest: 'bypass',
-    }).then(() => {
-      console.log('MSW started successfully')
-    }).catch((error) => {
-      console.error('MSW failed to start:', error)
-    })
+    worker
+      .start({
+        serviceWorker: {
+          url: workerUrl,
+        },
+        onUnhandledRequest: 'bypass',
+      })
+      .then(() => {
+        console.log('MSW started successfully (fake API enabled)')
+      })
+      .catch(error => {
+        console.error('MSW failed to start:', error)
+      })
+  } else {
+    console.info('Fake API (MSW) is disabled. Using real backend APIs.')
   }
 }

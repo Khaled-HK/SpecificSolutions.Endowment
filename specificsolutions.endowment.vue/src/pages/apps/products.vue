@@ -2,6 +2,7 @@
 import { ref, onMounted, watch, reactive, computed } from 'vue'
 import { useFormValidation } from '@/composables/useFormValidation'
 import { useI18n } from 'vue-i18n'
+import { useApi } from '@/composables/useApi'
 
 // Define interfaces for better type safety
 interface Product {
@@ -124,7 +125,7 @@ const loadProducts = async () => {
       SearchTerm: search.value || ''
     })
     
-    const response = await $api(`/Product/filter?${params}`)
+    const response = await useApi()(`/Product/filter?${params}`)
     products.value = response.data.items || []
     
     // Update total count for pagination
@@ -184,7 +185,7 @@ const addProduct = async () => {
   }
   
   try {
-    const response = await $api('/Product', {
+    const response = await useApi()('/Product', {
       method: 'POST',
       body: {
         name: newProduct.name,
@@ -256,7 +257,7 @@ const updateProduct = async () => {
   }
   
   try {
-    const response = await $api(`/Product/${editProduct.id}`, {
+    const response = await useApi()(`/Product/${editProduct.id}`, {
       method: 'PUT',
       body: {
         id: editProduct.id,
@@ -298,7 +299,7 @@ const deleteProduct = async () => {
   if (!selectedProduct.value) return
   
   try {
-    const response = await $api(`/Product/${selectedProduct.value.id}`, {
+    const response = await useApi()(`/Product/${selectedProduct.value.id}`, {
       method: 'DELETE',
     })
     
