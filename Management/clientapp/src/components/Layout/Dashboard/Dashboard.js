@@ -15,9 +15,8 @@ export default {
             //    this.logout();
 
             if (this.loginDetails.userType == 1 || this.loginDetails.userType == 3) {
-
                 setInterval(() => {
-                    this.GetChangeRequestCount();
+                    this.GetChangeOfPathRequestCount();
                 }, 5000);
             }
         }
@@ -29,7 +28,7 @@ export default {
     },
     data() {
         return {      
-            ChangeRequestCount: '',
+            ChangeOfPathRequestCount: '',
             active: 1,
             menuFlag: [20],
             
@@ -44,12 +43,14 @@ export default {
             }
         },
 
-        GetChangeRequestCount() {
-            this.$http.GetChangeRequestCount()
+        GetChangeOfPathRequestCount() {
+            const fn = this.$http.GetChangeOfPathRequestCount || this.$http.GetChangeRequestCount;
+            if (!fn) return;
+            fn()
                 .then(response => {
-                    this.ChangeRequestCount = response.data.changeRequestCount;
+                    const d = response && response.data ? response.data : {};
+                    this.ChangeOfPathRequestCount = d.changeOfPathRequestCount ?? d.changeRequestCount ?? '';
                 })
-
         },
 
         OpenMenuByToggle(code) {

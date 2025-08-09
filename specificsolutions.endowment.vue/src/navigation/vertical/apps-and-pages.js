@@ -89,11 +89,11 @@ export default [
         subject: 'MaintenanceRequest',
       },
       {
-        title: 'Change Requests',
-        to: 'apps-change-requests',
+        title: 'Change Of Path Requests',
+        to: 'apps-change-of-path-requests',
         icon: { icon: 'tabler-edit' },
         action: 'View',
-        subject: 'ChangeRequest',
+        subject: 'ChangeOfPathRequest',
       },
       {
         title: 'Demolition Requests',

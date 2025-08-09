@@ -376,6 +376,8 @@
     "loginTexts": true,
     "useLanguage": true,
     "useLogin": true,
-    "useAlert": true
+    "useAlert": true,
+    "useKhaledAlerts": true,
+    "useAppAlerts": true
   }
 }

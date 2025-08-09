@@ -47,11 +47,11 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
         public bool MaintenanceRequestEdit { get; set; }
         public bool MaintenanceRequestDelete { get; set; }
 
-        // ChangeRequest Permissions
-        public bool ChangeRequestView { get; set; }
-        public bool ChangeRequestAdd { get; set; }
-        public bool ChangeRequestEdit { get; set; }
-        public bool ChangeRequestDelete { get; set; }
+        // ChangeOfPathRequest Permissions
+        public bool ChangeOfPathRequestView { get; set; }
+        public bool ChangeOfPathRequestAdd { get; set; }
+        public bool ChangeOfPathRequestEdit { get; set; }
+        public bool ChangeOfPathRequestDelete { get; set; }
 
         // DemolitionRequest Permissions
         public bool DemolitionRequestView { get; set; }
@@ -77,11 +77,7 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
         public bool ExpenditureChangeRequestEdit { get; set; }
         public bool ExpenditureChangeRequestDelete { get; set; }
 
-        // ChangeOfPathRequest Permissions
-        public bool ChangeOfPathRequestView { get; set; }
-        public bool ChangeOfPathRequestAdd { get; set; }
-        public bool ChangeOfPathRequestEdit { get; set; }
-        public bool ChangeOfPathRequestDelete { get; set; }
+        
 
         public bool OfficeView { get; set; }
         public bool OfficeAdd { get; set; }
@@ -131,7 +127,6 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
             bool requestView, bool requestAdd, bool requestEdit, bool requestDelete,
             bool constructionRequestView, bool constructionRequestAdd, bool constructionRequestEdit, bool constructionRequestDelete,
             bool maintenanceRequestView, bool maintenanceRequestAdd, bool maintenanceRequestEdit, bool maintenanceRequestDelete,
-            bool changeRequestView, bool changeRequestAdd, bool changeRequestEdit, bool changeRequestDelete,
             bool demolitionRequestView, bool demolitionRequestAdd, bool demolitionRequestEdit, bool demolitionRequestDelete,
             bool nameChangeRequestView, bool nameChangeRequestAdd, bool nameChangeRequestEdit, bool nameChangeRequestDelete,
             bool needsRequestView, bool needsRequestAdd, bool needsRequestEdit, bool needsRequestDelete,
@@ -185,10 +180,7 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
             MaintenanceRequestEdit = maintenanceRequestEdit;
             MaintenanceRequestDelete = maintenanceRequestDelete;
 
-            ChangeRequestView = changeRequestView;
-            ChangeRequestAdd = changeRequestAdd;
-            ChangeRequestEdit = changeRequestEdit;
-            ChangeRequestDelete = changeRequestDelete;
+            // removed duplicate capitalized parameters; use camelCase
 
             DemolitionRequestView = demolitionRequestView;
             DemolitionRequestAdd = demolitionRequestAdd;
@@ -205,15 +197,15 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
             NeedsRequestEdit = needsRequestEdit;
             NeedsRequestDelete = needsRequestDelete;
 
-            ExpenditureChangeRequestView = expenditureChangeRequestView;
-            ExpenditureChangeRequestAdd = expenditureChangeRequestAdd;
-            ExpenditureChangeRequestEdit = expenditureChangeRequestEdit;
-            ExpenditureChangeRequestDelete = expenditureChangeRequestDelete;
-
             ChangeOfPathRequestView = changeOfPathRequestView;
             ChangeOfPathRequestAdd = changeOfPathRequestAdd;
             ChangeOfPathRequestEdit = changeOfPathRequestEdit;
             ChangeOfPathRequestDelete = changeOfPathRequestDelete;
+
+            ExpenditureChangeRequestView = expenditureChangeRequestView;
+            ExpenditureChangeRequestAdd = expenditureChangeRequestAdd;
+            ExpenditureChangeRequestEdit = expenditureChangeRequestEdit;
+            ExpenditureChangeRequestDelete = expenditureChangeRequestDelete;
 
             OfficeView = officeView;
             OfficeAdd = officeAdd;
@@ -255,7 +247,7 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
             bool requestView, bool requestAdd, bool requestEdit, bool requestDelete,
             bool constructionRequestView, bool constructionRequestAdd, bool constructionRequestEdit, bool constructionRequestDelete,
             bool maintenanceRequestView, bool maintenanceRequestAdd, bool maintenanceRequestEdit, bool maintenanceRequestDelete,
-            bool changeRequestView, bool changeRequestAdd, bool changeRequestEdit, bool changeRequestDelete,
+            // removed duplicate capitalized ChangeOfPathRequest parameters
             bool demolitionRequestView, bool demolitionRequestAdd, bool demolitionRequestEdit, bool demolitionRequestDelete,
             bool nameChangeRequestView, bool nameChangeRequestAdd, bool nameChangeRequestEdit, bool nameChangeRequestDelete,
             bool needsRequestView, bool needsRequestAdd, bool needsRequestEdit, bool needsRequestDelete,
@@ -277,7 +269,7 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
                 requestView, requestAdd, requestEdit, requestDelete,
                 constructionRequestView, constructionRequestAdd, constructionRequestEdit, constructionRequestDelete,
                 maintenanceRequestView, maintenanceRequestAdd, maintenanceRequestEdit, maintenanceRequestDelete,
-                changeRequestView, changeRequestAdd, changeRequestEdit, changeRequestDelete,
+                // removed duplicate capitalized ChangeOfPathRequest parameters
                 demolitionRequestView, demolitionRequestAdd, demolitionRequestEdit, demolitionRequestDelete,
                 nameChangeRequestView, nameChangeRequestAdd, nameChangeRequestEdit, nameChangeRequestDelete,
                 needsRequestView, needsRequestAdd, needsRequestEdit, needsRequestDelete,
@@ -302,12 +294,11 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
                 requestView: true, requestAdd: true, requestEdit: true, requestDelete: true,
                 constructionRequestView: true, constructionRequestAdd: true, constructionRequestEdit: true, constructionRequestDelete: true,
                 maintenanceRequestView: true, maintenanceRequestAdd: true, maintenanceRequestEdit: true, maintenanceRequestDelete: true,
-                changeRequestView: true, changeRequestAdd: true, changeRequestEdit: true, changeRequestDelete: true,
+                changeOfPathRequestView: true, changeOfPathRequestAdd: true, changeOfPathRequestEdit: true, changeOfPathRequestDelete: true,
                 demolitionRequestView: true, demolitionRequestAdd: true, demolitionRequestEdit: true, demolitionRequestDelete: true,
                 nameChangeRequestView: true, nameChangeRequestAdd: true, nameChangeRequestEdit: true, nameChangeRequestDelete: true,
                 needsRequestView: true, needsRequestAdd: true, needsRequestEdit: true, needsRequestDelete: true,
                 expenditureChangeRequestView: true, expenditureChangeRequestAdd: true, expenditureChangeRequestEdit: true, expenditureChangeRequestDelete: true,
-                changeOfPathRequestView: true, changeOfPathRequestAdd: true, changeOfPathRequestEdit: true, changeOfPathRequestDelete: true,
                 officeView: true, officeAdd: true, officeEdit: true, officeDelete: true,
                 endowmentView: true, endowmentAdd: true, endowmentEdit: true, endowmentDelete: true,
                 cityView: true, cityAdd: true, cityEdit: true, cityDelete: true,
@@ -319,92 +310,89 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
         public List<string> ToPermissionList()
         {
             var permissions = new List<string>();
-            
+
             if (AccountView) permissions.Add("Account_View");
             if (AccountAdd) permissions.Add("Account_Add");
             if (AccountEdit) permissions.Add("Account_Edit");
             if (AccountDelete) permissions.Add("Account_Delete");
-            
+
             if (AccountDetailView) permissions.Add("AccountDetail_View");
             if (AccountDetailAdd) permissions.Add("AccountDetail_Add");
             if (AccountDetailEdit) permissions.Add("AccountDetail_Edit");
             if (AccountDetailDelete) permissions.Add("AccountDetail_Delete");
-            
+
             if (UserView) permissions.Add("User_View");
             if (UserAdd) permissions.Add("User_Add");
             if (UserEdit) permissions.Add("User_Edit");
             if (UserDelete) permissions.Add("User_Delete");
-            
+
             if (RoleView) permissions.Add("Role_View");
             if (RoleAdd) permissions.Add("Role_Add");
             if (RoleEdit) permissions.Add("Role_Edit");
             if (RoleDelete) permissions.Add("Role_Delete");
-            
+
             if (DecisionView) permissions.Add("Decision_View");
             if (DecisionAdd) permissions.Add("Decision_Add");
             if (DecisionEdit) permissions.Add("Decision_Edit");
             if (DecisionDelete) permissions.Add("Decision_Delete");
-            
+
             if (RequestView) permissions.Add("Request_View");
             if (RequestAdd) permissions.Add("Request_Add");
             if (RequestEdit) permissions.Add("Request_Edit");
             if (RequestDelete) permissions.Add("Request_Delete");
-            
+
             if (ConstructionRequestView) permissions.Add("ConstructionRequest_View");
             if (ConstructionRequestAdd) permissions.Add("ConstructionRequest_Add");
             if (ConstructionRequestEdit) permissions.Add("ConstructionRequest_Edit");
             if (ConstructionRequestDelete) permissions.Add("ConstructionRequest_Delete");
-            
+
             if (MaintenanceRequestView) permissions.Add("MaintenanceRequest_View");
             if (MaintenanceRequestAdd) permissions.Add("MaintenanceRequest_Add");
             if (MaintenanceRequestEdit) permissions.Add("MaintenanceRequest_Edit");
             if (MaintenanceRequestDelete) permissions.Add("MaintenanceRequest_Delete");
-            
-            if (ChangeRequestView) permissions.Add("ChangeRequest_View");
-            if (ChangeRequestAdd) permissions.Add("ChangeRequest_Add");
-            if (ChangeRequestEdit) permissions.Add("ChangeRequest_Edit");
-            if (ChangeRequestDelete) permissions.Add("ChangeRequest_Delete");
-            
+
+            // ChangeOfPathRequest unified naming
+
             if (DemolitionRequestView) permissions.Add("DemolitionRequest_View");
             if (DemolitionRequestAdd) permissions.Add("DemolitionRequest_Add");
             if (DemolitionRequestEdit) permissions.Add("DemolitionRequest_Edit");
             if (DemolitionRequestDelete) permissions.Add("DemolitionRequest_Delete");
-            
+
             if (NameChangeRequestView) permissions.Add("NameChangeRequest_View");
             if (NameChangeRequestAdd) permissions.Add("NameChangeRequest_Add");
             if (NameChangeRequestEdit) permissions.Add("NameChangeRequest_Edit");
             if (NameChangeRequestDelete) permissions.Add("NameChangeRequest_Delete");
-            
+
             if (NeedsRequestView) permissions.Add("NeedsRequest_View");
             if (NeedsRequestAdd) permissions.Add("NeedsRequest_Add");
             if (NeedsRequestEdit) permissions.Add("NeedsRequest_Edit");
             if (NeedsRequestDelete) permissions.Add("NeedsRequest_Delete");
-            
+
             if (ExpenditureChangeRequestView) permissions.Add("ExpenditureChangeRequest_View");
             if (ExpenditureChangeRequestAdd) permissions.Add("ExpenditureChangeRequest_Add");
             if (ExpenditureChangeRequestEdit) permissions.Add("ExpenditureChangeRequest_Edit");
             if (ExpenditureChangeRequestDelete) permissions.Add("ExpenditureChangeRequest_Delete");
-            
+
             if (ChangeOfPathRequestView) permissions.Add("ChangeOfPathRequest_View");
             if (ChangeOfPathRequestAdd) permissions.Add("ChangeOfPathRequest_Add");
             if (ChangeOfPathRequestEdit) permissions.Add("ChangeOfPathRequest_Edit");
             if (ChangeOfPathRequestDelete) permissions.Add("ChangeOfPathRequest_Delete");
-            
+
             if (OfficeView) permissions.Add("Office_View");
             if (OfficeAdd) permissions.Add("Office_Add");
             if (OfficeEdit) permissions.Add("Office_Edit");
             if (OfficeDelete) permissions.Add("Office_Delete");
-            
+
             if (EndowmentView) permissions.Add("Endowment_View");
             if (EndowmentAdd) permissions.Add("Endowment_Add");
             if (EndowmentEdit) permissions.Add("Endowment_Edit");
             if (EndowmentDelete) permissions.Add("Endowment_Delete");
-            
+
             if (CityView) permissions.Add("City_View");
             if (CityAdd) permissions.Add("City_Add");
             if (CityEdit) permissions.Add("City_Edit");
             if (CityDelete) permissions.Add("City_Delete");
-            
+
             if (RegionView) permissions.Add("Region_View");
             if (RegionAdd) permissions.Add("Region_Add");
             if (RegionEdit) permissions.Add("Region_Edit");
@@ -419,14 +407,14 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
             if (MosqueAdd) permissions.Add("Mosque_Add");
             if (MosqueEdit) permissions.Add("Mosque_Edit");
             if (MosqueDelete) permissions.Add("Mosque_Delete");
-            
+
             // إضافة logging لمعرفة الصلاحيات التي تم إضافتها
             Console.WriteLine($"🔍 ToPermissionList - ConstructionRequest permissions:");
             Console.WriteLine($"  - ConstructionRequestView: {ConstructionRequestView}");
             Console.WriteLine($"  - ConstructionRequestAdd: {ConstructionRequestAdd}");
             Console.WriteLine($"  - ConstructionRequestEdit: {ConstructionRequestEdit}");
             Console.WriteLine($"  - ConstructionRequestDelete: {ConstructionRequestDelete}");
-            
+
             return permissions;
         }
     }

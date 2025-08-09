@@ -69,12 +69,12 @@ const api = useApi()
 const loadBuildings = async () => {
   loading.value = true
   try {
-    const response = await api('/Buildings', {
+    const response = await api('/Buildings/filter?PageNumber=1&PageSize=10', {
       headers: {
         'Accept-Language': locale.value
       }
     })
-    buildings.value = response
+    buildings.value = response.data?.items || response
   } catch (error) {
     console.error('Error loading buildings:', error)
   } finally {
@@ -84,7 +84,7 @@ const loadBuildings = async () => {
 
 const loadCities = async () => {
   try {
-    const response = await api('/Cities', {
+    const response = await api('/City/GetCities', {
       headers: {
         'Accept-Language': locale.value
       }
@@ -97,7 +97,7 @@ const loadCities = async () => {
 
 const loadRegions = async () => {
   try {
-    const response = await api('/Regions', {
+    const response = await api('/Region/GetRegions', {
       headers: {
         'Accept-Language': locale.value
       }

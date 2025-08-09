@@ -36,7 +36,8 @@ const newRequest = ref({
 })
 
 // Form validation
-const { errors, clearErrors, setFieldTouched, validateRequired, validateEmail } = useFormValidation()
+const { validationState, clearErrors, setFieldTouched, validateRequired, validateEmail } = useFormValidation()
+const errors = validationState.errors
 
 // Priority options
 const priorityOptions = [
@@ -69,7 +70,8 @@ const api = useApi()
 const fetchNeedsRequests = async () => {
   try {
     loading.value = true
-    const response = await api('/NeedsRequests')
+    // Backend exposes: GET api/NeedsRequest/needs-requests for list, and GET api/NeedsRequest/filter for paging
+    const response = await api('/NeedsRequest/needs-requests')
     needsRequests.value = response.data || []
   } catch (error) {
     console.error('Error fetching needs requests:', error)
@@ -135,12 +137,12 @@ const addNeedsRequest = async () => {
     loading.value = true
 
     if (isEdit.value) {
-      await api(`/NeedsRequests/${selectedRequest.value.id}`, {
+      await api(`/NeedsRequest/${selectedRequest.value.id}`, {
         method: 'PUT',
         body: newRequest.value,
       })
     } else {
-      await api('/NeedsRequests', {
+      await api('/NeedsRequest', {
         method: 'POST',
         body: newRequest.value,
       })
@@ -169,9 +171,9 @@ const editRequest = (request) => {
 }
 
 const deleteRequest = async (id) => {
-  if (confirm(t('confirmDelete'))) {
+  if (confirm(t('pages.requests.confirmDelete'))) {
     try {
-      await api(`/NeedsRequests/${id}`, {
+      await api(`/NeedsRequest/${id}`, {
         method: 'DELETE',
       })
       await fetchNeedsRequests()
@@ -224,21 +226,21 @@ onMounted(() => {
     <VCardText>
       <VDataTable
         :headers="[
-          { title: t('title'), key: 'title' },
-          { title: t('description'), key: 'description' },
-          { title: t('priority'), key: 'priority' },
-          { title: t('location'), key: 'location' },
-          { title: t('referenceNumber'), key: 'referenceNumber' },
-          { title: t('requestStatus'), key: 'requestStatus' },
-          { title: t('needsType'), key: 'needsType' },
-          { title: t('estimatedCost'), key: 'estimatedCost' },
-          { title: t('provider'), key: 'provider' },
-          { title: t('actions'), key: 'actions', sortable: false },
+          { title: t('tableHeaders.needsRequests.title'), key: 'title' },
+          { title: t('tableHeaders.needsRequests.description'), key: 'description' },
+          { title: t('tableHeaders.needsRequests.priority'), key: 'priority' },
+          { title: t('tableHeaders.needsRequests.location'), key: 'location' },
+          { title: t('tableHeaders.needsRequests.referenceNumber'), key: 'referenceNumber' },
+          { title: t('tableHeaders.needsRequests.requestStatus'), key: 'requestStatus' },
+          { title: t('tableHeaders.needsRequests.needsType'), key: 'needsType' },
+          { title: t('tableHeaders.needsRequests.estimatedCost'), key: 'estimatedCost' },
+          { title: t('tableHeaders.needsRequests.provider'), key: 'provider' },
+          { title: t('tableHeaders.needsRequests.actions'), key: 'actions', sortable: false },
         ]"
         :items="needsRequests"
         :loading="loading"
       >
-        <template #item.actions="{ item }">
+        <template #item.actions="{ item }: { item: any }">
           <VBtn
             icon
             variant="text"
@@ -277,7 +279,7 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="newRequest.title"
-                  :label="t('title')"
+                  :label="t('tableHeaders.needsRequests.title')"
                   :error-messages="errors.title"
                   required
                 />
@@ -286,7 +288,7 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="newRequest.description"
-                  :label="t('description')"
+                  :label="t('tableHeaders.needsRequests.description')"
                   :error-messages="errors.description"
                   required
                 />
@@ -296,7 +298,7 @@ onMounted(() => {
                 <VSelect
                   v-model="newRequest.priority"
                   :items="priorityOptions"
-                  :label="t('priority')"
+                  :label="t('tableHeaders.needsRequests.priority')"
                   :error-messages="errors.priority"
                   required
                 />
@@ -305,7 +307,7 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="newRequest.location"
-                  :label="t('location')"
+                  :label="t('tableHeaders.needsRequests.location')"
                   :error-messages="errors.location"
                   required
                 />
@@ -314,7 +316,7 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="newRequest.referenceNumber"
-                  :label="t('referenceNumber')"
+                  :label="t('tableHeaders.needsRequests.referenceNumber')"
                   :error-messages="errors.referenceNumber"
                   required
                 />
@@ -324,7 +326,7 @@ onMounted(() => {
                 <VSelect
                   v-model="newRequest.requestStatus"
                   :items="statusOptions"
-                  :label="t('requestStatus')"
+                  :label="t('tableHeaders.needsRequests.requestStatus')"
                   :error-messages="errors.requestStatus"
                   required
                 />
@@ -334,7 +336,7 @@ onMounted(() => {
                 <VSelect
                   v-model="newRequest.needsType"
                   :items="needsTypeOptions"
-                  :label="t('needsType')"
+                  :label="t('tableHeaders.needsRequests.needsType')"
                   :error-messages="errors.needsType"
                   required
                 />
@@ -343,7 +345,7 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="newRequest.estimatedCost"
-                  :label="t('estimatedCost')"
+                  :label="t('tableHeaders.needsRequests.estimatedCost')"
                   :error-messages="errors.estimatedCost"
                   type="number"
                   required
@@ -353,7 +355,7 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="newRequest.provider"
-                  :label="t('provider')"
+                  :label="t('tableHeaders.needsRequests.provider')"
                   :error-messages="errors.provider"
                   required
                 />
@@ -369,7 +371,7 @@ onMounted(() => {
             variant="text"
             @click="dialog = false"
           >
-            {{ t('cancel') }}
+            {{ t('common.cancel') }}
           </VBtn>
           <VBtn
             color="primary"
@@ -377,7 +379,7 @@ onMounted(() => {
             :disabled="Object.keys(errors).length > 0"
             @click="addNeedsRequest"
           >
-            {{ isEdit ? t('update') : t('save') }}
+            {{ isEdit ? t('common.update') : t('common.save') }}
           </VBtn>
         </VCardActions>
       </VCard>

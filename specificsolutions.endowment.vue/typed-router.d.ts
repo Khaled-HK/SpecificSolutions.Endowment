@@ -28,7 +28,7 @@ declare module 'vue-router/auto-routes' {
     'apps-accounts': RouteRecordInfo<'apps-accounts', '/apps/accounts', Record<never, never>, Record<never, never>>,
     'apps-buildings': RouteRecordInfo<'apps-buildings', '/apps/buildings', Record<never, never>, Record<never, never>>,
     'apps-calendar': RouteRecordInfo<'apps-calendar', '/apps/calendar', Record<never, never>, Record<never, never>>,
-    'apps-change-requests': RouteRecordInfo<'apps-change-requests', '/apps/change-requests', Record<never, never>, Record<never, never>>,
+    'apps-change-of-path-requests': RouteRecordInfo<'apps-change-of-path-requests', '/apps/change-of-path-requests', Record<never, never>, Record<never, never>>,
     'apps-chat': RouteRecordInfo<'apps-chat', '/apps/chat', Record<never, never>, Record<never, never>>,
     'apps-cities': RouteRecordInfo<'apps-cities', '/apps/cities', Record<never, never>, Record<never, never>>,
     'apps-construction-requests': RouteRecordInfo<'apps-construction-requests', '/apps/construction-requests', Record<never, never>, Record<never, never>>,

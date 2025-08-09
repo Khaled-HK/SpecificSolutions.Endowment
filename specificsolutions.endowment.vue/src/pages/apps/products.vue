@@ -2,6 +2,7 @@
 import { ref, onMounted, watch, reactive, computed } from 'vue'
 import { useFormValidation } from '@/composables/useFormValidation'
 import { useI18n } from 'vue-i18n'
+import { useAppAlerts } from '@/composables/useAppAlerts'
 import { useApi } from '@/composables/useApi'
 
 // Define interfaces for better type safety
@@ -35,10 +36,8 @@ const products = ref<Product[]>([])
 const loading = ref(false)
 const totalItems = ref(0)
 
-// Simple alert state
-const showAlert = ref(false)
-const alertMessage = ref('')
-const alertType = ref('success')
+// App-wide alerts
+const { success: showSuccess, error: showError, warning: showWarning } = useAppAlerts()
 
 const dialog = ref(false)
 const editDialog = ref(false)
@@ -141,9 +140,7 @@ const loadProducts = async () => {
     }
   } catch (error) {
     console.error('Error loading products:', error)
-    alertMessage.value = 'حدث خطأ أثناء تحميل المواد'
-    alertType.value = 'error'
-    showAlert.value = true
+    showError(t('pages.products.errorLoading') || 'حدث خطأ أثناء تحميل المواد', { timeout: 0, clickToDismiss: true })
     products.value = []
     totalItems.value = 0
   } finally {
@@ -201,10 +198,8 @@ const addProduct = async () => {
       if (response.errors && Array.isArray(response.errors)) {
         setErrorsFromResponse(response)
       } else {
-        const errorMsg = response.message || 'حدث خطأ أثناء إضافة المادة'
-        alertMessage.value = errorMsg
-        alertType.value = 'error'
-        showAlert.value = true
+        const errorMsg = response.message || t('pages.products.errorAdd') || 'حدث خطأ أثناء إضافة المادة'
+        showError(errorMsg, { timeout: 0, clickToDismiss: true })
       }
       return
     }
@@ -212,14 +207,10 @@ const addProduct = async () => {
     dialog.value = false
     resetNewProduct()
     loadProducts()
-    alertMessage.value = 'تم إضافة المادة بنجاح'
-    alertType.value = 'success'
-    showAlert.value = true
+    showSuccess(t('pages.products.successAdd') || 'تم إضافة المادة بنجاح', { timeout: 4000, clickToDismiss: true })
   } catch (error) {
     console.error('Error adding product:', error)
-    alertMessage.value = 'حدث خطأ أثناء إضافة المادة'
-    alertType.value = 'error'
-    showAlert.value = true
+    showError(t('pages.products.errorAdd') || 'حدث خطأ أثناء إضافة المادة', { timeout: 0, clickToDismiss: true })
   }
 }
 
@@ -274,24 +265,18 @@ const updateProduct = async () => {
       if (response.errors && Array.isArray(response.errors)) {
         setErrorsFromResponse(response)
       } else {
-        const errorMsg = response.message || 'حدث خطأ أثناء تحديث المادة'
-        alertMessage.value = errorMsg
-        alertType.value = 'error'
-        showAlert.value = true
+        const errorMsg = response.message || t('pages.products.errorUpdate') || 'حدث خطأ أثناء تحديث المادة'
+        showError(errorMsg, { timeout: 0, clickToDismiss: true })
       }
       return
     }
     
     editDialog.value = false
     loadProducts()
-    alertMessage.value = 'تم تحديث المادة بنجاح'
-    alertType.value = 'success'
-    showAlert.value = true
+    showSuccess(t('pages.products.successUpdate') || 'تم تحديث المادة بنجاح', { timeout: 4000, clickToDismiss: true })
   } catch (error) {
     console.error('Error updating product:', error)
-    alertMessage.value = 'حدث خطأ أثناء تحديث المادة'
-    alertType.value = 'error'
-    showAlert.value = true
+    showError(t('pages.products.errorUpdate') || 'حدث خطأ أثناء تحديث المادة', { timeout: 0, clickToDismiss: true })
   }
 }
 
@@ -305,24 +290,18 @@ const deleteProduct = async () => {
     
     // Check if the response indicates success - response comes directly
     if (response && response.isSuccess === false) {
-      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء حذف المادة'
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
+      const errorMsg = response.message || response.errors?.[0]?.errorMessage || t('pages.products.errorDelete') || 'حدث خطأ أثناء حذف المادة'
+      showError(errorMsg, { timeout: 0, clickToDismiss: true })
       return
     }
     
     deleteDialog.value = false
     selectedProduct.value = null
     loadProducts()
-    alertMessage.value = 'تم حذف المادة بنجاح'
-    alertType.value = 'success'
-    showAlert.value = true
+    showSuccess(t('pages.products.successDelete') || 'تم حذف المادة بنجاح', { timeout: 4000, clickToDismiss: true })
   } catch (error) {
     console.error('Error deleting product:', error)
-    alertMessage.value = 'حدث خطأ أثناء حذف المادة'
-    alertType.value = 'error'
-    showAlert.value = true
+    showError(t('pages.products.errorDelete') || 'حدث خطأ أثناء حذف المادة', { timeout: 0, clickToDismiss: true })
   }
 }
 
@@ -415,12 +394,12 @@ const validateEditProduct = () => {
     isValid = false
   }
   
-  if (editProduct.price < 0) {
+  if ((editProduct.price ?? 0) < 0) {
     addError('editPrice', 'السعر لا يمكن أن يكون سالب')
     isValid = false
   }
   
-  if (editProduct.quantity < 0) {
+  if ((editProduct.quantity ?? 0) < 0) {
     addError('editQuantity', 'الكمية لا يمكن أن تكون سالبة')
     isValid = false
   }
@@ -506,20 +485,20 @@ onMounted(() => {
       <!-- Price Column -->
       <template #item.price="{ item }">
         <VChip
-          :color="item.price > 0 ? 'success' : 'warning'"
+          :color="(item.price || 0) > 0 ? 'success' : 'warning'"
           size="small"
         >
-          {{ item.price || 0 }} ريال
+          {{ (item.price || 0) }} ريال
         </VChip>
       </template>
 
       <!-- Quantity Column -->
       <template #item.quantity="{ item }">
         <VChip
-          :color="item.quantity > 0 ? 'primary' : 'error'"
+          :color="(item.quantity || 0) > 0 ? 'primary' : 'error'"
           size="small"
         >
-          {{ item.quantity || 0 }}
+          {{ (item.quantity || 0) }}
         </VChip>
       </template>
 
@@ -735,13 +714,6 @@ onMounted(() => {
       </VCard>
     </VDialog>
 
-    <!-- Alert -->
-    <VSnackbar
-      v-model="showAlert"
-      :color="alertType"
-      :timeout="3000"
-    >
-      {{ alertMessage }}
-    </VSnackbar>
+    
   </VCard>
 </template> 

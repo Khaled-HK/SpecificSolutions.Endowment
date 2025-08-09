@@ -45,9 +45,45 @@ export const setupGuards = router => {
     }
   }
 
+  // استخراج action/subject من سلسلة الـ matched (من الأكثر تحديدًا للأقل)
+  const resolveActionSubject = (to) => {
+    const matched = Array.isArray(to.matched) ? to.matched : []
+    for (let i = matched.length - 1; i >= 0; i--) {
+      const meta = matched[i]?.meta
+      if (meta?.action && meta?.subject)
+        return { action: meta.action, subject: meta.subject }
+    }
+    // Fallbacks
+    let action = to.meta?.action
+    let subject = to.meta?.subject
+    if (!action || !subject) {
+      const cleanPath = (to.path || '').split('#')[0].split('?')[0]
+      const map = {
+        '/apps/accounts': 'Account',
+        '/apps/change-of-path-requests': 'ChangeOfPathRequest',
+        '/apps/needs-requests': 'NeedsRequest',
+        '/apps/expenditure-change-requests': 'ExpenditureChangeRequest',
+        '/apps/name-change-requests': 'NameChangeRequest',
+        '/apps/buildings': 'Building',
+        '/apps/cities': 'City',
+        '/apps/regions': 'Region',
+        '/apps/mosques': 'Mosque',
+        '/apps/offices': 'Office',
+        '/apps/decisions': 'Decision',
+        '/apps/requests': 'Request',
+      }
+      if (!subject && map[cleanPath]) {
+        subject = map[cleanPath]
+      }
+      if (!action && subject) action = 'View'
+    }
+    return { action, subject }
+  }
+
   // دالة للتحقق من الصلاحيات باستخدام CASL
   const checkPermissions = (to) => {
-    return ability.can(to.meta.action, to.meta.subject)
+    const { action, subject } = resolveActionSubject(to)
+    return ability.can(action, subject)
   }
 
   // Helper functions to map backend permissions to CASL actions/subjects
@@ -188,9 +224,10 @@ export const setupGuards = router => {
 
       // التحقق من الصلاحيات
       const hasPermission = checkPermissions(to)
-      
+
       if (!hasPermission) {
-        console.warn('❌ Permission denied for:', to.path, 'Action:', to.meta.action, 'Subject:', to.meta.subject)
+        const { action, subject } = resolveActionSubject(to)
+        console.warn('❌ Permission denied for:', to.path, 'Action:', action, 'Subject:', subject)
         console.warn('🔍 Current ability rules count:', ability.rules.length)
         next({
           name: 'not-authorized',

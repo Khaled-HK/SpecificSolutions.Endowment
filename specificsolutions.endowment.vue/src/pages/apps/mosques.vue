@@ -73,7 +73,7 @@ definePage({
   },
 })
 
-const { t } = useI18n()
+const { t, te, locale } = useI18n()
 
 // استخدام نظام التحقق الجديد
 const {
@@ -128,15 +128,10 @@ const getCurrentDate = (): string => {
   return today.toISOString().split('T')[0];
 }
 
-// استخدام نظام التنبيهات الجديد
-import { useAlert } from '@/composables/useAlert'
+// استخدام نظام التنبيهات الموحد على مستوى التطبيق
+import { useAppAlerts } from '@/composables/useAppAlerts'
 
-const { showSuccess, showError, showWarning, showInfo } = useAlert()
-
-// Simple alert state (للتوافق مع الكود الموجود)
-const showAlert = ref(false)
-const alertMessage = ref('')
-const alertType = ref<'success' | 'error' | 'warning' | 'info'>('success')
+const { success: showSuccess, error: showError, warning: showWarning, info: showInfo } = useAppAlerts()
 
 const dialog = ref(false)
 const editDialog = ref(false)
@@ -288,9 +283,7 @@ const loadMosques = async () => {
     }
   } catch (error) {
     console.error('Error loading mosques:', error)
-    alertMessage.value = 'حدث خطأ أثناء تحميل المساجد'
-    alertType.value = 'error'
-    showAlert.value = true
+    showError(t('pages.mosques.errorLoading') || 'حدث خطأ أثناء تحميل المساجد', { timeout: 0, clickToDismiss: true })
     mosques.value = []
     totalItems.value = 0
   } finally {
@@ -303,15 +296,13 @@ const loadRegions = async () => {
   try {
     const response = await api('/Region/filter?PageSize=100')
     const rawList = response.data.items || []
-    regions.value = rawList.map(item => ({
+    regions.value = rawList.map((item: any) => ({
       ...item,
       name: item.name || item.regionName || item.title || item.id // fallback
     }))
   } catch (error) {
     console.error('Error loading regions:', error)
-    alertMessage.value = 'حدث خطأ أثناء تحميل المناطق'
-    alertType.value = 'error'
-    showAlert.value = true
+    showError(t('pages.mosques.errorLoadingRegions') || 'حدث خطأ أثناء تحميل المناطق', { timeout: 0, clickToDismiss: true })
   } finally {
     regionsLoading.value = false
   }
@@ -322,15 +313,13 @@ const loadOffices = async () => {
   try {
     const response = await api('/Office/filter?PageSize=100')
     const rawList = response.data.items || []
-    offices.value = rawList.map(item => ({
+    offices.value = rawList.map((item: any) => ({
       ...item,
       name: item.name || item.officeName || item.title || item.id // fallback
     }))
   } catch (error) {
     console.error('Error loading offices:', error)
-    alertMessage.value = 'حدث خطأ أثناء تحميل المكاتب'
-    alertType.value = 'error'
-    showAlert.value = true
+    showError(t('pages.mosques.errorLoadingOffices') || 'حدث خطأ أثناء تحميل المكاتب', { timeout: 0, clickToDismiss: true })
   } finally {
     officesLoading.value = false
   }
@@ -431,26 +420,10 @@ const addMosque = async () => {
         setErrorsFromResponse(response, 'add')
         
         // إظهار رسالة للمستخدم باستخدام النظام الجديد
-        showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
-          timeout: 5000,
-          clickToDismiss: true
-        })
-        
-        // للتوافق مع الكود الموجود
-        alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
-        alertType.value = 'warning'
-        showAlert.value = true
+        showWarning(te('validation.fixHighlighted') ? t('validation.fixHighlighted') : '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', { timeout: 5000, clickToDismiss: true })
       } else {
-        const errorMsg = response.message || 'حدث خطأ أثناء إضافة المسجد'
-        showError(errorMsg, {
-          timeout: 0, // لا يختفي تلقائياً للأخطاء المهمة
-          clickToDismiss: true
-        })
-        
-        // للتوافق مع الكود الموجود
-        alertMessage.value = errorMsg
-        alertType.value = 'error'
-        showAlert.value = true
+        const errorMsg = response.message || t('pages.mosques.errorAdd') || 'حدث خطأ أثناء إضافة المسجد'
+        showError(errorMsg, { timeout: 0, clickToDismiss: true })
       }
       return
     }
@@ -458,15 +431,7 @@ const addMosque = async () => {
     dialog.value = false
     resetNewMosque()
     loadMosques()
-    showSuccess('تم إضافة المسجد بنجاح', {
-      timeout: 4000,
-      clickToDismiss: true
-    })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = 'تم إضافة المسجد بنجاح'
-    alertType.value = 'success'
-    showAlert.value = true
+    showSuccess(t('pages.mosques.successAdd') || 'تم إضافة المسجد بنجاح', { timeout: 4000, clickToDismiss: true })
   } catch (error: any) {
     console.error('❌ خطأ في الشبكة أو في الخادم:', error)
     
@@ -474,35 +439,11 @@ const addMosque = async () => {
     if (error?.data?.errors && Array.isArray(error.data.errors)) {
       setErrorsFromResponse(error.data, 'add')
       
-      showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
-        timeout: 5000,
-        clickToDismiss: true
-      })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
-      alertType.value = 'warning'
-      showAlert.value = true
+      showWarning(te('validation.fixHighlighted') ? t('validation.fixHighlighted') : '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', { timeout: 5000, clickToDismiss: true })
     } else if (error?.data?.message) {
-      showError(error.data.message, {
-        timeout: 0,
-        clickToDismiss: true
-      })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = error.data.message
-      alertType.value = 'error'
-      showAlert.value = true
+      showError(error.data.message, { timeout: 0, clickToDismiss: true })
     } else {
-      showError('حدث خطأ أثناء إضافة المسجد', {
-        timeout: 0,
-        clickToDismiss: true
-      })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = 'حدث خطأ أثناء إضافة المسجد'
-      alertType.value = 'error'
-      showAlert.value = true
+      showError(t('pages.mosques.errorAdd') || 'حدث خطأ أثناء إضافة المسجد', { timeout: 0, clickToDismiss: true })
     }
   }
 }
@@ -590,25 +531,15 @@ const updateMosque = async () => {
       if (response.errors && Array.isArray(response.errors)) {
         setErrorsFromResponse(response, 'edit')
       } else {
-        const errorMsg = response.message || 'حدث خطأ أثناء تحديث المسجد'
-        alertMessage.value = errorMsg
-        alertType.value = 'error'
-        showAlert.value = true
+        const errorMsg = response.message || t('pages.mosques.errorUpdate') || 'حدث خطأ أثناء تحديث المسجد'
+        showError(errorMsg, { timeout: 0, clickToDismiss: true })
       }
       return
     }
     
     editDialog.value = false
     loadMosques()
-    showSuccess('تم تحديث المسجد بنجاح', {
-      timeout: 4000,
-      clickToDismiss: true
-    })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = 'تم تحديث المسجد بنجاح'
-    alertType.value = 'success'
-    showAlert.value = true
+    showSuccess(t('pages.mosques.successUpdate') || 'تم تحديث المسجد بنجاح', { timeout: 4000, clickToDismiss: true })
   } catch (error: any) {
     console.error('Error updating mosque:', error)
     
@@ -616,35 +547,11 @@ const updateMosque = async () => {
     if (error?.data?.errors && Array.isArray(error.data.errors)) {
       setErrorsFromResponse(error.data, 'edit')
       
-      showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
-        timeout: 5000,
-        clickToDismiss: true
-      })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
-      alertType.value = 'warning'
-      showAlert.value = true
+      showWarning(te('validation.fixHighlighted') ? t('validation.fixHighlighted') : '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', { timeout: 5000, clickToDismiss: true })
     } else if (error?.data?.message) {
-      showError(error.data.message, {
-        timeout: 0,
-        clickToDismiss: true
-      })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = error.data.message
-      alertType.value = 'error'
-      showAlert.value = true
+      showError(error.data.message, { timeout: 0, clickToDismiss: true })
     } else {
-      showError('حدث خطأ أثناء تحديث المسجد', {
-        timeout: 0,
-        clickToDismiss: true
-      })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = 'حدث خطأ أثناء تحديث المسجد'
-      alertType.value = 'error'
-      showAlert.value = true
+      showError(t('pages.mosques.errorUpdate') || 'حدث خطأ أثناء تحديث المسجد', { timeout: 0, clickToDismiss: true })
     }
   }
 }
@@ -659,16 +566,8 @@ const deleteMosque = async () => {
     
     // Check if the response indicates success - response comes directly
     if (response && response.isSuccess === false) {
-      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء حذف المسجد'
-      showError(errorMsg, {
-        timeout: 0,
-        clickToDismiss: true
-      })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
+      const errorMsg = response.message || response.errors?.[0]?.errorMessage || t('pages.mosques.errorDelete') || 'حدث خطأ أثناء حذف المسجد'
+      showError(errorMsg, { timeout: 0, clickToDismiss: true })
       deleteDialog.value = false
       return
     }
@@ -677,27 +576,11 @@ const deleteMosque = async () => {
 
     deleteDialog.value = false
     loadMosques()
-    showSuccess('تم حذف المسجد بنجاح', {
-      timeout: 4000,
-      clickToDismiss: true
-    })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = 'تم حذف المسجد بنجاح'
-    alertType.value = 'success'
-    showAlert.value = true
+    showSuccess(t('pages.mosques.successDelete') || 'تم حذف المسجد بنجاح', { timeout: 4000, clickToDismiss: true })
   } catch (error) {
     console.error('Error deleting mosque:', error)
     // ofetch doesn't throw for HTTP errors, so this is likely a network error
-    showError('حدث خطأ في الاتصال بالخادم', {
-      timeout: 0,
-      clickToDismiss: true
-    })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = 'حدث خطأ في الاتصال بالخادم'
-    alertType.value = 'error'
-    showAlert.value = true
+    showError(t('common.networkError') || 'حدث خطأ في الاتصال بالخادم', { timeout: 0, clickToDismiss: true })
     deleteDialog.value = false
   }
 }
@@ -718,45 +601,21 @@ const deleteSelectedRows = async () => {
     
     if (failedOperations.length > 0) {
       const errorMessages = failedOperations.map((response) => 
-        response?.message || response?.errors?.[0]?.errorMessage || 'حدث خطأ أثناء العملية'
+        response?.message || response?.errors?.[0]?.errorMessage || (t('common.operationError') || 'حدث خطأ أثناء العملية')
       )
-      const errorMsg = `فشل في حذف ${failedOperations.length} عنصر: ${errorMessages.join(', ')}`
-      showError(errorMsg, {
-        timeout: 0,
-        clickToDismiss: true
-      })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
+      const errorMsg = t('pages.mosques.deleteSelectedError', { count: failedOperations.length, details: errorMessages.join(', ') }) || `فشل في حذف ${failedOperations.length} عنصر: ${errorMessages.join(', ')}`
+      showError(errorMsg, { timeout: 0, clickToDismiss: true })
       return
     }
     
     // If we reach here, all deletions were successful
     selectedRows.value = []
     loadMosques()
-    showSuccess('تم حذف المساجد المحددة بنجاح', {
-      timeout: 4000,
-      clickToDismiss: true
-    })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = 'تم حذف المساجد المحددة بنجاح'
-    alertType.value = 'success'
-    showAlert.value = true
+    showSuccess(t('pages.mosques.successDeleteSelected') || 'تم حذف المساجد المحددة بنجاح', { timeout: 4000, clickToDismiss: true })
   } catch (error) {
     console.error('Error deleting selected mosques:', error)
     // ofetch doesn't throw for HTTP errors, so this is likely a network error
-    showError('حدث خطأ في الاتصال بالخادم', {
-      timeout: 0,
-      clickToDismiss: true
-    })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = 'حدث خطأ في الاتصال بالخادم'
-    alertType.value = 'error'
-    showAlert.value = true
+    showError('حدث خطأ في الاتصال بالخادم', { timeout: 0, clickToDismiss: true })
   }
 }
 
@@ -808,8 +667,8 @@ const openEditDialog = async (mosque: Mosque) => {
     numberOfFloors: mosque.numberOfFloors,
     openingDate: formatDate(mosque.openingDate),
     constructionDate: formatDate(mosque.constructionDate),
-    mosqueDefinition: mosque.mosqueDefinition || 0, // استخدام القيمة من API أو 0 كافتراضي
-    mosqueClassification: mosque.mosqueClassification || 0, // استخدام القيمة من API أو 0 كافتراضي
+    mosqueDefinition: Number(mosque.mosqueDefinition ?? 0),
+    mosqueClassification: Number(mosque.mosqueClassification ?? 0),
     landDonorName: mosque.landDonorName || '',
     prayerCapacity: mosque.prayerCapacity || '',
     sourceFunds: mosque.sourceFunds || 0, // استخدام القيمة من API أو 0 كافتراضي
@@ -858,9 +717,7 @@ const loadBuildingDetails = async (mosqueId: string) => {
     }
   } catch (error) {
     console.error('Error loading building details:', error)
-    alertMessage.value = 'حدث خطأ أثناء تحميل تفاصيل المبنى'
-    alertType.value = 'error'
-    showAlert.value = true
+    showError(t('pages.buildingDetails.errorLoading') || 'حدث خطأ أثناء تحميل تفاصيل المبنى', { timeout: 0, clickToDismiss: true })
     buildingDetails.value = []
   } finally {
     buildingDetailsLoading.value = false
@@ -916,9 +773,7 @@ const addBuildingDetail = async () => {
 
   const isValid = await addBuildingDetailForm.value.validate()
   if (!isValid) {
-    alertMessage.value = 'يرجى ملء جميع الحقول المطلوبة'
-    alertType.value = 'warning'
-    showAlert.value = true
+    showWarning(t('validation.requiredAll') || 'يرجى ملء جميع الحقول المطلوبة', { timeout: 5000, clickToDismiss: true })
     return
   }
 
@@ -926,17 +781,13 @@ const addBuildingDetail = async () => {
     // نحتاج إلى الحصول على BuildingId من Mosque أولاً
     const mosqueResponse = await api(`/Mosque/${selectedMosque.value?.mosqueID}`)
     if (!mosqueResponse || !mosqueResponse.data) {
-      alertMessage.value = 'لم يتم العثور على المسجد'
-      alertType.value = 'error'
-      showAlert.value = true
+      showError(t('pages.mosques.notFound') || 'لم يتم العثور على المسجد', { timeout: 0, clickToDismiss: true })
       return
     }
 
     const buildingId = mosqueResponse.data.buildingId
     if (!buildingId) {
-      alertMessage.value = 'لم يتم العثور على المبنى المرتبط بالمسجد'
-      alertType.value = 'error'
-      showAlert.value = true
+      showError(t('pages.buildingDetails.missingBuildingForMosque') || 'لم يتم العثور على المبنى المرتبط بالمسجد', { timeout: 0, clickToDismiss: true })
       return
     }
 
@@ -952,10 +803,8 @@ const addBuildingDetail = async () => {
     })
     
     if (response && response.isSuccess === false) {
-      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء إضافة تفصيل المبنى'
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
+      const errorMsg = response.message || response.errors?.[0]?.errorMessage || t('pages.buildingDetails.errorAdd') || 'حدث خطأ أثناء إضافة تفصيل المبنى'
+      showError(errorMsg, { timeout: 0, clickToDismiss: true })
       return
     }
     
@@ -965,14 +814,10 @@ const addBuildingDetail = async () => {
     // Reload building details
     await reloadBuildingDetails()
     
-    alertMessage.value = 'تم إضافة تفصيل المبنى بنجاح'
-    alertType.value = 'success'
-    showAlert.value = true
+    showSuccess(t('pages.buildingDetails.successAdd') || 'تم إضافة تفصيل المبنى بنجاح', { timeout: 4000, clickToDismiss: true })
   } catch (error) {
     console.error('Error adding building detail:', error)
-    alertMessage.value = 'حدث خطأ أثناء إضافة تفصيل المبنى'
-    alertType.value = 'error'
-    showAlert.value = true
+    showError(t('pages.buildingDetails.errorAdd') || 'حدث خطأ أثناء إضافة تفصيل المبنى', { timeout: 0, clickToDismiss: true })
   }
 }
 
@@ -983,10 +828,8 @@ const deleteBuildingDetail = async (buildingDetailId: string) => {
     })
     
     if (response && response.isSuccess === false) {
-      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء حذف تفصيل المبنى'
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
+      const errorMsg = response.message || response.errors?.[0]?.errorMessage || t('pages.buildingDetails.errorDelete') || 'حدث خطأ أثناء حذف تفصيل المبنى'
+      showError(errorMsg, { timeout: 0, clickToDismiss: true })
       return
     }
     
@@ -994,14 +837,10 @@ const deleteBuildingDetail = async (buildingDetailId: string) => {
       await reloadBuildingDetails()
     }
     
-    alertMessage.value = 'تم حذف تفصيل المبنى بنجاح'
-    alertType.value = 'success'
-    showAlert.value = true
+    showSuccess(t('pages.buildingDetails.successDelete') || 'تم حذف تفصيل المبنى بنجاح', { timeout: 4000, clickToDismiss: true })
   } catch (error) {
     console.error('Error deleting building detail:', error)
-    alertMessage.value = 'حدث خطأ أثناء حذف تفصيل المبنى'
-    alertType.value = 'error'
-    showAlert.value = true
+    showError(t('pages.buildingDetails.errorDelete') || 'حدث خطأ أثناء حذف تفصيل المبنى', { timeout: 0, clickToDismiss: true })
   }
 }
 
@@ -1044,9 +883,7 @@ const searchBuildingDetails = async () => {
     }
   } catch (error) {
     console.error('Error searching building details:', error)
-    alertMessage.value = 'حدث خطأ أثناء البحث في تفاصيل المبنى'
-    alertType.value = 'error'
-    showAlert.value = true
+    showError(t('pages.buildingDetails.errorSearch') || 'حدث خطأ أثناء البحث في تفاصيل المبنى', { timeout: 0, clickToDismiss: true })
     buildingDetails.value = []
   } finally {
     buildingDetailsLoading.value = false
@@ -1058,7 +895,7 @@ const clearBuildingDetailsSearch = async () => {
   await reloadBuildingDetails()
 }
 
-const openEditBuildingDetailDialog = async (buildingDetail) => {
+const openEditBuildingDetailDialog = async (buildingDetail: any) => {
   // تحويل القيمة الرقمية إلى نصية
   let buildingCategoryText = '';
   if (buildingDetail.buildingCategory === 0 || buildingDetail.buildingCategory === 'Facility') {
@@ -1097,9 +934,7 @@ const updateBuildingDetail = async () => {
 
   const isValid = await editBuildingDetailForm.value.validate()
   if (!isValid) {
-    alertMessage.value = 'يرجى ملء جميع الحقول المطلوبة'
-    alertType.value = 'warning'
-    showAlert.value = true
+    showWarning(t('validation.requiredAll') || 'يرجى ملء جميع الحقول المطلوبة', { timeout: 5000, clickToDismiss: true })
     return
   }
 
@@ -1116,10 +951,8 @@ const updateBuildingDetail = async () => {
     })
     
     if (response && response.isSuccess === false) {
-      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء تحديث تفصيل المبنى'
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
+      const errorMsg = response.message || response.errors?.[0]?.errorMessage || t('pages.buildingDetails.errorUpdate') || 'حدث خطأ أثناء تحديث تفصيل المبنى'
+      showError(errorMsg, { timeout: 0, clickToDismiss: true })
       return
     }
     
@@ -1129,14 +962,10 @@ const updateBuildingDetail = async () => {
     // Reload building details
     await reloadBuildingDetails()
     
-    alertMessage.value = 'تم تحديث تفصيل المبنى بنجاح'
-    alertType.value = 'success'
-    showAlert.value = true
+    showSuccess(t('pages.buildingDetails.successUpdate') || 'تم تحديث تفصيل المبنى بنجاح', { timeout: 4000, clickToDismiss: true })
   } catch (error) {
     console.error('Error updating building detail:', error)
-    alertMessage.value = 'حدث خطأ أثناء تحديث تفصيل المبنى'
-    alertType.value = 'error'
-    showAlert.value = true
+    showError(t('pages.buildingDetails.errorUpdate') || 'حدث خطأ أثناء تحديث تفصيل المبنى', { timeout: 0, clickToDismiss: true })
   }
 }
 
@@ -1146,7 +975,7 @@ const selectedFacilityDetail = ref(null)
 const facilityDetailsList = ref([])
 const facilityDetailsLoading = ref(false)
 
-const loadFacilityDetailsByBuildingDetailId = async (buildingDetail) => {
+const loadFacilityDetailsByBuildingDetailId = async (buildingDetail: any) => {
   facilityDetailsLoading.value = true
   try {
     // جلب تفاصيل المبنى (نفس نمط جلب المسجد)
@@ -1169,7 +998,7 @@ const loadFacilityDetailsByBuildingDetailId = async (buildingDetail) => {
   }
 }
 
-const openProductManagementDialog = async (buildingDetail) => {
+const openProductManagementDialog = async (buildingDetail: any) => {
   selectedBuildingDetail.value = buildingDetail
   selectedFacilityDetail.value = buildingDetail // للحفاظ على التوافق مع الكود الحالي إذا لزم
   productManagementDialog.value = true
@@ -1244,16 +1073,16 @@ const addFacilityDetail = async () => {
       }
     })
     if (response && response.isSuccess === false) {
-      let errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء إضافة المادة';
+      let errorMsg = response.message || response.errors?.[0]?.errorMessage || t('pages.products.errorAdd') || 'حدث خطأ أثناء إضافة المادة';
       errorMsg = errorMsg.replace(/\n/g, '');
       showAlertMsg(errorMsg, 'error');
       return;
     }
     addFacilityDetailDialog.value = false
     await loadFacilityDetailsByBuildingDetailId(selectedBuildingDetail.value)
-    showAlertMsg('تمت إضافة المادة بنجاح', 'success')
+    showAlertMsg(t('pages.products.successAdd') || 'تمت إضافة المادة بنجاح', 'success')
   } catch (e) {
-    showAlertMsg('حدث خطأ أثناء إضافة المادة', 'error')
+    showAlertMsg(t('pages.products.errorAdd') || 'حدث خطأ أثناء إضافة المادة', 'error')
   } finally {
     addFacilityDetailLoading.value = false
   }
@@ -1280,9 +1109,9 @@ const deleteFacilityDetail = async () => {
     await api(`/FacilityDetail/${facilityDetailToDelete.value.id || facilityDetailToDelete.value.Id}`, { method: 'DELETE' })
     deleteFacilityDetailDialog.value = false
     await loadFacilityDetailsByBuildingDetailId(selectedFacilityDetail.value)
-    showAlertMsg('تم حذف المادة بنجاح', 'success')
+    showAlertMsg(t('pages.products.successDelete') || 'تم حذف المادة بنجاح', 'success')
   } catch (e) {
-    showAlertMsg('حدث خطأ أثناء حذف المادة', 'error')
+    showAlertMsg(t('pages.products.errorDelete') || 'حدث خطأ أثناء حذف المادة', 'error')
   } finally {
     deleteFacilityDetailLoading.value = false
   }
@@ -1326,7 +1155,7 @@ const updateFacilityDetail = async () => {
       }
     })
     if (response && response.isSuccess === false) {
-      let errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء تعديل المادة';
+      let errorMsg = response.message || response.errors?.[0]?.errorMessage || t('pages.products.errorUpdate') || 'حدث خطأ أثناء تعديل المادة';
       errorMsg = errorMsg.replace(/\n/g, '');
   
       showAlertMsg(errorMsg, 'error');
@@ -1334,9 +1163,9 @@ const updateFacilityDetail = async () => {
     }
     editFacilityDetailDialog.value = false
     await loadFacilityDetailsByBuildingDetailId(selectedFacilityDetail.value)
-    showAlertMsg('تم تعديل المادة بنجاح', 'success')
+    showAlertMsg(t('pages.products.successUpdate') || 'تم تعديل المادة بنجاح', 'success')
   } catch (e) {
-    showAlertMsg('حدث خطأ أثناء تعديل المادة', 'error')
+    showAlertMsg(t('pages.products.errorUpdate') || 'حدث خطأ أثناء تعديل المادة', 'error')
   } finally {
     editFacilityDetailLoading.value = false
   }
@@ -1362,9 +1191,10 @@ const filteredFacilityDetails = computed(() => {
 })
 
 function showAlertMsg(msg, type = 'success') {
-  alertMessage.value = msg
-  alertType.value = type
-  showAlert.value = true
+  if (type === 'success') return showSuccess(msg, { timeout: 4000, clickToDismiss: true })
+  if (type === 'warning') return showWarning(msg, { timeout: 5000, clickToDismiss: true })
+  if (type === 'error') return showError(msg, { timeout: 0, clickToDismiss: true })
+  return showInfo(msg, { timeout: 4000, clickToDismiss: true })
 }
 </script>
 
@@ -1547,38 +1377,7 @@ function showAlertMsg(msg, type = 'success') {
       max-width="800px"
       persistent
     >
-      <!-- Alert for validation errors and success messages - Above VCard -->
-      <div class="d-flex justify-center mb-4" v-if="showAlert">
-        <VAlert
-          v-model="showAlert"
-          :type="alertType"
-          variant="tonal"
-          closable
-          @click="showAlert = false"
-          style="cursor: pointer;"
-          :style="{
-            position: 'relative',
-            zIndex: 9999,
-            maxWidth: '600px',
-            width: '100%',
-            borderRadius: alertType === 'success' ? '16px' : '8px',
-            boxShadow: alertType === 'success' ? '0 2px 4px rgba(76, 175, 80, 0.2)' : '0 2px 8px rgba(0,0,0,0.15)',
-            border: alertType === 'success' ? '1px solid #4caf50' : '1px solid',
-            borderColor: alertType === 'warning' ? '#ff9800' : alertType === 'error' ? '#f44336' : '#4caf50',
-            backgroundColor: alertType === 'success' ? '#e8f5e8' : alertType === 'warning' ? '#fff8e1' : alertType === 'error' ? '#ffebee' : '#e8f5e8',
-            padding: alertType === 'success' ? '12px 16px' : '16px'
-          }"
-        >
-          <div class="d-flex align-center">
-            <VIcon
-              :icon="alertType === 'warning' ? 'tabler-alert-triangle' : alertType === 'error' ? 'tabler-alert-circle' : 'tabler-check-circle'"
-              :color="alertType === 'warning' ? 'warning' : alertType === 'error' ? 'error' : 'success'"
-              class="me-2"
-            />
-            <span class="font-weight-medium" :style="{ color: alertType === 'success' ? '#2e7d32' : 'inherit' }">{{ alertMessage }}</span>
-          </div>
-        </VAlert>
-      </div>
+      
       
       <VCard>
           <VCardTitle class="text-h6">إضافة مسجد جديد</VCardTitle>
@@ -2453,16 +2252,7 @@ function showAlertMsg(msg, type = 'success') {
           للمبنى: {{ selectedFacilityDetail.name }}
         </VCardSubtitle>
         <VCardText>
-          <!-- Alert for messages -->
-          <VAlert
-            v-model="showAlert"
-            :type="alertType"
-            variant="tonal"
-            closable
-            class="mb-4"
-          >
-            {{ alertMessage }}
-          </VAlert>
+          
           
           <!-- هنا سيتم وضع جدول المواد المرتبطة بهذا المبنى -->
           <div class="text-center text-medium-emphasis py-8">
@@ -2539,16 +2329,7 @@ function showAlertMsg(msg, type = 'success') {
       <VCard>
         <VCardTitle class="text-h6">إضافة مادة جديدة</VCardTitle>
         <VCardText>
-          <!-- Alert for messages -->
-          <VAlert
-            v-model="showAlert"
-            :type="alertType"
-            variant="tonal"
-            closable
-            class="mb-4"
-          >
-            {{ alertMessage }}
-          </VAlert>
+          
           
           <VForm @submit.prevent="addFacilityDetail">
             <VAutocomplete
@@ -2605,16 +2386,7 @@ function showAlertMsg(msg, type = 'success') {
       <VCard>
         <VCardTitle class="text-h6">تعديل المادة</VCardTitle>
         <VCardText>
-          <!-- Alert for messages -->
-          <VAlert
-            v-model="showAlert"
-            :type="alertType"
-            variant="tonal"
-            closable
-            class="mb-4"
-          >
-            {{ alertMessage }}
-          </VAlert>
+          
           
           <VForm @submit.prevent="updateFacilityDetail">
             <VRow>

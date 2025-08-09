@@ -228,11 +228,11 @@
 
 
         public static string MachineNameNotValid = "لا يمكنك تسجيل الدخول من هذا الجهاز الا بطلب من الادارة  ";
-        public static string ChangeRequestCompleate = "لقد استهلكت جميع الطلبات الرجاء التواصل مع الاداة  ";
-        public static string ChangeRequestNotValid = "يمكنك تسجيل الدخول بهذا الجهاز دون تقديم الطلب الرجاء تسجيل الدخول   ";
-        public static string ChangeRequestNotValidNow = "لا يمكنك تقديم طلب تغير في الوقت الحالي   ";
-        public static string ChangeRequestNotValidFromThsDevice = "لا يمكنك تقديم طلب تغير من هذا الجهاز قم بطلب التغير من الجهاز الجديد   ";
-        public static string ChangeRequestPending = "لقد قمت بإرسال الطلب مسبقا في انتظار الرد من الإدارة  ";
+        public static string ChangeOfPathRequestCompleate = "لقد استهلكت جميع الطلبات الرجاء التواصل مع الاداة  ";
+        public static string ChangeOfPathRequestNotValid = "يمكنك تسجيل الدخول بهذا الجهاز دون تقديم الطلب الرجاء تسجيل الدخول   ";
+        public static string ChangeOfPathRequestNotValidNow = "لا يمكنك تقديم طلب تغير في الوقت الحالي   ";
+        public static string ChangeOfPathRequestNotValidFromThsDevice = "لا يمكنك تقديم طلب تغير من هذا الجهاز قم بطلب التغير من الجهاز الجديد   ";
+        public static string ChangeOfPathRequestPending = "لقد قمت بإرسال الطلب مسبقا في انتظار الرد من الإدارة  ";
         public static string MachineNameEmpty = "لم يتم التعرف علي الجهاز الخاص بك الرجاء محاولة تسجيل الدخول من مكان أخر  ";
         public static string StudentNotFound = "لم يتم العتور علي البيانات الخاصة بك يرجي مراجعة الادارة  ";
         public static string StudentBlockedAcount = "تم إيقافك يرجي مراجعة الادارة ";

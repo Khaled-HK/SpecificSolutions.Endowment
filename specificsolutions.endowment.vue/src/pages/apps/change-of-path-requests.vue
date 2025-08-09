@@ -23,14 +23,14 @@
             size="small"
             color="primary"
             variant="text"
-            @click="openEditDialog(item.raw)"
+            @click="openEditDialog(item.raw || item)"
           />
           <VBtn
             icon="mdi-delete"
             size="small"
             color="error"
             variant="text"
-            @click="deleteChangeRequest(item.raw.id)"
+            @click="deleteChangeRequest(item.raw?.id || item.id)"
           />
         </template>
       </VDataTable>
@@ -52,8 +52,8 @@
               <VTextField
                 v-model="newRequest.title"
                 :label="t('pages.changeRequests.title')"
-                :error="hasErrors('title')"
-                :error-messages="getErrors('title')"
+                :error="hasError('title')"
+                :error-messages="getError('title')"
                 @blur="setFieldTouched('title')"
               />
             </VCol>
@@ -61,8 +61,8 @@
               <VTextField
                 v-model="newRequest.referenceNumber"
                 :label="t('pages.changeRequests.referenceNumber')"
-                :error="hasErrors('referenceNumber')"
-                :error-messages="getErrors('referenceNumber')"
+                :error="hasError('referenceNumber')"
+                :error-messages="getError('referenceNumber')"
                 @blur="setFieldTouched('referenceNumber')"
               />
             </VCol>
@@ -71,8 +71,8 @@
                 v-model="newRequest.priority"
                 :items="priorityOptions"
                 :label="t('pages.changeRequests.priority')"
-                :error="hasErrors('priority')"
-                :error-messages="getErrors('priority')"
+                :error="hasError('priority')"
+                :error-messages="getError('priority')"
                 @blur="setFieldTouched('priority')"
               />
             </VCol>
@@ -81,8 +81,8 @@
                 v-model="newRequest.requestStatus"
                 :items="statusOptions"
                 :label="t('pages.changeRequests.requestStatus')"
-                :error="hasErrors('requestStatus')"
-                :error-messages="getErrors('requestStatus')"
+                :error="hasError('requestStatus')"
+                :error-messages="getError('requestStatus')"
                 @blur="setFieldTouched('requestStatus')"
               />
             </VCol>
@@ -90,8 +90,8 @@
               <VTextField
                 v-model="newRequest.currentType"
                 :label="t('pages.changeRequests.currentType')"
-                :error="hasErrors('currentType')"
-                :error-messages="getErrors('currentType')"
+                :error="hasError('currentType')"
+                :error-messages="getError('currentType')"
                 @blur="setFieldTouched('currentType')"
               />
             </VCol>
@@ -99,8 +99,8 @@
               <VTextField
                 v-model="newRequest.newType"
                 :label="t('pages.changeRequests.newType')"
-                :error="hasErrors('newType')"
-                :error-messages="getErrors('newType')"
+                :error="hasError('newType')"
+                :error-messages="getError('newType')"
                 @blur="setFieldTouched('newType')"
               />
             </VCol>
@@ -108,8 +108,8 @@
               <VTextField
                 v-model="newRequest.location"
                 :label="t('pages.changeRequests.location')"
-                :error="hasErrors('location')"
-                :error-messages="getErrors('location')"
+                :error="hasError('location')"
+                :error-messages="getError('location')"
                 @blur="setFieldTouched('location')"
               />
             </VCol>
@@ -117,8 +117,8 @@
               <VTextarea
                 v-model="newRequest.description"
                 :label="t('pages.changeRequests.description')"
-                :error="hasErrors('description')"
-                :error-messages="getErrors('description')"
+                :error="hasError('description')"
+                :error-messages="getError('description')"
                 @blur="setFieldTouched('description')"
                 rows="3"
               />
@@ -127,8 +127,8 @@
               <VTextarea
                 v-model="newRequest.reason"
                 :label="t('pages.changeRequests.reason')"
-                :error="hasErrors('reason')"
-                :error-messages="getErrors('reason')"
+                :error="hasError('reason')"
+                :error-messages="getError('reason')"
                 @blur="setFieldTouched('reason')"
                 rows="3"
               />
@@ -195,6 +195,12 @@
 </template>
 
 <script setup lang="ts">
+definePage({
+  meta: {
+    action: 'View',
+    subject: 'ChangeOfPathRequest',
+  },
+})
 import { ref, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useFormValidation } from '@/composables/useFormValidation'
@@ -212,9 +218,11 @@ const {
   validateLength,
   addError,
   hasErrors,
-  getErrors,
   setErrorsFromResponse
 } = useFormValidation()
+
+const hasError = (field: string) => !!(validationState.errors[field]?.length && validationState.touched[field])
+const getError = (field: string) => validationState.errors[field] || []
 
 // Data
 const changeRequests = ref([])
@@ -267,7 +275,7 @@ const headers = computed(() => [
 const loadChangeRequests = async () => {
   loading.value = true
   try {
-    const response = await api('/ChangeOfPathRequests/filter', {
+    const response = await api('/ChangeOfPathRequest/filter', {
       headers: {
         'Accept-Language': locale.value
       }
@@ -364,7 +372,7 @@ const addChangeRequest = async () => {
   }
 
   try {
-    await api('/ChangeOfPathRequests', {
+    await api('/ChangeOfPathRequest', {
       method: 'POST',
       body: newRequest.value,
       headers: {
@@ -377,8 +385,9 @@ const addChangeRequest = async () => {
     await loadChangeRequests()
   } catch (error) {
     console.error('Error adding change request:', error)
-    if (error.response?.data?.errors) {
-      setErrorsFromResponse(error.response.data.errors, {
+    const resp: any = error as any
+    if (resp.response?.data?.errors) {
+      ;(setErrorsFromResponse as any)(resp.response.data.errors, {
         Title: 'title',
         Description: 'description',
         Priority: 'priority',
@@ -440,7 +449,7 @@ const updateChangeRequest = async () => {
   }
 
   try {
-    await api(`/ChangeOfPathRequests/${selectedId.value}`, {
+    await api(`/ChangeOfPathRequest/${selectedId.value}`, {
       method: 'PUT',
       body: newRequest.value,
       headers: {
@@ -453,8 +462,9 @@ const updateChangeRequest = async () => {
     await loadChangeRequests()
   } catch (error) {
     console.error('Error updating change request:', error)
-    if (error.response?.data?.errors) {
-      setErrorsFromResponse(error.response.data.errors, {
+    const resp: any = error as any
+    if (resp.response?.data?.errors) {
+      ;(setErrorsFromResponse as any)(resp.response.data.errors, {
         Title: 'title',
         Description: 'description',
         Priority: 'priority',
@@ -470,13 +480,13 @@ const updateChangeRequest = async () => {
 }
 
 const deleteChangeRequest = (id: string) => {
-  selectedId.value = id
+  selectedId.value = id as any
   deleteDialog.value = true
 }
 
 const confirmDelete = async () => {
   try {
-    await api(`/ChangeOfPathRequests/${selectedId.value}`, {
+    await api(`/ChangeOfPathRequest/${selectedId.value}`, {
       method: 'DELETE',
       headers: {
         'Accept-Language': locale.value

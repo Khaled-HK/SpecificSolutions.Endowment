@@ -1,4 +1,4 @@
-import { ref, reactive } from 'vue'
+import { reactive } from 'vue'
 
 export interface AlertOptions {
   message: string
@@ -17,17 +17,19 @@ export interface AlertState {
   clickToDismiss: boolean
 }
 
-export const useAlert = () => {
-  const alertState = reactive<AlertState>({
-    show: false,
-    message: '',
-    type: 'info',
-    timeout: 0,
-    closable: true,
-    clickToDismiss: true,
-  })
+// Singleton state (shared across the whole app)
+const alertState = reactive<AlertState>({
+  show: false,
+  message: '',
+  type: 'info',
+  timeout: 0,
+  closable: true,
+  clickToDismiss: true,
+})
 
-  let timeoutId: NodeJS.Timeout | null = null
+let timeoutId: NodeJS.Timeout | null = null
+
+export const useAlert = () => {
 
   const showAlert = (options: AlertOptions) => {
     // إلغاء التنبيه السابق إذا كان موجوداً
@@ -68,19 +70,20 @@ export const useAlert = () => {
 
   // دوال مساعدة للأنواع المختلفة
   const showSuccess = (message: string, options?: Partial<AlertOptions>) => {
-    showAlert({ message, type: 'success', ...options })
+    // مدة افتراضية 4000ms إن لم تُحدَّد
+    showAlert({ message, type: 'success', timeout: 4000, ...options })
   }
 
   const showError = (message: string, options?: Partial<AlertOptions>) => {
-    showAlert({ message, type: 'error', ...options })
+    showAlert({ message, type: 'error', timeout: 5000, ...options })
   }
 
   const showWarning = (message: string, options?: Partial<AlertOptions>) => {
-    showAlert({ message, type: 'warning', ...options })
+    showAlert({ message, type: 'warning', timeout: 5000, ...options })
   }
 
   const showInfo = (message: string, options?: Partial<AlertOptions>) => {
-    showAlert({ message, type: 'info', ...options })
+    showAlert({ message, type: 'info', timeout: 4000, ...options })
   }
 
   return {

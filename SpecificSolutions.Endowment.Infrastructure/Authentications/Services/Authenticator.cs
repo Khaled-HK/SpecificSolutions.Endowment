@@ -97,29 +97,16 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
             var permissions = await GetUserPermissionsAsync(user);
             //var permissions1 = await GetUserPermissionsAsync1(user);
 
-            // إضافة logging لمعرفة الصلاحيات المرسلة
-            Console.WriteLine($"🔍 Backend - User permissions count: {permissions.Count}");
-            Console.WriteLine($"🔍 Backend - User permissions: {string.Join(", ", permissions)}");
-            
-            // فحص الصلاحيات الجديدة
-            var newPermissions = permissions.Where(p => p.Contains("DemolitionRequest") || p.Contains("NameChangeRequest") || p.Contains("NeedsRequest") || p.Contains("ExpenditureChangeRequest") || p.Contains("ChangeOfPathRequest")).ToList();
-            Console.WriteLine($"🔍 Backend - New request permissions found: {newPermissions.Count}");
-            Console.WriteLine($"🔍 Backend - New request permissions: {string.Join(", ", newPermissions)}");
-
-            // Clear any existing permissions to avoid duplicates from previous sessions
-            user.AddPermissions(permissions);
-
-            await _sessionService.CreateSessionAsync(user);
-
-            var response = new UserLogin(
-                token: token,
-                id: user.Id,
-                name: user.Name,
-                refreshToken: refreshToken,
-                permissions: user.Permissions
-            );
-
-            return response;
+            return new UserLogin
+            {
+                Id = user.Id,
+                Name = string.IsNullOrWhiteSpace(user.Name)
+                    ? ($"{user.FirstName} {user.LastName}".Trim())
+                    : user.Name,
+                Token = token,
+                RefreshToken = refreshToken,
+                Permissions = permissions
+            };
         }
 
         public async Task<RegistrationResponse> Register(RegistrationRequest request)
@@ -267,19 +254,11 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
                             // Get detailed permissions for this role group
                             var permissionList = userRole.Permissions.ToPermissionList();
                             
-                            // إضافة logging لمعرفة الصلاحيات من كل دور
-                            Console.WriteLine($"🔍 Backend - Role {userRole.RoleName} permissions count: {permissionList.Count}");
-                            Console.WriteLine($"🔍 Backend - Role {userRole.RoleName} permissions: {string.Join(", ", permissionList)}");
-
                             // Add permissions without context for general use
                             permissions.AddRange(permissionList);
                         }
                     }
                 }
-
-                // إضافة logging نهائي لمعرفة جميع الصلاحيات
-                Console.WriteLine($"🔍 Backend - Total permissions returned: {permissions.Count}");
-                Console.WriteLine($"🔍 Backend - All permissions: {string.Join(", ", permissions)}");
                 
                 return permissions;
             }

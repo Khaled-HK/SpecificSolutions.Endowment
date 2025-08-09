@@ -9,9 +9,9 @@ export const BASE_PERMISSIONS = [
 ]
 
 export const SUBJECTS = [
-  'AccountDetail', 'ConstructionRequest', 'MaintenanceRequest', 'ChangeRequest',
+  'AccountDetail', 'ConstructionRequest', 'MaintenanceRequest', 'ChangeOfPathRequest',
   'DemolitionRequest', 'NameChangeRequest', 'NeedsRequest', 'ExpenditureChangeRequest',
-  'ChangeOfPathRequest', 'Account', 'User', 'Role', 'Decision', 'Request',
+  'Account', 'User', 'Role', 'Decision', 'Request',
   'Office', 'Endowment', 'City', 'Region', 'Building', 'Mosque'
 ] as const
 

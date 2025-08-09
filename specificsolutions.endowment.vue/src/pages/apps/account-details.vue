@@ -288,7 +288,7 @@ const operationTypeOptions = computed(() => [
 const loadAccountDetails = async () => {
   loading.value = true
   try {
-    const response = await api('/AccountDetails/filter', {
+    const response = await api('/AccountDetail/filter', {
       method: 'GET',
       headers: {
         'Accept-Language': locale.value
@@ -372,7 +372,7 @@ const addAccountDetail = async () => {
   }
 
   try {
-    await api('/AccountDetails', {
+    await api('/AccountDetail', {
       method: 'POST',
       body: newAccountDetail.value,
       headers: {
@@ -425,7 +425,7 @@ const updateAccountDetail = async () => {
   }
 
   try {
-    await api(`/AccountDetails/${selectedItem.value.id}`, {
+    await api(`/AccountDetail/${selectedItem.value.id}`, {
       method: 'PUT',
       body: newAccountDetail.value,
       headers: {
@@ -458,7 +458,7 @@ const confirmDelete = (item: any) => {
 
 const deleteAccountDetail = async () => {
   try {
-    await api(`/AccountDetails/${selectedItem.value.id}`, {
+    await api(`/AccountDetail/${selectedItem.value.id}`, {
       method: 'DELETE',
       headers: {
         'Accept-Language': locale.value

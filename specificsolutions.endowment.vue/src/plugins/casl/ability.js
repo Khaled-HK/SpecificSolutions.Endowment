@@ -41,15 +41,16 @@ export const reloadAbilityFromCookie = () => {
     
     if (storedRules) {
       const userAbilityRules = JSON.parse(storedRules)
+      const normalized = normalizeRules(userAbilityRules)
       
-      if (userAbilityRules && Array.isArray(userAbilityRules) && userAbilityRules.length > 0) {
+      if (normalized && Array.isArray(normalized) && normalized.length > 0) {
         // إضافة الصلاحيات الأساسية إلى الصلاحيات المحملة
         const rulesWithBasics = [
           // صلاحيات أساسية مطلوبة
           { action: 'View', subject: 'Dashboard' },
           { action: 'read', subject: 'Auth' },
           // الصلاحيات المحملة من الكوكيز
-          ...userAbilityRules
+          ...normalized
         ]
         
         ability.update(rulesWithBasics)
@@ -85,15 +86,16 @@ export const reloadAbilityFromCookie = () => {
             }
           })
           
+          const normalized = normalizeRules(rules)
           // حفظ الصلاحيات في الكوكيز
-          Cookies.set('user-ability-rules', JSON.stringify(rules), { 
+          Cookies.set('user-ability-rules', JSON.stringify(normalized), { 
             expires: 7,
             path: '/',
             secure: false,
             sameSite: 'lax'
           })
           
-          ability.update(rules)
+          ability.update(normalized)
           console.log('✅ Permissions loaded from userData and saved to cookies')
           return true
         }
@@ -122,6 +124,28 @@ export const reloadAbilityFromCookie = () => {
   }
 }
 
+// Normalize mixed rule formats to CASL-compatible { action, subject }
+function normalizeRules(rules) {
+  try {
+    return (rules || []).map(r => {
+      if (typeof r === 'string') {
+        // e.g. "ChangeOfPathRequest_View"
+        if (r.endsWith('_View')) return { action: 'View', subject: r.replace(/_View$/, '') }
+        if (r.endsWith('_Add')) return { action: 'Add', subject: r.replace(/_Add$/, '') }
+        if (r.endsWith('_Edit')) return { action: 'Edit', subject: r.replace(/_Edit$/, '') }
+        if (r.endsWith('_Delete')) return { action: 'Delete', subject: r.replace(/_Delete$/, '') }
+        return null
+      }
+      if (typeof r === 'object' && r && (r.action || r.Action) && (r.subject || r.Subject)) {
+        return { action: r.action || r.Action, subject: r.subject || r.Subject }
+      }
+      return r
+    }).filter(Boolean)
+  } catch {
+    return []
+  }
+}
+
 // Helper functions to map backend permissions to CASL actions/subjects
 function mapPermissionToAction(permission) {
   // Handle underscore format from backend (e.g., "City_View", "Account_Add")
@@ -143,7 +167,7 @@ function mapPermissionToSubject(permission) {
   if (permission.startsWith('AccountDetail_')) return 'AccountDetail'
   if (permission.startsWith('ConstructionRequest_')) return 'ConstructionRequest'
   if (permission.startsWith('MaintenanceRequest_')) return 'MaintenanceRequest'
-  if (permission.startsWith('ChangeRequest_')) return 'ChangeRequest'
+  if (permission.startsWith('ChangeOfPathRequest_')) return 'ChangeOfPathRequest'
   if (permission.startsWith('DemolitionRequest_')) return 'DemolitionRequest'
   if (permission.startsWith('NameChangeRequest_')) return 'NameChangeRequest'
   if (permission.startsWith('NeedsRequest_')) return 'NeedsRequest'

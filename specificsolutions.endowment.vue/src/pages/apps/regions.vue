@@ -35,7 +35,7 @@ const loading = ref(false)
 const citiesLoading = ref(false)
 const totalItems = ref(0)
 
-const { t } = useI18n()
+const { t, te } = useI18n()
 
 // استخدام نظام التحقق الجديد "نمط خالد"
 const {
@@ -56,15 +56,10 @@ const {
   validateLength,
 } = useFormValidation()
 
-// استخدام نظام التنبيهات الجديد "نمط خالد"
-import { useAlert } from '@/composables/useAlert'
+// استخدام نظام التنبيهات الموحد على مستوى التطبيق
+import { useAppAlerts } from '@/composables/useAppAlerts'
 
-const { showSuccess, showError, showWarning, showInfo } = useAlert()
-
-// Simple alert state (للتوافق مع الكود الموجود)
-const showAlert = ref(false)
-const alertMessage = ref('')
-const alertType = ref<'success' | 'error' | 'warning' | 'info'>('success')
+const { success: showSuccess, error: showError, warning: showWarning, info: showInfo } = useAppAlerts()
 
 const dialog = ref(false)
 const editDialog = ref(false)
@@ -144,15 +139,7 @@ const loadRegions = async () => {
     }
   } catch (error) {
     console.error('❌ خطأ في تحميل المناطق:', error)
-    showError('حدث خطأ أثناء تحميل المناطق', {
-      timeout: 0,
-      clickToDismiss: true
-    })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = 'حدث خطأ أثناء تحميل المناطق'
-    alertType.value = 'error'
-    showAlert.value = true
+    showError(t('pages.regions.errorLoading') || 'حدث خطأ أثناء تحميل المناطق', { timeout: 0, clickToDismiss: true })
     regions.value = []
     totalItems.value = 0
   } finally {
@@ -171,15 +158,7 @@ const loadCities = async () => {
     countries.value = uniqueCountries.sort()
   } catch (error) {
     console.error('❌ خطأ في تحميل المدن:', error)
-    showError('حدث خطأ أثناء تحميل المدن', {
-      timeout: 0,
-      clickToDismiss: true
-    })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = 'حدث خطأ أثناء تحميل المدن'
-    alertType.value = 'error'
-    showAlert.value = true
+    showError(t('pages.cities.errorLoading') ?? 'حدث خطأ أثناء تحميل المدن', { timeout: 0, clickToDismiss: true })
   } finally {
     citiesLoading.value = false
   }
@@ -219,16 +198,7 @@ const addRegion = async () => {
     setFieldTouched('name')
     setFieldTouched('country')
     setFieldTouched('cityId')
-    
-    showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
-      timeout: 5000,
-      clickToDismiss: true
-    })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
-    alertType.value = 'warning'
-    showAlert.value = true
+    showWarning(te('validation.fixHighlighted') ? t('validation.fixHighlighted') : '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', { timeout: 5000, clickToDismiss: true })
     return
   }
 
@@ -254,26 +224,10 @@ const addRegion = async () => {
         setFieldTouched('country')
         
         // إظهار رسالة للمستخدم باستخدام النظام الجديد
-        showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
-          timeout: 5000,
-          clickToDismiss: true
-        })
-        
-        // للتوافق مع الكود الموجود
-        alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
-        alertType.value = 'warning'
-        showAlert.value = true
+        showWarning(te('validation.fixHighlighted') ? t('validation.fixHighlighted') : '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', { timeout: 5000, clickToDismiss: true })
       } else {
-        const errorMsg = response.message || 'حدث خطأ أثناء إضافة المنطقة'
-        showError(errorMsg, {
-          timeout: 0, // لا يختفي تلقائياً للأخطاء المهمة
-          clickToDismiss: true
-        })
-        
-        // للتوافق مع الكود الموجود
-        alertMessage.value = errorMsg
-        alertType.value = 'error'
-        showAlert.value = true
+        const errorMsg = response.message || t('pages.regions.errorAdd') || 'حدث خطأ أثناء إضافة المنطقة'
+        showError(errorMsg, { timeout: 0, clickToDismiss: true })
       }
       return
     }
@@ -281,15 +235,7 @@ const addRegion = async () => {
     dialog.value = false
     resetNewRegion()
     loadRegions()
-    showSuccess('تم إضافة المنطقة بنجاح', {
-      timeout: 4000,
-      clickToDismiss: true
-    })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = 'تم إضافة المنطقة بنجاح'
-    alertType.value = 'success'
-    showAlert.value = true
+    showSuccess(t('pages.regions.successAdd') ?? 'تم إضافة المنطقة بنجاح', { timeout: 4000, clickToDismiss: true })
   } catch (error: any) {
     console.error('❌ خطأ في الشبكة أو في الخادم:', error)
     
@@ -302,35 +248,11 @@ const addRegion = async () => {
       setFieldTouched('cityId')
       setFieldTouched('country')
       
-      showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
-        timeout: 5000,
-        clickToDismiss: true
-      })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
-      alertType.value = 'warning'
-      showAlert.value = true
+      showWarning(t('validation.fixHighlighted') || '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', { timeout: 5000, clickToDismiss: true })
     } else if (error?.data?.message) {
-      showError(error.data.message, {
-        timeout: 0,
-        clickToDismiss: true
-      })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = error.data.message
-      alertType.value = 'error'
-      showAlert.value = true
+      showError(error.data.message, { timeout: 0, clickToDismiss: true })
     } else {
-      showError('حدث خطأ أثناء إضافة المنطقة', {
-        timeout: 0,
-        clickToDismiss: true
-      })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = 'حدث خطأ أثناء إضافة المنطقة'
-      alertType.value = 'error'
-      showAlert.value = true
+      showError(t('pages.regions.errorAdd') || 'حدث خطأ أثناء إضافة المنطقة', { timeout: 0, clickToDismiss: true })
     }
   }
 }
@@ -367,16 +289,7 @@ const updateRegion = async () => {
     setFieldTouched('editName')
     setFieldTouched('editCountry')
     setFieldTouched('editCityId')
-    
-    showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
-      timeout: 5000,
-      clickToDismiss: true
-    })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
-    alertType.value = 'warning'
-    showAlert.value = true
+    showWarning(te('validation.fixHighlighted') ? t('validation.fixHighlighted') : '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', { timeout: 5000, clickToDismiss: true })
     return
   }
 
@@ -403,41 +316,17 @@ const updateRegion = async () => {
         setFieldTouched('editCountry')
         
         // إظهار رسالة للمستخدم باستخدام النظام الجديد
-        showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
-          timeout: 5000,
-          clickToDismiss: true
-        })
-        
-        // للتوافق مع الكود الموجود
-        alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
-        alertType.value = 'warning'
-        showAlert.value = true
+        showWarning(te('validation.fixHighlighted') ? t('validation.fixHighlighted') : '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', { timeout: 5000, clickToDismiss: true })
       } else {
-        const errorMsg = response.message || 'حدث خطأ أثناء تحديث المنطقة'
-        showError(errorMsg, {
-          timeout: 0,
-          clickToDismiss: true
-        })
-        
-        // للتوافق مع الكود الموجود
-        alertMessage.value = errorMsg
-        alertType.value = 'error'
-        showAlert.value = true
+        const errorMsg = response.message || t('pages.regions.errorUpdate') || 'حدث خطأ أثناء تحديث المنطقة'
+        showError(errorMsg, { timeout: 0, clickToDismiss: true })
       }
       return
     }
     
     editDialog.value = false
     loadRegions()
-    showSuccess('تم تحديث المنطقة بنجاح', {
-      timeout: 4000,
-      clickToDismiss: true
-    })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = 'تم تحديث المنطقة بنجاح'
-    alertType.value = 'success'
-    showAlert.value = true
+    showSuccess(t('pages.regions.successUpdate') || 'تم تحديث المنطقة بنجاح', { timeout: 4000, clickToDismiss: true })
   } catch (error: any) {
     console.error('❌ خطأ في الشبكة أو في الخادم:', error)
     
@@ -450,35 +339,11 @@ const updateRegion = async () => {
       setFieldTouched('editCityId')
       setFieldTouched('editCountry')
       
-      showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
-        timeout: 5000,
-        clickToDismiss: true
-      })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
-      alertType.value = 'warning'
-      showAlert.value = true
+      showWarning(t('validation.fixHighlighted') || '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', { timeout: 5000, clickToDismiss: true })
     } else if (error?.data?.message) {
-      showError(error.data.message, {
-        timeout: 0,
-        clickToDismiss: true
-      })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = error.data.message
-      alertType.value = 'error'
-      showAlert.value = true
+      showError(error.data.message, { timeout: 0, clickToDismiss: true })
     } else {
-      showError('حدث خطأ أثناء تحديث المنطقة', {
-        timeout: 0,
-        clickToDismiss: true
-      })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = 'حدث خطأ أثناء تحديث المنطقة'
-      alertType.value = 'error'
-      showAlert.value = true
+      showError(t('pages.regions.errorUpdate') || 'حدث خطأ أثناء تحديث المنطقة', { timeout: 0, clickToDismiss: true })
     }
   }
 }
@@ -497,17 +362,9 @@ const deleteRegion = async () => {
     
     // Check if the response indicates success - response comes directly, not in response.data
     if (response && response.isSuccess === false) {
-      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء حذف المنطقة'
+      const errorMsg = response.message || response.errors?.[0]?.errorMessage || t('pages.regions.errorDelete') || 'حدث خطأ أثناء حذف المنطقة'
       console.log('API returned error:', errorMsg)
-      showError(errorMsg, {
-        timeout: 0,
-        clickToDismiss: true
-      })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
+      showError(errorMsg, { timeout: 0, clickToDismiss: true })
       deleteDialog.value = false
       return
     }
@@ -516,15 +373,7 @@ const deleteRegion = async () => {
     console.log('Region deleted successfully')
     deleteDialog.value = false
     loadRegions()
-    showSuccess('تم حذف المنطقة بنجاح', {
-      timeout: 4000,
-      clickToDismiss: true
-    })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = 'تم حذف المنطقة بنجاح'
-    alertType.value = 'success'
-    showAlert.value = true
+    showSuccess(t('pages.regions.successDelete') || 'تم حذف المنطقة بنجاح', { timeout: 4000, clickToDismiss: true })
   } catch (error: any) {
     console.error('❌ خطأ في الشبكة أو في الخادم:', error)
     
@@ -537,35 +386,11 @@ const deleteRegion = async () => {
       setFieldTouched('editCityId')
       setFieldTouched('editCountry')
       
-      showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
-        timeout: 5000,
-        clickToDismiss: true
-      })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
-      alertType.value = 'warning'
-      showAlert.value = true
+      showWarning(t('validation.fixHighlighted') || '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', { timeout: 5000, clickToDismiss: true })
     } else if (error?.data?.message) {
-      showError(error.data.message, {
-        timeout: 0,
-        clickToDismiss: true
-      })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = error.data.message
-      alertType.value = 'error'
-      showAlert.value = true
+      showError(error.data.message, { timeout: 0, clickToDismiss: true })
     } else {
-      showError('حدث خطأ أثناء حذف المنطقة', {
-        timeout: 0,
-        clickToDismiss: true
-      })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = 'حدث خطأ أثناء حذف المنطقة'
-      alertType.value = 'error'
-      showAlert.value = true
+      showError(t('pages.regions.errorDelete') || 'حدث خطأ أثناء حذف المنطقة', { timeout: 0, clickToDismiss: true })
     }
     deleteDialog.value = false
   }
@@ -587,33 +412,17 @@ const deleteSelectedRows = async () => {
     
     if (failedOperations.length > 0) {
       const errorMessages = failedOperations.map((response: any) => 
-        response?.message || response?.errors?.[0]?.errorMessage || 'حدث خطأ أثناء العملية'
+        response?.message || response?.errors?.[0]?.errorMessage || (t('common.operationError') || 'حدث خطأ أثناء العملية')
       )
-      const errorMsg = `فشل في حذف ${failedOperations.length} عنصر: ${errorMessages.join(', ')}`
-      showError(errorMsg, {
-        timeout: 0,
-        clickToDismiss: true
-      })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
+      const errorMsg = t('pages.regions.deleteSelectedError', { count: failedOperations.length, details: errorMessages.join(', ') }) || `فشل في حذف ${failedOperations.length} عنصر: ${errorMessages.join(', ')}`
+      showError(errorMsg, { timeout: 0, clickToDismiss: true })
       return
     }
     
     // If we reach here, all deletions were successful
     selectedRows.value = []
     loadRegions()
-    showSuccess('تم حذف المناطق المحددة بنجاح', {
-      timeout: 4000,
-      clickToDismiss: true
-    })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = 'تم حذف المناطق المحددة بنجاح'
-    alertType.value = 'success'
-    showAlert.value = true
+    showSuccess(t('pages.regions.successDeleteSelected') || 'تم حذف المناطق المحددة بنجاح', { timeout: 4000, clickToDismiss: true })
   } catch (error: any) {
     console.error('❌ خطأ في الشبكة أو في الخادم:', error)
     
@@ -626,35 +435,11 @@ const deleteSelectedRows = async () => {
       setFieldTouched('editCityId')
       setFieldTouched('editCountry')
       
-      showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
-        timeout: 5000,
-        clickToDismiss: true
-      })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
-      alertType.value = 'warning'
-      showAlert.value = true
+      showWarning(t('validation.fixHighlighted') || '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', { timeout: 5000, clickToDismiss: true })
     } else if (error?.data?.message) {
-      showError(error.data.message, {
-        timeout: 0,
-        clickToDismiss: true
-      })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = error.data.message
-      alertType.value = 'error'
-      showAlert.value = true
+      showError(error.data.message, { timeout: 0, clickToDismiss: true })
     } else {
-      showError('حدث خطأ أثناء حذف المناطق المحددة', {
-        timeout: 0,
-        clickToDismiss: true
-      })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = 'حدث خطأ أثناء حذف المناطق المحددة'
-      alertType.value = 'error'
-      showAlert.value = true
+      showError(t('pages.regions.errorDeleteSelected') || 'حدث خطأ أثناء حذف المناطق المحددة', { timeout: 0, clickToDismiss: true })
     }
   }
 }
@@ -834,38 +619,7 @@ onMounted(() => {
       max-width="600px"
       persistent
     >
-      <!-- Alert for validation errors and success messages - Above VCard -->
-      <div class="d-flex justify-center mb-4" v-if="showAlert">
-        <VAlert
-          v-model="showAlert"
-          :type="alertType"
-          variant="tonal"
-          closable
-          @click="showAlert = false"
-          style="cursor: pointer;"
-          :style="{
-            position: 'relative',
-            zIndex: 9999,
-            maxWidth: '600px',
-            width: '100%',
-            borderRadius: alertType === 'success' ? '16px' : '8px',
-            boxShadow: alertType === 'success' ? '0 2px 4px rgba(76, 175, 80, 0.2)' : '0 2px 8px rgba(0,0,0,0.15)',
-            border: alertType === 'success' ? '1px solid #4caf50' : '1px solid',
-            borderColor: alertType === 'warning' ? '#ff9800' : alertType === 'error' ? '#f44336' : '#4caf50',
-            backgroundColor: alertType === 'success' ? '#e8f5e8' : alertType === 'warning' ? '#fff8e1' : alertType === 'error' ? '#ffebee' : '#e8f5e8',
-            padding: alertType === 'success' ? '12px 16px' : '16px'
-          }"
-        >
-          <div class="d-flex align-center">
-            <VIcon
-              :icon="alertType === 'warning' ? 'tabler-alert-triangle' : alertType === 'error' ? 'tabler-alert-circle' : 'tabler-check-circle'"
-              :color="alertType === 'warning' ? 'warning' : alertType === 'error' ? 'error' : 'success'"
-              class="me-2"
-            />
-            <span class="font-weight-medium" :style="{ color: alertType === 'success' ? '#2e7d32' : 'inherit' }">{{ alertMessage }}</span>
-          </div>
-        </VAlert>
-      </div>
+    
       
       <VCard>
         <VCardTitle class="text-h6">إضافة منطقة جديدة</VCardTitle>
@@ -950,38 +704,7 @@ onMounted(() => {
       max-width="600px"
       persistent
     >
-      <!-- Alert for validation errors and success messages - Above VCard -->
-      <div class="d-flex justify-center mb-4" v-if="showAlert">
-        <VAlert
-          v-model="showAlert"
-          :type="alertType"
-          variant="tonal"
-          closable
-          @click="showAlert = false"
-          style="cursor: pointer;"
-          :style="{
-            position: 'relative',
-            zIndex: 9999,
-            maxWidth: '600px',
-            width: '100%',
-            borderRadius: alertType === 'success' ? '16px' : '8px',
-            boxShadow: alertType === 'success' ? '0 2px 4px rgba(76, 175, 80, 0.2)' : '0 2px 8px rgba(0,0,0,0.15)',
-            border: alertType === 'success' ? '1px solid #4caf50' : '1px solid',
-            borderColor: alertType === 'warning' ? '#ff9800' : alertType === 'error' ? '#f44336' : '#4caf50',
-            backgroundColor: alertType === 'success' ? '#e8f5e8' : alertType === 'warning' ? '#fff8e1' : alertType === 'error' ? '#ffebee' : '#e8f5e8',
-            padding: alertType === 'success' ? '12px 16px' : '16px'
-          }"
-        >
-          <div class="d-flex align-center">
-            <VIcon
-              :icon="alertType === 'warning' ? 'tabler-alert-triangle' : alertType === 'error' ? 'tabler-alert-circle' : 'tabler-check-circle'"
-              :color="alertType === 'warning' ? 'warning' : alertType === 'error' ? 'error' : 'success'"
-              class="me-2"
-            />
-            <span class="font-weight-medium" :style="{ color: alertType === 'success' ? '#2e7d32' : 'inherit' }">{{ alertMessage }}</span>
-          </div>
-        </VAlert>
-      </div>
+    
       
       <VCard>
         <VCardTitle class="text-h6">تعديل المنطقة</VCardTitle>

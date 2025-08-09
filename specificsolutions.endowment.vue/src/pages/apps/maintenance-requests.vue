@@ -7,7 +7,7 @@
 
     <VCardText>
       <VDataTable :headers="headers" :items="maintenanceRequests" :loading="loading" class="text-no-wrap">
-        <template #item.actions="{ item }">
+        <template #item.actions="{ item }: { item: any }">
           <VBtn size="small" color="primary" variant="text" @click="openEditDialog(item.raw)">{{ t('common.edit') }}</VBtn>
           <VBtn size="small" color="error" variant="text" @click="openDeleteDialog(item.raw)">{{ t('common.delete') }}</VBtn>
         </template>
@@ -25,8 +25,8 @@
             <VTextField 
               v-model="newRequest.title" 
               :label="t('pages.maintenanceRequests.title')" 
-              :error="validationState.errors.title" 
-              :error-messages="validationState.errors.title" 
+              :error="validationState.errors.title && validationState.errors.title.length > 0 && validationState.touched.title" 
+              :error-messages="validationState.errors.title || []" 
               @blur="setFieldTouched('title')" 
             />
           </VCol>
@@ -34,8 +34,8 @@
             <VTextarea 
               v-model="newRequest.description" 
               :label="t('pages.maintenanceRequests.description')" 
-              :error="validationState.errors.description" 
-              :error-messages="validationState.errors.description" 
+              :error="validationState.errors.description && validationState.errors.description.length > 0 && validationState.touched.description" 
+              :error-messages="validationState.errors.description || []" 
               @blur="setFieldTouched('description')" 
             />
           </VCol>
@@ -43,8 +43,8 @@
             <VTextField 
               v-model="newRequest.priority" 
               :label="t('pages.maintenanceRequests.priority')" 
-              :error="validationState.errors.priority" 
-              :error-messages="validationState.errors.priority" 
+              :error="validationState.errors.priority && validationState.errors.priority.length > 0 && validationState.touched.priority" 
+              :error-messages="validationState.errors.priority || []" 
               @blur="setFieldTouched('priority')" 
             />
           </VCol>
@@ -52,8 +52,8 @@
             <VTextField 
               v-model="newRequest.location" 
               :label="t('pages.maintenanceRequests.location')" 
-              :error="validationState.errors.location" 
-              :error-messages="validationState.errors.location" 
+              :error="validationState.errors.location && validationState.errors.location.length > 0 && validationState.touched.location" 
+              :error-messages="validationState.errors.location || []" 
               @blur="setFieldTouched('location')" 
             />
           </VCol>
@@ -61,8 +61,8 @@
             <VTextField 
               v-model="newRequest.referenceNumber" 
               :label="t('pages.maintenanceRequests.referenceNumber')" 
-              :error="validationState.errors.referenceNumber" 
-              :error-messages="validationState.errors.referenceNumber" 
+              :error="validationState.errors.referenceNumber && validationState.errors.referenceNumber.length > 0 && validationState.touched.referenceNumber" 
+              :error-messages="validationState.errors.referenceNumber || []" 
               @blur="setFieldTouched('referenceNumber')" 
             />
           </VCol>
@@ -70,8 +70,8 @@
             <VTextField 
               v-model="newRequest.requestStatus" 
               :label="t('pages.maintenanceRequests.requestStatus')" 
-              :error="validationState.errors.requestStatus" 
-              :error-messages="validationState.errors.requestStatus" 
+              :error="validationState.errors.requestStatus && validationState.errors.requestStatus.length > 0 && validationState.touched.requestStatus" 
+              :error-messages="validationState.errors.requestStatus || []" 
               @blur="setFieldTouched('requestStatus')" 
             />
           </VCol>
@@ -79,8 +79,8 @@
             <VTextField 
               v-model="newRequest.maintenanceType" 
               :label="t('pages.maintenanceRequests.maintenanceType')" 
-              :error="validationState.errors.maintenanceType" 
-              :error-messages="validationState.errors.maintenanceType" 
+              :error="validationState.errors.maintenanceType && validationState.errors.maintenanceType.length > 0 && validationState.touched.maintenanceType" 
+              :error-messages="validationState.errors.maintenanceType || []" 
               @blur="setFieldTouched('maintenanceType')" 
             />
           </VCol>
@@ -89,8 +89,8 @@
               v-model.number="newRequest.estimatedCost" 
               :label="t('pages.maintenanceRequests.estimatedCost')" 
               type="number" 
-              :error="validationState.errors.estimatedCost" 
-              :error-messages="validationState.errors.estimatedCost" 
+              :error="validationState.errors.estimatedCost && validationState.errors.estimatedCost.length > 0 && validationState.touched.estimatedCost" 
+              :error-messages="validationState.errors.estimatedCost || []" 
               @blur="setFieldTouched('estimatedCost')" 
             />
           </VCol>
@@ -99,8 +99,8 @@
               v-model="newRequest.expectedStartDate" 
               :label="t('pages.maintenanceRequests.expectedStartDate')" 
               type="date" 
-              :error="validationState.errors.expectedStartDate" 
-              :error-messages="validationState.errors.expectedStartDate" 
+              :error="validationState.errors.expectedStartDate && validationState.errors.expectedStartDate.length > 0 && validationState.touched.expectedStartDate" 
+              :error-messages="validationState.errors.expectedStartDate || []" 
               @blur="setFieldTouched('expectedStartDate')" 
             />
           </VCol>
@@ -109,8 +109,8 @@
               v-model="newRequest.expectedEndDate" 
               :label="t('pages.maintenanceRequests.expectedEndDate')" 
               type="date" 
-              :error="validationState.errors.expectedEndDate" 
-              :error-messages="validationState.errors.expectedEndDate" 
+              :error="validationState.errors.expectedEndDate && validationState.errors.expectedEndDate.length > 0 && validationState.touched.expectedEndDate" 
+              :error-messages="validationState.errors.expectedEndDate || []" 
               @blur="setFieldTouched('expectedEndDate')" 
             />
           </VCol>
@@ -134,8 +134,8 @@
             <VTextField 
               v-model="editRequest.title" 
               :label="t('pages.maintenanceRequests.title')" 
-              :error="validationState.errors.title" 
-              :error-messages="validationState.errors.title" 
+              :error="validationState.errors.title && validationState.errors.title.length > 0 && validationState.touched.title" 
+              :error-messages="validationState.errors.title || []" 
               @blur="setFieldTouched('title')" 
             />
           </VCol>
@@ -143,8 +143,8 @@
             <VTextarea 
               v-model="editRequest.description" 
               :label="t('pages.maintenanceRequests.description')" 
-              :error="validationState.errors.description" 
-              :error-messages="validationState.errors.description" 
+              :error="validationState.errors.description && validationState.errors.description.length > 0 && validationState.touched.description" 
+              :error-messages="validationState.errors.description || []" 
               @blur="setFieldTouched('description')" 
             />
           </VCol>
@@ -152,8 +152,8 @@
             <VTextField 
               v-model="editRequest.priority" 
               :label="t('pages.maintenanceRequests.priority')" 
-              :error="validationState.errors.priority" 
-              :error-messages="validationState.errors.priority" 
+              :error="validationState.errors.priority && validationState.errors.priority.length > 0 && validationState.touched.priority" 
+              :error-messages="validationState.errors.priority || []" 
               @blur="setFieldTouched('priority')" 
             />
           </VCol>
@@ -161,8 +161,8 @@
             <VTextField 
               v-model="editRequest.location" 
               :label="t('pages.maintenanceRequests.location')" 
-              :error="validationState.errors.location" 
-              :error-messages="validationState.errors.location" 
+              :error="validationState.errors.location && validationState.errors.location.length > 0 && validationState.touched.location" 
+              :error-messages="validationState.errors.location || []" 
               @blur="setFieldTouched('location')" 
             />
           </VCol>
@@ -170,8 +170,8 @@
             <VTextField 
               v-model="editRequest.referenceNumber" 
               :label="t('pages.maintenanceRequests.referenceNumber')" 
-              :error="validationState.errors.referenceNumber" 
-              :error-messages="validationState.errors.referenceNumber" 
+              :error="validationState.errors.referenceNumber && validationState.errors.referenceNumber.length > 0 && validationState.touched.referenceNumber" 
+              :error-messages="validationState.errors.referenceNumber || []" 
               @blur="setFieldTouched('referenceNumber')" 
             />
           </VCol>
@@ -179,8 +179,8 @@
             <VTextField 
               v-model="editRequest.requestStatus" 
               :label="t('pages.maintenanceRequests.requestStatus')" 
-              :error="validationState.errors.requestStatus" 
-              :error-messages="validationState.errors.requestStatus" 
+              :error="validationState.errors.requestStatus && validationState.errors.requestStatus.length > 0 && validationState.touched.requestStatus" 
+              :error-messages="validationState.errors.requestStatus || []" 
               @blur="setFieldTouched('requestStatus')" 
             />
           </VCol>
@@ -188,8 +188,8 @@
             <VTextField 
               v-model="editRequest.maintenanceType" 
               :label="t('pages.maintenanceRequests.maintenanceType')" 
-              :error="validationState.errors.maintenanceType" 
-              :error-messages="validationState.errors.maintenanceType" 
+              :error="validationState.errors.maintenanceType && validationState.errors.maintenanceType.length > 0 && validationState.touched.maintenanceType" 
+              :error-messages="validationState.errors.maintenanceType || []" 
               @blur="setFieldTouched('maintenanceType')" 
             />
           </VCol>
@@ -198,8 +198,8 @@
               v-model.number="editRequest.estimatedCost" 
               :label="t('pages.maintenanceRequests.estimatedCost')" 
               type="number" 
-              :error="validationState.errors.estimatedCost" 
-              :error-messages="validationState.errors.estimatedCost" 
+              :error="validationState.errors.estimatedCost && validationState.errors.estimatedCost.length > 0 && validationState.touched.estimatedCost" 
+              :error-messages="validationState.errors.estimatedCost || []" 
               @blur="setFieldTouched('estimatedCost')" 
             />
           </VCol>
@@ -208,8 +208,8 @@
               v-model="editRequest.expectedStartDate" 
               :label="t('pages.maintenanceRequests.expectedStartDate')" 
               type="date" 
-              :error="validationState.errors.expectedStartDate" 
-              :error-messages="validationState.errors.expectedStartDate" 
+              :error="validationState.errors.expectedStartDate && validationState.errors.expectedStartDate.length > 0 && validationState.touched.expectedStartDate" 
+              :error-messages="validationState.errors.expectedStartDate || []" 
               @blur="setFieldTouched('expectedStartDate')" 
             />
           </VCol>
@@ -218,8 +218,8 @@
               v-model="editRequest.expectedEndDate" 
               :label="t('pages.maintenanceRequests.expectedEndDate')" 
               type="date" 
-              :error="validationState.errors.expectedEndDate" 
-              :error-messages="validationState.errors.expectedEndDate" 
+              :error="validationState.errors.expectedEndDate && validationState.errors.expectedEndDate.length > 0 && validationState.touched.expectedEndDate" 
+              :error-messages="validationState.errors.expectedEndDate || []" 
               @blur="setFieldTouched('expectedEndDate')" 
             />
           </VCol>
@@ -271,14 +271,28 @@ const {
 const { t, locale } = useI18n()
 const api = useApi()
 
-const maintenanceRequests = ref([])
+interface MaintenanceRequestRow {
+  id: string
+  title: string
+  description: string
+  priority: string
+  location: string
+  referenceNumber: string
+  requestStatus: string
+  maintenanceType: string
+  estimatedCost: number
+  expectedStartDate: string
+  expectedEndDate: string
+}
+
+const maintenanceRequests = ref<MaintenanceRequestRow[]>([])
 const loading = ref(false)
 const dialog = ref(false)
 const editDialog = ref(false)
 const deleteDialog = ref(false)
-const selectedRequest = ref(null)
+const selectedRequest = ref<MaintenanceRequestRow | null>(null)
 
-const newRequest = ref({
+const newRequest = ref<Omit<MaintenanceRequestRow, 'id'>>({
   title: '',
   description: '',
   priority: '',
@@ -291,8 +305,8 @@ const newRequest = ref({
   expectedEndDate: '',
 })
 
-const editRequest = ref({
-  id: null,
+const editRequest = ref<MaintenanceRequestRow>({
+  id: '',
   title: '',
   description: '',
   priority: '',
@@ -324,12 +338,15 @@ const headers = computed(() => [
 const loadMaintenanceRequests = async () => {
   loading.value = true
   try {
-    const response = await api('/MaintenanceRequests/GetMaintenanceRequests', {
+    const response = await api('/MaintenanceRequest/GetMaintenanceRequests', {
       headers: { 'Accept-Language': locale.value }
     })
-    maintenanceRequests.value = response
+    maintenanceRequests.value = response?.data || response
   } catch (error) {
     console.error('Error loading maintenance requests:', error)
+    // تنبيه موحّد عند الفشل
+    const { error: appError } = useAppAlerts()
+    appError(t('pages.maintenanceRequests.errorLoadingRequests') || 'حدث خطأ أثناء تحميل طلبات الصيانة', { timeout: 0, clickToDismiss: true })
   } finally {
     loading.value = false
   }
@@ -381,7 +398,7 @@ const addMaintenanceRequest = async () => {
   }
 
   try {
-    await api('/MaintenanceRequests', {
+    await api('/MaintenanceRequest', {
       method: 'POST',
       body: newRequest.value,
       headers: { 'Accept-Language': locale.value }
@@ -389,22 +406,15 @@ const addMaintenanceRequest = async () => {
     dialog.value = false
     resetNewRequest()
     await loadMaintenanceRequests()
-  } catch (error) {
-    console.error('Error adding maintenance request:', error)
-    if (error.response?.data?.errors) {
-      setErrorsFromResponse(error.response.data.errors, {
-        Title: 'title',
-        Description: 'description',
-        Priority: 'priority',
-        Location: 'location',
-        ReferenceNumber: 'referenceNumber',
-        RequestStatus: 'requestStatus',
-        MaintenanceType: 'maintenanceType',
-        EstimatedCost: 'estimatedCost',
-        ExpectedStartDate: 'expectedStartDate',
-        ExpectedEndDate: 'expectedEndDate',
-      })
+    const { success } = useAppAlerts()
+    success(t('pages.maintenanceRequests.successAdd') || 'تم إضافة الطلب بنجاح', { timeout: 4000, clickToDismiss: true })
+  } catch (e: any) {
+    console.error('Error adding maintenance request:', e)
+    if (e.response?.data) {
+      setErrorsFromResponse(e.response.data, 'add')
     }
+    const { error: appError } = useAppAlerts()
+    appError(t('pages.maintenanceRequests.errorAdd') || 'حدث خطأ أثناء إضافة الطلب', { timeout: 0, clickToDismiss: true })
   }
 }
 
@@ -454,47 +464,45 @@ const updateMaintenanceRequest = async () => {
   }
 
   try {
-    await api(`/MaintenanceRequests/${editRequest.value.id}`, {
+    await api(`/MaintenanceRequest/${editRequest.value.id}`, {
       method: 'PUT',
       body: editRequest.value,
       headers: { 'Accept-Language': locale.value }
     })
     editDialog.value = false
     await loadMaintenanceRequests()
-  } catch (error) {
-    console.error('Error updating maintenance request:', error)
-    if (error.response?.data?.errors) {
-      setErrorsFromResponse(error.response.data.errors, {
-        Title: 'title',
-        Description: 'description',
-        Priority: 'priority',
-        Location: 'location',
-        ReferenceNumber: 'referenceNumber',
-        RequestStatus: 'requestStatus',
-        MaintenanceType: 'maintenanceType',
-        EstimatedCost: 'estimatedCost',
-        ExpectedStartDate: 'expectedStartDate',
-        ExpectedEndDate: 'expectedEndDate',
-      })
+    const { success } = useAppAlerts()
+    success(t('pages.maintenanceRequests.successUpdate') || 'تم تحديث الطلب بنجاح', { timeout: 4000, clickToDismiss: true })
+  } catch (e: any) {
+    console.error('Error updating maintenance request:', e)
+    if (e.response?.data) {
+      setErrorsFromResponse(e.response.data, 'edit')
     }
+    const { error: appError } = useAppAlerts()
+    appError(t('pages.maintenanceRequests.errorUpdate') || 'حدث خطأ أثناء تحديث الطلب', { timeout: 0, clickToDismiss: true })
   }
 }
 
 const deleteMaintenanceRequest = async () => {
   try {
-    await api(`/MaintenanceRequests/${selectedRequest.value.id}`, {
+    if (!selectedRequest.value) return
+    await api(`/MaintenanceRequest/${selectedRequest.value.id}`, {
       method: 'DELETE',
       headers: { 'Accept-Language': locale.value }
     })
     deleteDialog.value = false
     selectedRequest.value = null
     await loadMaintenanceRequests()
+    const { success } = useAppAlerts()
+    success(t('pages.maintenanceRequests.successDelete') || 'تم حذف الطلب بنجاح', { timeout: 4000, clickToDismiss: true })
   } catch (error) {
     console.error('Error deleting maintenance request:', error)
+    const { error: appError } = useAppAlerts()
+    appError(t('pages.maintenanceRequests.errorDelete') || 'حدث خطأ أثناء حذف الطلب', { timeout: 0, clickToDismiss: true })
   }
 }
 
-const openEditDialog = (request) => {
+const openEditDialog = (request: any) => {
   clearErrors()
   editRequest.value = {
     id: request.id,
@@ -512,7 +520,7 @@ const openEditDialog = (request) => {
   editDialog.value = true
 }
 
-const openDeleteDialog = (request) => {
+const openDeleteDialog = (request: any) => {
   selectedRequest.value = request
   deleteDialog.value = true
 }

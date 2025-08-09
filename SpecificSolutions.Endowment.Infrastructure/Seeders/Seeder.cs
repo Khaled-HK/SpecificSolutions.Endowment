@@ -87,7 +87,7 @@ public sealed class Seeder
                     lastName: "Alnefati",
                     officeId: new Guid("DDEC6E9E-7628-4623-9A94-4E4EFC02187C"),
                     userName: "1",
-                    passwordHash: hasher.HashPassword(null, "1"),
+                    passwordHash: hasher.HashPassword(null!, "1"),
                     emailConfirmed: true) // Add SecurityStamp
 
             };
@@ -107,7 +107,7 @@ public sealed class Seeder
                     lastName: "Dev",
                     officeId: new Guid("DDEC6E9E-7628-4623-9A94-4E4EFC02187C"),
                     userName: "admin@demo.com",
-                    passwordHash: hasher.HashPassword(null, "admin"),
+                    passwordHash: hasher.HashPassword(null!, "admin"),
                     emailConfirmed: true)
 
             };
@@ -125,7 +125,7 @@ public sealed class Seeder
                 lastName: "Employee",
                 officeId: new Guid("DDEC6E9E-7628-4623-9A94-4E4EFC02187C"),
                 userName: "employee@gmail.com",
-                passwordHash: hasher.HashPassword(null, "12345678"),
+                passwordHash: hasher.HashPassword(null!, "12345678"),
                 emailConfirmed: true);
 
             await _context.Users.AddAsync(employeeUser);
@@ -205,7 +205,6 @@ public sealed class Seeder
                         requestView: true, requestAdd: true, requestEdit: true, requestDelete: true,
                         constructionRequestView: true, constructionRequestAdd: true, constructionRequestEdit: true, constructionRequestDelete: true,
                         maintenanceRequestView: true, maintenanceRequestAdd: true, maintenanceRequestEdit: true, maintenanceRequestDelete: true,
-                        changeRequestView: true, changeRequestAdd: true, changeRequestEdit: true, changeRequestDelete: true,
                         demolitionRequestView: true, demolitionRequestAdd: true, demolitionRequestEdit: true, demolitionRequestDelete: true,
                         nameChangeRequestView: true, nameChangeRequestAdd: true, nameChangeRequestEdit: true, nameChangeRequestDelete: true,
                         needsRequestView: true, needsRequestAdd: true, needsRequestEdit: true, needsRequestDelete: true,
@@ -232,7 +231,6 @@ public sealed class Seeder
                         requestView: true, requestAdd: true, requestEdit: true, requestDelete: true,
                         constructionRequestView: true, constructionRequestAdd: true, constructionRequestEdit: true, constructionRequestDelete: true,
                         maintenanceRequestView: true, maintenanceRequestAdd: true, maintenanceRequestEdit: true, maintenanceRequestDelete: true,
-                        changeRequestView: true, changeRequestAdd: true, changeRequestEdit: true, changeRequestDelete: true,
                         demolitionRequestView: true, demolitionRequestAdd: true, demolitionRequestEdit: true, demolitionRequestDelete: true,
                         nameChangeRequestView: true, nameChangeRequestAdd: true, nameChangeRequestEdit: true, nameChangeRequestDelete: true,
                         needsRequestView: true, needsRequestAdd: true, needsRequestEdit: true, needsRequestDelete: true,

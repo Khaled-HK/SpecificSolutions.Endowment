@@ -16,7 +16,7 @@
   "Requests": "الطلبات",
   "Construction Requests": "طلبات البناء",
   "Maintenance Requests": "طلبات الصيانة",
-  "Change Requests": "طلبات التغيير",
+  "Change Of Path Requests": "طلبات تغيير المسار",
   "Demolition Requests": "طلبات الهدم",
   "Name Change Requests": "طلبات تغيير الاسم",
   "Needs Requests": "طلبات الاحتياجات",
@@ -258,6 +258,33 @@
       "createdDate": "تاريخ الإنشاء",
       "actions": "الإجراءات"
     },
+    "decisions": {
+      "title": "إدارة القرارات",
+      "addDecision": "إضافة قرار",
+      "addNewDecision": "إضافة قرار جديد",
+      "editDecision": "تعديل القرار",
+      "decisionTitle": "عنوان القرار",
+      "referenceNumber": "رقم المرجع",
+      "description": "الوصف",
+      "searchPlaceholder": "البحث في القرارات...",
+      "noDescription": "لا يوجد وصف",
+      "noReferenceNumber": "لا يوجد رقم مرجعي",
+      "itemsPerPage": "عناصر في الصفحة:",
+      "deleteSelected": "حذف المحدد ({count})",
+      "confirmDelete": "تأكيد الحذف",
+      "deleteConfirmation": "هل أنت متأكد من حذف القرار \"{title}\"؟",
+      "deleteWarning": "لا يمكن التراجع عن هذا الإجراء.",
+      "validationWarning": "⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه",
+      "errorLoading": "حدث خطأ أثناء تحميل القرارات",
+      "successAdd": "تم إضافة القرار بنجاح",
+      "errorAdd": "حدث خطأ أثناء إضافة القرار",
+      "successUpdate": "تم تحديث القرار بنجاح",
+      "errorUpdate": "حدث خطأ أثناء تحديث القرار",
+      "successDelete": "تم حذف القرار بنجاح",
+      "errorDelete": "حدث خطأ أثناء حذف القرار",
+      "selectedDeleted": "تم حذف القرارات المحددة بنجاح",
+      "selectedDeleteError": "حدث خطأ أثناء حذف القرارات المحددة"
+    },
     "regions": {
       "name": "المنطقة",
       "country": "الدولة",
@@ -346,6 +373,19 @@
       "expectedEndDate": "تاريخ نهاية متوقع",
       "createdDate": "تاريخ الإنشاء",
       "actions": "الإجراءات"
+    },
+    "products": {
+      "title": "إدارة المواد",
+      "addProduct": "إضافة مادة",
+      "addNewProduct": "إضافة مادة جديدة",
+      "editProduct": "تعديل المادة",
+      "errorLoading": "حدث خطأ أثناء تحميل المواد",
+      "successAdd": "تم إضافة المادة بنجاح",
+      "errorAdd": "حدث خطأ أثناء إضافة المادة",
+      "successUpdate": "تم تحديث المادة بنجاح",
+      "errorUpdate": "حدث خطأ أثناء تحديث المادة",
+      "successDelete": "تم حذف المادة بنجاح",
+      "errorDelete": "حدث خطأ أثناء حذف المادة"
     },
     "changeRequests": {
       "title": "العنوان",
@@ -458,6 +498,12 @@
     "close": "قريب",
     "open": "افتح",
     "loading": "جار التحميل",
+    "dataIterator": {
+      "loadingText": "جاري تحميل العناصر...",
+      "noResultsText": "لا توجد نتائج مطابقة",
+      "loadingText$": "جاري تحميل العناصر...",
+      "noResultsText$": "لا توجد نتائج مطابقة"
+    },
     "carousel": {
       "ariaLabel": {
         "delimiter": "تحديد"
@@ -590,11 +636,64 @@
       "confirmDelete": "تأكيد الحذف",
       "deleteConfirmation": "هل أنت متأكد من حذف طلب الصيانة هذا؟"
     },
+    "cities": {
+      "title": "إدارة المدن",
+      "addCity": "إضافة مدينة",
+      "addNewCity": "إضافة مدينة جديدة",
+      "editCity": "تعديل المدينة",
+      "cityName": "اسم المدينة",
+      "country": "الدولة",
+      "searchPlaceholder": "البحث في المدن...",
+      "itemsPerPage": "عناصر في الصفحة:",
+      "errorLoading": "حدث خطأ أثناء تحميل المدن",
+      "successAdd": "تم إضافة المدينة بنجاح",
+      "errorAdd": "حدث خطأ أثناء إضافة المدينة",
+      "successUpdate": "تم تحديث المدينة بنجاح",
+      "errorUpdate": "حدث خطأ أثناء تحديث المدينة",
+      "successDelete": "تم حذف المدينة بنجاح",
+      "errorDelete": "حدث خطأ أثناء حذف المدينة",
+      "successDeleteSelected": "تم حذف المدن المحددة بنجاح",
+      "errorDeleteSelected": "حدث خطأ أثناء حذف المدن المحددة",
+      "deleteSelectedError": "فشل في حذف {count} عنصر: {details}"
+    },
+    "mosques": {
+      "title": "إدارة المساجد",
+      "addMosque": "إضافة مسجد",
+      "addNewMosque": "إضافة مسجد جديد",
+      "editMosque": "تعديل المسجد",
+      "name": "اسم المسجد",
+      "region": "المنطقة",
+      "office": "المكتب",
+      "notFound": "لم يتم العثور على المسجد",
+      "errorLoading": "حدث خطأ أثناء تحميل المساجد",
+      "errorLoadingRegions": "حدث خطأ أثناء تحميل المناطق",
+      "errorLoadingOffices": "حدث خطأ أثناء تحميل المكاتب",
+      "successAdd": "تم إضافة المسجد بنجاح",
+      "errorAdd": "حدث خطأ أثناء إضافة المسجد",
+      "successUpdate": "تم تحديث المسجد بنجاح",
+      "errorUpdate": "حدث خطأ أثناء تحديث المسجد",
+      "successDelete": "تم حذف المسجد بنجاح",
+      "errorDelete": "حدث خطأ أثناء حذف المسجد",
+      "successDeleteSelected": "تم حذف المساجد المحددة بنجاح",
+      "deleteSelectedError": "فشل في حذف {count} عنصر: {details}"
+    },
+    "buildingDetails": {
+      "title": "تفاصيل المبنى",
+      "errorLoading": "حدث خطأ أثناء تحميل تفاصيل المبنى",
+      "errorSearch": "حدث خطأ أثناء البحث في تفاصيل المبنى",
+      "missingBuildingForMosque": "لم يتم العثور على المبنى المرتبط بالمسجد",
+      "successAdd": "تم إضافة تفصيل المبنى بنجاح",
+      "errorAdd": "حدث خطأ أثناء إضافة تفصيل المبنى",
+      "successUpdate": "تم تحديث تفصيل المبنى بنجاح",
+      "errorUpdate": "حدث خطأ أثناء تحديث تفصيل المبنى",
+      "successDelete": "تم حذف تفصيل المبنى بنجاح",
+      "errorDelete": "حدث خطأ أثناء حذف تفصيل المبنى"
+    },
     "changeRequests": {
-      "title": "إدارة طلبات التغيير",
-      "addChangeRequest": "إضافة طلب تغيير",
-      "addNewChangeRequest": "إضافة طلب تغيير جديد",
-      "editChangeRequest": "تعديل طلب التغيير",
+      "title": "إدارة طلبات تغيير المسار",
+      "addChangeRequest": "إضافة طلب تغيير مسار",
+      "addNewChangeRequest": "إضافة طلب تغيير مسار جديد",
+      "editChangeRequest": "تعديل طلب تغيير المسار",
       "title": "العنوان",
       "description": "الوصف",
       "priority": "الأولوية",
@@ -612,7 +711,7 @@
       "statusRejected": "مرفوض",
       "statusInProgress": "قيد التنفيذ",
       "confirmDelete": "تأكيد الحذف",
-      "deleteConfirmation": "هل أنت متأكد من حذف طلب التغيير هذا؟"
+      "deleteConfirmation": "هل أنت متأكد من حذف طلب تغيير المسار هذا؟"
     },
     "accounts": {
       "title": "إدارة الحسابات",
@@ -685,15 +784,64 @@
       "operationTypeDebit": "مدين",
       "confirmDelete": "تأكيد الحذف",
       "deleteConfirmation": "هل أنت متأكد من حذف تفصيل الحساب هذا؟"
+    },
+    "offices": {
+      "title": "إدارة المكاتب",
+      "addOffice": "إضافة مكتب",
+      "addNewOffice": "إضافة مكتب جديد",
+      "editOffice": "تعديل المكتب",
+      "officeName": "اسم المكتب",
+      "location": "الموقع",
+      "phoneNumber": "رقم الهاتف",
+      "region": "المنطقة",
+      "searchPlaceholder": "البحث في المكاتب...",
+      "noRegion": "لا توجد منطقة",
+      "noPhone": "لا يوجد رقم هاتف",
+      "itemsPerPage": "عناصر في الصفحة:",
+      "noRegionsAvailable": "لا توجد مناطق متاحة",
+      "selectRegionPlaceholder": "اختر المنطقة...",
+      "deleteSelected": "حذف المحدد ({count})",
+      "confirmDelete": "تأكيد الحذف",
+      "deleteConfirmation": "هل أنت متأكد من حذف المكتب \"{name}\"؟",
+      "deleteWarning": "لا يمكن التراجع عن هذا الإجراء.",
+      "validationWarning": "⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه",
+      "errorLoadingOffices": "حدث خطأ أثناء تحميل المكاتب",
+      "errorLoadingRegions": "حدث خطأ أثناء تحميل المناطق",
+      "errorAddingOffice": "حدث خطأ أثناء إضافة المكتب",
+      "successAddOffice": "تم إضافة المكتب بنجاح",
+      "errorUpdatingOffice": "حدث خطأ أثناء تحديث المكتب",
+      "successUpdateOffice": "تم تحديث المكتب بنجاح",
+      "errorDeletingOffice": "حدث خطأ أثناء حذف المكتب",
+      "successDeleteOffice": "تم حذف المكتب بنجاح",
+      "selectedOfficesDeleted": "تم حذف المكاتب المحددة بنجاح",
+      "operationError": "حدث خطأ أثناء العملية",
+      "networkError": "حدث خطأ في الاتصال بالخادم"
     }
   },
   "validation": {
-    "required": "حقل {field} مطلوب"
+    "required": "حقل {field} مطلوب",
+    "fixHighlighted": "⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه",
+    "requiredAll": "يرجى ملء جميع الحقول المطلوبة"
   },
   "common": {
     "cancel": "إلغاء",
     "save": "حفظ",
     "update": "تحديث",
-    "delete": "حذف"
+    "delete": "حذف",
+    "add": "إضافة",
+    "networkError": "حدث خطأ في الاتصال بالخادم",
+    "operationError": "حدث خطأ أثناء العملية"
+  },
+  "alerts": {
+    "error": "خطأ",
+    "success": "نجاح",
+    "info": "معلومات"
+  }
+  ,
+  "vuetify": {
+    "dataIterator": {
+      "loadingText": "جاري تحميل العناصر...",
+      "noResultsText": "لا توجد نتائج مطابقة"
+    }
   }
 }

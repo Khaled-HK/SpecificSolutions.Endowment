@@ -170,6 +170,10 @@
     "close": "قريب",
     "open": "افتح",
     "loading": "جار التحميل",
+    "dataIterator": {
+      "loadingText": "جاري تحميل العناصر...",
+      "noResultsText": "لا توجد نتائج مطابقة"
+    },
     "carousel": {
       "ariaLabel": {
         "delimiter": "تحديد"
@@ -208,6 +212,13 @@
       "ariaLabel": {
         "item": "العنصر"
       }
+    }
+  }
+  ,
+  "vuetify": {
+    "dataIterator": {
+      "loadingText": "جاري تحميل العناصر...",
+      "noResultsText": "لا توجد نتائج مطابقة"
     }
   }
 }

@@ -12,6 +12,18 @@
       </VCardTitle>
 
       <VCardText>
+        <!-- Server-side search (Khaled pattern) -->
+        <VRow class="mb-4">
+          <VCol cols="12" md="4" class="ms-auto">
+            <VTextField
+              v-model="searchQuery"
+              :label="t('common.search')"
+              prepend-inner-icon="mdi-magnify"
+              hide-details
+              clearable
+            />
+          </VCol>
+        </VRow>
         <VDataTable
           :headers="headers"
           :items="accounts"
@@ -40,19 +52,19 @@
 
           <template #item.gender="{ item }">
             <VChip
-              :color="item.gender === 1 ? 'blue' : 'pink'"
+              :color="Number(item.gender) === 1 ? 'blue' : 'pink'"
               size="small"
             >
-              {{ item.gender === 1 ? t('pages.accounts.genderMale') : t('pages.accounts.genderFemale') }}
+              {{ Number(item.gender) === 1 ? t('pages.accounts.genderMale') : t('pages.accounts.genderFemale') }}
             </VChip>
           </template>
 
           <template #item.status="{ item }">
             <VChip
-              :color="item.status === 1 ? 'green' : 'red'"
+              :color="Number(item.status) === 1 ? 'green' : 'red'"
               size="small"
             >
-              {{ item.status === 1 ? t('pages.accounts.statusActive') : t('pages.accounts.statusInactive') }}
+              {{ Number(item.status) === 1 ? t('pages.accounts.statusActive') : t('pages.accounts.statusInactive') }}
             </VChip>
           </template>
 
@@ -61,7 +73,7 @@
               color="info"
               size="small"
             >
-              {{ getSocialStatusText(item.socialStatus) }}
+              {{ getSocialStatusText(Number(item.socialStatus ?? 0)) }}
             </VChip>
           </template>
 
@@ -70,7 +82,7 @@
               color="warning"
               size="small"
             >
-              {{ getAccountTypeText(item.type) }}
+              {{ getAccountTypeText(Number(item.type ?? 0)) }}
             </VChip>
           </template>
 
@@ -81,6 +93,25 @@
             >
               {{ item.isActive ? t('pages.accounts.isActive') : t('pages.accounts.isInactive') }}
             </VChip>
+          </template>
+          <template #bottom>
+            <VCardText class="pt-2">
+              <div class="d-flex flex-wrap justify-center justify-sm-space-between gap-y-2 mt-2">
+                <VSelect
+                  v-model="itemsPerPage"
+                  :items="[5, 10, 25, 50, 100]"
+                  :label="t('common.itemsPerPage')"
+                  variant="underlined"
+                  style="max-inline-size: 8rem;min-inline-size: 5rem;"
+                />
+
+                <VPagination
+                  v-model="currentPage"
+                  :total-visible="$vuetify.display.smAndDown ? 3 : 5"
+                  :length="Math.ceil(totalItems / itemsPerPage) || 1"
+                />
+              </div>
+            </VCardText>
           </template>
         </VDataTable>
       </VCardText>
@@ -397,7 +428,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+definePage({
+  meta: {
+    action: 'View',
+    subject: 'Account',
+  },
+})
+import { ref, onMounted, computed, watch } from 'vue'
 import { useFormValidation } from '@/composables/useFormValidation'
 import { useI18n } from 'vue-i18n'
 import { useApi } from '@/composables/useApi'
@@ -415,18 +452,52 @@ const {
   validateLength,
   addError,
   hasErrors,
-  getError,
-  hasError,
   setErrorsFromResponse
 } = useFormValidation()
 
+// Local helpers to mirror commonly used accessors
+const hasError = (field: string) => !!(validationState.errors[field]?.length && validationState.touched[field])
+const getError = (field: string) => validationState.errors[field] || []
+
 // Data
-const accounts = ref([])
+interface AccountRow {
+  id: string
+  name: string
+  motherName: string
+  birthDate: string
+  gender: number | null
+  barcode: string
+  status: number | null
+  lockerFileNumber: number | null
+  socialStatus: number | null
+  bookNumber: number | null
+  paperNumber: number | null
+  registrationNumber: number | null
+  accountNumber: string
+  type: number | null
+  lookOver: boolean
+  note: string
+  nid: number | null
+  isActive: boolean
+  balance: number
+  address: string
+  city: string
+  country: string
+  contactNumber: string
+  floors: number
+}
+
+const accounts = ref<AccountRow[]>([])
 const loading = ref(false)
 const dialog = ref(false)
 const deleteDialog = ref(false)
 const editing = ref(false)
-const selectedAccount = ref(null)
+const selectedAccount = ref<AccountRow | null>(null)
+  // Pagination & search
+  const currentPage = ref(1)
+  const itemsPerPage = ref(10)
+  const searchQuery = ref('')
+  const totalItems = ref(0)
 
 // Form data
 const newAccount = ref({
@@ -516,18 +587,18 @@ const headers = computed(() => [
 
 // Helper functions
 const getSocialStatusText = (status: number) => {
-  const statusMap = {
+  const statusMap: Record<number, string> = {
     1: t('pages.accounts.socialStatusMarried'),
     2: t('pages.accounts.socialStatusWidower'),
     3: t('pages.accounts.socialStatusDivorced'),
     4: t('pages.accounts.socialStatusSingle'),
-    5: t('pages.accounts.socialStatusChild')
+    5: t('pages.accounts.socialStatusChild'),
   }
-  return statusMap[status] || status
+  return statusMap[status] ?? String(status)
 }
 
 const getAccountTypeText = (type: number) => {
-  const typeMap = {
+  const typeMap: Record<number, string> = {
     1: t('pages.accounts.accountTypeMartyr'),
     2: t('pages.accounts.accountTypeDisability'),
     3: t('pages.accounts.accountTypeBeneficiary'),
@@ -541,9 +612,9 @@ const getAccountTypeText = (type: number) => {
     11: t('pages.accounts.accountTypeRevenues'),
     12: t('pages.accounts.accountTypeProducts'),
     13: t('pages.accounts.accountTypeLiabilities'),
-    14: t('pages.accounts.accountTypeExpenses')
+    14: t('pages.accounts.accountTypeExpenses'),
   }
-  return typeMap[type] || type
+  return typeMap[type] ?? String(type)
 }
 
 // Load accounts
@@ -553,22 +624,33 @@ const loadAccounts = async () => {
     const params = new URLSearchParams({
       PageNumber: currentPage.value.toString(),
       PageSize: itemsPerPage.value.toString(),
-      SearchTerm: searchQuery.value || '',
+      Name: searchQuery.value || '',
     }).toString()
-    
-    const response = await api('/Accounts/filter', {
+
+    const response = await api(`/Account/filter?${params}`, {
       headers: {
         'Accept-Language': locale.value
       }
     })
     accounts.value = response.data.items || []
-    totalItems.value = response.totalCount || 0
+    totalItems.value = response.data?.totalCount || 0
   } catch (error) {
     console.error('Error loading accounts:', error)
   } finally {
     loading.value = false
   }
 }
+
+// Reload on pagination change
+watch([() => currentPage.value, () => itemsPerPage.value], () => {
+  loadAccounts()
+})
+
+// Reload on search change (server-side filter by Name)
+watch(() => searchQuery.value, () => {
+  currentPage.value = 1
+  loadAccounts()
+})
 
 // Reset form
 const resetNewAccount = () => {
@@ -688,7 +770,7 @@ const addAccount = async () => {
   }
 
   try {
-    await api('/Accounts', {
+    await api('/Account', {
       method: 'POST',
       body: newAccount.value,
       headers: {
@@ -701,8 +783,9 @@ const addAccount = async () => {
     await loadAccounts()
   } catch (error) {
     console.error('Error adding account:', error)
-    if (error.response?.data?.errors) {
-      setErrorsFromResponse(error.response.data.errors, {
+    const resp: any = error as any
+    if (resp.response?.data?.errors) {
+      ;(setErrorsFromResponse as any)(resp.response.data.errors, {
         Name: 'name',
         MotherName: 'motherName',
         BirthDate: 'birthDate',
@@ -802,8 +885,9 @@ const updateAccount = async () => {
     return
   }
 
+  if (!selectedAccount.value?.id) return
   try {
-    await api(`/Accounts/${selectedAccount.value.id}`, {
+    await api(`/Account/${selectedAccount.value.id}`, {
       method: 'PUT',
       body: newAccount.value,
       headers: {
@@ -816,8 +900,9 @@ const updateAccount = async () => {
     await loadAccounts()
   } catch (error) {
     console.error('Error updating account:', error)
-    if (error.response?.data?.errors) {
-      setErrorsFromResponse(error.response.data.errors, {
+    const resp: any = error as any
+    if (resp.response?.data?.errors) {
+      ;(setErrorsFromResponse as any)(resp.response.data.errors, {
         Name: 'name',
         MotherName: 'motherName',
         BirthDate: 'birthDate',
@@ -853,8 +938,9 @@ const confirmDelete = (account: any) => {
 }
 
 const deleteAccount = async () => {
+  if (!selectedAccount.value?.id) return
   try {
-    await api(`/Accounts/${selectedAccount.value.id}`, {
+    await api(`/Account/${selectedAccount.value.id}`, {
       method: 'DELETE',
       headers: {
         'Accept-Language': locale.value

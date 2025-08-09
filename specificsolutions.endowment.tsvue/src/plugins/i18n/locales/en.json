@@ -169,6 +169,10 @@
     "close": "Close",
     "open": "open",
     "loading": "loading",
+    "dataIterator": {
+      "loadingText": "Loading items...",
+      "noResultsText": "No matching records found"
+    },
     "carousel": {
       "ariaLabel": {
         "delimiter": "delimiter"
@@ -208,6 +212,13 @@
       "ariaLabel": {
         "item": "item"
       }
+    }
+  }
+  ,
+  "vuetify": {
+    "dataIterator": {
+      "loadingText": "Loading items...",
+      "noResultsText": "No matching records found"
     }
   }
 }

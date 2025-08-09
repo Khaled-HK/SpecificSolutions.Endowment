@@ -36,7 +36,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
                 Issuer = jwtSettings.Value.Issuer,
                 Audience = jwtSettings.Value.Audience,
                 //todo: change to 15 minutes
-                Expires = DateTime.Now.AddYears((int)jwtSettings.Value.DurationInMinutes),
+                Expires = DateTime.Now.AddMinutes(jwtSettings.Value.DurationInMinutes),
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -67,7 +67,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
                 Issuer = jwtSettings.Value.Issuer,
                 Audience = jwtSettings.Value.Audience,
 
-                Expires = DateTime.Now.AddYears((int)jwtSettings.Value.DurationInMinutes),
+                Expires = DateTime.Now.AddMinutes(jwtSettings.Value.DurationInMinutes),
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();

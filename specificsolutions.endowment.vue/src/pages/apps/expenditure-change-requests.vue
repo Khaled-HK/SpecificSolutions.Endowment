@@ -13,7 +13,7 @@ import { useI18n } from 'vue-i18n'
 import { useFormValidation } from '@/composables/useFormValidation'
 import { useApi } from '@/composables/useApi'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 // Data
 const expenditureChangeRequests = ref([])
@@ -38,7 +38,8 @@ const newRequest = ref({
 })
 
 // Form validation
-const { errors, clearErrors, setFieldTouched, validateRequired, validateEmail } = useFormValidation()
+const { validationState, clearErrors, setFieldTouched, validateRequired, validateEmail } = useFormValidation()
+const errors = validationState.errors
 
 // Priority options
 const priorityOptions = [
@@ -62,8 +63,10 @@ const api = useApi()
 const fetchExpenditureChangeRequests = async () => {
   try {
     loading.value = true
-    const response = await api('/ExpenditureChangeRequests')
-    expenditureChangeRequests.value = response.data || []
+    const response = await api('/ExpenditureChangeRequest/filter?PageNumber=1&PageSize=10', {
+      headers: { 'Accept-Language': locale.value }
+    })
+    expenditureChangeRequests.value = response.data?.items || response.data || []
   } catch (error) {
     console.error('Error fetching expenditure change requests:', error)
   } finally {
@@ -133,14 +136,16 @@ const addExpenditureChangeRequest = async () => {
     loading.value = true
 
     if (isEdit.value) {
-      await api(`/ExpenditureChangeRequests/${selectedRequest.value.id}`, {
+      await api(`/ExpenditureChangeRequest/${selectedRequest.value.id}`, {
         method: 'PUT',
         body: newRequest.value,
+        headers: { 'Accept-Language': locale.value }
       })
     } else {
-      await api('/ExpenditureChangeRequests', {
+      await api('/ExpenditureChangeRequest', {
         method: 'POST',
         body: newRequest.value,
+        headers: { 'Accept-Language': locale.value }
       })
     }
 
@@ -167,10 +172,11 @@ const editRequest = (request) => {
 }
 
 const deleteRequest = async (id) => {
-  if (confirm(t('confirmDelete'))) {
+  if (confirm(t('pages.requests.confirmDelete'))) {
     try {
-      await api(`/ExpenditureChangeRequests/${id}`, {
+      await api(`/ExpenditureChangeRequest/${id}`, {
         method: 'DELETE',
+        headers: { 'Accept-Language': locale.value }
       })
       await fetchExpenditureChangeRequests()
     } catch (error) {
@@ -224,18 +230,18 @@ onMounted(() => {
     <VCardText>
       <VDataTable
         :headers="[
-          { title: t('title'), key: 'title' },
-          { title: t('description'), key: 'description' },
-          { title: t('priority'), key: 'priority' },
-          { title: t('location'), key: 'location' },
-          { title: t('referenceNumber'), key: 'referenceNumber' },
-          { title: t('requestStatus'), key: 'requestStatus' },
-          { title: t('currentExpenditure'), key: 'currentExpenditure' },
-          { title: t('newExpenditure'), key: 'newExpenditure' },
-          { title: t('changeReason'), key: 'changeReason' },
-          { title: t('estimatedCost'), key: 'estimatedCost' },
-          { title: t('approvalRequired'), key: 'approvalRequired' },
-          { title: t('actions'), key: 'actions', sortable: false },
+          { title: t('tableHeaders.expenditureChangeRequests.title'), key: 'title' },
+          { title: t('tableHeaders.expenditureChangeRequests.description'), key: 'description' },
+          { title: t('tableHeaders.expenditureChangeRequests.priority'), key: 'priority' },
+          { title: t('tableHeaders.expenditureChangeRequests.location'), key: 'location' },
+          { title: t('tableHeaders.expenditureChangeRequests.referenceNumber'), key: 'referenceNumber' },
+          { title: t('tableHeaders.expenditureChangeRequests.requestStatus'), key: 'requestStatus' },
+          { title: t('tableHeaders.expenditureChangeRequests.currentExpenditure'), key: 'currentExpenditure' },
+          { title: t('tableHeaders.expenditureChangeRequests.newExpenditure'), key: 'newExpenditure' },
+          { title: t('tableHeaders.expenditureChangeRequests.changeReason'), key: 'changeReason' },
+          { title: t('tableHeaders.expenditureChangeRequests.estimatedCost'), key: 'estimatedCost' },
+          { title: t('tableHeaders.expenditureChangeRequests.approvalRequired'), key: 'approvalRequired' },
+          { title: t('tableHeaders.expenditureChangeRequests.actions'), key: 'actions', sortable: false },
         ]"
         :items="expenditureChangeRequests"
         :loading="loading"
@@ -248,7 +254,7 @@ onMounted(() => {
             {{ item.raw.approvalRequired ? t('yes') : t('no') }}
           </VChip>
         </template>
-        <template #item.actions="{ item }">
+        <template #item.actions="{ item }: { item: any }">
           <VBtn
             icon
             variant="text"
@@ -287,7 +293,7 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="newRequest.title"
-                  :label="t('title')"
+                  :label="t('tableHeaders.expenditureChangeRequests.title')"
                   :error-messages="errors.title"
                   required
                 />
@@ -296,7 +302,7 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="newRequest.description"
-                  :label="t('description')"
+                  :label="t('tableHeaders.expenditureChangeRequests.description')"
                   :error-messages="errors.description"
                   required
                 />
@@ -306,7 +312,7 @@ onMounted(() => {
                 <VSelect
                   v-model="newRequest.priority"
                   :items="priorityOptions"
-                  :label="t('priority')"
+                  :label="t('tableHeaders.expenditureChangeRequests.priority')"
                   :error-messages="errors.priority"
                   required
                 />
@@ -315,7 +321,7 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="newRequest.location"
-                  :label="t('location')"
+                  :label="t('tableHeaders.expenditureChangeRequests.location')"
                   :error-messages="errors.location"
                   required
                 />
@@ -324,7 +330,7 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="newRequest.referenceNumber"
-                  :label="t('referenceNumber')"
+                  :label="t('tableHeaders.expenditureChangeRequests.referenceNumber')"
                   :error-messages="errors.referenceNumber"
                   required
                 />
@@ -334,7 +340,7 @@ onMounted(() => {
                 <VSelect
                   v-model="newRequest.requestStatus"
                   :items="statusOptions"
-                  :label="t('requestStatus')"
+                  :label="t('tableHeaders.expenditureChangeRequests.requestStatus')"
                   :error-messages="errors.requestStatus"
                   required
                 />
@@ -343,7 +349,7 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="newRequest.currentExpenditure"
-                  :label="t('currentExpenditure')"
+                  :label="t('tableHeaders.expenditureChangeRequests.currentExpenditure')"
                   :error-messages="errors.currentExpenditure"
                   required
                 />
@@ -352,7 +358,7 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="newRequest.newExpenditure"
-                  :label="t('newExpenditure')"
+                  :label="t('tableHeaders.expenditureChangeRequests.newExpenditure')"
                   :error-messages="errors.newExpenditure"
                   required
                 />
@@ -361,7 +367,7 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="newRequest.estimatedCost"
-                  :label="t('estimatedCost')"
+                  :label="t('tableHeaders.expenditureChangeRequests.estimatedCost')"
                   :error-messages="errors.estimatedCost"
                   type="number"
                   required
@@ -378,7 +384,7 @@ onMounted(() => {
               <VCol cols="12">
                 <VTextarea
                   v-model="newRequest.changeReason"
-                  :label="t('changeReason')"
+                  :label="t('tableHeaders.expenditureChangeRequests.changeReason')"
                   :error-messages="errors.changeReason"
                   required
                 />
@@ -394,7 +400,7 @@ onMounted(() => {
             variant="text"
             @click="dialog = false"
           >
-            {{ t('cancel') }}
+            {{ t('common.cancel') }}
           </VBtn>
           <VBtn
             color="primary"
@@ -402,7 +408,7 @@ onMounted(() => {
             :disabled="Object.keys(errors).length > 0"
             @click="addExpenditureChangeRequest"
           >
-            {{ isEdit ? t('update') : t('save') }}
+            {{ isEdit ? t('common.update') : t('common.save') }}
           </VBtn>
         </VCardActions>
       </VCard>

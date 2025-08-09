@@ -23,7 +23,7 @@ definePage({
   },
 })
 
-const { t } = useI18n()
+const { t, te } = useI18n()
 
 // استخدام نظام التحقق الجديد
 const {
@@ -48,15 +48,10 @@ const cities = ref<City[]>([])
 const loading = ref(false)
 const totalItems = ref(0)
 
-// استخدام نظام التنبيهات الجديد
-import { useAlert } from '@/composables/useAlert'
+// استخدام نظام التنبيهات الموحّد
+import { useAppAlerts } from '@/composables/useAppAlerts'
 
-const { showSuccess, showError, showWarning, showInfo } = useAlert()
-
-// Simple alert state (للتوافق مع الكود الموجود)
-const showAlert = ref(false)
-const alertMessage = ref('')
-const alertType = ref<'success' | 'error' | 'warning' | 'info'>('success')
+const { success: showSuccess, error: showError, warning: showWarning, info: showInfo } = useAppAlerts()
 
 const dialog = ref(false)
 const editDialog = ref(false)
@@ -129,15 +124,10 @@ const loadCities = async () => {
     }
   } catch (error) {
     console.error('❌ خطأ في تحميل المدن:', error)
-    showError('حدث خطأ أثناء تحميل المدن', {
+    showError(te('pages.cities.errorLoading') ? t('pages.cities.errorLoading') : 'حدث خطأ أثناء تحميل المدن', {
       timeout: 0,
       clickToDismiss: true
     })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = 'حدث خطأ أثناء تحميل المدن'
-    alertType.value = 'error'
-    showAlert.value = true
     cities.value = []
     totalItems.value = 0
   } finally {
@@ -172,27 +162,17 @@ const addCity = async () => {
         setFieldTouched('name')
         setFieldTouched('country')
         
-        // إظهار رسالة للمستخدم باستخدام النظام الجديد
-        showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
+        // تنبيه عام للمستخدم
+        showWarning(te('validation.fixHighlighted') ? t('validation.fixHighlighted') : '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
           timeout: 5000,
           clickToDismiss: true
         })
-        
-        // للتوافق مع الكود الموجود
-        alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
-        alertType.value = 'warning'
-        showAlert.value = true
       } else {
-        const errorMsg = response.message || 'حدث خطأ أثناء إضافة المدينة'
+        const errorMsg = response.message || (te('pages.cities.errorAdd') ? t('pages.cities.errorAdd') : 'حدث خطأ أثناء إضافة المدينة')
         showError(errorMsg, {
           timeout: 0, // لا يختفي تلقائياً للأخطاء المهمة
           clickToDismiss: true
         })
-        
-        // للتوافق مع الكود الموجود
-        alertMessage.value = errorMsg
-        alertType.value = 'error'
-        showAlert.value = true
       }
       return
     }
@@ -200,15 +180,11 @@ const addCity = async () => {
     dialog.value = false
     resetNewCity()
     loadCities()
-    showSuccess('تم إضافة المدينة بنجاح', {
+    showSuccess(te('pages.cities.successAdd') ? t('pages.cities.successAdd') : 'تم إضافة المدينة بنجاح', {
       timeout: 4000,
       clickToDismiss: true
     })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = 'تم إضافة المدينة بنجاح'
-    alertType.value = 'success'
-    showAlert.value = true
+
   } catch (error: any) {
     console.error('❌ خطأ في الشبكة أو في الخادم:', error)
     
@@ -220,35 +196,20 @@ const addCity = async () => {
       setFieldTouched('name')
       setFieldTouched('country')
       
-      showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
+      showWarning(te('validation.fixHighlighted') ? t('validation.fixHighlighted') : '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
         timeout: 5000,
         clickToDismiss: true
       })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
-      alertType.value = 'warning'
-      showAlert.value = true
     } else if (error?.data?.message) {
       showError(error.data.message, {
         timeout: 0,
         clickToDismiss: true
       })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = error.data.message
-      alertType.value = 'error'
-      showAlert.value = true
     } else {
-      showError('حدث خطأ أثناء إضافة المدينة', {
+      showError(te('pages.cities.errorAdd') ? t('pages.cities.errorAdd') : 'حدث خطأ أثناء إضافة المدينة', {
         timeout: 0,
         clickToDismiss: true
       })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = 'حدث خطأ أثناء إضافة المدينة'
-      alertType.value = 'error'
-      showAlert.value = true
     }
   }
 }
@@ -267,7 +228,7 @@ const updateCity = async () => {
       body: {
         id: editCity.value.id,
         name: editCity.value.name.trim(),
-        country: editCity.value.country.trim(),
+        country: (editCity.value.country || '').trim(),
       },
     })
     
@@ -281,42 +242,27 @@ const updateCity = async () => {
         setFieldTouched('editName')
         setFieldTouched('editCountry')
         
-        // إظهار رسالة للمستخدم باستخدام النظام الجديد
-        showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
+        showWarning(te('validation.fixHighlighted') ? t('validation.fixHighlighted') : '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
           timeout: 5000,
           clickToDismiss: true
         })
-        
-        // للتوافق مع الكود الموجود
-        alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
-        alertType.value = 'warning'
-        showAlert.value = true
       } else {
-        const errorMsg = response.message || 'حدث خطأ أثناء تحديث المدينة'
+        const errorMsg = response.message || (te('pages.cities.errorUpdate') ? t('pages.cities.errorUpdate') : 'حدث خطأ أثناء تحديث المدينة')
         showError(errorMsg, {
           timeout: 0,
           clickToDismiss: true
         })
-        
-        // للتوافق مع الكود الموجود
-        alertMessage.value = errorMsg
-        alertType.value = 'error'
-        showAlert.value = true
       }
       return
     }
     
     editDialog.value = false
     loadCities()
-    showSuccess('تم تحديث المدينة بنجاح', {
+    showSuccess(te('pages.cities.successUpdate') ? t('pages.cities.successUpdate') : 'تم تحديث المدينة بنجاح', {
       timeout: 4000,
       clickToDismiss: true
     })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = 'تم تحديث المدينة بنجاح'
-    alertType.value = 'success'
-    showAlert.value = true
+
   } catch (error: any) {
     console.error('❌ خطأ في الشبكة أو في الخادم:', error)
     
@@ -328,35 +274,20 @@ const updateCity = async () => {
       setFieldTouched('editName')
       setFieldTouched('editCountry')
       
-      showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
+      showWarning(te('validation.fixHighlighted') ? t('validation.fixHighlighted') : '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
         timeout: 5000,
         clickToDismiss: true
       })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
-      alertType.value = 'warning'
-      showAlert.value = true
     } else if (error?.data?.message) {
       showError(error.data.message, {
         timeout: 0,
         clickToDismiss: true
       })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = error.data.message
-      alertType.value = 'error'
-      showAlert.value = true
     } else {
-      showError('حدث خطأ أثناء تحديث المدينة', {
+      showError(te('pages.cities.errorUpdate') ? t('pages.cities.errorUpdate') : 'حدث خطأ أثناء تحديث المدينة', {
         timeout: 0,
         clickToDismiss: true
       })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = 'حدث خطأ أثناء تحديث المدينة'
-      alertType.value = 'error'
-      showAlert.value = true
     }
   }
 }
@@ -375,17 +306,12 @@ const deleteCity = async () => {
     
     // Check if the response indicates success - response comes directly, not in response.data
     if (response && response.isSuccess === false) {
-      const errorMsg = response.message || response.errors?.[0]?.errorMessage || 'حدث خطأ أثناء حذف المدينة'
+      const errorMsg = response.message || response.errors?.[0]?.errorMessage || (te('pages.cities.errorDelete') ? t('pages.cities.errorDelete') : 'حدث خطأ أثناء حذف المدينة')
       console.log('API returned error:', errorMsg)
       showError(errorMsg, {
         timeout: 0,
         clickToDismiss: true
       })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
       deleteDialog.value = false
       return
     }
@@ -394,15 +320,11 @@ const deleteCity = async () => {
     console.log('City deleted successfully')
     deleteDialog.value = false
     loadCities()
-    showSuccess('تم حذف المدينة بنجاح', {
+    showSuccess(te('pages.cities.successDelete') ? t('pages.cities.successDelete') : 'تم حذف المدينة بنجاح', {
       timeout: 4000,
       clickToDismiss: true
     })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = 'تم حذف المدينة بنجاح'
-    alertType.value = 'success'
-    showAlert.value = true
+
   } catch (error: any) {
     console.error('❌ خطأ في الشبكة أو في الخادم:', error)
     
@@ -410,35 +332,20 @@ const deleteCity = async () => {
     if (error?.data?.errors && Array.isArray(error.data.errors)) {
       setErrorsFromResponse(error.data, 'edit')
       
-      showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
+      showWarning(t('validation.fixHighlighted') || '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
         timeout: 5000,
         clickToDismiss: true
       })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
-      alertType.value = 'warning'
-      showAlert.value = true
     } else if (error?.data?.message) {
       showError(error.data.message, {
         timeout: 0,
         clickToDismiss: true
       })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = error.data.message
-      alertType.value = 'error'
-      showAlert.value = true
     } else {
-      showError('حدث خطأ أثناء حذف المدينة', {
+      showError(te('pages.cities.errorDelete') ? t('pages.cities.errorDelete') : 'حدث خطأ أثناء حذف المدينة', {
         timeout: 0,
         clickToDismiss: true
       })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = 'حدث خطأ أثناء حذف المدينة'
-      alertType.value = 'error'
-      showAlert.value = true
     }
     deleteDialog.value = false
   }
@@ -460,33 +367,24 @@ const deleteSelectedRows = async () => {
     
     if (failedOperations.length > 0) {
       const errorMessages = failedOperations.map((response: any) => 
-        response?.message || response?.errors?.[0]?.errorMessage || 'حدث خطأ أثناء العملية'
+        response?.message || response?.errors?.[0]?.errorMessage || (t('common.operationError') || 'حدث خطأ أثناء العملية')
       )
-      const errorMsg = `فشل في حذف ${failedOperations.length} عنصر: ${errorMessages.join(', ')}`
+      const errorMsg = te('pages.cities.deleteSelectedError') ? t('pages.cities.deleteSelectedError', { count: failedOperations.length, details: errorMessages.join(', ') }) : `فشل في حذف ${failedOperations.length} عنصر: ${errorMessages.join(', ')}`
       showError(errorMsg, {
         timeout: 0,
         clickToDismiss: true
       })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
       return
     }
     
     // If we reach here, all deletions were successful
     selectedRows.value = []
     loadCities()
-    showSuccess('تم حذف المدن المحددة بنجاح', {
+    showSuccess(te('pages.cities.successDeleteSelected') ? t('pages.cities.successDeleteSelected') : 'تم حذف المدن المحددة بنجاح', {
       timeout: 4000,
       clickToDismiss: true
     })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = 'تم حذف المدن المحددة بنجاح'
-    alertType.value = 'success'
-    showAlert.value = true
+
   } catch (error: any) {
     console.error('❌ خطأ في الشبكة أو في الخادم:', error)
     
@@ -494,35 +392,20 @@ const deleteSelectedRows = async () => {
     if (error?.data?.errors && Array.isArray(error.data.errors)) {
       setErrorsFromResponse(error.data, 'edit')
       
-      showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
+      showWarning(t('validation.fixHighlighted') || '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
         timeout: 5000,
         clickToDismiss: true
       })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
-      alertType.value = 'warning'
-      showAlert.value = true
     } else if (error?.data?.message) {
       showError(error.data.message, {
         timeout: 0,
         clickToDismiss: true
       })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = error.data.message
-      alertType.value = 'error'
-      showAlert.value = true
     } else {
-      showError('حدث خطأ أثناء حذف المدن المحددة', {
+      showError(te('pages.cities.errorDeleteSelected') ? t('pages.cities.errorDeleteSelected') : 'حدث خطأ أثناء حذف المدن المحددة', {
         timeout: 0,
         clickToDismiss: true
       })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = 'حدث خطأ أثناء حذف المدن المحددة'
-      alertType.value = 'error'
-      showAlert.value = true
     }
   }
 }
@@ -698,40 +581,7 @@ onMounted(() => {
        v-model="dialog"
        max-width="600px"
        persistent
-     >
-       <!-- Alert for validation errors and success messages - Above VCard -->
-       <div class="d-flex justify-center mb-4" v-if="showAlert">
-         <VAlert
-           v-model="showAlert"
-           :type="alertType"
-           variant="tonal"
-           closable
-           @click="showAlert = false"
-           style="cursor: pointer;"
-           :style="{
-             position: 'relative',
-             zIndex: 9999,
-             maxWidth: '600px',
-             width: '100%',
-             borderRadius: alertType === 'success' ? '16px' : '8px',
-             boxShadow: alertType === 'success' ? '0 2px 4px rgba(76, 175, 80, 0.2)' : '0 2px 8px rgba(0,0,0,0.15)',
-             border: alertType === 'success' ? '1px solid #4caf50' : '1px solid',
-             borderColor: alertType === 'warning' ? '#ff9800' : alertType === 'error' ? '#f44336' : '#4caf50',
-             backgroundColor: alertType === 'success' ? '#e8f5e8' : alertType === 'warning' ? '#fff8e1' : alertType === 'error' ? '#ffebee' : '#e8f5e8',
-             padding: alertType === 'success' ? '12px 16px' : '16px'
-           }"
-         >
-           <div class="d-flex align-center">
-             <VIcon
-               :icon="alertType === 'warning' ? 'tabler-alert-triangle' : alertType === 'error' ? 'tabler-alert-circle' : 'tabler-check-circle'"
-               :color="alertType === 'warning' ? 'warning' : alertType === 'error' ? 'error' : 'success'"
-               class="me-2"
-             />
-             <span class="font-weight-medium" :style="{ color: alertType === 'success' ? '#2e7d32' : 'inherit' }">{{ alertMessage }}</span>
-           </div>
-         </VAlert>
-       </div>
-       
+      >
        <VCard>
          <VCardTitle class="text-h6">إضافة مدينة جديدة</VCardTitle>
          <VCardText>
@@ -787,40 +637,7 @@ onMounted(() => {
        v-model="editDialog"
        max-width="600px"
        persistent
-     >
-       <!-- Alert for validation errors and success messages - Above VCard -->
-       <div class="d-flex justify-center mb-4" v-if="showAlert">
-         <VAlert
-           v-model="showAlert"
-           :type="alertType"
-           variant="tonal"
-           closable
-           @click="showAlert = false"
-           style="cursor: pointer;"
-           :style="{
-             position: 'relative',
-             zIndex: 9999,
-             maxWidth: '600px',
-             width: '100%',
-             borderRadius: alertType === 'success' ? '16px' : '8px',
-             boxShadow: alertType === 'success' ? '0 2px 4px rgba(76, 175, 80, 0.2)' : '0 2px 8px rgba(0,0,0,0.15)',
-             border: alertType === 'success' ? '1px solid #4caf50' : '1px solid',
-             borderColor: alertType === 'warning' ? '#ff9800' : alertType === 'error' ? '#f44336' : '#4caf50',
-             backgroundColor: alertType === 'success' ? '#e8f5e8' : alertType === 'warning' ? '#fff8e1' : alertType === 'error' ? '#ffebee' : '#e8f5e8',
-             padding: alertType === 'success' ? '12px 16px' : '16px'
-           }"
-         >
-           <div class="d-flex align-center">
-             <VIcon
-               :icon="alertType === 'warning' ? 'tabler-alert-triangle' : alertType === 'error' ? 'tabler-alert-circle' : 'tabler-check-circle'"
-               :color="alertType === 'warning' ? 'warning' : alertType === 'error' ? 'error' : 'success'"
-               class="me-2"
-             />
-             <span class="font-weight-medium" :style="{ color: alertType === 'success' ? '#2e7d32' : 'inherit' }">{{ alertMessage }}</span>
-           </div>
-         </VAlert>
-       </div>
-       
+      >
        <VCard>
          <VCardTitle class="text-h6">تعديل المدينة</VCardTitle>
          <VCardText>

@@ -82,7 +82,7 @@ const headers = computed(() => [
 const loadConstructionRequests = async () => {
   loading.value = true
   try {
-    const response = await api('/ConstructionRequests/GetConstructionRequests', {
+    const response = await api('/ConstructionRequest/GetConstructionRequests', {
       headers: {
         'Accept-Language': locale.value
       }
@@ -142,7 +142,7 @@ const addConstructionRequest = async () => {
   }
 
   try {
-    await api('/ConstructionRequests', {
+    await api('/ConstructionRequest', {
       method: 'POST',
       body: newRequest.value,
       headers: {
@@ -219,7 +219,7 @@ const updateConstructionRequest = async () => {
   }
 
   try {
-    await api(`/ConstructionRequests/${editRequest.value.id}`, {
+    await api(`/ConstructionRequest/${editRequest.value.id}`, {
       method: 'PUT',
       body: editRequest.value,
       headers: {
@@ -250,7 +250,7 @@ const updateConstructionRequest = async () => {
 
 const deleteConstructionRequest = async () => {
   try {
-    await api(`/ConstructionRequests/${selectedRequest.value.id}`, {
+    await api(`/ConstructionRequest/${selectedRequest.value.id}`, {
       method: 'DELETE',
       headers: {
         'Accept-Language': locale.value

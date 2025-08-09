@@ -64,9 +64,19 @@ export function useLogin() {
         return
       }
       
-      // حفظ بيانات المستخدم
-      Cookies.set('accessToken', token)
-      Cookies.set('userData', JSON.stringify(user))
+      // حفظ بيانات المستخدم على المسار الجذري لضمان توافرها في جميع الصفحات
+      Cookies.set('accessToken', token, {
+        expires: 7,
+        path: '/',
+        secure: false,
+        sameSite: 'lax',
+      })
+      Cookies.set('userData', JSON.stringify(user), {
+        expires: 7,
+        path: '/',
+        secure: false,
+        sameSite: 'lax',
+      })
 
       // معالجة الصلاحيات
       const userPermissions = user.permissions || user.userAbilityRules || []

@@ -13,7 +13,7 @@ import { useI18n } from 'vue-i18n'
 import { useFormValidation } from '@/composables/useFormValidation'
 import { useApi } from '@/composables/useApi'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 // Data
 const nameChangeRequests = ref([])
@@ -37,7 +37,8 @@ const newRequest = ref({
 })
 
 // Form validation
-const { errors, clearErrors, setFieldTouched, validateRequired, validateEmail } = useFormValidation()
+const { validationState, clearErrors, setFieldTouched, validateRequired, validateEmail } = useFormValidation()
+const errors = validationState.errors
 
 // Priority options
 const priorityOptions = [
@@ -68,8 +69,10 @@ const api = useApi()
 const fetchNameChangeRequests = async () => {
   try {
     loading.value = true
-    const response = await api('/NameChangeRequests')
-    nameChangeRequests.value = response.data || []
+    const response = await api('/NameChangeRequest/filter?PageNumber=1&PageSize=10', {
+      headers: { 'Accept-Language': locale.value }
+    })
+    nameChangeRequests.value = response.data?.items || response.data || []
   } catch (error) {
     console.error('Error fetching name change requests:', error)
   } finally {
@@ -138,26 +141,29 @@ const addNameChangeRequest = async () => {
   try {
     loading.value = true
 
-    if (isEdit.value) {
-      await api(`/NameChangeRequests/${selectedRequest.value.id}`, {
+    if (isEdit.value && selectedRequest.value) {
+      const idToUpdate = (selectedRequest.value as any).id
+      await api(`/NameChangeRequest/${idToUpdate}`, {
         method: 'PUT',
         body: newRequest.value,
+        headers: { 'Accept-Language': locale.value }
       })
     } else {
-      await api('/NameChangeRequests', {
+      await api('/NameChangeRequest', {
         method: 'POST',
         body: newRequest.value,
+        headers: { 'Accept-Language': locale.value }
       })
     }
 
     await fetchNameChangeRequests()
     dialog.value = false
     resetForm()
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error saving name change request:', error)
     if (error.data?.errors) {
-      Object.keys(error.data.errors).forEach(field => {
-        errors.value[field] = error.data.errors[field]
+      Object.keys(error.data.errors).forEach((field: string) => {
+        ;(errors as any)[field] = error.data.errors[field]
       })
     }
   } finally {
@@ -165,21 +171,22 @@ const addNameChangeRequest = async () => {
   }
 }
 
-const editRequest = (request) => {
+const editRequest = (request: any) => {
   isEdit.value = true
   selectedRequest.value = request
   newRequest.value = { ...request }
   dialog.value = true
 }
 
-const deleteRequest = async (id) => {
-  if (confirm(t('confirmDelete'))) {
+const deleteRequest = async (id: number) => {
+  if (confirm(t('pages.requests.confirmDelete'))) {
     try {
-      await api(`/NameChangeRequests/${id}`, {
+      await api(`/NameChangeRequest/${id}`, {
         method: 'DELETE',
+        headers: { 'Accept-Language': locale.value }
       })
       await fetchNameChangeRequests()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting name change request:', error)
     }
   }
@@ -229,22 +236,22 @@ onMounted(() => {
     <VCardText>
       <VDataTable
         :headers="[
-          { title: t('title'), key: 'title' },
-          { title: t('description'), key: 'description' },
-          { title: t('priority'), key: 'priority' },
-          { title: t('location'), key: 'location' },
-          { title: t('referenceNumber'), key: 'referenceNumber' },
-          { title: t('requestStatus'), key: 'requestStatus' },
-          { title: t('currentName'), key: 'currentName' },
-          { title: t('newName'), key: 'newName' },
-          { title: t('changeReason'), key: 'changeReason' },
-          { title: t('buildingType'), key: 'buildingType' },
-          { title: t('actions'), key: 'actions', sortable: false },
+          { title: t('tableHeaders.nameChangeRequests.title'), key: 'title' },
+          { title: t('tableHeaders.nameChangeRequests.description'), key: 'description' },
+          { title: t('tableHeaders.nameChangeRequests.priority'), key: 'priority' },
+          { title: t('tableHeaders.nameChangeRequests.location'), key: 'location' },
+          { title: t('tableHeaders.nameChangeRequests.referenceNumber'), key: 'referenceNumber' },
+          { title: t('tableHeaders.nameChangeRequests.requestStatus'), key: 'requestStatus' },
+          { title: t('tableHeaders.nameChangeRequests.currentName'), key: 'currentName' },
+          { title: t('tableHeaders.nameChangeRequests.newName'), key: 'newName' },
+          { title: t('tableHeaders.nameChangeRequests.changeReason'), key: 'changeReason' },
+          { title: t('tableHeaders.nameChangeRequests.buildingType'), key: 'buildingType' },
+          { title: t('tableHeaders.nameChangeRequests.actions'), key: 'actions', sortable: false },
         ]"
         :items="nameChangeRequests"
         :loading="loading"
       >
-        <template #item.actions="{ item }">
+        <template #item.actions="{ item }: { item: any }">
           <VBtn
             icon
             variant="text"
@@ -283,7 +290,7 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="newRequest.title"
-                  :label="t('title')"
+                  :label="t('tableHeaders.nameChangeRequests.title')"
                   :error-messages="errors.title"
                   required
                 />
@@ -292,7 +299,7 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="newRequest.description"
-                  :label="t('description')"
+                  :label="t('tableHeaders.nameChangeRequests.description')"
                   :error-messages="errors.description"
                   required
                 />
@@ -302,7 +309,7 @@ onMounted(() => {
                 <VSelect
                   v-model="newRequest.priority"
                   :items="priorityOptions"
-                  :label="t('priority')"
+                  :label="t('tableHeaders.nameChangeRequests.priority')"
                   :error-messages="errors.priority"
                   required
                 />
@@ -311,7 +318,7 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="newRequest.location"
-                  :label="t('location')"
+                  :label="t('tableHeaders.nameChangeRequests.location')"
                   :error-messages="errors.location"
                   required
                 />
@@ -320,7 +327,7 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="newRequest.referenceNumber"
-                  :label="t('referenceNumber')"
+                  :label="t('tableHeaders.nameChangeRequests.referenceNumber')"
                   :error-messages="errors.referenceNumber"
                   required
                 />
@@ -330,7 +337,7 @@ onMounted(() => {
                 <VSelect
                   v-model="newRequest.requestStatus"
                   :items="statusOptions"
-                  :label="t('requestStatus')"
+                  :label="t('tableHeaders.nameChangeRequests.requestStatus')"
                   :error-messages="errors.requestStatus"
                   required
                 />
@@ -339,7 +346,7 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="newRequest.currentName"
-                  :label="t('currentName')"
+                  :label="t('tableHeaders.nameChangeRequests.currentName')"
                   :error-messages="errors.currentName"
                   required
                 />
@@ -348,7 +355,7 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="newRequest.newName"
-                  :label="t('newName')"
+                  :label="t('tableHeaders.nameChangeRequests.newName')"
                   :error-messages="errors.newName"
                   required
                 />
@@ -358,7 +365,7 @@ onMounted(() => {
                 <VSelect
                   v-model="newRequest.buildingType"
                   :items="buildingTypeOptions"
-                  :label="t('buildingType')"
+                  :label="t('tableHeaders.nameChangeRequests.buildingType')"
                   :error-messages="errors.buildingType"
                   required
                 />
@@ -367,7 +374,7 @@ onMounted(() => {
               <VCol cols="12">
                 <VTextarea
                   v-model="newRequest.changeReason"
-                  :label="t('changeReason')"
+                  :label="t('tableHeaders.nameChangeRequests.changeReason')"
                   :error-messages="errors.changeReason"
                   required
                 />
@@ -383,7 +390,7 @@ onMounted(() => {
             variant="text"
             @click="dialog = false"
           >
-            {{ t('cancel') }}
+            {{ t('common.cancel') }}
           </VBtn>
           <VBtn
             color="primary"
@@ -391,7 +398,7 @@ onMounted(() => {
             :disabled="Object.keys(errors).length > 0"
             @click="addNameChangeRequest"
           >
-            {{ isEdit ? t('update') : t('save') }}
+            {{ isEdit ? t('common.update') : t('common.save') }}
           </VBtn>
         </VCardActions>
       </VCard>

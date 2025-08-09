@@ -36,10 +36,7 @@ const loading = ref(false)
 const regionsLoading = ref(false)
 const totalItems = ref(0)
 
-// Simple alert state
-const showAlert = ref(false)
-const alertMessage = ref('')
-const alertType = ref<'success' | 'error' | 'warning' | 'info'>('success')
+// Alerts: use the shared app alerts only
 
 const dialog = ref(false)
 const editDialog = ref(false)
@@ -77,13 +74,13 @@ const {
   addError,
 } = useFormValidation()
 
-// استخدام نظام التنبيهات الجديد "نمط خالد"
-import { useAlert } from '@/composables/useAlert'
+// استخدام نظام التنبيهات الجديد "نمط خالد" على مستوى التطبيق
+import { useAppAlerts } from '@/composables/useAppAlerts'
 
-const { showSuccess, showError, showWarning, showInfo } = useAlert()
+const { success: showSuccess, error: showError, warning: showWarning, info: showInfo } = useAppAlerts()
 
 // استخدام i18n للترجمة
-const { t, locale } = useI18n()
+const { t, te, locale } = useI18n()
 
 // Using the ready-made template structure
 const options = ref({
@@ -143,15 +140,10 @@ const loadOffices = async () => {
     }
   } catch (error) {
     console.error('Error loading offices:', error)
-    showError(locale.value === 'ar' ? 'حدث خطأ أثناء تحميل المكاتب' : 'Error loading offices', {
+    showError(t('pages.offices.errorLoadingOffices'), {
       timeout: 0,
       clickToDismiss: true
     })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = locale.value === 'ar' ? 'حدث خطأ أثناء تحميل المكاتب' : 'Error loading offices'
-    alertType.value = 'error'
-    showAlert.value = true
     offices.value = []
     totalItems.value = 0
   } finally {
@@ -170,15 +162,10 @@ const loadRegions = async () => {
     regions.value = response.data.items || []
   } catch (error) {
     console.error('Error loading regions:', error)
-    showError(locale.value === 'ar' ? 'حدث خطأ أثناء تحميل المناطق' : 'Error loading regions', {
+    showError(t('pages.offices.errorLoadingRegions'), {
       timeout: 0,
       clickToDismiss: true
     })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = locale.value === 'ar' ? 'حدث خطأ أثناء تحميل المناطق' : 'Error loading regions'
-    alertType.value = 'error'
-    showAlert.value = true
   } finally {
     regionsLoading.value = false
   }
@@ -228,15 +215,10 @@ const addOffice = async () => {
   setFieldTouched('regionId')
   
   if (!isValid) {
-    showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
+    showWarning(te('validation.fixHighlighted') ? t('validation.fixHighlighted') : '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
       timeout: 5000,
       clickToDismiss: true
     })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
-    alertType.value = 'warning'
-    showAlert.value = true
     return
   }
 
@@ -265,26 +247,16 @@ const addOffice = async () => {
         setFieldTouched('phoneNumber')
         setFieldTouched('regionId')
         
-        showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
+        showWarning(te('validation.fixHighlighted') ? t('validation.fixHighlighted') : '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
           timeout: 5000,
           clickToDismiss: true
         })
-        
-        // للتوافق مع الكود الموجود
-        alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
-        alertType.value = 'warning'
-        showAlert.value = true
       } else {
         const errorMsg = response.message || (locale.value === 'ar' ? 'حدث خطأ أثناء إضافة المكتب' : 'Error adding office')
         showError(errorMsg, {
           timeout: 0,
           clickToDismiss: true
         })
-        
-        // للتوافق مع الكود الموجود
-        alertMessage.value = errorMsg
-        alertType.value = 'error'
-        showAlert.value = true
       }
       return
     }
@@ -296,22 +268,12 @@ const addOffice = async () => {
       timeout: 4000,
       clickToDismiss: true
     })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = locale.value === 'ar' ? 'تم إضافة المكتب بنجاح' : 'Office added successfully'
-    alertType.value = 'success'
-    showAlert.value = true
   } catch (error) {
     console.error('Error adding office:', error)
     showError(locale.value === 'ar' ? 'حدث خطأ أثناء إضافة المكتب' : 'Error adding office', {
       timeout: 0,
       clickToDismiss: true
     })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = locale.value === 'ar' ? 'حدث خطأ أثناء إضافة المكتب' : 'Error adding office'
-    alertType.value = 'error'
-    showAlert.value = true
   }
 }
 
@@ -353,15 +315,10 @@ const updateOffice = async () => {
   setFieldTouched('phoneNumber')
   
   if (!isValid) {
-    showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
+    showWarning(te('validation.fixHighlighted') ? t('validation.fixHighlighted') : '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
       timeout: 5000,
       clickToDismiss: true
     })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
-    alertType.value = 'warning'
-    showAlert.value = true
     return
   }
 
@@ -389,26 +346,16 @@ const updateOffice = async () => {
         setFieldTouched('location')
         setFieldTouched('phoneNumber')
         
-        showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
+        showWarning(te('validation.fixHighlighted') ? t('validation.fixHighlighted') : '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
           timeout: 5000,
           clickToDismiss: true
         })
-        
-        // للتوافق مع الكود الموجود
-        alertMessage.value = '⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه'
-        alertType.value = 'warning'
-        showAlert.value = true
       } else {
         const errorMsg = response.message || (locale.value === 'ar' ? 'حدث خطأ أثناء تحديث المكتب' : 'Error updating office')
         showError(errorMsg, {
           timeout: 0,
           clickToDismiss: true
         })
-        
-        // للتوافق مع الكود الموجود
-        alertMessage.value = errorMsg
-        alertType.value = 'error'
-        showAlert.value = true
       }
       return
     }
@@ -419,22 +366,12 @@ const updateOffice = async () => {
       timeout: 4000,
       clickToDismiss: true
     })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = locale.value === 'ar' ? 'تم تحديث المكتب بنجاح' : 'Office updated successfully'
-    alertType.value = 'success'
-    showAlert.value = true
   } catch (error) {
     console.error('Error updating office:', error)
     showError(locale.value === 'ar' ? 'حدث خطأ أثناء تحديث المكتب' : 'Error updating office', {
       timeout: 0,
       clickToDismiss: true
     })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = locale.value === 'ar' ? 'حدث خطأ أثناء تحديث المكتب' : 'Error updating office'
-    alertType.value = 'error'
-    showAlert.value = true
   }
 }
 
@@ -456,11 +393,6 @@ const deleteOffice = async () => {
         timeout: 0,
         clickToDismiss: true
       })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
       deleteDialog.value = false
       return
     }
@@ -472,11 +404,6 @@ const deleteOffice = async () => {
       timeout: 4000,
       clickToDismiss: true
     })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = locale.value === 'ar' ? 'تم حذف المكتب بنجاح' : 'Office deleted successfully'
-    alertType.value = 'success'
-    showAlert.value = true
   } catch (error) {
     console.error('Error deleting office:', error)
     // ofetch doesn't throw for HTTP errors, so this is likely a network error
@@ -484,11 +411,6 @@ const deleteOffice = async () => {
       timeout: 0,
       clickToDismiss: true
     })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = locale.value === 'ar' ? 'حدث خطأ في الاتصال بالخادم' : 'Network connection error'
-    alertType.value = 'error'
-    showAlert.value = true
   }
 }
 
@@ -522,11 +444,6 @@ const deleteSelectedRows = async () => {
         timeout: 0,
         clickToDismiss: true
       })
-      
-      // للتوافق مع الكود الموجود
-      alertMessage.value = errorMsg
-      alertType.value = 'error'
-      showAlert.value = true
       return
     }
     
@@ -537,11 +454,6 @@ const deleteSelectedRows = async () => {
       timeout: 4000,
       clickToDismiss: true
     })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = locale.value === 'ar' ? 'تم حذف المكاتب المحددة بنجاح' : 'Selected offices deleted successfully'
-    alertType.value = 'success'
-    showAlert.value = true
   } catch (error) {
     console.error('Error deleting selected offices:', error)
     // ofetch doesn't throw for HTTP errors, so this is likely a network error
@@ -549,11 +461,6 @@ const deleteSelectedRows = async () => {
       timeout: 0,
       clickToDismiss: true
     })
-    
-    // للتوافق مع الكود الموجود
-    alertMessage.value = locale.value === 'ar' ? 'حدث خطأ في الاتصال بالخادم' : 'Network connection error'
-    alertType.value = 'error'
-    showAlert.value = true
   }
 }
 
@@ -603,20 +510,10 @@ onMounted(() => {
 
 <template>
   <div>
-    <!-- Simple VAlert - just like template examples -->
-    <VAlert
-      v-model="showAlert"
-      :type="alertType"
-      variant="tonal"
-      closable
-      class="mb-4"
-    >
-      {{ alertMessage }}
-    </VAlert>
 
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center pa-6">
-        <span class="text-h5">{{ locale === 'ar' ? 'إدارة المكاتب' : 'Offices Management' }}</span>
+        <span class="text-h5">{{ t('pages.offices.title') }}</span>
         <div class="d-flex gap-2">
           <VBtn
             v-if="selectedRows.length > 0"
@@ -624,13 +521,13 @@ onMounted(() => {
             variant="outlined"
             @click="() => { clearErrors(); deleteSelectedRows(); }"
           >
-            {{ locale === 'ar' ? `حذف المحدد (${selectedRows.length})` : `Delete Selected (${selectedRows.length})` }}
+            {{ t('pages.offices.deleteSelected', { count: selectedRows.length }) }}
           </VBtn>
           <VBtn
             color="primary"
             @click="() => { clearErrors(); resetNewOffice(); dialog = true; }"
           >
-            {{ locale === 'ar' ? 'إضافة مكتب' : 'Add Office' }}
+            {{ t('pages.offices.addOffice') }}
           </VBtn>
         </div>
       </VCardTitle>
@@ -647,7 +544,7 @@ onMounted(() => {
           >
             <VTextField
               v-model="search"
-              :placeholder="locale === 'ar' ? 'البحث في المكاتب...' : 'Search offices...'"
+              :placeholder="t('pages.offices.searchPlaceholder')"
               prepend-inner-icon="mdi-magnify"
               single-line
               hide-details
@@ -699,7 +596,7 @@ onMounted(() => {
               v-else 
               class="text-medium-emphasis"
             >
-              {{ locale === 'ar' ? 'لا توجد منطقة' : 'No region' }}
+              {{ t('pages.offices.noRegion') }}
             </span>
           </template>
 
@@ -717,7 +614,7 @@ onMounted(() => {
               v-else 
               class="text-medium-emphasis"
             >
-              {{ locale === 'ar' ? 'لا يوجد رقم هاتف' : 'No phone number' }}
+              {{ t('pages.offices.noPhone') }}
             </span>
           </template>
 
@@ -740,7 +637,7 @@ onMounted(() => {
                 <VSelect
                   v-model="options.itemsPerPage"
                   :items="[5, 10, 25, 50, 100]"
-                  :label="locale === 'ar' ? 'عناصر في الصفحة:' : 'Items per page:'"
+                  :label="t('pages.offices.itemsPerPage')"
                   variant="underlined"
                   style="max-inline-size: 8rem;min-inline-size: 5rem;"
                 />
@@ -763,48 +660,16 @@ onMounted(() => {
       max-width="600px"
       persistent
     >
-      <!-- Alert for validation errors and success messages - Above VCard -->
-      <div class="d-flex justify-center mb-4" v-if="showAlert">
-        <VAlert
-          v-model="showAlert"
-          :type="alertType"
-          variant="tonal"
-          closable
-          @click="showAlert = false"
-          style="cursor: pointer;"
-          :style="{
-            position: 'relative',
-            zIndex: 9999,
-            maxWidth: '600px',
-            width: '100%',
-            borderRadius: alertType === 'success' ? '16px' : '8px',
-            boxShadow: alertType === 'success' ? '0 2px 4px rgba(76, 175, 80, 0.2)' : '0 2px 8px rgba(0,0,0,0.15)',
-            border: alertType === 'success' ? '1px solid #4caf50' : '1px solid',
-            borderColor: alertType === 'warning' ? '#ff9800' : alertType === 'error' ? '#f44336' : '#4caf50',
-            backgroundColor: alertType === 'success' ? '#e8f5e8' : alertType === 'warning' ? '#fff8e1' : alertType === 'error' ? '#ffebee' : '#e8f5e8',
-            padding: alertType === 'success' ? '12px 16px' : '16px'
-          }"
-        >
-          <div class="d-flex align-center">
-            <VIcon
-              :icon="alertType === 'warning' ? 'tabler-alert-triangle' : alertType === 'error' ? 'tabler-alert-circle' : 'tabler-check-circle'"
-              :color="alertType === 'warning' ? 'warning' : alertType === 'error' ? 'error' : 'success'"
-              class="me-2"
-            />
-            <span class="font-weight-medium" :style="{ color: alertType === 'success' ? '#2e7d32' : 'inherit' }">{{ alertMessage }}</span>
-          </div>
-        </VAlert>
-      </div>
       
       <VCard>
-        <VCardTitle class="text-h6">{{ locale === 'ar' ? 'إضافة مكتب جديد' : 'Add New Office' }}</VCardTitle>
+        <VCardTitle class="text-h6">{{ t('pages.offices.addNewOffice') }}</VCardTitle>
         <VCardText>
           <VForm @submit.prevent="addOffice">
             <VRow>
               <VCol cols="12">
                 <VTextField
                   v-model="newOffice.name"
-                  :label="locale === 'ar' ? 'اسم المكتب' : 'Office Name'"
+                  :label="t('pages.offices.officeName')"
                   variant="outlined"
                   required
                   :error="validationState.errors.name && validationState.errors.name.length > 0 && validationState.touched.name"
@@ -815,7 +680,7 @@ onMounted(() => {
               <VCol cols="12">
                 <VTextField
                   v-model="newOffice.location"
-                  :label="locale === 'ar' ? 'الموقع' : 'Location'"
+                  :label="t('pages.offices.location')"
                   variant="outlined"
                   required
                   :error="validationState.errors.location && validationState.errors.location.length > 0 && validationState.touched.location"
@@ -826,10 +691,10 @@ onMounted(() => {
               <VCol cols="12">
                 <VTextField
                   v-model="newOffice.phoneNumber"
-                  :label="locale === 'ar' ? 'رقم الهاتف' : 'Phone Number'"
+                  :label="t('pages.offices.phoneNumber')"
                   variant="outlined"
                   required
-                  :placeholder="locale === 'ar' ? '091-1234567 أو 021-1234567' : '091-1234567 or 021-1234567'"
+                  :placeholder="'091-1234567 / 021-1234567'"
                   :error="validationState.errors.phoneNumber && validationState.errors.phoneNumber.length > 0 && validationState.touched.phoneNumber"
                   :error-messages="validationState.errors.phoneNumber || []"
                   @blur="setFieldTouched('phoneNumber')"
@@ -839,20 +704,20 @@ onMounted(() => {
               <VCol cols="12">
                 <VAutocomplete
                   v-model="newOffice.regionId"
-                  :label="locale === 'ar' ? 'المنطقة' : 'Region'"
+                  :label="t('pages.offices.region')"
                   variant="outlined"
                   :items="regions"
                   item-title="name"
                   item-value="id"
                   :loading="regionsLoading"
                   clearable
-                  :no-data-text="locale === 'ar' ? 'لا توجد مناطق متاحة' : 'No regions available'"
+                  :no-data-text="t('pages.offices.noRegionsAvailable')"
                   required
                   :error="validationState.errors.regionId && validationState.errors.regionId.length > 0 && validationState.touched.regionId"
                   :error-messages="validationState.errors.regionId || []"
                   @blur="setFieldTouched('regionId')"
                   prepend-inner-icon="mdi-map-marker"
-                  :placeholder="locale === 'ar' ? 'اختر المنطقة...' : 'Select region...'"
+                  :placeholder="t('pages.offices.selectRegionPlaceholder')"
                   hide-no-data
                 />
               </VCol>
@@ -866,15 +731,14 @@ onMounted(() => {
             variant="text"
             @click="() => { clearErrors(); dialog = false; }"
           >
-            {{ locale === 'ar' ? 'إلغاء' : 'Cancel' }}
+            {{ t('common.cancel') }}
           </VBtn>
           <VBtn
             color="primary"
             variant="flat"
-            :disabled="hasErrors"
             @click="() => { clearErrors(); addOffice(); }"
           >
-            {{ locale === 'ar' ? 'حفظ' : 'Save' }}
+            {{ t('common.save') }}
           </VBtn>
         </VCardActions>
       </VCard>
@@ -886,48 +750,16 @@ onMounted(() => {
       max-width="600px"
       persistent
     >
-      <!-- Alert for validation errors and success messages - Above VCard -->
-      <div class="d-flex justify-center mb-4" v-if="showAlert">
-        <VAlert
-          v-model="showAlert"
-          :type="alertType"
-          variant="tonal"
-          closable
-          @click="showAlert = false"
-          style="cursor: pointer;"
-          :style="{
-            position: 'relative',
-            zIndex: 9999,
-            maxWidth: '600px',
-            width: '100%',
-            borderRadius: alertType === 'success' ? '16px' : '8px',
-            boxShadow: alertType === 'success' ? '0 2px 4px rgba(76, 175, 80, 0.2)' : '0 2px 8px rgba(0,0,0,0.15)',
-            border: alertType === 'success' ? '1px solid #4caf50' : '1px solid',
-            borderColor: alertType === 'warning' ? '#ff9800' : alertType === 'error' ? '#f44336' : '#4caf50',
-            backgroundColor: alertType === 'success' ? '#e8f5e8' : alertType === 'warning' ? '#fff8e1' : alertType === 'error' ? '#ffebee' : '#e8f5e8',
-            padding: alertType === 'success' ? '12px 16px' : '16px'
-          }"
-        >
-          <div class="d-flex align-center">
-            <VIcon
-              :icon="alertType === 'warning' ? 'tabler-alert-triangle' : alertType === 'error' ? 'tabler-alert-circle' : 'tabler-check-circle'"
-              :color="alertType === 'warning' ? 'warning' : alertType === 'error' ? 'error' : 'success'"
-              class="me-2"
-            />
-            <span class="font-weight-medium" :style="{ color: alertType === 'success' ? '#2e7d32' : 'inherit' }">{{ alertMessage }}</span>
-          </div>
-        </VAlert>
-      </div>
       
       <VCard>
-        <VCardTitle class="text-h6">{{ locale === 'ar' ? 'تعديل المكتب' : 'Edit Office' }}</VCardTitle>
+        <VCardTitle class="text-h6">{{ t('pages.offices.editOffice') }}</VCardTitle>
         <VCardText>
           <VForm @submit.prevent="updateOffice">
             <VRow>
               <VCol cols="12">
                 <VTextField
                   v-model="editOffice.name"
-                  :label="locale === 'ar' ? 'اسم المكتب' : 'Office Name'"
+                  :label="t('pages.offices.officeName')"
                   variant="outlined"
                   required
                   :error="validationState.errors.name && validationState.errors.name.length > 0 && validationState.touched.name"
@@ -938,7 +770,7 @@ onMounted(() => {
               <VCol cols="12">
                 <VTextField
                   v-model="editOffice.location"
-                  :label="locale === 'ar' ? 'الموقع' : 'Location'"
+                  :label="t('pages.offices.location')"
                   variant="outlined"
                   required
                   :error="validationState.errors.location && validationState.errors.location.length > 0 && validationState.touched.location"
@@ -949,10 +781,10 @@ onMounted(() => {
               <VCol cols="12">
                 <VTextField
                   v-model="editOffice.phoneNumber"
-                  :label="locale === 'ar' ? 'رقم الهاتف' : 'Phone Number'"
+                  :label="t('pages.offices.phoneNumber')"
                   variant="outlined"
                   required
-                  :placeholder="locale === 'ar' ? '091-1234567 أو 021-1234567' : '091-1234567 or 021-1234567'"
+                  :placeholder="'091-1234567 / 021-1234567'"
                   :error="validationState.errors.phoneNumber && validationState.errors.phoneNumber.length > 0 && validationState.touched.phoneNumber"
                   :error-messages="validationState.errors.phoneNumber || []"
                   @blur="setFieldTouched('phoneNumber')"
@@ -969,7 +801,7 @@ onMounted(() => {
             variant="text"
             @click="() => { clearErrors(); editDialog = false; }"
           >
-            {{ locale === 'ar' ? 'إلغاء' : 'Cancel' }}
+            {{ t('common.cancel') }}
           </VBtn>
           <VBtn
             color="primary"
@@ -977,7 +809,7 @@ onMounted(() => {
             :disabled="hasErrors"
             @click="() => { clearErrors(); updateOffice(); }"
           >
-            {{ locale === 'ar' ? 'تحديث' : 'Update' }}
+            {{ t('common.update') }}
           </VBtn>
         </VCardActions>
       </VCard>
@@ -988,45 +820,13 @@ onMounted(() => {
       v-model="deleteDialog"
       max-width="400px"
     >
-      <!-- Alert for validation errors and success messages - Above VCard -->
-      <div class="d-flex justify-center mb-4" v-if="showAlert">
-        <VAlert
-          v-model="showAlert"
-          :type="alertType"
-          variant="tonal"
-          closable
-          @click="showAlert = false"
-          style="cursor: pointer;"
-          :style="{
-            position: 'relative',
-            zIndex: 9999,
-            maxWidth: '400px',
-            width: '100%',
-            borderRadius: alertType === 'success' ? '16px' : '8px',
-            boxShadow: alertType === 'success' ? '0 2px 4px rgba(76, 175, 80, 0.2)' : '0 2px 8px rgba(0,0,0,0.15)',
-            border: alertType === 'success' ? '1px solid #4caf50' : '1px solid',
-            borderColor: alertType === 'warning' ? '#ff9800' : alertType === 'error' ? '#f44336' : '#4caf50',
-            backgroundColor: alertType === 'success' ? '#e8f5e8' : alertType === 'warning' ? '#fff8e1' : alertType === 'error' ? '#ffebee' : '#e8f5e8',
-            padding: alertType === 'success' ? '12px 16px' : '16px'
-          }"
-        >
-          <div class="d-flex align-center">
-            <VIcon
-              :icon="alertType === 'warning' ? 'tabler-alert-triangle' : alertType === 'error' ? 'tabler-alert-circle' : 'tabler-check-circle'"
-              :color="alertType === 'warning' ? 'warning' : alertType === 'error' ? 'error' : 'success'"
-              class="me-2"
-            />
-            <span class="font-weight-medium" :style="{ color: alertType === 'success' ? '#2e7d32' : 'inherit' }">{{ alertMessage }}</span>
-          </div>
-        </VAlert>
-      </div>
       
       <VCard>
-        <VCardTitle class="text-h6">{{ locale === 'ar' ? 'تأكيد الحذف' : 'Confirm Delete' }}</VCardTitle>
+        <VCardTitle class="text-h6">{{ t('pages.offices.confirmDelete') }}</VCardTitle>
         <VCardText>
-          {{ locale === 'ar' ? `هل أنت متأكد من حذف المكتب "${selectedOffice?.name}"؟` : `Are you sure you want to delete the office "${selectedOffice?.name}"?` }}
+          {{ t('pages.offices.deleteConfirmation', { name: selectedOffice?.name }) }}
           <br>
-          <span class="text-error">{{ locale === 'ar' ? 'لا يمكن التراجع عن هذا الإجراء.' : 'This action cannot be undone.' }}</span>
+          <span class="text-error">{{ t('pages.offices.deleteWarning') }}</span>
         </VCardText>
         <VCardActions>
           <VSpacer />
@@ -1035,14 +835,14 @@ onMounted(() => {
             variant="text"
             @click="() => { clearErrors(); deleteDialog = false; }"
           >
-            {{ locale === 'ar' ? 'إلغاء' : 'Cancel' }}
+            {{ t('common.cancel') }}
           </VBtn>
           <VBtn
             color="error"
             variant="flat"
             @click="() => { clearErrors(); deleteOffice(); }"
           >
-            {{ locale === 'ar' ? 'حذف' : 'Delete' }}
+            {{ t('common.delete') }}
           </VBtn>
         </VCardActions>
       </VCard>

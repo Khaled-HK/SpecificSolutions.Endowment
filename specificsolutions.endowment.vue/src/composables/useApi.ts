@@ -2,48 +2,57 @@ import { ofetch } from 'ofetch'
 import Cookies from 'js-cookie'
 
 export const useApi = () => {
+  const resolvedBaseURL = (import.meta as any).env?.VITE_API_BASE_URL
+    || (typeof window !== 'undefined' && window.location.host.includes('localhost:5173')
+      ? 'http://localhost:7140/api'
+      : '/api')
+
   const client = ofetch.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+    baseURL: resolvedBaseURL,
+    credentials: 'include',
     async onRequest({ options }) {
       const accessTokenCookie = useCookie('accessToken').value as string | null | undefined
       const accessToken = accessTokenCookie || Cookies.get('accessToken')
-      const userDataCookie = useCookie('userData').value as any
-      let userData = userDataCookie
-      if (!userData && typeof document !== 'undefined') {
-        const userDataString = Cookies.get('userData')
-        try { userData = userDataString ? JSON.parse(userDataString) : null } catch { userData = null }
+
+      const rawUserDataCookie = useCookie('userData').value as unknown
+      let userData: any = null
+      if (rawUserDataCookie) {
+        if (typeof rawUserDataCookie === 'string') {
+          try {
+            userData = JSON.parse(rawUserDataCookie)
+          } catch {
+            userData = null
+          }
+        } else if (typeof rawUserDataCookie === 'object') {
+          userData = rawUserDataCookie
+        }
       }
 
-      // Merge headers as plain object
-      const currentHeaders: Record<string, string> = {}
-      const hdrs: any = options.headers as any
-      if (hdrs && typeof hdrs.forEach === 'function') {
-        hdrs.forEach((v: string, k: string) => { currentHeaders[k] = v })
-      } else if (Array.isArray(hdrs)) {
-        hdrs.forEach(([k, v]: [string, string]) => { currentHeaders[k] = v })
-      } else if (hdrs && typeof hdrs === 'object') {
-        Object.assign(currentHeaders, hdrs as Record<string, string>)
-      }
-      currentHeaders['Accept'] = 'application/json'
+      // Normalize headers to a Headers instance for consistent setting
+      const headers = new Headers(options.headers as any)
 
       if (accessToken) {
-        currentHeaders['Authorization'] = `Bearer ${accessToken}`
+        headers.set('Authorization', `Bearer ${accessToken}`)
+      } else if (userData && (userData.token || userData.Token || userData.accessToken)) {
+        const fallbackToken = userData.token || userData.Token || userData.accessToken
+        headers.set('Authorization', `Bearer ${fallbackToken}`)
       } else if (userData && (userData.id || userData.Id)) {
-        currentHeaders['X-User-Id'] = String(userData.id ?? userData.Id)
+        headers.set('X-User-Id', String(userData.id ?? userData.Id))
       }
 
-      const savedLanguage = typeof window !== 'undefined' ? localStorage.getItem('preferredLanguage') : null
-      const currentLanguage = savedLanguage === 'en' ? 'en-US' : 'ar-LY'
-      currentHeaders['Accept-Language'] = currentLanguage
-      options.headers = currentHeaders as any
+      if ((import.meta as any).env?.DEV) {
+        try {
+          const hasAuth = headers.has('Authorization')
+          console.debug('[useApi] Authorization header set:', hasAuth)
+        } catch {}
+      }
+
+      options.headers = headers
     },
     async onResponseError({ response }) {
-      if (response && (response.status === 401 || response.status === 403)) {
-        Cookies.remove('accessToken')
-        Cookies.remove('userData')
-        Cookies.remove('user-ability-rules')
-        if (typeof window !== 'undefined') window.location.href = '/login'
-      }
+      // لا نقوم بإعادة التوجيه تلقائياً. نسمح للمكونات بالتعامل مع 401/403 وعرض الرسالة دون إنهاء الجلسة.
+      // إذا رغبت بإعادة التوجيه تلقائياً عند 401، يمكن إعادة تفعيل ذلك لاحقاً.
+      return
     },
   })
 

@@ -71,7 +71,7 @@ const headers = computed(() => [
 const loadRequests = async () => {
   loading.value = true
   try {
-    const response = await api('/Requests/requests', {
+    const response = await api('/Request/requests', {
       headers: {
         'Accept-Language': locale.value
       }
@@ -114,7 +114,7 @@ const addRequest = async () => {
   }
   
   try {
-    await api('/Requests', {
+    await api('/Request', {
       method: 'POST',
       body: newRequest.value,
       headers: {
@@ -178,7 +178,7 @@ const updateRequest = async () => {
   }
   
   try {
-    await api(`/Requests/${editRequest.value.id}`, {
+    await api(`/Request/${editRequest.value.id}`, {
       method: 'PUT',
       body: editRequest.value,
       headers: {
@@ -205,7 +205,7 @@ const updateRequest = async () => {
 
 const deleteRequest = async () => {
   try {
-    await api(`/Requests/${selectedRequest.value.id}`, {
+    await api(`/Request/${selectedRequest.value.id}`, {
       method: 'DELETE',
       headers: {
         'Accept-Language': locale.value
