@@ -2,10 +2,10 @@ import { ofetch } from 'ofetch'
 import Cookies from 'js-cookie'
 
 export const useApi = () => {
-  const resolvedBaseURL = (import.meta as any).env?.VITE_API_BASE_URL
-    || (typeof window !== 'undefined' && window.location.host.includes('localhost:5173')
-      ? 'http://localhost:7140/api'
-      : '/api')
+  const resolvedBaseURL = (import.meta as any).env?.VITE_API_BASE_URL as string | undefined
+  if (!resolvedBaseURL) {
+    throw new Error('VITE_API_BASE_URL is not set. Please define it in your environment (.env/.env.local).')
+  }
 
   const client = ofetch.create({
     baseURL: resolvedBaseURL,
@@ -40,12 +40,7 @@ export const useApi = () => {
         headers.set('X-User-Id', String(userData.id ?? userData.Id))
       }
 
-      if ((import.meta as any).env?.DEV) {
-        try {
-          const hasAuth = headers.has('Authorization')
-          console.debug('[useApi] Authorization header set:', hasAuth)
-        } catch {}
-      }
+      // No debug logs in production; keep headers minimal
 
       options.headers = headers
     },

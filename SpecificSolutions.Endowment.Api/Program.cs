@@ -121,11 +121,9 @@ if (!app.Environment.IsDevelopment() || builder.Configuration["ASPNETCORE_URLS"]
 // Use rate limiting
 app.UseRateLimiter();
 
-// Add middleware
-app.UseUserContext();
-
-// Add authentication and authorization
+// Add authentication first so HttpContext.User is populated before custom middleware
 app.UseAuthentication();
+app.UseUserContext();
 app.UseAuthorization();
 
 // Use Swagger documentation
@@ -133,8 +131,15 @@ app.UseSwaggerDocumentation(app.Environment);
 
 app.UseMiddleware<ThreadCultureMiddleware>();
 
+// Serve SPA static files from wwwroot and enable default files (index.html)
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 // Map the RequestController
 app.MapControllers();
+
+// Fallback to index.html for client-side routes (SPA)
+app.MapFallbackToFile("index.html");
 
 app.Run();
 

@@ -970,9 +970,9 @@ const updateBuildingDetail = async () => {
 }
 
 const productManagementDialog = ref(false)
-const selectedFacilityDetail = ref(null)
+const selectedFacilityDetail = ref<any | null>(null)
 
-const facilityDetailsList = ref([])
+const facilityDetailsList = ref<any[]>([])
 const facilityDetailsLoading = ref(false)
 
 const loadFacilityDetailsByBuildingDetailId = async (buildingDetail: any) => {
@@ -1023,10 +1023,11 @@ onMounted(() => {
 })
 
 const addFacilityDetailDialog = ref(false)
-const newFacilityDetail = ref({ productId: '', quantity: 1 })
+const newFacilityDetail = ref<{ productId: string | number | null; quantity: number }>({ productId: null, quantity: 1 })
 const addFacilityDetailLoading = ref(false)
+const addFacilityDetailFormRef = ref()
 
-const productsList = ref([])
+const productsList = ref<any[]>([])
 const productsLoading = ref(false)
 
 const fetchProductsList = async () => {
@@ -1035,8 +1036,8 @@ const fetchProductsList = async () => {
     const response = await api('/Product/GetProducts')
     if (response && response.data) {
       // معالجة: تأكد أن كل عنصر له خاصية name
-      const rawList = response.data.data || response.data || []
-      productsList.value = rawList.map(item => ({
+      const rawList = (response.data.data || response.data || []) as any[]
+      productsList.value = rawList.map((item: any) => ({
         ...item,
         name: item.name || item.productName || (item.product && item.product.name) || item.title || item.id // fallback
       }))
@@ -1062,6 +1063,14 @@ const closeAddFacilityDetailDialog = () => {
 
 const addFacilityDetail = async () => {
   if (!selectedBuildingDetail.value) return
+  // Validate form inputs before sending request
+  if (addFacilityDetailFormRef.value) {
+    const isValid = await addFacilityDetailFormRef.value.validate()
+    if (!isValid) {
+      showWarning(t('validation.requiredAll') || 'يرجى ملء جميع الحقول المطلوبة', { timeout: 5000, clickToDismiss: true })
+      return
+    }
+  }
   addFacilityDetailLoading.value = true
   try {
     const response = await api('/FacilityDetail', {
@@ -1089,10 +1098,10 @@ const addFacilityDetail = async () => {
 }
 
 const deleteFacilityDetailDialog = ref(false)
-const facilityDetailToDelete = ref(null)
+const facilityDetailToDelete = ref<any | null>(null)
 const deleteFacilityDetailLoading = ref(false)
 
-const openDeleteFacilityDetailDialog = (facilityDetail) => {
+const openDeleteFacilityDetailDialog = (facilityDetail: any) => {
   facilityDetailToDelete.value = facilityDetail
   deleteFacilityDetailDialog.value = true
 }
@@ -1118,10 +1127,10 @@ const deleteFacilityDetail = async () => {
 }
 
 const editFacilityDetailDialog = ref(false)
-const editFacilityDetail = ref({ id: '', productId: '', quantity: 1 })
+const editFacilityDetail = ref<{ id: string | number | null; productId: string | number | null; quantity: number }>({ id: null, productId: null, quantity: 1 })
 const editFacilityDetailLoading = ref(false)
 
-const openEditFacilityDetailDialog = async (facilityDetail) => {
+const openEditFacilityDetailDialog = async (facilityDetail: any) => {
   // تحميل المنتجات أولاً
   await fetchProductsList();
 
@@ -1173,10 +1182,10 @@ const updateFacilityDetail = async () => {
 
 const facilityDetailsSearch = ref('')
 
-const filteredFacilityDetails = computed(() => {
+const filteredFacilityDetails = computed<any[]>(() => {
   if (!facilityDetailsSearch.value) return facilityDetailsList.value
   const search = facilityDetailsSearch.value.toLowerCase()
-  return facilityDetailsList.value.filter(item => {
+  return facilityDetailsList.value.filter((item: any) => {
     const name = item.product?.name || item.productName || ''
     const id = String(item.id || item.Id || '')
     const productId = String(item.productId || item.ProductId || '')
@@ -1190,7 +1199,7 @@ const filteredFacilityDetails = computed(() => {
   })
 })
 
-function showAlertMsg(msg, type = 'success') {
+function showAlertMsg(msg: string, type: 'success' | 'warning' | 'error' | 'info' = 'success') {
   if (type === 'success') return showSuccess(msg, { timeout: 4000, clickToDismiss: true })
   if (type === 'warning') return showWarning(msg, { timeout: 5000, clickToDismiss: true })
   if (type === 'error') return showError(msg, { timeout: 0, clickToDismiss: true })
@@ -2327,36 +2336,57 @@ function showAlertMsg(msg, type = 'success') {
       persistent
     >
       <VCard>
-        <VCardTitle class="text-h6">إضافة مادة جديدة</VCardTitle>
+        <VCardTitle class="text-h6 d-flex align-center">
+          <VIcon icon="tabler-package" class="me-2" />
+          إضافة مادة جديدة
+          <VSpacer />
+          <IconBtn @click="closeAddFacilityDetailDialog" size="small">
+            <VIcon icon="tabler-x" />
+          </IconBtn>
+        </VCardTitle>
+        <VCardSubtitle class="text-medium-emphasis">اختر المادة والكمية</VCardSubtitle>
         <VCardText>
-          
-          
-          <VForm @submit.prevent="addFacilityDetail">
-            <VAutocomplete
-              v-model="newFacilityDetail.productId"
-              :items="productsList"
-              item-title="value"
-              item-value="key"
-              label="اختر المادة"
-              :loading="productsLoading"
-              required
-              clearable
-              no-data-text="لا توجد مواد متاحة"
-              placeholder="اختر المادة..."
-            />
-            <VTextField
-              v-model="newFacilityDetail.quantity"
-              label="الكمية"
-              type="number"
-              min="1"
-              required
-            />
+          <VForm @submit.prevent="addFacilityDetail" ref="addFacilityDetailFormRef">
+            <VRow>
+              <VCol cols="12">
+                <VAutocomplete
+                  v-model="newFacilityDetail.productId"
+                  :items="productsList"
+                  item-title="value"
+                  item-value="key"
+                  label="اختر المادة"
+                  :loading="productsLoading"
+                  required
+                  clearable
+                  no-data-text="لا توجد مواد متاحة"
+                  placeholder="اختر المادة..."
+                  variant="outlined"
+                  density="comfortable"
+                  prepend-inner-icon="tabler-box"
+                  :rules="[v => !!v || 'المادة مطلوبة']"
+                />
+              </VCol>
+              <VCol cols="12">
+                <VTextField
+                  v-model.number="newFacilityDetail.quantity"
+                  label="الكمية"
+                  type="number"
+                  min="1"
+                  step="1"
+                  required
+                  variant="outlined"
+                  density="comfortable"
+                  prepend-inner-icon="tabler-hash"
+                  :rules="[v => !!v || 'الكمية مطلوبة', v => Number(v) > 0 || 'الكمية يجب أن تكون أكبر من صفر']"
+                />
+              </VCol>
+            </VRow>
           </VForm>
         </VCardText>
         <VCardActions>
           <VSpacer />
-          <VBtn color="grey-darken-1" variant="text" @click="closeAddFacilityDetailDialog">إلغاء</VBtn>
           <VBtn color="primary" variant="flat" @click="addFacilityDetail" :loading="addFacilityDetailLoading">حفظ</VBtn>
+          <VBtn color="grey-darken-1" variant="text" @click="closeAddFacilityDetailDialog">إلغاء</VBtn>
         </VCardActions>
       </VCard>
     </VDialog>
