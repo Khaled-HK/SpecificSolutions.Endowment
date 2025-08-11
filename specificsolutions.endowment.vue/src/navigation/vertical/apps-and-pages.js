@@ -1,8 +1,34 @@
 export default [
   { heading: 'Apps & Pages' },
   {
-    title: 'endowmentManagement',
+    title: 'mosqueManagement',
     icon: { icon: 'tabler-building-mosque' },
+    children: [
+      {
+        title: 'Mosques',
+        to: 'apps-mosques',
+        icon: { icon: 'tabler-building-mosque' },
+        action: 'View',
+        subject: 'Mosque',
+      },
+    ],
+  },
+  {
+    title: 'decisionManagement',
+    icon: { icon: 'tabler-file-text' },
+    children: [
+      {
+        title: 'Decisions',
+        to: 'apps-decisions',
+        icon: { icon: 'tabler-file-text' },
+        action: 'View',
+        subject: 'Decision',
+      },
+    ],
+  },
+  {
+    title: 'basicDataManagement',
+    icon: { icon: 'tabler-database' },
     children: [
       {
         title: 'Buildings',
@@ -10,13 +36,6 @@ export default [
         icon: { icon: 'tabler-building' },
         action: 'View',
         subject: 'Building',
-      },
-      {
-        title: 'Mosques',
-        to: 'apps-mosques',
-        icon: { icon: 'tabler-building-mosque' },
-        action: 'View',
-        subject: 'Mosque',
       },
       {
         title: 'Cities',
@@ -46,13 +65,12 @@ export default [
         action: 'View',
         subject: 'Product',
       },
-      {
-        title: 'Decisions',
-        to: 'apps-decisions',
-        icon: { icon: 'tabler-file-text' },
-        action: 'View',
-        subject: 'Decision',
-      },
+    ],
+  },
+  {
+    title: 'accountManagement',
+    icon: { icon: 'tabler-users' },
+    children: [
       {
         title: 'Accounts',
         to: 'apps-accounts',
@@ -67,6 +85,12 @@ export default [
         action: 'View',
         subject: 'AccountDetail',
       },
+    ],
+  },
+  {
+    title: 'Requests',
+    icon: { icon: 'tabler-file-text' },
+    children: [
       {
         title: 'Requests',
         to: 'apps-requests',

@@ -113,6 +113,12 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
         public bool MosqueEdit { get; set; }
         public bool MosqueDelete { get; set; }
 
+        //Product Permissions
+        public bool ProductView { get; set; }
+        public bool ProductAdd { get; set; }
+        public bool ProductEdit { get; set; }
+        public bool ProductDelete { get; set; }
+
         // Public parameterless constructor for JSON deserialization
         public Permission() { }
 
@@ -137,7 +143,8 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
             bool cityView, bool cityAdd, bool cityEdit, bool cityDelete,
             bool regionView, bool regionAdd, bool regionEdit, bool regionDelete,
             bool buildingView, bool buildingAdd, bool buildingEdit, bool buildingDelete,
-            bool mosqueView, bool mosqueAdd, bool mosqueEdit, bool mosqueDelete
+            bool mosqueView, bool mosqueAdd, bool mosqueEdit, bool mosqueDelete,
+            bool productView, bool productAdd, bool productEdit, bool productDelete
             )
         {
             AccountView = accountView;
@@ -236,6 +243,11 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
             MosqueAdd = mosqueAdd;
             MosqueEdit = mosqueEdit;
             MosqueDelete = mosqueDelete;
+
+            ProductView = productView;
+            ProductAdd = productAdd;
+            ProductEdit = productEdit;
+            ProductDelete = productDelete;
         }
 
         public static Permission Create(
@@ -258,7 +270,8 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
             bool cityView, bool cityAdd, bool cityEdit, bool cityDelete,
             bool regionView, bool regionAdd, bool regionEdit, bool regionDelete,
             bool buildingView, bool buildingAdd, bool buildingEdit, bool buildingDelete,
-            bool mosqueView, bool mosqueAdd, bool mosqueEdit, bool mosqueDelete)
+            bool mosqueView, bool mosqueAdd, bool mosqueEdit, bool mosqueDelete,
+            bool productView, bool productAdd, bool productEdit, bool productDelete)
         {
             return new Permission(
                 accountView, accountAdd, accountEdit, accountDelete,
@@ -280,7 +293,8 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
                 cityView, cityAdd, cityEdit, cityDelete,
                 regionView, regionAdd, regionEdit, regionDelete,
                 buildingView, buildingAdd, buildingEdit, buildingDelete,
-                mosqueView, mosqueAdd, mosqueEdit, mosqueDelete);
+                mosqueView, mosqueAdd, mosqueEdit, mosqueDelete,
+                productView, productAdd, productEdit, productDelete);
         }
 
         public static Permission Seed()
@@ -304,7 +318,8 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
                 cityView: true, cityAdd: true, cityEdit: true, cityDelete: true,
                 regionView: true, regionAdd: true, regionEdit: true, regionDelete: true,
                 buildingView: true, buildingAdd: true, buildingEdit: true, buildingDelete: true,
-                mosqueView: true, mosqueAdd: true, mosqueEdit: true, mosqueDelete: true);
+                mosqueView: true, mosqueAdd: true, mosqueEdit: true, mosqueDelete: true,
+                productView: true, productAdd: true, productEdit: true, productDelete: true);
         }
 
         public List<string> ToPermissionList()
@@ -407,6 +422,11 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
             if (MosqueAdd) permissions.Add("Mosque_Add");
             if (MosqueEdit) permissions.Add("Mosque_Edit");
             if (MosqueDelete) permissions.Add("Mosque_Delete");
+
+            if (ProductView) permissions.Add("Product_View");
+            if (ProductAdd) permissions.Add("Product_Add");
+            if (ProductEdit) permissions.Add("Product_Edit");
+            if (ProductDelete) permissions.Add("Product_Delete");
 
             // إضافة logging لمعرفة الصلاحيات التي تم إضافتها
             Console.WriteLine($"🔍 ToPermissionList - ConstructionRequest permissions:");

@@ -215,7 +215,8 @@ public sealed class Seeder
                         cityView: true, cityAdd: true, cityEdit: true, cityDelete: true,
                         regionView: true, regionAdd: true, regionEdit: true, regionDelete: true,
                         buildingView: true, buildingAdd: true, buildingEdit: true, buildingDelete: true,
-                        mosqueView: true, mosqueAdd: true, mosqueEdit: true, mosqueDelete: true
+                        mosqueView: true, mosqueAdd: true, mosqueEdit: true, mosqueDelete: true,
+                        productView: true, productAdd: true, productEdit: true, productDelete: true
                     )),
                     
                 // Employee Group - Basic permissions (استخدام المستخدم الثالث الموجود)
@@ -241,7 +242,8 @@ public sealed class Seeder
                         cityView: true, cityAdd: true, cityEdit: true, cityDelete: true,
                         regionView: true, regionAdd: true, regionEdit: true, regionDelete: true,
                         buildingView: true, buildingAdd: true, buildingEdit: true, buildingDelete: true,
-                        mosqueView: true, mosqueAdd: true, mosqueEdit: true, mosqueDelete: true
+                        mosqueView: true, mosqueAdd: true, mosqueEdit: true, mosqueDelete: true,
+                        productView: true, productAdd: true, productEdit: true, productDelete: true
                     ))
             };
             await _context.ApplicationUserRole.AddRangeAsync(userRoles);
