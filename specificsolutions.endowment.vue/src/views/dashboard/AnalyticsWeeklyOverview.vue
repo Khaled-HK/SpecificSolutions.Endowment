@@ -4,6 +4,8 @@ import { hexToRgb } from '@layouts/utils'
 
 const vuetifyTheme = useTheme()
 
+const props = defineProps<{ series?: any[]; labels?: string[] }>()
+
 const options = computed(() => {
   const currentTheme = ref(vuetifyTheme.current.value.colors)
   const variableTheme = ref(vuetifyTheme.current.value.variables)
@@ -57,7 +59,7 @@ const options = computed(() => {
       active: { filter: { type: 'none' } },
     },
     xaxis: {
-      categories: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      categories: props.labels ?? ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7'],
       tickPlacement: 'on',
       labels: { show: false },
       crosshairs: { opacity: 0 },
@@ -101,7 +103,7 @@ const options = computed(() => {
   }
 })
 
-const series = [{ data: [37, 57, 45, 75, 57, 40, 65] }]
+const series = computed(() => props.series ?? [{ data: [0, 0, 0, 0, 0, 0, 0] }])
 
 const moreList = [
   { title: 'Share', value: 'Share' },

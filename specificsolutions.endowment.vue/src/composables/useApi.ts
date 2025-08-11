@@ -2,7 +2,7 @@ import { ofetch } from 'ofetch'
 import Cookies from 'js-cookie'
 
 export const useApi = () => {
-  const resolvedBaseURL = (import.meta as any).env?.VITE_API_BASE_URL as string | undefined
+  const resolvedBaseURL = ((import.meta as any).env?.VITE_API_BASE_URL as string | undefined) ?? '/api'
   if (!resolvedBaseURL) {
     throw new Error('VITE_API_BASE_URL is not set. Please define it in your environment (.env/.env.local).')
   }

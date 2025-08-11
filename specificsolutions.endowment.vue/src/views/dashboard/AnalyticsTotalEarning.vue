@@ -1,31 +1,11 @@
 <script setup lang="ts">
-import aviato from '@images/logos/aviato.png'
-import bitbank from '@images/logos/bitbank.png'
-import zipcar from '@images/logos/zipcar.png'
+type RegionCount = { name: string; count: number }
 
-const earnings = [
-  {
-    avatar: zipcar,
-    title: 'Zipcar',
-    subtitle: 'Vuejs, React & HTML',
-    amount: '$24,895.65',
-    progress: 'primary',
-  },
-  {
-    avatar: bitbank,
-    title: 'Bitbank',
-    subtitle: 'Sketch, Figma & XD',
-    amount: '$8,6500.20',
-    progress: 'info',
-  },
-  {
-    avatar: aviato,
-    title: 'Aviato',
-    subtitle: 'HTML & Anguler',
-    amount: '$1,2450.80',
-    progress: 'secondary',
-  },
-]
+const props = defineProps<{
+  value?: number | string
+  profit?: number | string
+  regions?: RegionCount[]
+}>()
 
 const moreList = [
   { title: 'Share', value: 'Share' },
@@ -37,7 +17,7 @@ const moreList = [
 <template>
   <VCard>
     <VCardItem>
-      <VCardTitle>Total Earning</VCardTitle>
+      <VCardTitle>Requests & Maintenance</VCardTitle>
 
       <template #append>
         <div class="me-n3">
@@ -49,7 +29,7 @@ const moreList = [
     <VCardText>
       <div class="d-flex align-center">
         <h3 class="text-h3">
-          $24,895
+          {{ props.value ?? 0 }}
         </h3>
 
         <VIcon
@@ -58,44 +38,26 @@ const moreList = [
           color="success"
         />
         <div class="text-success">
-          10%
+          {{ props.profit ?? 0 }}
         </div>
       </div>
       <div class="text-body-1 mb-12">
-        Compared to $84,325 last year
+        New requests in last 30 days / Upcoming maintenance next 30 days
       </div>
 
       <VList class="card-list">
         <VListItem
-          v-for="earning in earnings"
-          :key="earning.title"
+          v-for="r in (props.regions ?? [])"
+          :key="r.name"
         >
-          <template #prepend>
-            <VAvatar
-              rounded
-              :image="earning.avatar"
-              variant="tonal"
-            />
-          </template>
-
           <VListItemTitle class="font-weight-medium">
-            {{ earning.title }}
+            {{ r.name }}
           </VListItemTitle>
-          <VListItemSubtitle class="text-body-1">
-            {{ earning.subtitle }}
-          </VListItemSubtitle>
-
           <template #append>
             <div>
               <h6 class="text-h6 mb-2">
-                {{ earning.amount }}
+                {{ r.count }}
               </h6>
-              <VProgressLinear
-                :color="earning.progress"
-                model-value="80"
-                rounded-bar
-                rounded
-              />
             </div>
           </template>
         </VListItem>

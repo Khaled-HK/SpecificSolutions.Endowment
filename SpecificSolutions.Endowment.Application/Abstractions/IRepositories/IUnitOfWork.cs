@@ -34,6 +34,7 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
         IProductRepository Products { get; } // Add Products repository
         IRegionRepository Regions { get; } // Add Regions repository
         IBuildingDetailRequestRepository BuildingDetailRequests { get; }
+        IDashboardRepository Dashboard { get; }
 
         Task<int> CompleteAsync(CancellationToken cancellationToken = default);
     }

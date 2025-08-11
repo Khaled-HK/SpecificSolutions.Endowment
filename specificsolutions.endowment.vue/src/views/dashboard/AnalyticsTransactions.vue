@@ -1,30 +1,15 @@
 <script setup lang="ts">
-const statistics = [
-  {
-    title: 'Sales',
-    stats: '245k',
-    icon: 'ri-pie-chart-2-line',
-    color: 'primary',
-  },
-  {
-    title: 'Customers',
-    stats: '12.5k',
-    icon: 'ri-group-line',
-    color: 'success',
-  },
-  {
-    title: 'Product',
-    stats: '1.54k',
-    icon: 'ri-macbook-line',
-    color: 'warning',
-  },
-  {
-    title: 'Revenue',
-    stats: '$88k',
-    icon: 'ri-money-dollar-circle-line',
-    color: 'info',
-  },
+import { computed } from 'vue'
+
+const props = defineProps<{ statistics?: { title: string; stats: string; icon: string; color: string }[] }>()
+const fallback = [
+  { title: 'Mosques', stats: '0', icon: 'ri-building-4-line', color: 'primary' },
+  { title: 'Buildings', stats: '0', icon: 'ri-community-line', color: 'success' },
+  { title: 'Offices', stats: '0', icon: 'ri-building-line', color: 'warning' },
+  { title: 'Regions', stats: '0', icon: 'ri-map-pin-2-line', color: 'info' },
 ]
+
+const statistics = computed(() => props.statistics ?? fallback)
 
 const moreList = [
   { title: 'Share', value: 'Share' },

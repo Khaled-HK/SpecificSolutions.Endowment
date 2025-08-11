@@ -66,6 +66,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories
         private IBranchRepository _branchs;
         private IFacilityDetailRepository _FacilityDetails;
         private IBuildingDetailRequestRepository _buildingDetailRequestRepository;
+        private IDashboardRepository _dashboard;
 
         public UnitOfWork(AppDbContext context)
         {
@@ -102,6 +103,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories
         public IBranchRepository Branches => _branchs ??= new BranchRepository(_context);
         public IFacilityDetailRepository FacilityDetails => _FacilityDetails ??= new FacilityDetailRepository(_context);
         public IBuildingDetailRequestRepository BuildingDetailRequests => _buildingDetailRequestRepository ??= new BuildingDetailRequestRepository(_context);
+        public IDashboardRepository Dashboard => _dashboard ??= new SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Reports.DashboardRepository(_context);
 
         public async Task<int> CompleteAsync(CancellationToken cancellationToken = default)
         {

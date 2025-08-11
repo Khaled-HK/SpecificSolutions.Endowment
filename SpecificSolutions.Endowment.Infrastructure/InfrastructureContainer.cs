@@ -23,6 +23,7 @@ using SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Mosque
 using SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.NameChangeRequests;
 using SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.NeedsRequests;
 using SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Offices;
+using SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Reports;
 using SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Requests;
 using SpecificSolutions.Endowment.Infrastructure.Seeders;
 
@@ -112,6 +113,9 @@ public static class InfrastructureContainer
         services.AddScoped<IDemolitionRequestRepository, DemolitionRequestRepository>();
 
         services.AddScoped<IFacilityRepository, FacilityRepository>();
+
+        // Dashboard / Reports
+        services.AddScoped<IDashboardRepository, DashboardRepository>();
 
         return services;
     }
