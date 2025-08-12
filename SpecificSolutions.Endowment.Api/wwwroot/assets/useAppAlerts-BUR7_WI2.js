@@ -1,1 +1,0 @@
-import{d5 as t}from"./index-Di2-zUd_.js";const l=u=>{const{showSuccess:r,showError:n,showWarning:c,showInfo:e}=t();return{success:(s,o)=>{r(s,o)},error:(s,o)=>{n(s,o)},warning:(s,o)=>{c(s,o)},info:(s,o)=>{e(s,o)}}};export{l as u};

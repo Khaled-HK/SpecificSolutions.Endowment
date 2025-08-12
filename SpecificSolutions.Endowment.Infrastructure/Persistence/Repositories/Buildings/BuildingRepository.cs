@@ -69,6 +69,8 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Bu
                 Office = b.Office != null ? b.Office.Name : string.Empty,
                 Unit = b.Unit,
                 Region = b.Region != null ? b.Region.Name : string.Empty,
+                //RegionName = b.Region != null ? b.Region.Name : string.Empty, // Add for UI compatibility
+                //CityName = "N/A", // Default value since City relationship doesn't exist
                 NearestLandmark = b.NearestLandmark,
                 ConstructionDate = b.ConstructionDate,
                 OpeningDate = b.OpeningDate,

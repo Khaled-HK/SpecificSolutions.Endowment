@@ -64,13 +64,11 @@ export const setupGuards = router => {
         '/apps/needs-requests': 'NeedsRequest',
         '/apps/expenditure-change-requests': 'ExpenditureChangeRequest',
         '/apps/name-change-requests': 'NameChangeRequest',
-        '/apps/buildings': 'Building',
         '/apps/cities': 'City',
         '/apps/regions': 'Region',
         '/apps/mosques': 'Mosque',
         '/apps/offices': 'Office',
         '/apps/decisions': 'Decision',
-        '/apps/requests': 'Request',
       }
       if (!subject && map[cleanPath]) {
         subject = map[cleanPath]
@@ -104,7 +102,6 @@ export const setupGuards = router => {
 
   function mapPermissionToSubject(permission) {
     // Handle underscore format from backend (e.g., "City_View", "Account_Add")
-    if (permission.startsWith('AccountDetail_')) return 'AccountDetail'
     if (permission.startsWith('ConstructionRequest_')) return 'ConstructionRequest'
     if (permission.startsWith('MaintenanceRequest_')) return 'MaintenanceRequest'
     if (permission.startsWith('ChangeRequest_')) return 'ChangeRequest'
@@ -117,12 +114,10 @@ export const setupGuards = router => {
     if (permission.startsWith('User_')) return 'User'
     if (permission.startsWith('Role_')) return 'Role'
     if (permission.startsWith('Decision_')) return 'Decision'
-    if (permission.startsWith('Request_')) return 'Request'
     if (permission.startsWith('Office_')) return 'Office'
     if (permission.startsWith('Endowment_')) return 'Endowment'
     if (permission.startsWith('City_')) return 'City'
     if (permission.startsWith('Region_')) return 'Region'
-    if (permission.startsWith('Building_')) return 'Building'
     if (permission.startsWith('Mosque_')) return 'Mosque'
     
     // Handle fake API format (e.g., { action: 'manage', subject: 'all' })

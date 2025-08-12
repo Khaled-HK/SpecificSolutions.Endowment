@@ -22,5 +22,7 @@ namespace SpecificSolutions.Endowment.Application.Models.DTOs.DemolitionRequests
         public decimal EstimatedRebuildingCost { get; set; }
         public string ContractorName { get; set; }
         public string Reason { get; set; }
+        public string BuildingType { get; set; }
+        public string SafetyMeasures { get; set; }
     }
 }

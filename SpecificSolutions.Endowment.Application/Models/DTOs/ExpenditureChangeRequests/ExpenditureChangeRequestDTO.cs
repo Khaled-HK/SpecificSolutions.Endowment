@@ -7,5 +7,6 @@ namespace SpecificSolutions.Endowment.Application.Models.DTOs.ExpenditureChangeR
         public string CurrentExpenditure { get; set; }
         public string NewExpenditure { get; set; }
         public string Reason { get; set; }
+        public bool ApprovalRequired { get; set; }
     }
 }

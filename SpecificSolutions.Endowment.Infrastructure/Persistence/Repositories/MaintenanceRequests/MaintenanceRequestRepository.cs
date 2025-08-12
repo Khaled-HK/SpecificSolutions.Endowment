@@ -53,14 +53,30 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Ma
 
             if (!string.IsNullOrWhiteSpace(query.SearchTerm))
             {
-                maintenanceRequests = maintenanceRequests.Where(mr => mr.Location.Contains(query.SearchTerm));
+                maintenanceRequests = maintenanceRequests.Where(mr => 
+                    mr.Location.Contains(query.SearchTerm) ||
+                    (mr.Request != null && (
+                        mr.Request.Title.Contains(query.SearchTerm) ||
+                        mr.Request.Description.Contains(query.SearchTerm) ||
+                        mr.Request.ReferenceNumber.Contains(query.SearchTerm)
+                    )));
             }
 
             var maintenanceRequestDTOs = maintenanceRequests.Select(mr => new MaintenanceRequestDTO
             {
                 Id = mr.Id,
-                MaintenanceType = mr.MaintenanceType,
+                // Base FilterRequestDTO properties (from Request)
+                Title = mr.Request != null ? mr.Request.Title : null,
+                Description = mr.Request != null ? mr.Request.Description : null,
+                CreatedDate = mr.Request != null ? mr.Request.CreatedDate : default,
+                ReferenceNumber = mr.Request != null ? mr.Request.ReferenceNumber : null,
+                SubmissionDate = mr.Request != null ? mr.Request.CreatedDate : default,
+                Priority = "Medium", // Default value
                 Location = mr.Location,
+                RequestStatus = "Pending", // Default value
+                Attachments = new List<string>(), // Default empty list
+                // Specific Maintenance fields
+                MaintenanceType = mr.MaintenanceType,
                 EstimatedCost = mr.EstimatedCost,
                 ExpectedStartDate = mr.ExpectedStartDate,
                 ExpectedEndDate = mr.ExpectedEndDate

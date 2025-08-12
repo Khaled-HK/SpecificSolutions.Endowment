@@ -7,5 +7,6 @@ namespace SpecificSolutions.Endowment.Application.Models.DTOs.NameChangeRequests
         public string CurrentName { get; set; }
         public string NewName { get; set; }
         public string Reason { get; set; }
+        public string BuildingType { get; set; }
     }
 }

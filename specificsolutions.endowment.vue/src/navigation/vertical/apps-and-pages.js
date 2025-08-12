@@ -31,13 +31,6 @@ export default [
     icon: { icon: 'tabler-database' },
     children: [
       {
-        title: 'Buildings',
-        to: 'apps-buildings',
-        icon: { icon: 'tabler-building' },
-        action: 'View',
-        subject: 'Building',
-      },
-      {
         title: 'Cities',
         to: 'apps-cities',
         icon: { icon: 'tabler-map-pin' },
@@ -78,26 +71,12 @@ export default [
         action: 'View',
         subject: 'Account',
       },
-      {
-        title: 'Account Details',
-        to: 'apps-account-details',
-        icon: { icon: 'tabler-user-detail' },
-        action: 'View',
-        subject: 'AccountDetail',
-      },
     ],
   },
   {
     title: 'Requests',
     icon: { icon: 'tabler-file-text' },
     children: [
-      {
-        title: 'Requests',
-        to: 'apps-requests',
-        icon: { icon: 'tabler-file-text' },
-        action: 'View',
-        subject: 'Request',
-      },
       {
         title: 'Construction Requests',
         to: 'apps-construction-requests',

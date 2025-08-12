@@ -8,13 +8,6 @@ export default [
         icon: { icon: 'tabler-building-mosque' },
         children: [
           {
-            title: 'Buildings',
-            to: 'apps-buildings',
-            icon: { icon: 'tabler-building' },
-            action: 'View',
-            subject: 'Building',
-          },
-          {
             title: 'Mosques',
             to: 'apps-mosques',
             icon: { icon: 'tabler-building-mosque' },

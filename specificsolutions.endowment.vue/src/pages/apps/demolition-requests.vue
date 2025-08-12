@@ -8,7 +8,7 @@ definePage({
   },
 })
 
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useFormValidation } from '@/composables/useFormValidation'
 import { useApi } from '@/composables/useApi'
@@ -18,6 +18,8 @@ const { t, locale } = useI18n()
 // Data
 const demolitionRequests = ref([])
 const loading = ref(false)
+const totalItems = ref(0)
+const options = ref({ page: 1, itemsPerPage: 10 })
 const dialog = ref(false)
 const isEdit = ref(false)
 const selectedRequest = ref(null)
@@ -69,10 +71,15 @@ const api = useApi()
 const fetchDemolitionRequests = async () => {
   try {
     loading.value = true
-    const response = await api('/DemolitionRequest/filter?PageNumber=1&PageSize=10', {
+    const params = new URLSearchParams({
+      PageNumber: String(options.value.page),
+      PageSize: String(options.value.itemsPerPage),
+    }).toString()
+    const response = await api(`/DemolitionRequest/filter?${params}`, {
       headers: { 'Accept-Language': locale.value }
     })
-    demolitionRequests.value = response.data?.items || response.data || []
+    demolitionRequests.value = response.data?.items || []
+    totalItems.value = response.data?.totalCount || 0
   } catch (error: any) {
     console.error('Error fetching demolition requests:', error)
   } finally {
@@ -219,6 +226,10 @@ const openDialog = () => {
 onMounted(() => {
   fetchDemolitionRequests()
 })
+
+watch([() => options.value.page, () => options.value.itemsPerPage], () => {
+  fetchDemolitionRequests()
+})
 </script>
 
 <template>
@@ -251,6 +262,8 @@ onMounted(() => {
         ]"
         :items="demolitionRequests"
         :loading="loading"
+        :items-per-page="options.itemsPerPage"
+        :page="options.page"
       >
         <template #item.actions="{ item }: { item: any }">
           <VBtn
@@ -271,6 +284,25 @@ onMounted(() => {
           >
             <VIcon icon="tabler-trash" />
           </VBtn>
+        </template>
+        <template #bottom>
+          <VCardText class="pt-2">
+            <div class="d-flex flex-wrap justify-center justify-sm-space-between gap-y-2 mt-2">
+              <VSelect
+                v-model="options.itemsPerPage"
+                :items="[5,10,25,50,100]"
+                :label="t('common.itemsPerPage')"
+                variant="underlined"
+                style="max-inline-size: 8rem;min-inline-size: 5rem;"
+              />
+
+              <VPagination
+                v-model="options.page"
+                :total-visible="$vuetify.display.smAndDown ? 3 : 5"
+                :length="Math.ceil(totalItems / options.itemsPerPage) || 1"
+              />
+            </div>
+          </VCardText>
         </template>
       </VDataTable>
     </VCardText>

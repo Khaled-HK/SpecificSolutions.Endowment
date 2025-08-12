@@ -59,7 +59,12 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Re
                 Title = r.Title,
                 Description = r.Description,
                 CreatedDate = r.CreatedDate,
-                ReferenceNumber = r.ReferenceNumber
+                ReferenceNumber = r.ReferenceNumber,
+                SubmissionDate = r.CreatedDate,
+                Priority = "Medium", // Default value
+                Location = "N/A", // Default value
+                RequestStatus = "Pending", // Default value
+                Attachments = new List<string>() // Default empty list
             }).AsQueryable();
 
             return await PagedList<FilterRequestDTO>.CreateAsync(requestDTOs, query.PageNumber, (int)query.PageSize, cancellationToken);

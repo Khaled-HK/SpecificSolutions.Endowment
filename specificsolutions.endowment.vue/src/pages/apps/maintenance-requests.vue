@@ -6,10 +6,29 @@
     </VCardTitle>
 
     <VCardText>
-      <VDataTable :headers="headers" :items="maintenanceRequests" :loading="loading" class="text-no-wrap">
+      <VDataTable :headers="headers" :items="maintenanceRequests" :loading="loading" class="text-no-wrap" :items-per-page="options.itemsPerPage" :page="options.page">
         <template #item.actions="{ item }: { item: any }">
           <VBtn size="small" color="primary" variant="text" @click="openEditDialog(item.raw)">{{ t('common.edit') }}</VBtn>
           <VBtn size="small" color="error" variant="text" @click="openDeleteDialog(item.raw)">{{ t('common.delete') }}</VBtn>
+        </template>
+        <template #bottom>
+          <VCardText class="pt-2">
+            <div class="d-flex flex-wrap justify-center justify-sm-space-between gap-y-2 mt-2">
+              <VSelect
+                v-model="options.itemsPerPage"
+                :items="[5, 10, 25, 50, 100]"
+                :label="t('common.itemsPerPage')"
+                variant="underlined"
+                style="max-inline-size: 8rem;min-inline-size: 5rem;"
+              />
+
+              <VPagination
+                v-model="options.page"
+                :total-visible="$vuetify.display.smAndDown ? 3 : 5"
+                :length="Math.ceil(totalItems / options.itemsPerPage) || 1"
+              />
+            </div>
+          </VCardText>
         </template>
       </VDataTable>
     </VCardText>
@@ -287,6 +306,8 @@ interface MaintenanceRequestRow {
 
 const maintenanceRequests = ref<MaintenanceRequestRow[]>([])
 const loading = ref(false)
+const totalItems = ref(0)
+const options = ref({ page: 1, itemsPerPage: 10 })
 const dialog = ref(false)
 const editDialog = ref(false)
 const deleteDialog = ref(false)
@@ -338,10 +359,15 @@ const headers = computed(() => [
 const loadMaintenanceRequests = async () => {
   loading.value = true
   try {
-    const response = await api('/MaintenanceRequest/GetMaintenanceRequests', {
+    const params = new URLSearchParams({
+      PageNumber: String(options.value.page),
+      PageSize: String(options.value.itemsPerPage)
+    }).toString()
+    const response = await api(`/MaintenanceRequest/filter?${params}`, {
       headers: { 'Accept-Language': locale.value }
     })
-    maintenanceRequests.value = response?.data || response
+    maintenanceRequests.value = response.data?.items || []
+    totalItems.value = response.data?.totalCount || 0
   } catch (error) {
     console.error('Error loading maintenance requests:', error)
     // تنبيه موحّد عند الفشل
@@ -540,6 +566,10 @@ const resetNewRequest = () => {
     expectedEndDate: '',
   }
 }
+
+watch([() => options.value.page, () => options.value.itemsPerPage], () => {
+  loadMaintenanceRequests()
+})
 
 onMounted(() => {
   loadMaintenanceRequests()

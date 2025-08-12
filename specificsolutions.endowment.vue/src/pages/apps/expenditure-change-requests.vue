@@ -8,7 +8,7 @@ definePage({
   },
 })
 
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useFormValidation } from '@/composables/useFormValidation'
 import { useApi } from '@/composables/useApi'
@@ -18,6 +18,8 @@ const { t, locale } = useI18n()
 // Data
 const expenditureChangeRequests = ref([])
 const loading = ref(false)
+const totalItems = ref(0)
+const options = ref({ page: 1, itemsPerPage: 10 })
 const dialog = ref(false)
 const isEdit = ref(false)
 const selectedRequest = ref(null)
@@ -63,10 +65,15 @@ const api = useApi()
 const fetchExpenditureChangeRequests = async () => {
   try {
     loading.value = true
-    const response = await api('/ExpenditureChangeRequest/filter?PageNumber=1&PageSize=10', {
+    const params = new URLSearchParams({
+      PageNumber: String(options.value.page),
+      PageSize: String(options.value.itemsPerPage)
+    }).toString()
+    const response = await api(`/ExpenditureChangeRequest/filter?${params}`, {
       headers: { 'Accept-Language': locale.value }
     })
-    expenditureChangeRequests.value = response.data?.items || response.data || []
+    expenditureChangeRequests.value = response.data?.items || []
+    totalItems.value = response.data?.totalCount || 0
   } catch (error) {
     console.error('Error fetching expenditure change requests:', error)
   } finally {
@@ -136,7 +143,9 @@ const addExpenditureChangeRequest = async () => {
     loading.value = true
 
     if (isEdit.value) {
-      await api(`/ExpenditureChangeRequest/${selectedRequest.value.id}`, {
+      const idToUpdate = (selectedRequest.value as any)?.id
+      if (!idToUpdate) throw new Error('Missing id')
+      await api(`/ExpenditureChangeRequest/${idToUpdate}`, {
         method: 'PUT',
         body: newRequest.value,
         headers: { 'Accept-Language': locale.value }
@@ -152,11 +161,12 @@ const addExpenditureChangeRequest = async () => {
     await fetchExpenditureChangeRequests()
     dialog.value = false
     resetForm()
-  } catch (error) {
-    console.error('Error saving expenditure change request:', error)
-    if (error.data?.errors) {
-      Object.keys(error.data.errors).forEach(field => {
-        errors.value[field] = error.data.errors[field]
+  } catch (e: any) {
+    console.error('Error saving expenditure change request:', e)
+    const resp: any = e?.response?.data || e?.data
+    if (resp?.errors) {
+      Object.keys(resp.errors).forEach((field: string) => {
+        ;(errors as any)[field] = resp.errors[field]
       })
     }
   } finally {
@@ -164,14 +174,14 @@ const addExpenditureChangeRequest = async () => {
   }
 }
 
-const editRequest = (request) => {
+const editRequest = (request: any) => {
   isEdit.value = true
   selectedRequest.value = request
   newRequest.value = { ...request }
   dialog.value = true
 }
 
-const deleteRequest = async (id) => {
+const deleteRequest = async (id: string | number) => {
   if (confirm(t('pages.requests.confirmDelete'))) {
     try {
       await api(`/ExpenditureChangeRequest/${id}`, {
@@ -179,8 +189,8 @@ const deleteRequest = async (id) => {
         headers: { 'Accept-Language': locale.value }
       })
       await fetchExpenditureChangeRequests()
-    } catch (error) {
-      console.error('Error deleting expenditure change request:', error)
+    } catch (e: any) {
+      console.error('Error deleting expenditure change request:', e)
     }
   }
 }
@@ -210,6 +220,10 @@ const openDialog = () => {
 }
 
 onMounted(() => {
+  fetchExpenditureChangeRequests()
+})
+
+watch([() => options.value.page, () => options.value.itemsPerPage], () => {
   fetchExpenditureChangeRequests()
 })
 </script>
@@ -245,8 +259,10 @@ onMounted(() => {
         ]"
         :items="expenditureChangeRequests"
         :loading="loading"
+        :items-per-page="options.itemsPerPage"
+        :page="options.page"
       >
-        <template #item.approvalRequired="{ item }">
+        <template #item.approvalRequired="{ item }: { item: any }">
           <VChip
             :color="item.raw.approvalRequired ? 'warning' : 'success'"
             size="small"
@@ -273,6 +289,25 @@ onMounted(() => {
           >
             <VIcon icon="tabler-trash" />
           </VBtn>
+        </template>
+        <template #bottom>
+          <VCardText class="pt-2">
+            <div class="d-flex flex-wrap justify-center justify-sm-space-between gap-y-2 mt-2">
+              <VSelect
+                v-model="options.itemsPerPage"
+                :items="[5,10,25,50,100]"
+                :label="t('common.itemsPerPage')"
+                variant="underlined"
+                style="max-inline-size: 8rem;min-inline-size: 5rem;"
+              />
+
+              <VPagination
+                v-model="options.page"
+                :total-visible="$vuetify.display.smAndDown ? 3 : 5"
+                :length="Math.ceil(totalItems / options.itemsPerPage) || 1"
+              />
+            </div>
+          </VCardText>
         </template>
       </VDataTable>
     </VCardText>

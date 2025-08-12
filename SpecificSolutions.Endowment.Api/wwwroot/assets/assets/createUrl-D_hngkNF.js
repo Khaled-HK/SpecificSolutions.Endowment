@@ -1,0 +1,1 @@
+import{s as f}from"./useApi-CITYId4I.js";import{Q as q,cM as e}from"./index-CSodxjQR.js";const s=(c,r)=>q(()=>{if(!(r!=null&&r.query))return e(c);const t=e(c),a=e(r==null?void 0:r.query),u=Object.fromEntries(Object.entries(a).map(([m,y])=>[m,e(y)]));return`${t}${u?`?${f(u)}`:""}`});export{s as c};
