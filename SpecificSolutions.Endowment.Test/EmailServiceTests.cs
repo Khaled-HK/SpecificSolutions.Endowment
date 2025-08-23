@@ -26,7 +26,18 @@ namespace SpecificSolutions.Endowment.Test
                 FromEmail = "noreply@test.com",
                 FromName = "Test System",
                 EnableSsl = true,
-                UseSmtp = false // Use fallback for testing
+                UseSmtp = false, // Use fallback for testing
+                MaxEmailsPerDay = 500,
+                EmailRateLimit = 10,
+                EnableEmailValidation = true,
+                EnableEmailTracking = true,
+                RetryAttempts = 3,
+                RetryDelaySeconds = 2,
+                EnableFallbackLogging = true,
+                EnableEmailQueue = true,
+                QueueProcessingIntervalSeconds = 30,
+                EnableEmailTemplates = true,
+                DefaultLanguage = "ar"
             };
 
             var optionsMock = new Mock<IOptions<EmailSettings>>();
@@ -119,6 +130,126 @@ namespace SpecificSolutions.Endowment.Test
 
             // Assert
             Assert.Equal(expectedResult, result);
+        }
+
+        [Fact]
+        public void GetEmailStatistics_ReturnsValidStatistics()
+        {
+            // Act
+            var statistics = _emailService.GetEmailStatistics();
+
+            // Assert
+            Assert.NotNull(statistics);
+            Assert.Contains("DailyEmailCount", statistics.Keys);
+            Assert.Contains("MaxEmailsPerDay", statistics.Keys);
+            Assert.Contains("EmailRateLimit", statistics.Keys);
+            Assert.Contains("UseSmtp", statistics.Keys);
+            Assert.Contains("EnableEmailValidation", statistics.Keys);
+            Assert.Contains("EnableEmailTracking", statistics.Keys);
+        }
+
+        [Fact]
+        public async Task SendEmailAsync_WithRateLimitExceeded_ReturnsFalse()
+        {
+            // Arrange
+            var email = "test@example.com";
+            var subject = "Test Subject";
+            var body = "Test Body";
+
+            // Act - Send multiple emails quickly to trigger rate limit
+            var results = new List<bool>();
+            for (int i = 0; i < 15; i++) // More than rate limit
+            {
+                var result = await _emailService.SendEmailAsync(email, subject, body);
+                results.Add(result);
+            }
+
+            // Assert - Some emails should fail due to rate limiting
+            Assert.Contains(false, results);
+        }
+
+        [Fact]
+        public async Task SendEmailAsync_WithEmailValidationDisabled_AcceptsInvalidEmail()
+        {
+            // Arrange
+            var invalidEmail = "invalid-email";
+            var subject = "Test Subject";
+            var body = "Test Body";
+
+            // Create service with validation disabled
+            var settingsWithValidationDisabled = new EmailSettings
+            {
+                EnableEmailValidation = false,
+                UseSmtp = false
+            };
+
+            var optionsMock = new Mock<IOptions<EmailSettings>>();
+            optionsMock.Setup(x => x.Value).Returns(settingsWithValidationDisabled);
+
+            var emailService = new EmailService(_loggerMock.Object, optionsMock.Object);
+
+            // Act
+            var result = await emailService.SendEmailAsync(invalidEmail, subject, body);
+
+            // Assert
+            Assert.True(result); // Should succeed when validation is disabled
+        }
+
+        [Fact]
+        public async Task SendEmailAsync_WithTemplatesDisabled_UsesSimpleText()
+        {
+            // Arrange
+            var email = "test@example.com";
+            var confirmationLink = "https://test.com/confirm?token=123";
+
+            // Create service with templates disabled
+            var settingsWithTemplatesDisabled = new EmailSettings
+            {
+                EnableEmailTemplates = false,
+                UseSmtp = false
+            };
+
+            var optionsMock = new Mock<IOptions<EmailSettings>>();
+            optionsMock.Setup(x => x.Value).Returns(settingsWithTemplatesDisabled);
+
+            var emailService = new EmailService(_loggerMock.Object, optionsMock.Object);
+
+            // Act
+            var result = await emailService.SendEmailConfirmationAsync(email, confirmationLink);
+
+            // Assert
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task SendEmailAsync_WithDailyLimitExceeded_ReturnsFalse()
+        {
+            // Arrange
+            var email = "test@example.com";
+            var subject = "Test Subject";
+            var body = "Test Body";
+
+            // Create service with very low daily limit
+            var settingsWithLowLimit = new EmailSettings
+            {
+                MaxEmailsPerDay = 1,
+                UseSmtp = false
+            };
+
+            var optionsMock = new Mock<IOptions<EmailSettings>>();
+            optionsMock.Setup(x => x.Value).Returns(settingsWithLowLimit);
+
+            var emailService = new EmailService(_loggerMock.Object, optionsMock.Object);
+
+            // Act - Send first email (should succeed)
+            var firstResult = await emailService.SendEmailAsync(email, subject, body);
+            
+            // Send second email (should fail due to daily limit)
+            var secondResult = await emailService.SendEmailAsync(email, subject, body);
+
+            // Assert
+            Assert.True(firstResult);
+            Assert.False(secondResult);
         }
     }
 }
