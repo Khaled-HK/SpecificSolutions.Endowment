@@ -1,9 +1,11 @@
 using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
+using SpecificSolutions.Endowment.Application.Abstractions.Requests;
 using SpecificSolutions.Endowment.Core.Enums;
 using SpecificSolutions.Endowment.Core.Models.AccountDetails;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.AccountDetails.Commands.Create
 {
+    [Authorize(Permissions = Permission.AccountDetailAdd)]
     public class CreateAccountDetailCommand : ICommand, ICreateAccountDetailCommand
     {
         public Guid Id { get; set; }

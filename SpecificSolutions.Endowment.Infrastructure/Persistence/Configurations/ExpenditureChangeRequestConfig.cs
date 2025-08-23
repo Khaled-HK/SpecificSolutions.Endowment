@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SpecificSolutions.Endowment.Core.Entities.EndowmentExpenditureChangeRequests;
+using SpecificSolutions.Endowment.Core.Entities.ExpenditureChangeRequests;
 
 namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Configurations
 {

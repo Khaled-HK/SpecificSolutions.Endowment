@@ -167,16 +167,6 @@ const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
                   </RouterLink>
                 </div>
 
-                <!-- عرض الأخطاء العامة -->
-                <div v-if="validationState.errors.general && validationState.errors.general.length > 0" class="mb-4">
-                  <VAlert
-                    type="error"
-                    variant="tonal"
-                    :text="validationState.errors.general[0]"
-                    class="mb-4"
-                  />
-                </div>
-
                 <VBtn
                   block
                   type="submit"

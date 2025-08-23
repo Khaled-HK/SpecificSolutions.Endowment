@@ -3,8 +3,6 @@ using SpecificSolutions.Endowment.Application.Abstractions.IRepositories;
 using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
 using SpecificSolutions.Endowment.Application.Models.DTOs.Users;
 using SpecificSolutions.Endowment.Application.Models.Global;
-using SpecificSolutions.Endowment.Core.Resources;
-using System;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.Login
 {
@@ -25,15 +23,16 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Authentications.Comma
             _tokenService = tokenService;
         }
 
+        /// <summary>
+        /// نمط خالد: Handler نظيف بدون try-catch - الأخطاء تُعالج في Pipeline Behavior
+        /// </summary>
         public async Task<EndowmentResponse<IUserLogin>> Handle(LoginCommand command, CancellationToken cancellationToken)
         {
-            try
+            var user = await _authenticator.LoginAsync(command);
+            if (user == null)
             {
-                var user = await _authenticator.LoginAsync(command);
-                if (user == null)
-                {
-                    return new EndowmentResponse<IUserLogin>(ResponseState.BadRequest, "بيانات الاعتماد غير صحيحة. يرجى التحقق من البريد الإلكتروني وكلمة المرور.");
-                }
+                return new EndowmentResponse<IUserLogin>(ResponseState.BadRequest, "بيانات الاعتماد غير صحيحة. يرجى التحقق من البريد الإلكتروني وكلمة المرور.");
+            }
 
             var refreshToken = Models.Identity.Entities.RefreshToken.Create(user.Id, user.RefreshToken, DateTime.Now.AddHours(1));
 
@@ -41,19 +40,9 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Authentications.Comma
 
             await _unitOfWork.CompleteAsync(cancellationToken);
 
-                //_currentUser.SetUser(user);
-                _currentUser.UpdateUserInfo(user);
+            _currentUser.UpdateUserInfo(user);
 
-                return Response.SuccessLogin(user);
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return new EndowmentResponse<IUserLogin>(ResponseState.BadRequest, "بيانات الاعتماد غير صحيحة. يرجى التحقق من البريد الإلكتروني وكلمة المرور.");
-            }
-            catch (Exception)
-            {
-                return new EndowmentResponse<IUserLogin>(ResponseState.BadRequest, "حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.");
-            }
+            return Response.SuccessLogin(user);
         }
     }
 }

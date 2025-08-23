@@ -1,10 +1,11 @@
 using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
+using SpecificSolutions.Endowment.Application.Abstractions.Requests;
 using SpecificSolutions.Endowment.Core.Enums;
 using SpecificSolutions.Endowment.Core.Enums.Buildings;
 using SpecificSolutions.Endowment.Core.Models.Buildings;
-
 namespace SpecificSolutions.Endowment.Application.Handlers.Buildings.Commands.Update
 {
+    [Authorize(Permissions = Permission.BuildingEdit)]
     public class UpdateBuildingCommand : ICommand, IUpdateBuildingCommand
     {
         public Guid Id { get; set; }
@@ -35,7 +36,5 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Buildings.Commands.Up
         public string PrayerCapacity { get; set; }
         public SourceFunds SourceFunds { get; set; }
         //public HashSet<ICreateBuildingDetailCommand> BuildingDetails { get; set; }
-
-        public Permission Permission => Permission.BuildingEdit;
     }
 }

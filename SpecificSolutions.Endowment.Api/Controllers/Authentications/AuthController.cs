@@ -1,18 +1,18 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SpecificSolutions.Endowment.Application.Abstractions.Contracts;
+using SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.ChangePassword;
+using SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.ConfirmEmail;
+using SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.ForgotPassword;
 using SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.Login;
 using SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.RefreshToken;
 using SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.Register;
-using SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.ForgotPassword;
 using SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.ResetPassword;
-using SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.ChangePassword;
-using SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.ConfirmEmail;
 using SpecificSolutions.Endowment.Application.Models.DTOs.Users;
 using SpecificSolutions.Endowment.Application.Models.Global;
 using SpecificSolutions.Endowment.Application.Models.Identity;
 
-namespace SpecificSolutions.Endowment.Api.Controllers
+namespace SpecificSolutions.Endowment.Api.Controllers.Authentications
 {
     [AllowAnonymous]
     public class AuthController : ApiController

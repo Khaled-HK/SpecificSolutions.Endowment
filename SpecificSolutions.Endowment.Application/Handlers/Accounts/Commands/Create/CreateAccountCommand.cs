@@ -8,7 +8,7 @@ using SpecificSolutions.Endowment.Core.Models.Accounts;
 namespace SpecificSolutions.Endowment.Application.Handlers.Accounts.Commands.Create
 {
     [Authorize(Permissions = Permission.AccountAdd)]
-    public class CreateAccountCommand : ICommand, ICreateAccountCommand, IAuthorizeableRequest
+    public class CreateAccountCommand : ICommand, ICreateAccountCommand
     {
         public string Name { get; set; }
         public string MotherName { get; set; }
@@ -34,8 +34,6 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Accounts.Commands.Cre
         public string? Country { get; set; }
         public string? ContactNumber { get; set; }
         public int Floors { get; set; }
-
-        public Permission Permission => Permission.AccountAdd;
 
         public IAsyncEnumerable<AccountDetail>? AccountDetails { get; set; }
     }

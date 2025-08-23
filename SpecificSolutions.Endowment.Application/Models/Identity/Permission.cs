@@ -119,6 +119,36 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
         public bool ProductEdit { get; set; }
         public bool ProductDelete { get; set; }
 
+        //Bank Permissions
+        public bool BankView { get; set; }
+        public bool BankAdd { get; set; }
+        public bool BankEdit { get; set; }
+        public bool BankDelete { get; set; }
+
+        //Branch Permissions
+        public bool BranchView { get; set; }
+        public bool BranchAdd { get; set; }
+        public bool BranchEdit { get; set; }
+        public bool BranchDelete { get; set; }
+
+        //Facility Permissions
+        public bool FacilityView { get; set; }
+        public bool FacilityAdd { get; set; }
+        public bool FacilityEdit { get; set; }
+        public bool FacilityDelete { get; set; }
+
+        //BuildingDetailRequest Permissions
+        public bool BuildingDetailRequestView { get; set; }
+        public bool BuildingDetailRequestAdd { get; set; }
+        public bool BuildingDetailRequestEdit { get; set; }
+        public bool BuildingDetailRequestDelete { get; set; }
+
+        //QuranicSchool Permissions
+        public bool QuranicSchoolView { get; set; }
+        public bool QuranicSchoolAdd { get; set; }
+        public bool QuranicSchoolEdit { get; set; }
+        public bool QuranicSchoolDelete { get; set; }
+
         // Public parameterless constructor for JSON deserialization
         public Permission() { }
 
@@ -144,7 +174,12 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
             bool regionView, bool regionAdd, bool regionEdit, bool regionDelete,
             bool buildingView, bool buildingAdd, bool buildingEdit, bool buildingDelete,
             bool mosqueView, bool mosqueAdd, bool mosqueEdit, bool mosqueDelete,
-            bool productView, bool productAdd, bool productEdit, bool productDelete
+            bool productView, bool productAdd, bool productEdit, bool productDelete,
+            bool bankView, bool bankAdd, bool bankEdit, bool bankDelete,
+            bool branchView, bool branchAdd, bool branchEdit, bool branchDelete,
+            bool facilityView, bool facilityAdd, bool facilityEdit, bool facilityDelete,
+            bool buildingDetailRequestView, bool buildingDetailRequestAdd, bool buildingDetailRequestEdit, bool buildingDetailRequestDelete,
+            bool quranicSchoolView, bool quranicSchoolAdd, bool quranicSchoolEdit, bool quranicSchoolDelete
             )
         {
             AccountView = accountView;
@@ -248,6 +283,31 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
             ProductAdd = productAdd;
             ProductEdit = productEdit;
             ProductDelete = productDelete;
+
+            BankView = bankView;
+            BankAdd = bankAdd;
+            BankEdit = bankEdit;
+            BankDelete = bankDelete;
+
+            BranchView = branchView;
+            BranchAdd = branchAdd;
+            BranchEdit = branchEdit;
+            BranchDelete = branchDelete;
+
+            FacilityView = facilityView;
+            FacilityAdd = facilityAdd;
+            FacilityEdit = facilityEdit;
+            FacilityDelete = facilityDelete;
+
+            BuildingDetailRequestView = buildingDetailRequestView;
+            BuildingDetailRequestAdd = buildingDetailRequestAdd;
+            BuildingDetailRequestEdit = buildingDetailRequestEdit;
+            BuildingDetailRequestDelete = buildingDetailRequestDelete;
+
+            QuranicSchoolView = quranicSchoolView;
+            QuranicSchoolAdd = quranicSchoolAdd;
+            QuranicSchoolEdit = quranicSchoolEdit;
+            QuranicSchoolDelete = quranicSchoolDelete;
         }
 
         public static Permission Create(
@@ -271,7 +331,12 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
             bool regionView, bool regionAdd, bool regionEdit, bool regionDelete,
             bool buildingView, bool buildingAdd, bool buildingEdit, bool buildingDelete,
             bool mosqueView, bool mosqueAdd, bool mosqueEdit, bool mosqueDelete,
-            bool productView, bool productAdd, bool productEdit, bool productDelete)
+            bool productView, bool productAdd, bool productEdit, bool productDelete,
+            bool bankView, bool bankAdd, bool bankEdit, bool bankDelete,
+            bool branchView, bool branchAdd, bool branchEdit, bool branchDelete,
+            bool facilityView, bool facilityAdd, bool facilityEdit, bool facilityDelete,
+            bool buildingDetailRequestView, bool buildingDetailRequestAdd, bool buildingDetailRequestEdit, bool buildingDetailRequestDelete,
+            bool quranicSchoolView, bool quranicSchoolAdd, bool quranicSchoolEdit, bool quranicSchoolDelete)
         {
             return new Permission(
                 accountView, accountAdd, accountEdit, accountDelete,
@@ -294,7 +359,12 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
                 regionView, regionAdd, regionEdit, regionDelete,
                 buildingView, buildingAdd, buildingEdit, buildingDelete,
                 mosqueView, mosqueAdd, mosqueEdit, mosqueDelete,
-                productView, productAdd, productEdit, productDelete);
+                productView, productAdd, productEdit, productDelete,
+                bankView, bankAdd, bankEdit, bankDelete,
+                branchView, branchAdd, branchEdit, branchDelete,
+                facilityView, facilityAdd, facilityEdit, facilityDelete,
+                buildingDetailRequestView, buildingDetailRequestAdd, buildingDetailRequestEdit, buildingDetailRequestDelete,
+                quranicSchoolView, quranicSchoolAdd, quranicSchoolEdit, quranicSchoolDelete);
         }
 
         public static Permission Seed()
@@ -319,7 +389,12 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
                 regionView: true, regionAdd: true, regionEdit: true, regionDelete: true,
                 buildingView: true, buildingAdd: true, buildingEdit: true, buildingDelete: true,
                 mosqueView: true, mosqueAdd: true, mosqueEdit: true, mosqueDelete: true,
-                productView: true, productAdd: true, productEdit: true, productDelete: true);
+                productView: true, productAdd: true, productEdit: true, productDelete: true,
+                bankView: true, bankAdd: true, bankEdit: true, bankDelete: true,
+                branchView: true, branchAdd: true, branchEdit: true, branchDelete: true,
+                facilityView: true, facilityAdd: true, facilityEdit: true, facilityDelete: true,
+                buildingDetailRequestView: true, buildingDetailRequestAdd: true, buildingDetailRequestEdit: true, buildingDetailRequestDelete: true,
+                quranicSchoolView: true, quranicSchoolAdd: true, quranicSchoolEdit: true, quranicSchoolDelete: true);
         }
 
         public List<string> ToPermissionList()
@@ -427,6 +502,31 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
             if (ProductAdd) permissions.Add("Product_Add");
             if (ProductEdit) permissions.Add("Product_Edit");
             if (ProductDelete) permissions.Add("Product_Delete");
+
+            if (BankView) permissions.Add("Bank_View");
+            if (BankAdd) permissions.Add("Bank_Add");
+            if (BankEdit) permissions.Add("Bank_Edit");
+            if (BankDelete) permissions.Add("Bank_Delete");
+
+            if (BranchView) permissions.Add("Branch_View");
+            if (BranchAdd) permissions.Add("Branch_Add");
+            if (BranchEdit) permissions.Add("Branch_Edit");
+            if (BranchDelete) permissions.Add("Branch_Delete");
+
+            if (FacilityView) permissions.Add("Facility_View");
+            if (FacilityAdd) permissions.Add("Facility_Add");
+            if (FacilityEdit) permissions.Add("Facility_Edit");
+            if (FacilityDelete) permissions.Add("Facility_Delete");
+
+            if (BuildingDetailRequestView) permissions.Add("BuildingDetailRequest_View");
+            if (BuildingDetailRequestAdd) permissions.Add("BuildingDetailRequest_Add");
+            if (BuildingDetailRequestEdit) permissions.Add("BuildingDetailRequest_Edit");
+            if (BuildingDetailRequestDelete) permissions.Add("BuildingDetailRequest_Delete");
+
+            if (QuranicSchoolView) permissions.Add("QuranicSchool_View");
+            if (QuranicSchoolAdd) permissions.Add("QuranicSchool_Add");
+            if (QuranicSchoolEdit) permissions.Add("QuranicSchool_Edit");
+            if (QuranicSchoolDelete) permissions.Add("QuranicSchool_Delete");
 
             // إضافة logging لمعرفة الصلاحيات التي تم إضافتها
             Console.WriteLine($"🔍 ToPermissionList - ConstructionRequest permissions:");

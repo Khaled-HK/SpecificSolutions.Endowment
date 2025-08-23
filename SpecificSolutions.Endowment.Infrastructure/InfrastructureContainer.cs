@@ -11,6 +11,8 @@ using SpecificSolutions.Endowment.Infrastructure.Authentications.Services;
 using SpecificSolutions.Endowment.Infrastructure.Persistence;
 using SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.AccountDetails;
 using SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Accounts;
+using SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.ApplicationRoles;
+using SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.ApplicationUsers;
 using SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.AuditLogs;
 using SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.ChangeOfPathRequests;
 using SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.ConstructionRequests;
@@ -26,6 +28,7 @@ using SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Office
 using SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Reports;
 using SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Requests;
 using SpecificSolutions.Endowment.Infrastructure.Seeders;
+using SpecificSolutions.Endowment.Infrastructure.Services;
 
 namespace SpecificSolutions.Endowment.Infrastructure;
 
@@ -70,16 +73,21 @@ public static class InfrastructureContainer
 
         // Register Repositories   
         //TODO move it to api
-        services.AddSingleton<ICurrentUser, CurrentUser>();
+        services.AddScoped<ICurrentUser, CurrentUser>();
 
         services.AddHttpContextAccessor();
-        services.AddScoped<IUserContext, UserContext>();
         //services.AddScoped<ISerializerService, SerializerService>();
         services.AddScoped<IRequestRepository, RequestRepository>();
         services.AddScoped<IDecisionRepository, DecisionRepository>();
         services.AddScoped<IAccountRepository, AccountRepository>();
         services.AddScoped<IAccountDetailRepository, AccountDetailRepository>();
         services.AddScoped<IAuditLogsRepository, AuditLogsRepository>();
+
+        // Register User Repository - نمط خالد
+        services.AddScoped<IApplicationUserRepository, ApplicationUserRepository>();
+
+        // Register Role Repository - نمط خالد
+        services.AddScoped<IApplicationRoleRepository, ApplicationRoleRepository>();
 
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -95,6 +103,13 @@ public static class InfrastructureContainer
         services.AddScoped<ITokenService, TokenService>();
 
         services.AddScoped<ISessionService, SessionService>();
+
+        // Register Authentication Services - منظمة ومقسمة المسؤوليات
+        services.AddScoped<RegistrationService>();
+        services.AddScoped<PasswordService>();
+        services.AddScoped<PermissionService>();
+        services.AddScoped<IUserApprovalService, UserApprovalService>();
+        services.AddScoped<IAuthenticator, Authenticator>();
 
         services.AddScoped<IMosqueRepository, MosqueRepository>();
 

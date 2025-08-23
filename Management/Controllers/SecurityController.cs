@@ -60,8 +60,8 @@ namespace SpecificSolutions.EndowmentVue.Controllers
         {
             try
             {
-                if (command == null)
-                    return StatusCode(BackMessages.StatusCode, BackMessages.EmptyBodyObject);
+                            if (command == null)
+                return StatusCode(BackMessages.StatusCode, new { Message = BackMessages.EmptyBodyObject });
 
                 var response = await _mediator.Send(command, cancellationToken);
 
@@ -122,7 +122,7 @@ namespace SpecificSolutions.EndowmentVue.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(BackMessages.StatusCode, BackMessages.LogoutError);
+                return StatusCode(BackMessages.StatusCode, new { Message = BackMessages.LogoutError });
             }
         }
     }

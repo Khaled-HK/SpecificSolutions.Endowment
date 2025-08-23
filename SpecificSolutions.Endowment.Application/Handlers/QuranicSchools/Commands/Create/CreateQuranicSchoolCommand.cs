@@ -1,9 +1,12 @@
 using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
+using SpecificSolutions.Endowment.Application.Abstractions.Requests;
+using SpecificSolutions.Endowment.Core.Enums;
 using SpecificSolutions.Endowment.Core.Enums.Buildings;
 using SpecificSolutions.Endowment.Core.Models.Buildings;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.QuranicSchools.Commands.Create
 {
+    [Authorize(Permissions = Permission.QuranicSchoolAdd)]
     public class CreateQuranicSchoolCommand : ICommand, ICreateBuildingCommand
     {
         public Guid Id { get; set; }
@@ -11,9 +14,9 @@ namespace SpecificSolutions.Endowment.Application.Handlers.QuranicSchools.Comman
         public string FileNumber { get; set; }
         public string Definition { get; set; }
         public string Classification { get; set; }
-        public string OfficeId { get; set; }
+        public Guid OfficeId { get; set; }
         public string Unit { get; set; }
-        public string RegionId { get; set; }
+        public Guid RegionId { get; set; }
         public string NearestLandmark { get; set; }
         public DateTime ConstructionDate { get; set; }
         public DateTime OpeningDate { get; set; }

@@ -25,6 +25,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
             {
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new("sub", user.Id.ToString()),
+                new(ClaimTypes.Name, user.UserName ?? user.Email),
                 new(ClaimTypes.Email, user.Email)
             };
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
@@ -56,6 +57,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
             {
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new("sub", user.Id.ToString()),
+                new(ClaimTypes.Name, user.UserName ?? user.Email),
                 new(ClaimTypes.Email, user.Email)
             };
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));

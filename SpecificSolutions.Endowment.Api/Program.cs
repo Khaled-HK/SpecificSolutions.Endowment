@@ -4,6 +4,7 @@ using SpecificSolutions.Endowment.Application.Handlers;
 using SpecificSolutions.Endowment.Application.Middlewares;
 using Microsoft.AspNetCore.Diagnostics;
 using SpecificSolutions.Endowment.Application.Abstractions.Exceptions;
+using SpecificSolutions.Endowment.Infrastructure.Authentications.Middleware;
 
 var CorsPolicyName = "CorsPolicy";
 
@@ -123,7 +124,7 @@ app.UseRateLimiter();
 
 // Add authentication first so HttpContext.User is populated before custom middleware
 app.UseAuthentication();
-app.UseUserContext();
+app.UseCurrentUser(); // نمط خالد: تعيين ICurrentUser من JWT Token
 app.UseAuthorization();
 
 // Use Swagger documentation

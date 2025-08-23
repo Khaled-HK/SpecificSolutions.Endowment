@@ -23,12 +23,21 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity.Entities
         public virtual ICollection<AuditLog> AuditLogs { get; private set; } = new HashSet<AuditLog>();
         public Guid OfficeId { get; private set; }
         public virtual Office Office { get; private set; }
+        
+        // حالة الموافقة على المستخدم
+        public bool IsApproved { get; private set; } = false;
+        public DateTime? ApprovedAt { get; private set; }
+        public string? ApprovedBy { get; private set; }
+        
+        // تاريخ إنشاء المستخدم - نمط خالد
+        public DateTimeOffset CreatedDate { get; private set; } = DateTimeOffset.Now;
 
         public ApplicationUser() { }
 
         private ApplicationUser(string email, string firstName, string lastName, Guid officeId, string userName, string passwordHash,
             bool emailConfirmed)
         {
+            Id = Guid.NewGuid().ToString(); // تعيين Id تلقائياً
             Email = email;
             NormalizedEmail = email;
             UserName = userName;
@@ -54,9 +63,7 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity.Entities
             string passwordHash, bool emailConfirmed)
         {
             var applicationUser = new ApplicationUser(email, firstName, lastName, officeId, userName, passwordHash, emailConfirmed);
-
-            applicationUser.Id = id; // Convert Guid to string
-
+            applicationUser.Id = id; // تعيين Id محدد
             return applicationUser;
         }
 
@@ -136,6 +143,34 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity.Entities
             // Clear existing permissions and add new ones to avoid duplicates
             Permissions.Clear();
             Permissions.AddRange(permissions.Distinct());
+        }
+
+        /// <summary>
+        /// الموافقة على المستخدم ومنحه الصلاحيات
+        /// </summary>
+        public void ApproveUser(string approvedBy)
+        {
+            IsApproved = true;
+            ApprovedAt = DateTime.UtcNow;
+            ApprovedBy = approvedBy;
+        }
+
+        /// <summary>
+        /// إلغاء الموافقة على المستخدم
+        /// </summary>
+        public void RejectUser()
+        {
+            IsApproved = false;
+            ApprovedAt = null;
+            ApprovedBy = null;
+        }
+
+        /// <summary>
+        /// التحقق من حالة الموافقة
+        /// </summary>
+        public bool IsUserApproved()
+        {
+            return IsApproved;
         }
     }
 }

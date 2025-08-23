@@ -10,9 +10,21 @@ import authV2RegisterIllustrationLight from '@images/pages/auth-v2-register-illu
 import authV2MaskDark from '@images/pages/misc-mask-dark.png'
 import authV2MaskLight from '@images/pages/misc-mask-light.png'
 import { useFormValidation } from '@/composables/useFormValidation'
+import { useApi } from '@/composables/useApi'
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
 const imageVariant = useGenerateImageVariant(authV2RegisterIllustrationLight, authV2RegisterIllustrationDark, authV2RegisterIllustrationBorderedLight, authV2RegisterIllustrationBorderedDark, true)
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
+
+// استخدام API composable مثل الصفحات الأخرى
+const api = useApi()
+const router = useRouter()
+const { t, te } = useI18n()
+
+// استخدام نظام التنبيهات الموحّد
+import { useAppAlerts } from '@/composables/useAppAlerts'
+const { success: showSuccess, error: showError, warning: showWarning } = useAppAlerts()
 
 definePage({
   meta: {
@@ -49,6 +61,20 @@ const form = reactive({
 })
 
 const isPasswordVisible = ref(false)
+
+// computed property لتحسين حالة الزر
+const isFormValid = computed(() => {
+  return form.firstName && 
+         form.lastName && 
+         form.username && 
+         form.email && 
+         form.phoneNumber && 
+         form.address && 
+         form.city && 
+         form.country && 
+         form.password && 
+         form.privacyPolicies
+})
 
 const handleSubmit = async () => {
   clearErrors()
@@ -116,7 +142,7 @@ const handleSubmit = async () => {
   if (!isValid) return
   
   try {
-    const response = await $fetch('/api/auth/register', {
+    const response = await api('/auth/register', {
       method: 'POST',
       body: {
         firstName: form.firstName || '',
@@ -124,7 +150,7 @@ const handleSubmit = async () => {
         email: form.email,
         userName: form.username,
         password: form.password,
-        confirmPassword: form.password, // في الواقع يجب أن يكون هناك حقل منفصل
+        confirmPassword: form.password,
         phoneNumber: form.phoneNumber || '',
         address: form.address || '',
         city: form.city || '',
@@ -133,21 +159,46 @@ const handleSubmit = async () => {
       }
     })
     
-    if (response.isSuccess) {
-      // إظهار رسالة نجاح والانتقال إلى صفحة تسجيل الدخول
-      console.log('تم التسجيل بنجاح')
-      router.push('/login')
-    } else {
-      // معالجة الأخطاء
+    if (response && response.isSuccess === false) {
+      // معالجة أخطاء التحقق من الباك إند
       if (response.errors && Array.isArray(response.errors)) {
         setErrorsFromResponse(response)
+        showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
+          timeout: 5000,
+          clickToDismiss: true
+        })
       } else if (response.message) {
-        addError('general', response.message)
+        showError(response.message, {
+          timeout: 0,
+          clickToDismiss: true
+        })
       }
+      return
     }
+    
+    // نجاح التسجيل
+    showSuccess('تم التسجيل بنجاح! سيتم توجيهك إلى صفحة تسجيل الدخول', {
+      timeout: 3000,
+      clickToDismiss: true
+    })
+    router.push('/login')
+    
   } catch (error) {
     console.error('خطأ في التسجيل:', error)
-    addError('general', 'حدث خطأ أثناء التسجيل')
+    
+    // التحقق من أن الخطأ يحتوي على أخطاء FluentValidation
+    if (error?.data?.errors && Array.isArray(error.data.errors)) {
+      setErrorsFromResponse(error.data)
+      showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
+        timeout: 5000,
+        clickToDismiss: true
+      })
+    } else {
+      showError('حدث خطأ أثناء التسجيل', {
+        timeout: 0,
+        clickToDismiss: true
+      })
+    }
   }
 }
 </script>
@@ -354,7 +405,7 @@ const handleSubmit = async () => {
                 <VBtn
                   block
                   type="submit"
-                  :disabled="hasErrors"
+                  :disabled="!isFormValid"
                 >
                   إنشاء حساب
                 </VBtn>

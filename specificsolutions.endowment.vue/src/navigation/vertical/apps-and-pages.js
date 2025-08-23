@@ -316,20 +316,29 @@ export default [
     ],
   },
   {
-    title: 'User',
+    title: 'User Management',
     icon: { icon: 'tabler-user' },
+    action: 'View',
+    subject: 'Dashboard', // مؤقتاً للسماح للجميع بالرؤية
     children: [
       { 
-        title: 'List', 
+        title: 'User List', 
         to: 'apps-user-list',
         action: 'View',
         subject: 'otherview',
       },
       { 
-        title: 'View', 
+        title: 'User View', 
         to: { name: 'apps-user-view-id', params: { id: 21 } },
         action: 'View',
         subject: 'otherview',
+      },
+      { 
+        title: 'User Approvals', 
+        to: 'apps-user-approvals',
+        icon: { icon: 'tabler-user-search' },
+        action: 'View',
+        subject: 'User',
       },
     ],
   },

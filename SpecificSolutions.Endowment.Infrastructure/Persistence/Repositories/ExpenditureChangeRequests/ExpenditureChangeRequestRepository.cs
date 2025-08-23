@@ -2,7 +2,7 @@ using SpecificSolutions.Endowment.Application.Abstractions.IRepositories;
 using SpecificSolutions.Endowment.Application.Handlers.EndowmentExpenditureChangeRequests.Queries.Filter;
 using SpecificSolutions.Endowment.Application.Models.DTOs.ExpenditureChangeRequests;
 using SpecificSolutions.Endowment.Application.Models.Global;
-using SpecificSolutions.Endowment.Core.Entities.EndowmentExpenditureChangeRequests;
+using SpecificSolutions.Endowment.Core.Entities.ExpenditureChangeRequests;
 
 namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.EndowmentExpenditureChangeRequests
 {
@@ -53,7 +53,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.En
 
             if (!string.IsNullOrWhiteSpace(query.SearchTerm))
             {
-                expenditureChangeRequests = expenditureChangeRequests.Where(ecr => 
+                expenditureChangeRequests = expenditureChangeRequests.Where(ecr =>
                     ecr.Reason.Contains(query.SearchTerm) ||
                     (ecr.Request != null && (
                         ecr.Request.Title.Contains(query.SearchTerm) ||

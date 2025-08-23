@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using SpecificSolutions.Endowment.Application.Models.DTOs.Users;
-
 namespace SpecificSolutions.Endowment.Application.Models.Global
 {
     public class Response
@@ -102,5 +99,16 @@ namespace SpecificSolutions.Endowment.Application.Models.Global
         {
             return new EndowmentResponse<TValue>(tValue, state, message);
         }
+
+        //// دوال مساعدة لتبسيط الاستخدام
+        //public static EndowmentResponse FailureResponse(string errorMessage)
+        //{
+        //    return FailureResponse("General", errorMessage);
+        //}
+
+        //public static EndowmentResponse SuccessResponse(string message)
+        //{
+        //    return SuccessResponse(ResponseState.Valid, message);
+        //}
     }
 }

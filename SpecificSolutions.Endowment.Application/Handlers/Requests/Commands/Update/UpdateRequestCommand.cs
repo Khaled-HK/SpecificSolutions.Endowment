@@ -1,7 +1,10 @@
 using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
+using SpecificSolutions.Endowment.Application.Abstractions.Requests;
+using SpecificSolutions.Endowment.Core.Enums;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Update
 {
+    [Authorize(Permissions = Permission.RequestEdit)]
     public class UpdateRequestCommand : ICommand
     {
         public Guid Id { get; set; }

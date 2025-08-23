@@ -1,10 +1,13 @@
 using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
+using SpecificSolutions.Endowment.Application.Abstractions.Requests;
+using SpecificSolutions.Endowment.Core.Enums;
 using SpecificSolutions.Endowment.Core.Enums.BuildingDetails;
 using SpecificSolutions.Endowment.Core.Models.BuildingDetails;
 using System.Text.Json.Serialization;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.BuildingDetails.Commands.Update
 {
+    [Authorize(Permissions = Permission.FacilityDetailEdit)]
     public class UpdateBuildingDetailCommand : ICommand, IUpdateBuildingDetailCommand
     {
         public Guid Id { get; set; }

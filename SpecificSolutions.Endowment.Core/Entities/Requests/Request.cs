@@ -3,7 +3,7 @@ using SpecificSolutions.Endowment.Core.Entities.ChangeOfPathRequests;
 using SpecificSolutions.Endowment.Core.Entities.ConstructionRequests;
 using SpecificSolutions.Endowment.Core.Entities.Decisions;
 using SpecificSolutions.Endowment.Core.Entities.DemolitionRequests;
-using SpecificSolutions.Endowment.Core.Entities.EndowmentExpenditureChangeRequests;
+using SpecificSolutions.Endowment.Core.Entities.ExpenditureChangeRequests;
 using SpecificSolutions.Endowment.Core.Entities.MaintenanceRequests;
 using SpecificSolutions.Endowment.Core.Entities.NameChangeRequests;
 using SpecificSolutions.Endowment.Core.Entities.NeedsRequests;

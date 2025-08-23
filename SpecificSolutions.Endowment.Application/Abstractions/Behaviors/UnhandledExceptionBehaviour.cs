@@ -1,12 +1,16 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Logging;
-using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
+using SpecificSolutions.Endowment.Application.Abstractions.Exceptions;
+using SpecificSolutions.Endowment.Application.Models.Global;
 
 namespace SpecificSolutions.Endowment.Application.Abstractions.Behaviors
 {
+    /// <summary>
+    /// نمط خالد: معالجة الأخطاء الموحدة لجميع الـ Commands والـ Queries
+    /// </summary>
     public class UnhandledExceptionBehaviour<TRequest, TResponse> :
         IPipelineBehavior<TRequest, TResponse>
-        where TRequest : ICommand
+        where TRequest : notnull
         where TResponse : notnull
     {
         private readonly ILogger<UnhandledExceptionBehaviour<TRequest, TResponse>> _logger;
@@ -22,13 +26,36 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.Behaviors
             {
                 return await next();
             }
+            catch (ValidationException ex)
+            {
+                var requestName = typeof(TRequest).Name;
+                _logger.LogWarning(ex, "Validation Exception for Request {Name}", requestName);
+                
+                // إعادة رمي الاستثناء ليتم التعامل معه في GlobalExceptionHandler
+                throw;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                var requestName = typeof(TRequest).Name;
+                _logger.LogWarning(ex, "Unauthorized Access Exception for Request {Name}", requestName);
+                
+                // نمط خالد: رمي استثناء مخصص مع رسالة عربية
+                throw new UnauthorizedAccessException("لم يتم الموافقة على حسابك بعد. يرجى انتظار موافقة المسؤول.");
+            }
+            catch (NotFoundException ex)
+            {
+                var requestName = typeof(TRequest).Name;
+                _logger.LogWarning(ex, "Not Found Exception for Request {Name}", requestName);
+                
+                throw;
+            }
             catch (Exception ex)
             {
                 var requestName = typeof(TRequest).Name;
+                _logger.LogError(ex, "Unhandled Exception for Request {Name} {@Request}", requestName, request);
 
-                _logger.LogError(ex, "CleanArchitecture Request: Unhandled Exception for Request {Name} {@Request}", requestName, request);
-
-                throw; // Rethrow the exception after logging
+                // نمط خالد: رمي استثناء عام مع رسالة عربية
+                throw new Exception("حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.");
             }
         }
     }

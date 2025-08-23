@@ -75,6 +75,10 @@
   "Preview": "معاينة",
   "Add": "يضيف",
   "User": "المستعمل",
+  "User Management": "إدارة المستخدمين",
+  "User List": "قائمة المستخدمين", 
+  "User View": "عرض المستخدم",
+  "User Approvals": "موافقات المستخدمين",
   "View": "رأي",
   "addDemolitionRequest": "إضافة طلب هدم",
   "editDemolitionRequest": "تعديل طلب هدم",
@@ -127,6 +131,10 @@
   "Login v1": "تسجيل الدخول v1",
   "Login v2": "تسجيل الدخول v2",
   "Login": "تسجيل الدخول",
+  "login": {
+    "tryAgain": "حدث خطأ، يرجى المحاولة مرة أخرى",
+    "noPermissions": "لا توجد صلاحيات لهذا المستخدم"
+  },
   "Register v1": "تسجيل v1",
   "Register v2": "تسجيل v2",
   "Register": "تسجيل",
@@ -345,6 +353,13 @@
       "createdDate": "تاريخ الإنشاء",
       "actions": "الإجراءات"
     },
+    "userApprovals": {
+      "user": "المستخدم",
+      "email": "البريد الإلكتروني",
+      "phone": "رقم الهاتف",
+      "registrationDate": "تاريخ التسجيل",
+      "actions": "الإجراءات"
+    },
     "constructionRequests": {
       "title": "العنوان",
       "description": "الوصف",
@@ -489,6 +504,13 @@
       "operationNumber": "رقم العملية",
       "balance": "الرصيد",
       "note": "ملاحظة",
+      "actions": "الإجراءات"
+    },
+    "userApprovals": {
+      "user": "المستخدم",
+      "email": "البريد الإلكتروني",
+      "phone": "رقم الهاتف",
+      "registrationDate": "تاريخ التسجيل",
       "actions": "الإجراءات"
     }
   },
@@ -833,6 +855,7 @@
     "update": "تحديث",
     "delete": "حذف",
     "add": "إضافة",
+    "itemsPerPage": "عناصر في الصفحة",
     "networkError": "حدث خطأ في الاتصال بالخادم",
     "operationError": "حدث خطأ أثناء العملية"
   },
@@ -847,5 +870,39 @@
       "loadingText": "جاري تحميل العناصر...",
       "noResultsText": "لا توجد نتائج مطابقة"
     }
-  }
+  },
+  "userApprovals": {
+    "title": "إدارة موافقات المستخدمين",
+    "approve": "موافقة",
+    "reject": "رفض",
+    "approveSelected": "موافقة على المحدد",
+    "rejectSelected": "رفض المحدد",
+    "approveAsAdmin": "موافقة كمدير",
+    "approveAsEmployee": "موافقة كموظف",
+    "approveAsCustomer": "موافقة كعميل",
+    "rejectAndDelete": "رفض وحذف",
+    "noDataTitle": "جميع المستخدمين تمت الموافقة عليهم!",
+    "noDataDescription": "لا يوجد مستخدمون في انتظار الموافقة حالياً",
+    "widgets": {
+      "totalPending": "المستخدمون المعلقون",
+      "awaitingApproval": "في انتظار الموافقة",
+      "selectedUsers": "المستخدمون المحددون",
+      "selectedForAction": "محدد للإجراء"
+    }
+  },
+  "roles": {
+    "admin": "مدير",
+    "employee": "موظف",
+    "customer": "عميل"
+  },
+  "welcome": "أهلاً وسهلاً",
+  "signInMessage": "يرجى تسجيل الدخول إلى حسابك وبدء المغامرة",
+  "email": "البريد الإلكتروني",
+  "password": "كلمة المرور",
+  "rememberMe": "تذكرني",
+  "forgotPassword": "نسيت كلمة المرور؟",
+  "signIn": "تسجيل الدخول",
+  "newUser": "جديد على منصتنا؟",
+  "createAccount": "إنشاء حساب",
+  "or": "أو"
 }

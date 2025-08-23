@@ -1,10 +1,13 @@
 using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
+using SpecificSolutions.Endowment.Application.Abstractions.Requests;
+using SpecificSolutions.Endowment.Core.Enums;
 using SpecificSolutions.Endowment.Core.Enums.Buildings;
 using SpecificSolutions.Endowment.Core.Enums.Mosques;
 using SpecificSolutions.Endowment.Core.Models.Mosques;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.Mosques.Commands.Update
 {
+    [Authorize(Permissions = Permission.MosqueEdit)]
     public class UpdateMosqueCommand : ICommand, IUpdateMosqueCommand
     {
         public Guid Id { get; set; }

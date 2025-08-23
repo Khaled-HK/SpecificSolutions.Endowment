@@ -1,8 +1,11 @@
 using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
+using SpecificSolutions.Endowment.Application.Abstractions.Requests;
+using SpecificSolutions.Endowment.Core.Enums;
 using SpecificSolutions.Endowment.Core.Models.Decisions;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Update
 {
+    [Authorize(Permissions = Permission.DecisionEdit)]
     public class UpdateDecisionCommand : ICommand, IUpdateDecisionCommand
     {
         public Guid Id { get; set; }

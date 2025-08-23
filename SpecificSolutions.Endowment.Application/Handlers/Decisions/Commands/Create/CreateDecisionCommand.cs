@@ -1,8 +1,11 @@
 using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
+using SpecificSolutions.Endowment.Application.Abstractions.Requests;
+using SpecificSolutions.Endowment.Core.Enums;
 using SpecificSolutions.Endowment.Core.Models.Decisions;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.Decisions.Commands.Create
 {
+    [Authorize(Permissions = Permission.DecisionAdd)]
     public class CreateDecisionCommand : ICommand, ICreateDecisionCommand
     {
         public string Title { get; set; }

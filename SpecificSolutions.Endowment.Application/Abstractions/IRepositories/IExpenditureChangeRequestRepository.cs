@@ -1,7 +1,7 @@
 ﻿using SpecificSolutions.Endowment.Application.Handlers.EndowmentExpenditureChangeRequests.Queries.Filter;
 using SpecificSolutions.Endowment.Application.Models.DTOs.ExpenditureChangeRequests;
 using SpecificSolutions.Endowment.Application.Models.Global;
-using SpecificSolutions.Endowment.Core.Entities.EndowmentExpenditureChangeRequests;
+using SpecificSolutions.Endowment.Core.Entities.ExpenditureChangeRequests;
 
 namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
 {

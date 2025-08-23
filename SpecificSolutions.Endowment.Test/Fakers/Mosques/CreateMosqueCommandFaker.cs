@@ -9,8 +9,8 @@ namespace SpecificSolutions.Endowment.Test.Fakers.Mosques
         public CreateMosqueCommandFaker()
         {
             RuleFor(x => x.Name, f => f.Company.CompanyName());
-            RuleFor(x => x.RegionId, f => f.Random.Guid().ToString());
-            RuleFor(x => x.OfficeId, f => f.Random.Guid().ToString());
+            RuleFor(x => x.RegionId, f => f.Random.Guid());
+            RuleFor(x => x.OfficeId, f => f.Random.Guid());
             RuleFor(x => x.FileNumber, f => f.Random.AlphaNumeric(10));
             RuleFor(x => x.Definition, f => f.Lorem.Sentence());
             RuleFor(x => x.Classification, f => f.Lorem.Word());

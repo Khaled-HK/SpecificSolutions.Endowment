@@ -181,6 +181,7 @@ function mapPermissionToSubject(permission) {
   if (permission.startsWith('Product_')) return 'Product'
   if (permission.startsWith('Decision_')) return 'Decision'
   if (permission.startsWith('Request_')) return 'Request'
+  if (permission.startsWith('User_')) return 'User'
   
   // Handle fake API format (e.g., { action: 'manage', subject: 'all' })
   if (typeof permission === 'object' && permission.subject) {

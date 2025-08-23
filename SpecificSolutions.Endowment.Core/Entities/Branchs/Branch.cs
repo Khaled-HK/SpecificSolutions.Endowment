@@ -1,5 +1,5 @@
 using SpecificSolutions.Endowment.Core.Entities.Banks;
-using SpecificSolutions.Endowment.Core.Entities.EndowmentExpenditureChangeRequests;
+using SpecificSolutions.Endowment.Core.Entities.ExpenditureChangeRequests;
 
 namespace SpecificSolutions.Endowment.Core.Entities.Branchs
 {

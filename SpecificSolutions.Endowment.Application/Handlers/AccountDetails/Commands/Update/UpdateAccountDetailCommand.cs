@@ -1,9 +1,11 @@
 using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
+using SpecificSolutions.Endowment.Application.Abstractions.Requests;
 using SpecificSolutions.Endowment.Core.Enums;
 using SpecificSolutions.Endowment.Core.Models.AccountDetails;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.AccountDetails.Commands.Update
 {
+    [Authorize(Permissions = Permission.AccountDetailEdit)]
     public class UpdateAccountDetailCommand : ICommand, IUpdateAccountDetailCommand
     {
         public Guid Id { get; set; }

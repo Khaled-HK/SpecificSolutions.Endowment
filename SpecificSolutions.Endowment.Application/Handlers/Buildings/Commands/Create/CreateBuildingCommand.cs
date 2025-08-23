@@ -13,9 +13,9 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Buildings.Commands.Cr
         public string FileNumber { get; set; }
         public string Definition { get; set; }
         public string Classification { get; set; }
-        public string OfficeId { get; set; }
+        public Guid OfficeId { get; set; }
         public string Unit { get; set; }
-        public string RegionId { get; set; }
+        public Guid RegionId { get; set; }
         public string NearestLandmark { get; set; }
         public DateTime ConstructionDate { get; set; }
         public DateTime OpeningDate { get; set; }
@@ -36,7 +36,5 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Buildings.Commands.Cr
         public string PrayerCapacity { get; set; }
         public SourceFunds SourceFunds { get; set; }
         //public HashSet<ICreateBuildingDetailCommand> BuildingDetails { get; set; }
-
-        public Permission Permission => Permission.BuildingAdd;
     }
 }

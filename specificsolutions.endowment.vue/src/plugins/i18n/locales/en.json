@@ -827,9 +827,23 @@
     "error": "Error",
     "success": "Success",
     "info": "Info"
-  }
-  ,
+  },
+  "welcome": "Welcome",
+  "signInMessage": "Please sign-in to your account and start the adventure",
+  "email": "Email",
+  "password": "Password",
+  "rememberMe": "Remember Me",
+  "forgotPassword": "Forgot Password?",
+  "signIn": "Sign In",
+  "newUser": "New on our platform?",
+  "createAccount": "Create an account",
+  "or": "or",
+  "login": {
+    "tryAgain": "An error occurred, please try again",
+    "noPermissions": "No permissions for this user"
+  },
   "vuetify": {
+    "close": "Close",
     "dataIterator": {
       "loadingText": "Loading items...",
       "noResultsText": "No matching records found"

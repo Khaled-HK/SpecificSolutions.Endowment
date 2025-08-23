@@ -1,7 +1,10 @@
 using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
+using SpecificSolutions.Endowment.Application.Abstractions.Requests;
+using SpecificSolutions.Endowment.Core.Enums;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.Facilities.Commands.Create
 {
+    [Authorize(Permissions = Permission.FacilityAdd)]
     public class CreateFacilityCommand : ICommand
     {
         public string Name { get; set; }

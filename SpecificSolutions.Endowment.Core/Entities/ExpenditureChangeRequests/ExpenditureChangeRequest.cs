@@ -1,7 +1,7 @@
 using SpecificSolutions.Endowment.Core.Entities.Branchs;
 using SpecificSolutions.Endowment.Core.Entities.Requests;
 
-namespace SpecificSolutions.Endowment.Core.Entities.EndowmentExpenditureChangeRequests
+namespace SpecificSolutions.Endowment.Core.Entities.ExpenditureChangeRequests
 {
     public class ExpenditureChangeRequest
     {

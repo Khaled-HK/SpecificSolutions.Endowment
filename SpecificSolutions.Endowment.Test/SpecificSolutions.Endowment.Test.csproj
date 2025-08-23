@@ -97,6 +97,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Management\Management.csproj" />
     <ProjectReference Include="..\SpecificSolutions.Endowment.Application\SpecificSolutions.Endowment.Application.csproj" />
+    <ProjectReference Include="..\SpecificSolutions.Endowment.Core\SpecificSolutions.Endowment.Core.csproj" />
     <ProjectReference Include="..\SpecificSolutions.Endowment.Infrastructure\SpecificSolutions.Endowment.Infrastructure.csproj" />
   </ItemGroup>
 

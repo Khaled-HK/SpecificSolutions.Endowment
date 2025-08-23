@@ -20,6 +20,8 @@ using SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Create;
 using SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Update;
 using SpecificSolutions.Endowment.Application.Handlers.Accounts.Commands.Create;
 using SpecificSolutions.Endowment.Application.Handlers.Accounts.Commands.Update;
+using SpecificSolutions.Endowment.Application.Handlers.UserApprovals.Commands.ApproveUser;
+using SpecificSolutions.Endowment.Application.Handlers.UserApprovals.Commands.RejectUser;
 using SpecificSolutions.Endowment.Application.Validators.Authentications;
 using SpecificSolutions.Endowment.Application.Validators.BuildingDetails;
 using SpecificSolutions.Endowment.Application.Validators.Buildings;
@@ -30,6 +32,7 @@ using SpecificSolutions.Endowment.Application.Validators.Cities;
 using SpecificSolutions.Endowment.Application.Validators.Regions;
 using SpecificSolutions.Endowment.Application.Validators.Requests;
 using SpecificSolutions.Endowment.Application.Validators.Accounts;
+using SpecificSolutions.Endowment.Application.Validators.UserApprovals;
 
 namespace SpecificSolutions.Endowment.Application.Validators
 {
@@ -76,6 +79,10 @@ namespace SpecificSolutions.Endowment.Application.Validators
             // Account Validators
             services.AddTransient<IValidator<CreateAccountCommand>, CreateAccountCommandValidator>();
             services.AddTransient<IValidator<UpdateAccountCommand>, UpdateAccountCommandValidator>();
+
+            // User Approval Validators - نمط خالد
+            services.AddTransient<IValidator<ApproveUserCommand>, ApproveUserCommandValidator>();
+            services.AddTransient<IValidator<RejectUserCommand>, RejectUserCommandValidator>();
 
             return services;
         }

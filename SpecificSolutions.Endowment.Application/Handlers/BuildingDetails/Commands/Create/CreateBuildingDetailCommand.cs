@@ -1,10 +1,13 @@
 using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
+using SpecificSolutions.Endowment.Application.Abstractions.Requests;
+using SpecificSolutions.Endowment.Core.Enums;
 using SpecificSolutions.Endowment.Core.Enums.BuildingDetails;
 using SpecificSolutions.Endowment.Core.Models.BuildingDetails;
 using System.Text.Json.Serialization;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.BuildingDetails.Commands.Create
 {
+    [Authorize(Permissions = Permission.FacilityDetailAdd)]
     public class CreateBuildingDetailCommand : ICommand, ICreateBuildingDetailCommand
     {
         public string Name { get; set; }

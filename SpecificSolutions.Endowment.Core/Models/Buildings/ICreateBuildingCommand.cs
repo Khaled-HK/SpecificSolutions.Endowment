@@ -8,9 +8,9 @@ namespace SpecificSolutions.Endowment.Core.Models.Buildings
         string FileNumber { get; set; }
         string Definition { get; set; }
         string Classification { get; set; }
-        string OfficeId { get; set; }
+        Guid OfficeId { get; set; }
         string Unit { get; set; }
-        string RegionId { get; set; }
+        Guid RegionId { get; set; }
         string NearestLandmark { get; set; }
         DateTime ConstructionDate { get; set; }
         DateTime OpeningDate { get; set; }

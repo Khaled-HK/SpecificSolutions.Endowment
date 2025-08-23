@@ -4,6 +4,7 @@ import { useAbility } from '@/plugins/casl/composables/useAbility'
 import { useApi } from '@/composables/useApi'
 import { BASE_PERMISSIONS, mapPermissionToAction, mapPermissionToSubject } from './authPermissions'
 import { useFormValidation } from './useFormValidation'
+import { useAppAlerts } from '@/composables/useAppAlerts'
 import Cookies from 'js-cookie'
 
 export function useLogin() {
@@ -11,6 +12,9 @@ export function useLogin() {
   const route = useRoute()
   const ability = useAbility()
   const api = useApi()
+  
+  // نظام التنبيهات - نمط خالد
+  const { error: showError } = useAppAlerts()
   
   const {
     validationState,
@@ -41,16 +45,19 @@ export function useLogin() {
         },
       })
 
-      // معالجة الاستجابة الفاشلة
-      if (res.isSuccess === false) {
-        if (res.errors && Array.isArray(res.errors)) {
+      // معالجة الاستجابة الفاشلة - نمط خالد
+      if (res.isSuccess === false || res.state === 400 || res.state === "400" || !res.data) {
+        if (res.errors && Array.isArray(res.errors) && res.errors.length > 0) {
           setErrorsFromResponse(res)
           setFieldTouched('email')
           setFieldTouched('password')
         } else if (res.message?.trim()) {
-          addError('general', res.message.trim())
+          // عرض رسالة الباك اند مباشرة - نمط خالد (Toast فقط)
+          showError(res.message.trim(), { timeout: 5000 })
+          setFieldTouched('email')
+          setFieldTouched('password')
         } else {
-          addError('general', t('login.tryAgain'))
+          showError(t('login.tryAgain'), { timeout: 5000 })
         }
         return
       }
@@ -82,7 +89,7 @@ export function useLogin() {
       const userPermissions = user.permissions || user.userAbilityRules || []
       
       if (!userPermissions.length) {
-        addError('email', t('login.noPermissions'))
+        showError(t('login.noPermissions'), { timeout: 5000 })
         return
       }
       
@@ -119,13 +126,19 @@ export function useLogin() {
       const target = route.query.to ? String(route.query.to) : '/dashboard'
       router.replace(target)
     } catch (err: any) {
-      // معالجة أخطاء التحقق في catch block
+      // معالجة أخطاء التحقق في catch block - نمط خالد
       if (err.data?.errors && Array.isArray(err.data.errors)) {
         setErrorsFromResponse(err.data)
         setFieldTouched('email')
         setFieldTouched('password')
+      } else if (err.data?.message?.trim()) {
+        // عرض رسالة الخطأ من الباك اند - نمط خالد (Toast فقط)
+        showError(err.data.message.trim(), { timeout: 5000 })
+      } else if (err.message?.trim()) {
+        // عرض رسالة الخطأ العامة (Toast فقط)
+        showError(err.message.trim(), { timeout: 5000 })
       } else {
-        addError('general', t('login.tryAgain'))
+        showError(t('login.tryAgain'), { timeout: 5000 })
       }
     } finally {
       isLoading.value = false
