@@ -189,7 +189,17 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
                     // Mosque permissions
                     mosqueView: true, mosqueAdd: false, mosqueEdit: false, mosqueDelete: false,
                     // Product permissions
-                    productView: true, productAdd: false, productEdit: false, productDelete: false
+                    productView: true, productAdd: false, productEdit: false, productDelete: false,
+                    // Bank permissions
+                    bankView: true, bankAdd: false, bankEdit: false, bankDelete: false,
+                    // Branch permissions
+                    branchView: true, branchAdd: false, branchEdit: false, branchDelete: false,
+                    // Facility permissions
+                    facilityView: true, facilityAdd: false, facilityEdit: false, facilityDelete: false,
+                    // BuildingDetailRequest permissions
+                    buildingDetailRequestView: true, buildingDetailRequestAdd: false, buildingDetailRequestEdit: false, buildingDetailRequestDelete: false,
+                    // QuranicSchool permissions
+                    quranicSchoolView: true, quranicSchoolAdd: false, quranicSchoolEdit: false, quranicSchoolDelete: false
                 ),
                 "employee" => Permission.Create(
                     // Account permissions
@@ -231,7 +241,17 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
                     // Mosque permissions
                     mosqueView: true, mosqueAdd: false, mosqueEdit: false, mosqueDelete: false,
                     // Product permissions
-                    productView: true, productAdd: false, productEdit: false, productDelete: false
+                    productView: true, productAdd: false, productEdit: false, productDelete: false,
+                    // Bank permissions
+                    bankView: true, bankAdd: false, bankEdit: false, bankDelete: false,
+                    // Branch permissions
+                    branchView: true, branchAdd: false, branchEdit: false, branchDelete: false,
+                    // Facility permissions
+                    facilityView: true, facilityAdd: false, facilityEdit: false, facilityDelete: false,
+                    // BuildingDetailRequest permissions
+                    buildingDetailRequestView: true, buildingDetailRequestAdd: false, buildingDetailRequestEdit: false, buildingDetailRequestDelete: false,
+                    // QuranicSchool permissions
+                    quranicSchoolView: true, quranicSchoolAdd: false, quranicSchoolEdit: false, quranicSchoolDelete: false
                 ),
                 _ => new Permission() // صلاحيات فارغة افتراضياً (جميع false)
             };

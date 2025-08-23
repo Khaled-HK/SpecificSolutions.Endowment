@@ -216,7 +216,12 @@ public sealed class Seeder
                         regionView: true, regionAdd: true, regionEdit: true, regionDelete: true,
                         buildingView: true, buildingAdd: true, buildingEdit: true, buildingDelete: true,
                         mosqueView: true, mosqueAdd: true, mosqueEdit: true, mosqueDelete: true,
-                        productView: true, productAdd: true, productEdit: true, productDelete: true
+                        productView: true, productAdd: true, productEdit: true, productDelete: true,
+                        bankView: true, bankAdd: true, bankEdit: true, bankDelete: true,
+                        branchView: true, branchAdd: true, branchEdit: true, branchDelete: true,
+                        facilityView: true, facilityAdd: true, facilityEdit: true, facilityDelete: true,
+                        buildingDetailRequestView: true, buildingDetailRequestAdd: true, buildingDetailRequestEdit: true, buildingDetailRequestDelete: true,
+                        quranicSchoolView: true, quranicSchoolAdd: true, quranicSchoolEdit: true, quranicSchoolDelete: true
                     )),
                     
                 // Employee Group - Basic permissions (استخدام المستخدم الثالث الموجود)
@@ -243,7 +248,12 @@ public sealed class Seeder
                         regionView: true, regionAdd: true, regionEdit: true, regionDelete: true,
                         buildingView: true, buildingAdd: true, buildingEdit: true, buildingDelete: true,
                         mosqueView: true, mosqueAdd: true, mosqueEdit: true, mosqueDelete: true,
-                        productView: true, productAdd: true, productEdit: true, productDelete: true
+                        productView: true, productAdd: true, productEdit: true, productDelete: true,
+                        bankView: true, bankAdd: true, bankEdit: true, bankDelete: true,
+                        branchView: true, branchAdd: true, branchEdit: true, branchDelete: true,
+                        facilityView: true, facilityAdd: true, facilityEdit: true, facilityDelete: true,
+                        buildingDetailRequestView: true, buildingDetailRequestAdd: true, buildingDetailRequestEdit: true, buildingDetailRequestDelete: true,
+                        quranicSchoolView: true, quranicSchoolAdd: true, quranicSchoolEdit: true, quranicSchoolDelete: true
                     ))
             };
             await _context.ApplicationUserRole.AddRangeAsync(userRoles);
