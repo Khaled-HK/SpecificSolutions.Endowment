@@ -824,7 +824,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Migrations
                     b.ToTable("DemolitionRequests");
                 });
 
-            modelBuilder.Entity("SpecificSolutions.Endowment.Core.Entities.EndowmentExpenditureChangeRequests.ExpenditureChangeRequest", b =>
+            modelBuilder.Entity("SpecificSolutions.Endowment.Core.Entities.ExpenditureChangeRequests.ExpenditureChangeRequest", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1377,7 +1377,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Migrations
                     b.Navigation("Request");
                 });
 
-            modelBuilder.Entity("SpecificSolutions.Endowment.Core.Entities.EndowmentExpenditureChangeRequests.ExpenditureChangeRequest", b =>
+            modelBuilder.Entity("SpecificSolutions.Endowment.Core.Entities.ExpenditureChangeRequests.ExpenditureChangeRequest", b =>
                 {
                     b.HasOne("SpecificSolutions.Endowment.Core.Entities.Branchs.Branch", "CurrentExpenditureBranch")
                         .WithMany("CurrentExpenditureRequests")
@@ -1393,7 +1393,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Migrations
 
                     b.HasOne("SpecificSolutions.Endowment.Core.Entities.Requests.Request", "Request")
                         .WithOne("ExpenditureChangeRequest")
-                        .HasForeignKey("SpecificSolutions.Endowment.Core.Entities.EndowmentExpenditureChangeRequests.ExpenditureChangeRequest", "RequestId")
+                        .HasForeignKey("SpecificSolutions.Endowment.Core.Entities.ExpenditureChangeRequests.ExpenditureChangeRequest", "RequestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

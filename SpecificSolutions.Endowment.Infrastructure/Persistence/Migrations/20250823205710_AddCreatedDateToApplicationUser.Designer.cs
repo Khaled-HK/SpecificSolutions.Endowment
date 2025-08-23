@@ -12,8 +12,8 @@ using SpecificSolutions.Endowment.Infrastructure.Persistence;
 namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250823052854_AddUserApprovalSystem")]
-    partial class AddUserApprovalSystem
+    [Migration("20250823205710_AddCreatedDateToApplicationUser")]
+    partial class AddCreatedDateToApplicationUser
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -141,6 +141,9 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -824,7 +827,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Migrations
                     b.ToTable("DemolitionRequests");
                 });
 
-            modelBuilder.Entity("SpecificSolutions.Endowment.Core.Entities.EndowmentExpenditureChangeRequests.ExpenditureChangeRequest", b =>
+            modelBuilder.Entity("SpecificSolutions.Endowment.Core.Entities.ExpenditureChangeRequests.ExpenditureChangeRequest", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1377,7 +1380,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Migrations
                     b.Navigation("Request");
                 });
 
-            modelBuilder.Entity("SpecificSolutions.Endowment.Core.Entities.EndowmentExpenditureChangeRequests.ExpenditureChangeRequest", b =>
+            modelBuilder.Entity("SpecificSolutions.Endowment.Core.Entities.ExpenditureChangeRequests.ExpenditureChangeRequest", b =>
                 {
                     b.HasOne("SpecificSolutions.Endowment.Core.Entities.Branchs.Branch", "CurrentExpenditureBranch")
                         .WithMany("CurrentExpenditureRequests")
@@ -1393,7 +1396,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Migrations
 
                     b.HasOne("SpecificSolutions.Endowment.Core.Entities.Requests.Request", "Request")
                         .WithOne("ExpenditureChangeRequest")
-                        .HasForeignKey("SpecificSolutions.Endowment.Core.Entities.EndowmentExpenditureChangeRequests.ExpenditureChangeRequest", "RequestId")
+                        .HasForeignKey("SpecificSolutions.Endowment.Core.Entities.ExpenditureChangeRequests.ExpenditureChangeRequest", "RequestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
