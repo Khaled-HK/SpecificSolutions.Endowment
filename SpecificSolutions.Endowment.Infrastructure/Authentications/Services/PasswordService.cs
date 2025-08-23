@@ -11,11 +11,13 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ISessionService _sessionService;
+        private readonly IEmailService _emailService;
 
-        public PasswordService(UserManager<ApplicationUser> userManager, ISessionService sessionService)
+        public PasswordService(UserManager<ApplicationUser> userManager, ISessionService sessionService, IEmailService emailService)
         {
             _userManager = userManager;
             _sessionService = sessionService;
+            _emailService = emailService;
         }
 
         /// <summary>
@@ -31,8 +33,14 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             
-            // TODO: إرسال البريد الإلكتروني مع رمز الاستعادة
-            // في التطبيق الحقيقي، يجب إرسال بريد إلكتروني مع الرمز
+            // إرسال بريد إعادة تعيين كلمة المرور
+            var resetLink = $"https://yourapp.com/reset-password?email={email}&token={token}";
+            var emailSent = await _emailService.SendPasswordResetAsync(email, resetLink);
+            
+            if (!emailSent)
+            {
+                throw new Exception("Failed to send password reset email.");
+            }
             
             return true;
         }

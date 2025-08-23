@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using SpecificSolutions.Endowment.Application.Abstractions.Contracts;
 using SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.Register;
 using SpecificSolutions.Endowment.Application.Models.Identity;
 using SpecificSolutions.Endowment.Application.Models.Identity.Entities;
@@ -13,11 +14,13 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly AppDbContext _dbContext;
+        private readonly IEmailService _emailService;
 
-        public RegistrationService(UserManager<ApplicationUser> userManager, AppDbContext dbContext)
+        public RegistrationService(UserManager<ApplicationUser> userManager, AppDbContext dbContext, IEmailService emailService)
         {
             _userManager = userManager;
             _dbContext = dbContext;
+            _emailService = emailService;
         }
 
         /// <summary>
@@ -155,10 +158,13 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 var confirmationLink = $"https://yourapp.com/confirm-email?email={user.Email}&token={token}";
 
-                // TODO: إرسال البريد الإلكتروني فعلياً
-                // await _emailService.SendEmailAsync(user.Email, "تأكيد البريد الإلكتروني", confirmationLink);
-
-                Console.WriteLine($"Email confirmation link: {confirmationLink}");
+                // إرسال بريد تأكيد البريد الإلكتروني
+                var emailSent = await _emailService.SendEmailConfirmationAsync(user.Email, confirmationLink);
+                
+                if (!emailSent)
+                {
+                    Console.WriteLine($"Failed to send confirmation email to {user.Email}");
+                }
             }
             catch (Exception ex)
             {

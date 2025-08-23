@@ -1,5 +1,9 @@
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SpecificSolutions.Endowment.Application.Abstractions.Contracts;
+using SpecificSolutions.Endowment.Application.Models.Global;
+using System.Net;
 using System.Net.Mail;
 
 namespace SpecificSolutions.Endowment.Infrastructure.Services
@@ -9,11 +13,13 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
     /// </summary>
     public class EmailService : IEmailService
     {
-        private readonly IConfiguration _configuration;
+        private readonly ILogger<EmailService> _logger;
+        private readonly EmailSettings _emailSettings;
 
-        public EmailService(IConfiguration configuration)
+        public EmailService(ILogger<EmailService> logger, IOptions<EmailSettings> emailSettings)
         {
-            _configuration = configuration;
+            _logger = logger;
+            _emailSettings = emailSettings.Value;
         }
 
         /// <summary>
@@ -21,23 +27,57 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
         /// </summary>
         public async Task<bool> SendEmailAsync(string to, string subject, string body)
         {
+            return await EmailRetryPolicy.ExecuteWithRetryAsync(
+                async () =>
+                {
+                    _logger.LogInformation("Attempting to send email to {Email} with subject: {Subject}", to, subject);
+
+                    if (_emailSettings.UseSmtp)
+                    {
+                        return await SendEmailViaSmtpAsync(to, subject, body);
+                    }
+                    else
+                    {
+                        // Fallback to console logging for development
+                        _logger.LogInformation("Email content for {Email}: Subject: {Subject}, Body: {Body}", to, subject, body);
+                        await Task.Delay(100); // Simulate email sending
+                        return true;
+                    }
+                },
+                _logger,
+                to);
+        }
+
+        /// <summary>
+        /// إرسال البريد عبر SMTP
+        /// </summary>
+        private async Task<bool> SendEmailViaSmtpAsync(string to, string subject, string body)
+        {
             try
             {
-                // TODO: تنفيذ إرسال البريد الإلكتروني الفعلي
-                // يمكن استخدام SendGrid, MailKit, أو أي خدمة بريد إلكتروني أخرى
+                using var client = new SmtpClient(_emailSettings.SmtpServer, _emailSettings.SmtpPort)
+                {
+                    EnableSsl = _emailSettings.EnableSsl,
+                    Credentials = new NetworkCredential(_emailSettings.SmtpUsername, _emailSettings.SmtpPassword)
+                };
 
-                Console.WriteLine($"Sending email to: {to}");
-                Console.WriteLine($"Subject: {subject}");
-                Console.WriteLine($"Body: {body}");
+                var message = new MailMessage
+                {
+                    From = new MailAddress(_emailSettings.FromEmail, _emailSettings.FromName),
+                    Subject = subject,
+                    Body = body,
+                    IsBodyHtml = true
+                };
+                message.To.Add(to);
 
-                // محاكاة إرسال البريد
-                await Task.Delay(100);
-
+                await client.SendMailAsync(message);
+                
+                _logger.LogInformation("Email sent successfully to {Email}", to);
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to send email: {ex.Message}");
+                _logger.LogError(ex, "SMTP email sending failed to {Email}", to);
                 return false;
             }
         }
@@ -47,17 +87,20 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
         /// </summary>
         public async Task<bool> SendEmailConfirmationAsync(string email, string confirmationLink)
         {
+            _logger.LogInformation("Sending email confirmation to {Email}", email);
+            
             var subject = "تأكيد البريد الإلكتروني - نظام الأوقاف";
-            var body = $@"
-                <h2>مرحباً بك في نظام الأوقاف</h2>
-                <p>يرجى النقر على الرابط التالي لتأكيد بريدك الإلكتروني:</p>
-                <p><a href='{confirmationLink}'>تأكيد البريد الإلكتروني</a></p>
-                <p>أو انسخ الرابط التالي في المتصفح:</p>
-                <p>{confirmationLink}</p>
-                <p>هذا الرابط صالح لمدة 24 ساعة فقط.</p>
-            ";
+            var userName = email.Split('@')[0]; // Extract username from email
+            var body = EmailTemplates.GetEmailConfirmationTemplate(userName, confirmationLink);
 
-            return await SendEmailAsync(email, subject, body);
+            var result = await SendEmailAsync(email, subject, body);
+            
+            if (result)
+                _logger.LogInformation("Email confirmation sent successfully to {Email}", email);
+            else
+                _logger.LogError("Failed to send email confirmation to {Email}", email);
+                
+            return result;
         }
 
         /// <summary>
@@ -65,19 +108,20 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
         /// </summary>
         public async Task<bool> SendPasswordResetAsync(string email, string resetLink)
         {
+            _logger.LogInformation("Sending password reset email to {Email}", email);
+            
             var subject = "إعادة تعيين كلمة المرور - نظام الأوقاف";
-            var body = $@"
-                <h2>إعادة تعيين كلمة المرور</h2>
-                <p>لقد تلقينا طلباً لإعادة تعيين كلمة المرور الخاصة بك.</p>
-                <p>يرجى النقر على الرابط التالي لإعادة تعيين كلمة المرور:</p>
-                <p><a href='{resetLink}'>إعادة تعيين كلمة المرور</a></p>
-                <p>أو انسخ الرابط التالي في المتصفح:</p>
-                <p>{resetLink}</p>
-                <p>هذا الرابط صالح لمدة ساعة واحدة فقط.</p>
-                <p>إذا لم تطلب إعادة تعيين كلمة المرور، يمكنك تجاهل هذا البريد.</p>
-            ";
+            var userName = email.Split('@')[0]; // Extract username from email
+            var body = EmailTemplates.GetPasswordResetTemplate(userName, resetLink);
 
-            return await SendEmailAsync(email, subject, body);
+            var result = await SendEmailAsync(email, subject, body);
+            
+            if (result)
+                _logger.LogInformation("Password reset email sent successfully to {Email}", email);
+            else
+                _logger.LogError("Failed to send password reset email to {Email}", email);
+                
+            return result;
         }
 
         /// <summary>
