@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using SpecificSolutions.Endowment.Application.Abstractions.Contracts;
 using SpecificSolutions.Endowment.Application.Models.DTOs.Users;
 using SpecificSolutions.Endowment.Application.Models.DTOs.UserApprovals;
@@ -19,17 +20,20 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly AppDbContext _dbContext;
         private readonly ICurrentUser _currentUser;
+        private readonly ILogger<UserApprovalService> _logger;
 
         public UserApprovalService(
             UserManager<ApplicationUser> userManager,
             RoleManager<ApplicationRole> roleManager,
             AppDbContext dbContext,
-            ICurrentUser currentUser)
+            ICurrentUser currentUser,
+            ILogger<UserApprovalService> logger)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _dbContext = dbContext;
             _currentUser = currentUser;
+            _logger = logger;
         }
 
         /// <summary>
@@ -37,7 +41,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
         /// تنفيذ الفلترة والتحويل إلى DTO على مستوى قاعدة البيانات
         /// </summary>
         public async Task<List<PendingUserDto>> GetPendingUsersAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
-        {
+        { 
             var users = await _dbContext.Users
                 .Where(u => !u.IsApproved)
                 .Skip((pageNumber - 1) * pageSize)
@@ -73,12 +77,18 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
         /// </summary>
         public async Task<bool> ApproveUserAsync(string userId, string roleName, CancellationToken cancellationToken = default)
         {
-            Console.WriteLine($"🔍 ApproveUserAsync - Starting for UserId: {userId}, RoleName: {roleName}");
+            if (string.IsNullOrEmpty(userId))
+                throw new ArgumentException("UserId cannot be null or empty", nameof(userId));
+                
+            if (string.IsNullOrEmpty(roleName))
+                throw new ArgumentException("RoleName cannot be null or empty", nameof(roleName));
+
+            _logger.LogInformation("Approving user {UserId} with role {RoleName}", userId, roleName);
             
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null || user.IsUserApproved())
             {
-                Console.WriteLine($"🔍 ApproveUserAsync - User not found or already approved");
+                _logger.LogWarning("User {UserId} not found or already approved", userId);
                 return false;
             }
 
@@ -86,19 +96,16 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
             if (!currentUserId.HasValue)
                 throw new UnauthorizedAccessException("يجب تسجيل الدخول لتنفيذ هذه العملية.");
 
-            Console.WriteLine($"🔍 ApproveUserAsync - CurrentUserId: {currentUserId.Value}");
-
             // الموافقة على المستخدم
             user.ApproveUser(currentUserId.Value.ToString());
-            Console.WriteLine($"🔍 ApproveUserAsync - User approved successfully");
+            _logger.LogInformation("User {UserId} approved successfully", userId);
 
             // إضافة الدور والصلاحيات
             await AddUserToRoleWithPermissionsAsync(user, roleName, cancellationToken);
 
             // حفظ التغييرات
-            Console.WriteLine($"🔍 ApproveUserAsync - Saving changes to database...");
             await _dbContext.SaveChangesAsync(cancellationToken);
-            Console.WriteLine($"🔍 ApproveUserAsync - Changes saved successfully");
+            _logger.LogInformation("User {UserId} approval completed successfully", userId);
             
             return true;
         }
@@ -108,12 +115,24 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
         /// </summary>
         public async Task<bool> RejectUserAsync(string userId, CancellationToken cancellationToken = default)
         {
+            if (string.IsNullOrEmpty(userId))
+                throw new ArgumentException("UserId cannot be null or empty", nameof(userId));
+
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null || user.IsUserApproved())
                 return false;
 
             // حذف المستخدم
             var result = await _userManager.DeleteAsync(user);
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("User {UserId} rejected and deleted successfully", userId);
+            }
+            else
+            {
+                _logger.LogError("Failed to delete user {UserId}: {Errors}", userId, string.Join(", ", result.Errors.Select(e => e.Description)));
+            }
+            
             return result.Succeeded;
         }
 
@@ -122,6 +141,9 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
         /// </summary>
         public async Task<bool> IsPendingUserAsync(string userId, CancellationToken cancellationToken = default)
         {
+            if (string.IsNullOrEmpty(userId))
+                return false;
+
             return await _dbContext.Users
                 .Where(u => u.Id == userId && !u.IsApproved)
                 .AnyAsync(cancellationToken);
@@ -132,20 +154,14 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
         /// </summary>
         private async Task AddUserToRoleWithPermissionsAsync(ApplicationUser user, string roleName, CancellationToken cancellationToken)
         {
-            Console.WriteLine($"🔍 AddUserToRoleWithPermissionsAsync - Starting for UserId: {user.Id}, RoleName: {roleName}");
-            
             var role = await _roleManager.FindByNameAsync(roleName);
             if (role == null)
-                throw new Exception($"الدور {roleName} غير موجود");
-
-            Console.WriteLine($"🔍 AddUserToRoleWithPermissionsAsync - Role found: {role.Id}");
+                throw new InvalidOperationException($"الدور {roleName} غير موجود");
 
             // الحصول على الصلاحيات المناسبة للدور
             var permissions = GetDefaultPermissionsForRole(roleName);
             if (permissions == null)
-                throw new Exception($"فشل في الحصول على الصلاحيات للدور {roleName}");
-
-            Console.WriteLine($"🔍 AddUserToRoleWithPermissionsAsync - Permissions created successfully");
+                throw new InvalidOperationException($"فشل في الحصول على الصلاحيات للدور {roleName}");
 
             // التحقق من وجود السجل مسبقاً
             var existingUserRole = await _dbContext.ApplicationUserRole
@@ -153,16 +169,15 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
 
             if (existingUserRole != null)
             {
-                Console.WriteLine($"🔍 AddUserToRoleWithPermissionsAsync - UserRole already exists, updating permissions");
+                _logger.LogInformation("Updating existing user role permissions for user {UserId} and role {RoleId}", user.Id, role.Id);
                 
                 // تحديث الصلاحيات الموجودة
                 existingUserRole.Permissions = permissions;
                 _dbContext.ApplicationUserRole.Update(existingUserRole);
-                Console.WriteLine($"🔍 AddUserToRoleWithPermissionsAsync - Existing UserRole permissions updated successfully");
             }
             else
             {
-                Console.WriteLine($"🔍 AddUserToRoleWithPermissionsAsync - Creating new UserRole");
+                _logger.LogInformation("Creating new user role for user {UserId} and role {RoleId}", user.Id, role.Id);
                 
                 // إنشاء ApplicationUserRole مع الصلاحيات المناسبة للدور
                 var userRole = ApplicationUserRole.Create(
@@ -171,12 +186,8 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
                     permissions: permissions
                 );
 
-                Console.WriteLine($"🔍 AddUserToRoleWithPermissionsAsync - ApplicationUserRole created successfully");
-
                 // إضافة العلاقة إلى قاعدة البيانات مباشرة (بدون استخدام AddToRoleAsync)
                 await _dbContext.ApplicationUserRole.AddAsync(userRole, cancellationToken);
-                
-                Console.WriteLine($"🔍 AddUserToRoleWithPermissionsAsync - UserRole added to DbContext successfully");
             }
         }
 
@@ -185,10 +196,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
         /// </summary>
         private Permission GetDefaultPermissionsForRole(string roleName)
         {
-            // Log the role name for debugging
-            Console.WriteLine($"🔍 GetDefaultPermissionsForRole - RoleName: '{roleName}' (Lowercase: '{roleName.ToLower()}')");
-            
-            var permissions = roleName.ToLower() switch
+            return roleName.ToLower() switch
             {
                 "admin" => Permission.Seed(), // جميع الصلاحيات
                 "customer" => Permission.Create(
@@ -324,11 +332,6 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
                     quranicSchoolView: true, quranicSchoolAdd: false, quranicSchoolEdit: false, quranicSchoolDelete: false
                 )
             };
-            
-            // Log the result for debugging
-            Console.WriteLine($"🔍 GetDefaultPermissionsForRole - Result: {(permissions != null ? "Permissions created successfully" : "NULL permissions")}");
-            
-            return permissions;
         }
     }
 }
