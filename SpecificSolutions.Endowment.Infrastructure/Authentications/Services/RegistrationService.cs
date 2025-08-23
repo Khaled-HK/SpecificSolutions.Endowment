@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Identity;
 using SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.Register;
-using SpecificSolutions.Endowment.Application.Models.DTOs.Users;
 using SpecificSolutions.Endowment.Application.Models.Identity;
 using SpecificSolutions.Endowment.Application.Models.Identity.Entities;
 using SpecificSolutions.Endowment.Infrastructure.Persistence;
@@ -34,13 +33,16 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
 
             // إنشاء المستخدم
             var user = ApplicationUser.Create(
-                request.Email, 
-                request.FirstName, 
+                request.Email,
+                request.FirstName,
                 request.LastName,
-                Guid.Parse(request.OfficeId), 
-                request.UserName, 
-                request.Password, 
-                false  // emailConfirmed = false - يحتاج تأكيد
+                Guid.Parse(request.OfficeId),
+                request.UserName,
+                request.Password,
+                false,  // emailConfirmed = false - يحتاج تأكيد,
+                request.IsApproved,
+                request.ApprovedAt,
+                request.ApprovedBy
             );
 
             // إنشاء المستخدم في قاعدة البيانات
@@ -54,8 +56,8 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
             // إرسال بريد تأكيد البريد الإلكتروني
             await SendEmailConfirmationAsync(user);
 
-            return new RegistrationResponse 
-            { 
+            return new RegistrationResponse
+            {
                 UserId = user.Id,
                 Message = "تم التسجيل بنجاح. يرجى تأكيد بريدك الإلكتروني ثم انتظار موافقة المسؤول."
             };
@@ -70,8 +72,8 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
             await ValidateUserDoesNotExistAsync(request.UserName, request.Email);
 
             // معالجة OfficeId الافتراضي
-            var officeId = request.OfficeId != Guid.Empty 
-                ? request.OfficeId 
+            var officeId = request.OfficeId != Guid.Empty
+                ? request.OfficeId
                 : new Guid("DDEC6E9E-7628-4623-9A94-4E4EFC02187C");
 
             // إنشاء المستخدم
@@ -82,7 +84,10 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
                 officeId,
                 request.UserName,
                 request.Password,
-                true
+                true,  // emailConfirmed = false - يحتاج تأكيد,
+                request.IsApproved,
+                request.ApprovedAt,
+                request.ApprovedBy
             );
 
             // إنشاء المستخدم في قاعدة البيانات
@@ -96,8 +101,8 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
             // لا نضيف صلاحيات - المستخدم بحاجة لموافقة المسؤول
             // المستخدم سيكون IsApproved = false افتراضياً
 
-            return new RegistrationResponse 
-            { 
+            return new RegistrationResponse
+            {
                 UserId = user.Id,
                 Message = "تم التسجيل بنجاح. في انتظار موافقة المسؤول لتفعيل الحساب."
             };
@@ -149,10 +154,10 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 var confirmationLink = $"https://yourapp.com/confirm-email?email={user.Email}&token={token}";
-                
+
                 // TODO: إرسال البريد الإلكتروني فعلياً
                 // await _emailService.SendEmailAsync(user.Email, "تأكيد البريد الإلكتروني", confirmationLink);
-                
+
                 Console.WriteLine($"Email confirmation link: {confirmationLink}");
             }
             catch (Exception ex)

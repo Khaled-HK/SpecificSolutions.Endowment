@@ -23,19 +23,19 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity.Entities
         public virtual ICollection<AuditLog> AuditLogs { get; private set; } = new HashSet<AuditLog>();
         public Guid OfficeId { get; private set; }
         public virtual Office Office { get; private set; }
-        
+
         // حالة الموافقة على المستخدم
         public bool IsApproved { get; private set; } = false;
         public DateTime? ApprovedAt { get; private set; }
         public string? ApprovedBy { get; private set; }
-        
+
         // تاريخ إنشاء المستخدم - نمط خالد
         public DateTimeOffset CreatedDate { get; private set; } = DateTimeOffset.Now;
 
         public ApplicationUser() { }
 
         private ApplicationUser(string email, string firstName, string lastName, Guid officeId, string userName, string passwordHash,
-            bool emailConfirmed)
+            bool emailConfirmed, bool isApproved, DateTime? approvedAt, string? approvedBy)
         {
             Id = Guid.NewGuid().ToString(); // تعيين Id تلقائياً
             Email = email;
@@ -49,20 +49,26 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity.Entities
             PasswordHash = passwordHash;
             EmailConfirmed = emailConfirmed;
             SecurityStamp = Guid.NewGuid().ToString();
+            IsApproved = isApproved;
+            ApprovedAt = approvedAt;
+            ApprovedBy = approvedBy;
         }
 
         // static factory method to create a new ApplicationUser
         public static ApplicationUser Create(string email, string firstName, string lastName, Guid officeId, string userName,
-            string passwordHash, bool emailConfirmed)
+            string passwordHash, bool emailConfirmed, bool isApproved, DateTime? approvedAt, string? approvedBy)
         {
-            return new ApplicationUser(email, firstName, lastName, officeId, userName, passwordHash, emailConfirmed);
+            return new ApplicationUser(email, firstName, lastName, officeId, userName, passwordHash, emailConfirmed,
+                isApproved, approvedAt, approvedBy);
         }
 
         // seed method to create a new ApplicationUser
         public static ApplicationUser Seed(string id, string email, string firstName, string lastName, Guid officeId, string userName,
-            string passwordHash, bool emailConfirmed)
+            string passwordHash, bool emailConfirmed, bool isApproved, DateTime? approvedAt, string? approvedBy)
         {
-            var applicationUser = new ApplicationUser(email, firstName, lastName, officeId, userName, passwordHash, emailConfirmed);
+            var applicationUser = new ApplicationUser(email, firstName, lastName, officeId, userName, passwordHash,
+               isApproved, emailConfirmed, approvedAt, approvedBy);
+
             applicationUser.Id = id; // تعيين Id محدد
             return applicationUser;
         }

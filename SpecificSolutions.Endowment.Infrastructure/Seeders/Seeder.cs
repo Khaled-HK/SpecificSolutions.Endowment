@@ -88,7 +88,11 @@ public sealed class Seeder
                     officeId: new Guid("DDEC6E9E-7628-4623-9A94-4E4EFC02187C"),
                     userName: "1",
                     passwordHash: hasher.HashPassword(null!, "1"),
-                    emailConfirmed: true) // Add SecurityStamp
+                    emailConfirmed: true,// Add SecurityStamp
+                    isApproved: true,
+                    approvedAt: DateTime.Now,
+                    approvedBy:new Guid("a2d890d8-01d1-494b-9f62-6336b937e6fc").ToString()
+                    )
 
             };
 
@@ -108,7 +112,10 @@ public sealed class Seeder
                     officeId: new Guid("DDEC6E9E-7628-4623-9A94-4E4EFC02187C"),
                     userName: "admin@demo.com",
                     passwordHash: hasher.HashPassword(null!, "admin"),
-                    emailConfirmed: true)
+                    emailConfirmed: true,
+                    isApproved: true,
+                    approvedAt: DateTime.Now,
+                    approvedBy:new Guid("a2d890d8-01d1-494b-9f62-6336b937e6fc").ToString())
 
             };
 
@@ -126,7 +133,11 @@ public sealed class Seeder
                 officeId: new Guid("DDEC6E9E-7628-4623-9A94-4E4EFC02187C"),
                 userName: "employee@gmail.com",
                 passwordHash: hasher.HashPassword(null!, "12345678"),
-                emailConfirmed: true);
+                emailConfirmed: true,
+                isApproved: true,
+                approvedAt: DateTime.Now,
+                approvedBy: new Guid("a2d890d8-01d1-494b-9f62-6336b937e6fc").ToString()
+                );
 
             await _context.Users.AddAsync(employeeUser);
             await _context.SaveChangesAsync();

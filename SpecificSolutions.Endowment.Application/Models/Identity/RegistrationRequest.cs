@@ -18,5 +18,8 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity
         [MinLength(6)]
         public string Password { get; set; }
         public Guid OfficeId { get; set; }
+        public bool IsApproved { get; set; }
+        public DateTime? ApprovedAt { get; set; }
+        public string? ApprovedBy { get; set; }
     }
 }

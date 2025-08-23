@@ -4,6 +4,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Authentications.Comma
 {
     public record RegisterCommand : ICommand
     {
+
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
@@ -15,5 +16,8 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Authentications.Comma
         public string City { get; set; }
         public string Country { get; set; }
         public string OfficeId { get; set; }
+        public bool IsApproved { get; set; }
+        public DateTime? ApprovedAt { get; set; }
+        public string? ApprovedBy { get; set; }
     }
 }
