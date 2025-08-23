@@ -73,22 +73,33 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
         /// </summary>
         public async Task<bool> ApproveUserAsync(string userId, string roleName, CancellationToken cancellationToken = default)
         {
+            Console.WriteLine($"🔍 ApproveUserAsync - Starting for UserId: {userId}, RoleName: {roleName}");
+            
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null || user.IsUserApproved())
+            {
+                Console.WriteLine($"🔍 ApproveUserAsync - User not found or already approved");
                 return false;
+            }
 
             var currentUserId = _currentUser.GetUserIdOrDefault();
             if (!currentUserId.HasValue)
                 throw new UnauthorizedAccessException("يجب تسجيل الدخول لتنفيذ هذه العملية.");
 
+            Console.WriteLine($"🔍 ApproveUserAsync - CurrentUserId: {currentUserId.Value}");
+
             // الموافقة على المستخدم
             user.ApproveUser(currentUserId.Value.ToString());
+            Console.WriteLine($"🔍 ApproveUserAsync - User approved successfully");
 
             // إضافة الدور والصلاحيات
             await AddUserToRoleWithPermissionsAsync(user, roleName, cancellationToken);
 
             // حفظ التغييرات
+            Console.WriteLine($"🔍 ApproveUserAsync - Saving changes to database...");
             await _dbContext.SaveChangesAsync(cancellationToken);
+            Console.WriteLine($"🔍 ApproveUserAsync - Changes saved successfully");
+            
             return true;
         }
 
@@ -121,24 +132,52 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
         /// </summary>
         private async Task AddUserToRoleWithPermissionsAsync(ApplicationUser user, string roleName, CancellationToken cancellationToken)
         {
+            Console.WriteLine($"🔍 AddUserToRoleWithPermissionsAsync - Starting for UserId: {user.Id}, RoleName: {roleName}");
+            
             var role = await _roleManager.FindByNameAsync(roleName);
             if (role == null)
                 throw new Exception($"الدور {roleName} غير موجود");
 
-            // إضافة المستخدم للدور
-            var addToRoleResult = await _userManager.AddToRoleAsync(user, roleName);
-            if (!addToRoleResult.Succeeded)
-                throw new Exception($"فشل في إضافة المستخدم للدور: {string.Join(", ", addToRoleResult.Errors.Select(e => e.Description))}");
+            Console.WriteLine($"🔍 AddUserToRoleWithPermissionsAsync - Role found: {role.Id}");
 
-            // إنشاء ApplicationUserRole مع الصلاحيات المناسبة للدور
-            var userRole = ApplicationUserRole.Create(
-                userId: user.Id,
-                roleId: role.Id,
-                permissions: GetDefaultPermissionsForRole(roleName)
-            );
+            // الحصول على الصلاحيات المناسبة للدور
+            var permissions = GetDefaultPermissionsForRole(roleName);
+            if (permissions == null)
+                throw new Exception($"فشل في الحصول على الصلاحيات للدور {roleName}");
 
-            // إضافة العلاقة إلى قاعدة البيانات
-            await _dbContext.ApplicationUserRole.AddAsync(userRole, cancellationToken);
+            Console.WriteLine($"🔍 AddUserToRoleWithPermissionsAsync - Permissions created successfully");
+
+            // التحقق من وجود السجل مسبقاً
+            var existingUserRole = await _dbContext.ApplicationUserRole
+                .FirstOrDefaultAsync(ur => ur.UserId == user.Id && ur.RoleId == role.Id, cancellationToken);
+
+            if (existingUserRole != null)
+            {
+                Console.WriteLine($"🔍 AddUserToRoleWithPermissionsAsync - UserRole already exists, updating permissions");
+                
+                // تحديث الصلاحيات الموجودة
+                existingUserRole.Permissions = permissions;
+                _dbContext.ApplicationUserRole.Update(existingUserRole);
+                Console.WriteLine($"🔍 AddUserToRoleWithPermissionsAsync - Existing UserRole permissions updated successfully");
+            }
+            else
+            {
+                Console.WriteLine($"🔍 AddUserToRoleWithPermissionsAsync - Creating new UserRole");
+                
+                // إنشاء ApplicationUserRole مع الصلاحيات المناسبة للدور
+                var userRole = ApplicationUserRole.Create(
+                    userId: user.Id,
+                    roleId: role.Id,
+                    permissions: permissions
+                );
+
+                Console.WriteLine($"🔍 AddUserToRoleWithPermissionsAsync - ApplicationUserRole created successfully");
+
+                // إضافة العلاقة إلى قاعدة البيانات مباشرة (بدون استخدام AddToRoleAsync)
+                await _dbContext.ApplicationUserRole.AddAsync(userRole, cancellationToken);
+                
+                Console.WriteLine($"🔍 AddUserToRoleWithPermissionsAsync - UserRole added to DbContext successfully");
+            }
         }
 
         /// <summary>
@@ -146,7 +185,10 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
         /// </summary>
         private Permission GetDefaultPermissionsForRole(string roleName)
         {
-            return roleName.ToLower() switch
+            // Log the role name for debugging
+            Console.WriteLine($"🔍 GetDefaultPermissionsForRole - RoleName: '{roleName}' (Lowercase: '{roleName.ToLower()}')");
+            
+            var permissions = roleName.ToLower() switch
             {
                 "admin" => Permission.Seed(), // جميع الصلاحيات
                 "customer" => Permission.Create(
@@ -253,8 +295,40 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
                     // QuranicSchool permissions
                     quranicSchoolView: true, quranicSchoolAdd: false, quranicSchoolEdit: false, quranicSchoolDelete: false
                 ),
-                _ => new Permission() // صلاحيات فارغة افتراضياً (جميع false)
+                _ => Permission.Create(
+                    // Default permissions for unknown roles - minimal read-only access
+                    accountView: true, accountAdd: false, accountEdit: false, accountDelete: false,
+                    accountDetailView: true, accountDetailAdd: false, accountDetailEdit: false, accountDetailDelete: false,
+                    userView: false, userAdd: false, userEdit: false, userDelete: false,
+                    roleView: false, roleAdd: false, roleEdit: false, roleDelete: false,
+                    decisionView: true, decisionAdd: false, decisionEdit: false, decisionDelete: false,
+                    requestView: true, requestAdd: false, requestEdit: false, requestDelete: false,
+                    constructionRequestView: true, constructionRequestAdd: false, constructionRequestEdit: false, constructionRequestDelete: false,
+                    maintenanceRequestView: true, maintenanceRequestAdd: false, maintenanceRequestEdit: false, maintenanceRequestDelete: false,
+                    demolitionRequestView: true, demolitionRequestAdd: false, demolitionRequestEdit: false, demolitionRequestDelete: false,
+                    nameChangeRequestView: true, nameChangeRequestAdd: false, nameChangeRequestEdit: false, nameChangeRequestDelete: false,
+                    needsRequestView: true, needsRequestAdd: false, needsRequestEdit: false, needsRequestDelete: false,
+                    expenditureChangeRequestView: true, expenditureChangeRequestAdd: false, expenditureChangeRequestEdit: false, expenditureChangeRequestDelete: false,
+                    changeOfPathRequestView: true, changeOfPathRequestAdd: false, changeOfPathRequestEdit: false, changeOfPathRequestDelete: false,
+                    officeView: true, officeAdd: false, officeEdit: false, officeDelete: false,
+                    endowmentView: true, endowmentAdd: false, endowmentEdit: false, endowmentDelete: false,
+                    cityView: true, cityAdd: false, cityEdit: false, cityDelete: false,
+                    regionView: true, regionAdd: false, regionEdit: false, regionDelete: false,
+                    buildingView: true, buildingAdd: false, buildingEdit: false, buildingDelete: false,
+                    mosqueView: true, mosqueAdd: false, mosqueEdit: false, mosqueDelete: false,
+                    productView: true, productAdd: false, productEdit: false, productDelete: false,
+                    bankView: true, bankAdd: false, bankEdit: false, bankDelete: false,
+                    branchView: true, branchAdd: false, branchEdit: false, branchDelete: false,
+                    facilityView: true, facilityAdd: false, facilityEdit: false, facilityDelete: false,
+                    buildingDetailRequestView: true, buildingDetailRequestAdd: false, buildingDetailRequestEdit: false, buildingDetailRequestDelete: false,
+                    quranicSchoolView: true, quranicSchoolAdd: false, quranicSchoolEdit: false, quranicSchoolDelete: false
+                )
             };
+            
+            // Log the result for debugging
+            Console.WriteLine($"🔍 GetDefaultPermissionsForRole - Result: {(permissions != null ? "Permissions created successfully" : "NULL permissions")}");
+            
+            return permissions;
         }
     }
 }

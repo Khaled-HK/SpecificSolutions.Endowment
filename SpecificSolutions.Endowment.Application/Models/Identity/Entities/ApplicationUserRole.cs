@@ -21,6 +21,15 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity.Entities
 
         public static ApplicationUserRole Create(string userId, string roleId, Permission permissions)
         {
+            if (string.IsNullOrEmpty(userId))
+                throw new ArgumentException("UserId cannot be null or empty", nameof(userId));
+            
+            if (string.IsNullOrEmpty(roleId))
+                throw new ArgumentException("RoleId cannot be null or empty", nameof(roleId));
+            
+            if (permissions == null)
+                throw new ArgumentException("Permissions cannot be null", nameof(permissions));
+            
             return new ApplicationUserRole(userId, roleId, permissions);
         }
 

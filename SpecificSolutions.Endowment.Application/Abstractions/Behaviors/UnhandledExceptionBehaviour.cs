@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Logging;
 using SpecificSolutions.Endowment.Application.Abstractions.Exceptions;
-using SpecificSolutions.Endowment.Application.Models.Global;
 
 namespace SpecificSolutions.Endowment.Application.Abstractions.Behaviors
 {
@@ -30,7 +29,7 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.Behaviors
             {
                 var requestName = typeof(TRequest).Name;
                 _logger.LogWarning(ex, "Validation Exception for Request {Name}", requestName);
-                
+
                 // إعادة رمي الاستثناء ليتم التعامل معه في GlobalExceptionHandler
                 throw;
             }
@@ -38,7 +37,7 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.Behaviors
             {
                 var requestName = typeof(TRequest).Name;
                 _logger.LogWarning(ex, "Unauthorized Access Exception for Request {Name}", requestName);
-                
+
                 // نمط خالد: رمي استثناء مخصص مع رسالة عربية
                 throw new UnauthorizedAccessException("لم يتم الموافقة على حسابك بعد. يرجى انتظار موافقة المسؤول.");
             }
@@ -46,7 +45,7 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.Behaviors
             {
                 var requestName = typeof(TRequest).Name;
                 _logger.LogWarning(ex, "Not Found Exception for Request {Name}", requestName);
-                
+
                 throw;
             }
             catch (Exception ex)

@@ -23,12 +23,20 @@ namespace SpecificSolutions.Endowment.Core.Helpers
 
         public static string Serialize<T>(T obj)
         {
+            // Handle null objects
+            if (obj == null)
+                return "null";
+            
             // Serialize the object to JSON
             return JsonSerializer.Serialize(obj);
         }
 
         public static T Deserialize<T>(string json)
         {
+            // Handle null or empty JSON
+            if (string.IsNullOrEmpty(json) || json == "null")
+                return default(T);
+            
             // Deserialize the JSON back to the object
             return JsonSerializer.Deserialize<T>(json);
         }
