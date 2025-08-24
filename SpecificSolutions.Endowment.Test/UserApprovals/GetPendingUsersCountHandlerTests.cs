@@ -275,7 +275,10 @@ namespace SpecificSolutions.Endowment.Test.UserApprovals
                 officeId: officeId ?? Guid.NewGuid(),
                 userName: email,
                 passwordHash: "test_hash",
-                emailConfirmed: true);
+                emailConfirmed: true,
+                isApproved: false,
+                approvedAt: null,
+                approvedBy: null);
 
             user.RejectUser(); // جعل المستخدم معلق
 
@@ -297,7 +300,10 @@ namespace SpecificSolutions.Endowment.Test.UserApprovals
                 officeId: Guid.NewGuid(),
                 userName: email,
                 passwordHash: "test_hash",
-                emailConfirmed: true);
+                emailConfirmed: true,
+                isApproved: false,
+                approvedAt: null,
+                approvedBy: null);
 
             user.ApproveUser("test-admin"); // جعل المستخدم معتمد
 

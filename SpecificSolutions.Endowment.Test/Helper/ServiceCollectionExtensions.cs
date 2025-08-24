@@ -115,7 +115,10 @@ public static class ServiceCollectionExtensions
                                             new Guid("DDEC6E9E-7628-4623-9A94-4E4EFC02187C"),
                                             "1",
                                             "1",
-                                            true));
+                                            true,
+                                            true,
+                                            DateTime.Now,
+                                            new Guid("a2d890d8-01d1-494b-9f62-6336b937e6fc").ToString()));
 
         context.SaveChanges();
     }
@@ -184,7 +187,10 @@ public class DbTruncate : IHostedService
                                             new Guid("DDEC6E9E-7628-4623-9A94-4E4EFC02187C"),
                                             "1",
                                             "1",
-                                            true));
+                                            true,
+                                            true,
+                                            DateTime.Now,
+                                            new Guid("a2d890d8-01d1-494b-9f62-6336b937e6fc").ToString()));
 
         await context.SaveChangesAsync(cancellationToken);
 

@@ -16,17 +16,28 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
         {
             return Policy<bool>
                 .Handle<Exception>()
+                .OrResult(result => result == false) // Retry on false result as well
                 .WaitAndRetryAsync(
                     retryCount: retryAttempts,
                     sleepDurationProvider: retryAttempt => 
                         TimeSpan.FromSeconds(retryDelaySeconds * Math.Pow(2, retryAttempt - 1)), // Exponential backoff
-                    onRetry: (exception, timeSpan, retryCount, context) =>
+                    onRetry: (outcome, timeSpan, retryCount, context) =>
                     {
-                        logger.LogWarning(
-                            "Email sending attempt {RetryCount} failed. Retrying in {Delay}ms. Error: {Error}",
-                            retryCount,
-                            timeSpan.TotalMilliseconds,
-                            exception.ToString());
+                        if (outcome.Exception != null)
+                        {
+                            logger.LogWarning(
+                                "Email sending attempt {RetryCount} failed. Retrying in {Delay}ms. Error: {Error}",
+                                retryCount,
+                                timeSpan.TotalMilliseconds,
+                                outcome.Exception.ToString());
+                        }
+                        else
+                        {
+                            logger.LogWarning(
+                                "Email sending attempt {RetryCount} returned false. Retrying in {Delay}ms.",
+                                retryCount,
+                                timeSpan.TotalMilliseconds);
+                        }
                     });
         }
 
@@ -47,11 +58,8 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
                 logger.LogInformation("Attempting to send email to {EmailAddress}", emailAddress);
                 var result = await emailAction();
                 
-                if (!result)
-                {
-                    throw new Exception($"Email sending failed for {emailAddress}");
-                }
-                
+                // Don't throw exception, just return the result
+                // The retry policy will handle false results
                 return result;
             });
         }
@@ -69,6 +77,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
         {
             var retryPolicy = Policy<bool>
                 .Handle<Exception>()
+                .OrResult(result => result == false) // Retry on false result as well
                 .WaitAndRetryAsync(
                     retryCount: maxRetries,
                     sleepDurationProvider: retryAttempt => 
@@ -82,14 +91,25 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
                             return TimeSpan.FromSeconds(baseDelaySeconds);
                         }
                     },
-                    onRetry: (exception, timeSpan, retryCount, context) =>
+                    onRetry: (outcome, timeSpan, retryCount, context) =>
                     {
-                        logger.LogWarning(
-                            "Email sending attempt {RetryCount}/{MaxRetries} failed. Retrying in {Delay}ms. Error: {Error}",
-                            retryCount,
-                            maxRetries,
-                            timeSpan.TotalMilliseconds,
-                            exception.ToString());
+                        if (outcome.Exception != null)
+                        {
+                            logger.LogWarning(
+                                "Email sending attempt {RetryCount}/{MaxRetries} failed. Retrying in {Delay}ms. Error: {Error}",
+                                retryCount,
+                                maxRetries,
+                                timeSpan.TotalMilliseconds,
+                                outcome.Exception.ToString());
+                        }
+                        else
+                        {
+                            logger.LogWarning(
+                                "Email sending attempt {RetryCount}/{MaxRetries} returned false. Retrying in {Delay}ms.",
+                                retryCount,
+                                maxRetries,
+                                timeSpan.TotalMilliseconds);
+                        }
                     });
 
             return await retryPolicy.ExecuteAsync(async () =>
@@ -98,11 +118,8 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
                 
                 var result = await emailAction();
                 
-                if (!result)
-                {
-                    throw new Exception($"Email sending failed for {emailAddress}");
-                }
-                
+                // Don't throw exception, just return the result
+                // The retry policy will handle false results
                 return result;
             });
         }

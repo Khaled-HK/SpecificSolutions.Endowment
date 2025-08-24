@@ -27,6 +27,10 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
             _emailRateLimit = new ConcurrentDictionary<string, DateTime>();
             _dailyEmailCount = new ConcurrentDictionary<string, int>();
             _lastResetDate = DateTime.Today;
+
+            // Log the configuration for debugging
+            _logger.LogInformation("EmailService initialized with settings: UseSmtp={UseSmtp}, RetryAttempts={RetryAttempts}, RetryDelaySeconds={RetryDelaySeconds}", 
+                _emailSettings.UseSmtp, _emailSettings.RetryAttempts, _emailSettings.RetryDelaySeconds);
         }
 
         /// <summary>
@@ -34,6 +38,8 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
         /// </summary>
         public async Task<bool> SendEmailAsync(string to, string subject, string body)
         {
+            _logger.LogInformation("Starting email send process for {Email} with UseSmtp={UseSmtp}", to, _emailSettings.UseSmtp);
+
             // التحقق من صحة البريد الإلكتروني
             if (_emailSettings.EnableEmailValidation && !await ValidateEmailAsync(to))
             {
@@ -58,20 +64,24 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
             return await EmailRetryPolicy.ExecuteWithRetryAsync(
                 async () =>
                 {
-                    _logger.LogInformation("Attempting to send email to {Email} with subject: {Subject}", to, subject);
+                    _logger.LogInformation("Attempting to send email to {Email} with subject: {Subject} (UseSmtp={UseSmtp})", 
+                        to, subject, _emailSettings.UseSmtp);
 
                     if (_emailSettings.UseSmtp)
                     {
+                        _logger.LogInformation("Using SMTP for email to {Email}", to);
                         return await SendEmailViaSmtpAsync(to, subject, body);
                     }
                     else
                     {
-                        // Fallback to console logging for development (مجاني)
+                        _logger.LogInformation("Using logging fallback for email to {Email}", to);
                         return await SendEmailViaLoggingAsync(to, subject, body);
                     }
                 },
                 _logger,
-                to);
+                to,
+                _emailSettings.RetryAttempts,
+                _emailSettings.RetryDelaySeconds);
         }
 
         /// <summary>
@@ -119,15 +129,14 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
         {
             try
             {
-                // محاكاة إرسال البريد
-                await Task.Delay(100);
-
-                // طباعة البريد في Logs (مجاني)
                 _logger.LogInformation("=== EMAIL CONTENT (Development Mode) ===");
                 _logger.LogInformation("To: {Email}", to);
                 _logger.LogInformation("Subject: {Subject}", subject);
                 _logger.LogInformation("Body: {Body}", body);
                 _logger.LogInformation("=== END EMAIL CONTENT ===");
+
+                // محاكاة إرسال البريد
+                await Task.Delay(100);
 
                 // تحديث العداد اليومي
                 IncrementDailyCount();

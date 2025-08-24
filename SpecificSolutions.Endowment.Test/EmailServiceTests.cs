@@ -251,5 +251,49 @@ namespace SpecificSolutions.Endowment.Test
             Assert.True(firstResult);
             Assert.False(secondResult);
         }
+
+        [Fact]
+        public async Task SendEmailAsync_WithRealGmailSettings_ShouldWork()
+        {
+            // Arrange
+            var email = "test@example.com";
+            var subject = "اختبار البريد الإلكتروني - نظام الأوقاف";
+            var body = "هذا اختبار للبريد الإلكتروني من نظام الأوقاف";
+
+            // Create service with real Gmail settings
+            var realGmailSettings = new EmailSettings
+            {
+                SmtpServer = "smtp.gmail.com",
+                SmtpPort = 587,
+                SmtpUsername = "khaled.send.mess@gmail.com",
+                SmtpPassword = "yqbz mjfx ylnf qubm", // Real app password
+                FromEmail = "khaled.send.mess@gmail.com",
+                FromName = "نظام الأوقاف",
+                EnableSsl = true,
+                UseSmtp = true,
+                MaxEmailsPerDay = 500,
+                EmailRateLimit = 10,
+                EnableEmailValidation = true,
+                EnableEmailTracking = true,
+                RetryAttempts = 3,
+                RetryDelaySeconds = 2,
+                EnableFallbackLogging = true,
+                EnableEmailQueue = true,
+                QueueProcessingIntervalSeconds = 30,
+                EnableEmailTemplates = true,
+                DefaultLanguage = "ar"
+            };
+
+            var optionsMock = new Mock<IOptions<EmailSettings>>();
+            optionsMock.Setup(x => x.Value).Returns(realGmailSettings);
+
+            var emailService = new EmailService(_loggerMock.Object, optionsMock.Object);
+
+            // Act
+            var result = await emailService.SendEmailAsync(email, subject, body);
+
+            // Assert
+            Assert.True(result, "Email should be sent successfully with real Gmail settings");
+        }
     }
 }
