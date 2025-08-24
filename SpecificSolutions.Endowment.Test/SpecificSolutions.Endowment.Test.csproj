@@ -13,6 +13,7 @@
  
 	<PropertyGroup>
 		<ShadowCopyFiles>false</ShadowCopyFiles>
+		<UserSecretsId>a603ccc0-3112-4a75-8f49-e5e192835f07</UserSecretsId>
 	</PropertyGroup>
 	
 	<ItemGroup>
@@ -20,7 +21,6 @@
 	  <Compile Remove="Branchs\**" />
 	  <Compile Remove="BuildingDetails\**" />
 	  <Compile Remove="ChangeOfPathRequests\**" />
-	  <Compile Remove="Cities\**" />
 	  <Compile Remove="ConstructionRequests\**" />
 	  <Compile Remove="DemolitionRequests\**" />
 	  <Compile Remove="ExpenditureChangeRequests\**" />
@@ -35,7 +35,6 @@
 	  <EmbeddedResource Remove="Branchs\**" />
 	  <EmbeddedResource Remove="BuildingDetails\**" />
 	  <EmbeddedResource Remove="ChangeOfPathRequests\**" />
-	  <EmbeddedResource Remove="Cities\**" />
 	  <EmbeddedResource Remove="ConstructionRequests\**" />
 	  <EmbeddedResource Remove="DemolitionRequests\**" />
 	  <EmbeddedResource Remove="ExpenditureChangeRequests\**" />
@@ -50,7 +49,6 @@
 	  <None Remove="Branchs\**" />
 	  <None Remove="BuildingDetails\**" />
 	  <None Remove="ChangeOfPathRequests\**" />
-	  <None Remove="Cities\**" />
 	  <None Remove="ConstructionRequests\**" />
 	  <None Remove="DemolitionRequests\**" />
 	  <None Remove="ExpenditureChangeRequests\**" />
@@ -99,6 +97,10 @@
     <ProjectReference Include="..\SpecificSolutions.Endowment.Application\SpecificSolutions.Endowment.Application.csproj" />
     <ProjectReference Include="..\SpecificSolutions.Endowment.Core\SpecificSolutions.Endowment.Core.csproj" />
     <ProjectReference Include="..\SpecificSolutions.Endowment.Infrastructure\SpecificSolutions.Endowment.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Cities\" />
   </ItemGroup>
 
 </Project>

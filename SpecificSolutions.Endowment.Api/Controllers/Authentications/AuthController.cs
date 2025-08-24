@@ -7,6 +7,7 @@ using SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.
 using SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.Login;
 using SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.RefreshToken;
 using SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.Register;
+using SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.ResendEmailConfirmation;
 using SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.ResetPassword;
 using SpecificSolutions.Endowment.Application.Models.DTOs.Users;
 using SpecificSolutions.Endowment.Application.Models.Global;
@@ -58,6 +59,10 @@ namespace SpecificSolutions.Endowment.Api.Controllers.Authentications
 
         [HttpPost("confirm-email")]
         public async Task<EndowmentResponse> ConfirmEmail(ConfirmEmailCommand command, CancellationToken cancellationToken) =>
+            await _mediator.Send(command, cancellationToken);
+
+        [HttpPost("resend-email-confirmation")]
+        public async Task<EndowmentResponse> ResendEmailConfirmation(ResendEmailConfirmationCommand command, CancellationToken cancellationToken) =>
             await _mediator.Send(command, cancellationToken);
     }
 }

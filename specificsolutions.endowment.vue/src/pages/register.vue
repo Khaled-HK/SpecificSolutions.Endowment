@@ -61,6 +61,7 @@ const form = reactive({
 })
 
 const isPasswordVisible = ref(false)
+const showEmailConfirmationMessage = ref(false)
 
 // computed property لتحسين حالة الزر
 const isFormValid = computed(() => {
@@ -76,129 +77,147 @@ const isFormValid = computed(() => {
          form.privacyPolicies
 })
 
-const handleSubmit = async () => {
-  clearErrors()
+// نمط خالد: معالجة الاستجابة من الباك إند فقط
+const handleRegistrationSuccess = (response) => {
+  // الباك إند يحدد ما إذا كان المستخدم يحتاج لتأكيد الإيميل أم لا
+  const message = response.message || response.data?.message || ''
+  const requiresEmailConfirmation = response.data?.requiresEmailConfirmation || false
   
-  let isValid = true
-  
-  if (!validateRequired(form.firstName, 'firstName', 'الاسم الأول مطلوب')) {
-    isValid = false
+  if (requiresEmailConfirmation) {
+    // الباك إند قال صراحةً أن المستخدم يحتاج لتأكيد الإيميل
+    showEmailConfirmationMessage.value = true
+    showSuccess(message, { timeout: 5000, clickToDismiss: true })
+    setTimeout(() => router.push('/confirm-email'), 3000)
+  } else {
+    // الباك إند قال أن المستخدم يمكنه تسجيل الدخول مباشرة
+    showSuccess(message || 'تم التسجيل بنجاح!', { timeout: 3000, clickToDismiss: true })
+    router.push('/login')
   }
+}
+
+const handleRegistrationError = (error) => {
+  console.error('خطأ في التسجيل:', error)
   
-  if (!validateRequired(form.lastName, 'lastName', 'اسم العائلة مطلوب')) {
-    isValid = false
-  }
-  
-  if (!validateRequired(form.username, 'username', 'اسم المستخدم مطلوب')) {
-    isValid = false
-  } else if (!validateLength(form.username, 'username', 3, 50, 'اسم المستخدم يجب أن يكون بين 3 و 50 حرف')) {
-    isValid = false
-  }
-  
-  if (!validateRequired(form.email, 'email', 'البريد الإلكتروني مطلوب')) {
-    isValid = false
-  } else if (!validateEmail(form.email, 'email', 'البريد الإلكتروني غير صحيح')) {
-    isValid = false
-  }
-  
-  if (!validateRequired(form.phoneNumber, 'phoneNumber', 'رقم الهاتف مطلوب')) {
-    isValid = false
-  }
-  
-  if (!validateRequired(form.address, 'address', 'العنوان مطلوب')) {
-    isValid = false
-  }
-  
-  if (!validateRequired(form.city, 'city', 'المدينة مطلوبة')) {
-    isValid = false
-  }
-  
-  if (!validateRequired(form.country, 'country', 'البلد مطلوب')) {
-    isValid = false
-  }
-  
-  if (!validateRequired(form.password, 'password', 'كلمة المرور مطلوبة')) {
-    isValid = false
-  } else if (!validateLength(form.password, 'password', 6, 100, 'كلمة المرور يجب أن تكون بين 6 و 100 حرف')) {
-    isValid = false
-  }
-  
-  if (!form.privacyPolicies) {
-    addError('privacyPolicies', 'يجب الموافقة على سياسة الخصوصية والشروط')
-    isValid = false
-  }
-  
-  setFieldTouched('firstName')
-  setFieldTouched('lastName')
-  setFieldTouched('username')
-  setFieldTouched('email')
-  setFieldTouched('phoneNumber')
-  setFieldTouched('address')
-  setFieldTouched('city')
-  setFieldTouched('country')
-  setFieldTouched('password')
-  setFieldTouched('privacyPolicies')
-  
-  if (!isValid) return
-  
-  try {
-    const response = await api('/auth/register', {
-      method: 'POST',
-      body: {
-        firstName: form.firstName || '',
-        lastName: form.lastName || '',
-        email: form.email,
-        userName: form.username,
-        password: form.password,
-        confirmPassword: form.password,
-        phoneNumber: form.phoneNumber || '',
-        address: form.address || '',
-        city: form.city || '',
-        country: form.country || '',
-        officeId: form.officeId || 'DDEC6E9E-7628-4623-9A94-4E4EFC02187C'
-      }
-    })
-    
-    if (response && response.isSuccess === false) {
-      // معالجة أخطاء التحقق من الباك إند
-      if (response.errors && Array.isArray(response.errors)) {
-        setErrorsFromResponse(response)
-        showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
-          timeout: 5000,
-          clickToDismiss: true
-        })
-      } else if (response.message) {
-        showError(response.message, {
-          timeout: 0,
-          clickToDismiss: true
-        })
-      }
-      return
-    }
-    
-    // نجاح التسجيل
-    showSuccess('تم التسجيل بنجاح! سيتم توجيهك إلى صفحة تسجيل الدخول', {
-      timeout: 3000,
+  if (error?.data?.errors && Array.isArray(error.data.errors)) {
+    setErrorsFromResponse(error.data)
+    showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
+      timeout: 5000,
       clickToDismiss: true
     })
-    router.push('/login')
-    
+  } else {
+    showError('حدث خطأ أثناء التسجيل', { timeout: 0, clickToDismiss: true })
+  }
+}
+
+const handleSubmit = async () => {
+  if (!validateForm()) return
+  
+  try {
+    const response = await submitRegistration()
+    handleRegistrationResponse(response)
   } catch (error) {
-    console.error('خطأ في التسجيل:', error)
-    
-    // التحقق من أن الخطأ يحتوي على أخطاء FluentValidation
-    if (error?.data?.errors && Array.isArray(error.data.errors)) {
-      setErrorsFromResponse(error.data)
-      showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
-        timeout: 5000,
-        clickToDismiss: true
-      })
-    } else {
-      showError('حدث خطأ أثناء التسجيل', {
-        timeout: 0,
-        clickToDismiss: true
-      })
-    }
+    handleRegistrationError(error)
+  }
+}
+
+const validateForm = () => {
+  clearErrors()
+  
+  const validations = [
+    () => validateRequired(form.firstName, 'firstName', 'الاسم الأول مطلوب'),
+    () => validateRequired(form.lastName, 'lastName', 'اسم العائلة مطلوب'),
+    () => validateUsername(),
+    () => validateEmailField(),
+    () => validateRequired(form.phoneNumber, 'phoneNumber', 'رقم الهاتف مطلوب'),
+    () => validateRequired(form.address, 'address', 'العنوان مطلوب'),
+    () => validateRequired(form.city, 'city', 'المدينة مطلوبة'),
+    () => validateRequired(form.country, 'country', 'البلد مطلوب'),
+    () => validatePassword(),
+    () => validatePrivacyPolicies()
+  ]
+  
+  const isValid = validations.every(validation => validation())
+  setAllFieldsTouched()
+  
+  return isValid
+}
+
+const validateUsername = () => {
+  if (!validateRequired(form.username, 'username', 'اسم المستخدم مطلوب')) {
+    return false
+  }
+  return validateLength(form.username, 'username', 3, 50, 'اسم المستخدم يجب أن يكون بين 3 و 50 حرف')
+}
+
+const validateEmailField = () => {
+  if (!validateRequired(form.email, 'email', 'البريد الإلكتروني مطلوب')) {
+    return false
+  }
+  return validateEmail(form.email, 'email', 'البريد الإلكتروني غير صحيح')
+}
+
+const validatePassword = () => {
+  if (!validateRequired(form.password, 'password', 'كلمة المرور مطلوبة')) {
+    return false
+  }
+  return validateLength(form.password, 'password', 6, 100, 'كلمة المرور يجب أن تكون بين 6 و 100 حرف')
+}
+
+const validatePrivacyPolicies = () => {
+  if (!form.privacyPolicies) {
+    addError('privacyPolicies', 'يجب الموافقة على سياسة الخصوصية والشروط')
+    return false
+  }
+  return true
+}
+
+const setAllFieldsTouched = () => {
+  const fields = ['firstName', 'lastName', 'username', 'email', 'phoneNumber', 'address', 'city', 'country', 'password', 'privacyPolicies']
+  fields.forEach(field => setFieldTouched(field))
+}
+
+const submitRegistration = async () => {
+  return await api('/auth/register', {
+    method: 'POST',
+    body: buildRegistrationPayload()
+  })
+}
+
+const buildRegistrationPayload = () => ({
+  firstName: form.firstName || '',
+  lastName: form.lastName || '',
+  email: form.email,
+  userName: form.username,
+  password: form.password,
+  confirmPassword: form.password,
+  phoneNumber: form.phoneNumber || '',
+  address: form.address || '',
+  city: form.city || '',
+  country: form.country || '',
+  officeId: form.officeId || 'DDEC6E9E-7628-4623-9A94-4E4EFC02187C'
+})
+
+const handleRegistrationResponse = (response) => {
+  if (response && response.isSuccess === false) {
+    handleBackendValidationErrors(response)
+    return
+  }
+  
+  handleRegistrationSuccess(response)
+}
+
+const handleBackendValidationErrors = (response) => {
+  if (response.errors && Array.isArray(response.errors)) {
+    setErrorsFromResponse(response)
+    showWarning('⚠️ يرجى تصحيح الأخطاء المميزة باللون الأحمر أدناه', {
+      timeout: 5000,
+      clickToDismiss: true
+    })
+  } else if (response.message) {
+    showError(response.message, {
+      timeout: 0,
+      clickToDismiss: true
+    })
   }
 }
 </script>
@@ -261,6 +280,41 @@ const handleSubmit = async () => {
           <p class="mb-0">
             Make your app management easy and fun!
           </p>
+        </VCardText>
+
+        <!-- Email Confirmation Message -->
+        <VCardText v-if="showEmailConfirmationMessage">
+          <VAlert
+            type="info"
+            variant="tonal"
+            class="mb-4"
+          >
+            <template #title>
+              تحقق من بريدك الإلكتروني ✉️
+            </template>
+            <template #text>
+              تم إرسال رابط تأكيد إلى بريدك الإلكتروني. يرجى التحقق من صندوق الوارد والضغط على الرابط لتأكيد حسابك.
+            </template>
+          </VAlert>
+          
+          <div class="d-flex gap-2 mt-3">
+            <VBtn
+              color="primary"
+              variant="outlined"
+              @click="router.push('/confirm-email')"
+              prepend-icon="tabler-mail-check"
+            >
+              صفحة تأكيد الإيميل
+            </VBtn>
+            <VBtn
+              color="secondary"
+              variant="text"
+              @click="router.push('/login')"
+              prepend-icon="tabler-login"
+            >
+              تسجيل الدخول
+            </VBtn>
+          </div>
         </VCardText>
 
         <VCardText>

@@ -52,7 +52,7 @@ builder.Services.AddAntiforgery(options =>
 // Configure HTTPS redirection
 builder.Services.AddHttpsRedirection(options =>
 {
-    options.HttpsPort = 7141; // Use the HTTPS port from launchSettings.json
+    options.HttpsPort = 7142; // Use the correct HTTPS port from launchSettings.json
 });
 
 //$.ajax({
@@ -79,12 +79,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(CorsPolicyName, configurePolicy =>
     {
-        var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
-
-        configurePolicy.WithOrigins(allowedOrigins ?? Array.Empty<string>())
+        configurePolicy
+               .AllowAnyOrigin()
                .AllowAnyMethod()
-               .AllowAnyHeader()
-               .AllowCredentials();
+               .AllowAnyHeader();
     });
 });
 
@@ -113,11 +111,11 @@ app.UseCors(CorsPolicyName);
 //app.UseExceptionHandler();
 app.UseExceptionHandler("/Home/Error");
 
-// Only use HTTPS redirection in production or when HTTPS is available
-if (!app.Environment.IsDevelopment() || builder.Configuration["ASPNETCORE_URLS"]?.Contains("https") == true)
-{
-    app.UseHttpsRedirection();
-}
+// Disable HTTPS redirection in development to avoid redirects
+// if (!app.Environment.IsDevelopment())
+// {
+//     app.UseHttpsRedirection();
+// }
 
 // Use rate limiting
 app.UseRateLimiter();

@@ -118,6 +118,11 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
             throw new NotImplementedException("ConfirmEmailAsync is not implemented for WPF application.");
         }
 
+        public Task<bool> ResendEmailConfirmationAsync(string email)
+        {
+            throw new NotImplementedException();
+        }
+
         // Implement other methods as needed
     }
 }

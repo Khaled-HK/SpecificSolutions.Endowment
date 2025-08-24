@@ -61,7 +61,8 @@ appsettings.Production.json
 appsettings.Staging.json
 appsettings.Testing.json
 appsettings.*.json
-!appsettings.Development.json
+# Ignore development settings that may contain sensitive data
+appsettings.Development.json
 
 # Environment variables and secrets
 .env
@@ -357,3 +358,5 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 /test_simple.ps1
+/SpecificSolutions.Endowment.Api/appsettings.Development.json
+/SpecificSolutions.Endowment.Api/appsettings.Development.json

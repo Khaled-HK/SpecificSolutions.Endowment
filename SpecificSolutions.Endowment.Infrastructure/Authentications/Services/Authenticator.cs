@@ -12,8 +12,7 @@ using SpecificSolutions.Endowment.Application.Models.Identity.Entities;
 namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
 {
     /// <summary>
-    /// خدمة المصادقة الرئيسية - منظمة ومنظفة
-    /// تستخدم services منفصلة لكل مسؤولية
+    /// خدمة المصادقة الرئيسية
     /// </summary>
     public class Authenticator : IAuthenticator
     {
@@ -25,7 +24,6 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
         private readonly ICurrentUser _currentUser;
         private readonly IOptions<JwtSettings> _jwtSettings;
 
-        // Services منفصلة للمسؤوليات المختلفة
         private readonly RegistrationService _registrationService;
         private readonly PasswordService _passwordService;
         private readonly PermissionService _permissionService;
@@ -63,29 +61,25 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
         {
             try
             {
-                // البحث عن المستخدم
                 var user = await FindUserByEmailAsync(command.Email);
 
-                // التحقق من موافقة المسؤول
+                if (!user.EmailConfirmed)
+                {
+                    throw new UnauthorizedAccessException("يرجى تأكيد بريدك الإلكتروني قبل تسجيل الدخول. تحقق من صندوق الوارد الخاص بك.");
+                }
+
                 if (!user.IsUserApproved())
                 {
                     throw new UnauthorizedAccessException("حسابك في انتظار موافقة المسؤول. يرجى المحاولة لاحقاً.");
                 }
 
-                // محاولة تسجيل الدخول
                 await SignInUserAsync(user, command.Password);
-
-                // التحقق من HttpContext
                 ValidateHttpContext();
 
-                // إنشاء الرموز المميزة
                 var token = await _tokenService.GenerateTokenAsync(user);
                 var refreshToken = _tokenService.GenerateRefreshTokenAsync();
 
-                // إنشاء الجلسة
                 await CreateUserSessionAsync(user);
-
-                // الحصول على الصلاحيات
                 var permissions = await _permissionService.GetUserPermissionsAsync(user);
 
                 return CreateUserLoginResponse(user, token, refreshToken, permissions);
@@ -130,7 +124,25 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
         /// </summary>
         public async Task<RegistrationResponse> Register(RegistrationRequest request)
         {
-            return await _registrationService.RegisterAsync(request);
+            var command = new RegisterCommand
+            {
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Email = request.Email,
+                UserName = request.UserName,
+                Password = request.Password,
+                ConfirmPassword = request.Password,
+                PhoneNumber = string.Empty,
+                Address = string.Empty,
+                City = string.Empty,
+                Country = string.Empty,
+                OfficeId = request.OfficeId.ToString(),
+                IsApproved = request.IsApproved,
+                ApprovedAt = request.ApprovedAt,
+                ApprovedBy = request.ApprovedBy
+            };
+            
+            return await _registrationService.RegisterAsync(command);
         }
 
         #endregion
@@ -187,6 +199,26 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
         public async Task<bool> ConfirmEmailAsync(string email, string token)
         {
             return await _passwordService.ConfirmEmailAsync(email, token);
+        }
+
+        /// <summary>
+        /// إعادة إرسال بريد تأكيد البريد الإلكتروني
+        /// </summary>
+        public async Task<bool> ResendEmailConfirmationAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                throw new NotFoundException("البريد الإلكتروني غير مسجل في النظام.");
+            }
+
+            if (user.EmailConfirmed)
+            {
+                throw new InvalidOperationException("البريد الإلكتروني مؤكد بالفعل.");
+            }
+
+            await _registrationService.SendEmailConfirmationAsync(user);
+            return true;
         }
 
         #endregion

@@ -1,11 +1,10 @@
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SpecificSolutions.Endowment.Application.Abstractions.Contracts;
 using SpecificSolutions.Endowment.Application.Models.Global;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Mail;
-using System.Collections.Concurrent;
 
 namespace SpecificSolutions.Endowment.Infrastructure.Services
 {
@@ -29,7 +28,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
             _lastResetDate = DateTime.Today;
 
             // Log the configuration for debugging
-            _logger.LogInformation("EmailService initialized with settings: UseSmtp={UseSmtp}, RetryAttempts={RetryAttempts}, RetryDelaySeconds={RetryDelaySeconds}", 
+            _logger.LogInformation("EmailService initialized with settings: UseSmtp={UseSmtp}, RetryAttempts={RetryAttempts}, RetryDelaySeconds={RetryDelaySeconds}",
                 _emailSettings.UseSmtp, _emailSettings.RetryAttempts, _emailSettings.RetryDelaySeconds);
         }
 
@@ -64,7 +63,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
             return await EmailRetryPolicy.ExecuteWithRetryAsync(
                 async () =>
                 {
-                    _logger.LogInformation("Attempting to send email to {Email} with subject: {Subject} (UseSmtp={UseSmtp})", 
+                    _logger.LogInformation("Attempting to send email to {Email} with subject: {Subject} (UseSmtp={UseSmtp})",
                         to, subject, _emailSettings.UseSmtp);
 
                     if (_emailSettings.UseSmtp)
@@ -108,10 +107,10 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
                 message.To.Add(to);
 
                 await client.SendMailAsync(message);
-                
+
                 // تحديث العداد اليومي
                 IncrementDailyCount();
-                
+
                 _logger.LogInformation("Email sent successfully to {Email} via SMTP", to);
                 return true;
             }
@@ -162,7 +161,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
                 return true;
             }
 
-            var now = DateTime.UtcNow;
+            var now = DateTime.Now;
             var lastEmailTime = _emailRateLimit.GetOrAdd(email, now);
 
             if ((now - lastEmailTime).TotalMinutes < 1.0 / _emailSettings.EmailRateLimit)
@@ -204,10 +203,10 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
         public async Task<bool> SendEmailConfirmationAsync(string email, string confirmationLink)
         {
             _logger.LogInformation("Sending email confirmation to {Email}", email);
-            
+
             var subject = "تأكيد البريد الإلكتروني - نظام الأوقاف";
             var userName = email.Split('@')[0]; // Extract username from email
-            
+
             string body;
             if (_emailSettings.EnableEmailTemplates)
             {
@@ -219,12 +218,12 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
             }
 
             var result = await SendEmailAsync(email, subject, body);
-            
+
             if (result)
                 _logger.LogInformation("Email confirmation sent successfully to {Email}", email);
             else
                 _logger.LogError("Failed to send email confirmation to {Email}", email);
-                
+
             return result;
         }
 
@@ -234,10 +233,10 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
         public async Task<bool> SendPasswordResetAsync(string email, string resetLink)
         {
             _logger.LogInformation("Sending password reset email to {Email}", email);
-            
+
             var subject = "إعادة تعيين كلمة المرور - نظام الأوقاف";
             var userName = email.Split('@')[0]; // Extract username from email
-            
+
             string body;
             if (_emailSettings.EnableEmailTemplates)
             {
@@ -249,12 +248,12 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
             }
 
             var result = await SendEmailAsync(email, subject, body);
-            
+
             if (result)
                 _logger.LogInformation("Password reset email sent successfully to {Email}", email);
             else
                 _logger.LogError("Failed to send password reset email to {Email}", email);
-                
+
             return result;
         }
 

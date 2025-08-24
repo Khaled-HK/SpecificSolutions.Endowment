@@ -104,6 +104,9 @@ public static class InfrastructureContainer
 
         services.AddScoped<ISessionService, SessionService>();
 
+        // Register App Settings
+        services.Configure<SpecificSolutions.Endowment.Core.Models.AppSettings>(configuration.GetSection("AppSettings"));
+
         // Register Email Settings
         services.Configure<SpecificSolutions.Endowment.Application.Models.Global.EmailSettings>(configuration.GetSection("EmailSettings"));
 
@@ -113,7 +116,7 @@ public static class InfrastructureContainer
         // Register Email Background Service
         services.AddHostedService<EmailBackgroundService>();
 
-        // Register Authentication Services - منظمة ومقسمة المسؤوليات
+        // Register Authentication Services
         services.AddScoped<RegistrationService>();
         services.AddScoped<PasswordService>();
         services.AddScoped<PermissionService>();

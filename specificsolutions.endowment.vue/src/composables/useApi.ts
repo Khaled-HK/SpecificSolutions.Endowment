@@ -3,14 +3,19 @@ import Cookies from 'js-cookie'
 
 export const useApi = () => {
   const resolvedBaseURL = ((import.meta as any).env?.VITE_API_BASE_URL as string | undefined) ?? '/api'
+  console.log('API Base URL:', resolvedBaseURL) // Debug log
   if (!resolvedBaseURL) {
     throw new Error('VITE_API_BASE_URL is not set. Please define it in your environment (.env/.env.local).')
   }
 
   const client = ofetch.create({
     baseURL: resolvedBaseURL,
-    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
     async onRequest({ options }) {
+      console.log('Making request with baseURL:', resolvedBaseURL) // Debug log
       const accessTokenCookie = useCookie('accessToken').value as string | null | undefined
       const accessToken = accessTokenCookie || Cookies.get('accessToken')
 
@@ -45,6 +50,7 @@ export const useApi = () => {
       options.headers = headers
     },
     async onResponseError({ response }) {
+      console.error('API Error:', response.status, response.statusText) // Debug log
       // لا نقوم بإعادة التوجيه تلقائياً. نسمح للمكونات بالتعامل مع 401/403 وعرض الرسالة دون إنهاء الجلسة.
       // إذا رغبت بإعادة التوجيه تلقائياً عند 401، يمكن إعادة تفعيل ذلك لاحقاً.
       return

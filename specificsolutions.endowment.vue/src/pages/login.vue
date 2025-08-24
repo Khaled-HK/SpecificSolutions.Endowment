@@ -10,9 +10,10 @@ import authV2MaskDark from '@images/pages/misc-mask-dark.png'
 import authV2MaskLight from '@images/pages/misc-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useLogin } from '@/composables/useLogin'
+import { ability } from '@/plugins/casl/ability'
 
 // تكوين الصفحة
 definePage({
@@ -20,6 +21,27 @@ definePage({
     layout: 'blank',
     unauthenticatedOnly: true,
   },
+})
+
+// إضافة صلاحيات أساسية لصفحة تسجيل الدخول
+onMounted(() => {
+  // إضافة صلاحيات أساسية للصفحات العامة
+  const basicRules = [
+    { action: 'View', subject: 'Dashboard' },
+    { action: 'read', subject: 'Auth' },
+    { action: 'write', subject: 'Auth' },
+    { action: 'View', subject: 'Login' },
+    { action: 'View', subject: 'Register' },
+    { action: 'View', subject: 'ForgotPassword' },
+    { action: 'View', subject: 'ResendEmailConfirmation' },
+    { action: 'View', subject: 'ConfirmEmail' }
+  ]
+  
+  // تحديث الصلاحيات إذا لم تكن موجودة
+  if (ability.rules.length === 0) {
+    ability.update(basicRules)
+    console.log('✅ Added basic permissions for login page')
+  }
 })
 
 // المتغيرات الأساسية
@@ -159,12 +181,20 @@ const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
                     v-model="rememberMe"
                     :label="t('rememberMe')"
                   />
-                  <RouterLink
-                    class="text-primary ms-2 mb-1"
-                    :to="{ name: 'forgot-password' }"
-                  >
-                    {{ t('forgotPassword') }}
-                  </RouterLink>
+                  <div class="d-flex flex-column align-end">
+                    <RouterLink
+                      class="text-primary ms-2 mb-1"
+                      :to="{ name: 'forgot-password' }"
+                    >
+                      {{ t('forgotPassword') }}
+                    </RouterLink>
+                    <RouterLink
+                      class="text-primary ms-2"
+                      :to="{ name: 'resend-email-confirmation' }"
+                    >
+                      إعادة إرسال بريد التأكيد
+                    </RouterLink>
+                  </div>
                 </div>
 
                 <VBtn

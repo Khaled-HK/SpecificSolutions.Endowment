@@ -19,6 +19,14 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.Contracts
         Task<bool> ForgotPasswordAsync(string email);
         Task<bool> ResetPasswordAsync(string email, string token, string newPassword);
         Task<bool> ChangePasswordAsync(string currentPassword, string newPassword);
+        /// <summary>
+        /// تأكيد البريد الإلكتروني
+        /// </summary>
         Task<bool> ConfirmEmailAsync(string email, string token);
+
+        /// <summary>
+        /// إعادة إرسال بريد تأكيد البريد الإلكتروني
+        /// </summary>
+        Task<bool> ResendEmailConfirmationAsync(string email);
     }
 }

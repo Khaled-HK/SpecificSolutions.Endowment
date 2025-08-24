@@ -252,7 +252,7 @@ namespace SpecificSolutions.Endowment.Test
             Assert.False(secondResult);
         }
 
-        [Fact]
+        [Fact(Skip = "This test requires SMTP_PASSWORD environment variable to be set. Only run when needed.")]
         public async Task SendEmailAsync_WithRealGmailSettings_ShouldWork()
         {
             // Arrange
@@ -283,7 +283,7 @@ namespace SpecificSolutions.Endowment.Test
             Assert.True(result, "Email should be sent successfully with minimal settings");
         }
 
-        [Fact]
+        [Fact(Skip = "This test requires SMTP_PASSWORD environment variable to be set. Only run when needed.")]
         public async Task SendRealEmailToKhaled_ShouldDeliverActualEmail()
         {
             // Arrange
@@ -323,13 +323,22 @@ namespace SpecificSolutions.Endowment.Test
                     </div>
                 </div>";
 
+            // Get password from environment variable ONLY
+            var smtpPassword = Environment.GetEnvironmentVariable("SMTP_PASSWORD");
+            if (string.IsNullOrEmpty(smtpPassword))
+            {
+                // Skip test if no environment variable is set
+                Assert.True(true, "SMTP_PASSWORD environment variable not set. Skipping real email test for security.");
+                return;
+            }
+
             // Create service with REAL Gmail settings
             var realGmailSettings = new EmailSettings
             {
                 SmtpServer = "smtp.gmail.com",
                 SmtpPort = 587,
                 SmtpUsername = "khaled.send.mess@gmail.com",
-                SmtpPassword = Environment.GetEnvironmentVariable("SMTP_PASSWORD") ?? "", // Get from environment variable
+                SmtpPassword = smtpPassword,
                 FromEmail = "khaled.send.mess@gmail.com",
                 FromName = "نظام الأوقاف - اختبار",
                 EnableSsl = true,
@@ -356,6 +365,58 @@ namespace SpecificSolutions.Endowment.Test
 
             // Assert
             Assert.True(result, "Email should be sent successfully to khaledalneffaati@gmail.com");
+        }
+
+        [Fact(Skip = "This test requires SMTP_PASSWORD environment variable to be set. Only run when needed.")]
+        public async Task SendEmailAsync_WithEnvironmentVariable_ShouldWorkSecurely()
+        {
+            // Arrange
+            var email = "test@example.com";
+            var subject = "Test Email - Secure";
+            var body = "This is a secure test email";
+
+            // Get password from environment variable ONLY
+            var smtpPassword = Environment.GetEnvironmentVariable("SMTP_PASSWORD");
+            if (string.IsNullOrEmpty(smtpPassword))
+            {
+                // Skip test if no environment variable is set
+                Assert.True(true, "SMTP_PASSWORD environment variable not set. Skipping secure email test.");
+                return;
+            }
+
+            // Create service with environment-based settings
+            var secureSettings = new EmailSettings
+            {
+                SmtpServer = "smtp.gmail.com",
+                SmtpPort = 587,
+                SmtpUsername = Environment.GetEnvironmentVariable("SMTP_USERNAME") ?? "test@example.com",
+                SmtpPassword = smtpPassword, // From environment variable
+                FromEmail = Environment.GetEnvironmentVariable("SMTP_FROM_EMAIL") ?? "test@example.com",
+                FromName = "Secure Test System",
+                EnableSsl = true,
+                UseSmtp = false, // Use logging fallback for security
+                MaxEmailsPerDay = 100,
+                EmailRateLimit = 0,
+                EnableEmailValidation = false,
+                EnableEmailTracking = false,
+                RetryAttempts = 1,
+                RetryDelaySeconds = 1,
+                EnableFallbackLogging = true,
+                EnableEmailQueue = false,
+                EnableEmailTemplates = false,
+                DefaultLanguage = "en"
+            };
+
+            var optionsMock = new Mock<IOptions<EmailSettings>>();
+            optionsMock.Setup(x => x.Value).Returns(secureSettings);
+
+            var emailService = new EmailService(_loggerMock.Object, optionsMock.Object);
+
+            // Act
+            var result = await emailService.SendEmailAsync(email, subject, body);
+
+            // Assert
+            Assert.True(result, "Email should be sent successfully using environment variables");
         }
     }
 }

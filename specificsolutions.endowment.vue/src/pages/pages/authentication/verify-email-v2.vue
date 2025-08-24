@@ -6,6 +6,15 @@ import authV2MaskDark from '@images/pages/misc-mask-dark.png'
 import authV2MaskLight from '@images/pages/misc-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
+import { useAppAlerts } from '@/composables/useAppAlerts'
+
+const { success: showSuccess, error: showError } = useAppAlerts()
+const router = useRouter()
+
+const handleResendEmail = () => {
+  // توجيه المستخدم إلى صفحة إعادة إرسال بريد التأكيد
+  router.push('/resend-email-confirmation')
+}
 
 definePage({
   meta: {
@@ -85,7 +94,14 @@ const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
           </VBtn>
 
           <div class="d-flex align-center justify-center">
-            <span class="me-1">Didn't get the mail? </span><a href="#">Resend</a>
+            <span class="me-1">Didn't get the mail? </span>
+            <VBtn
+              variant="text"
+              color="primary"
+              @click="handleResendEmail"
+            >
+              Resend
+            </VBtn>
           </div>
         </VCardText>
       </VCard>
