@@ -56,6 +56,13 @@ project.lock.json
 project.fragment.lock.json
 artifacts/
 
+# Environment-specific settings (keep base settings, ignore sensitive ones)
+appsettings.Production.json
+appsettings.Staging.json
+appsettings.Testing.json
+appsettings.*.json
+!appsettings.Development.json
+
 # StyleCop
 StyleCopReport.xml
 
