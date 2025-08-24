@@ -156,6 +156,12 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
         /// </summary>
         private bool CheckRateLimit(string email)
         {
+            // If rate limit is 0 or negative, disable rate limiting
+            if (_emailSettings.EmailRateLimit <= 0)
+            {
+                return true;
+            }
+
             var now = DateTime.UtcNow;
             var lastEmailTime = _emailRateLimit.GetOrAdd(email, now);
 

@@ -257,10 +257,73 @@ namespace SpecificSolutions.Endowment.Test
         {
             // Arrange
             var email = "test@example.com";
-            var subject = "اختبار البريد الإلكتروني - نظام الأوقاف";
-            var body = "هذا اختبار للبريد الإلكتروني من نظام الأوقاف";
+            var subject = "Test Email";
+            var body = "This is a test email";
 
-            // Create service with real Gmail settings
+            // Create service with minimal settings
+            var testSettings = new EmailSettings
+            {
+                UseSmtp = false, // Use logging fallback
+                EnableEmailValidation = false,
+                EnableEmailQueue = false,
+                EnableEmailTemplates = false,
+                MaxEmailsPerDay = 1000,
+                EmailRateLimit = 0 // Disable rate limiting
+            };
+
+            var optionsMock = new Mock<IOptions<EmailSettings>>();
+            optionsMock.Setup(x => x.Value).Returns(testSettings);
+
+            var emailService = new EmailService(_loggerMock.Object, optionsMock.Object);
+
+            // Act
+            var result = await emailService.SendEmailAsync(email, subject, body);
+
+            // Assert
+            Assert.True(result, "Email should be sent successfully with minimal settings");
+        }
+
+        [Fact]
+        public async Task SendRealEmailToKhaled_ShouldDeliverActualEmail()
+        {
+            // Arrange
+            var email = "khaledalneffaati@gmail.com";
+            var subject = "اختبار البريد الإلكتروني من نظام الأوقاف 📧";
+            var body = @"
+                <div style='direction: rtl; font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8f9fa;'>
+                    <div style='background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);'>
+                        <div style='text-align: center; margin-bottom: 30px;'>
+                            <h1 style='color: #2c3e50; margin: 0;'>🕌 نظام الأوقاف</h1>
+                            <p style='color: #7f8c8d; margin: 10px 0 0 0;'>اختبار البريد الإلكتروني</p>
+                        </div>
+                        
+                        <div style='margin-bottom: 30px;'>
+                            <h2 style='color: #2c3e50; margin-bottom: 20px;'>مرحباً خالد! 👋</h2>
+                            <p style='color: #34495e; line-height: 1.6; margin-bottom: 20px;'>
+                                هذه رسالة اختبار من نظام الأوقاف للتأكد من أن خدمة البريد الإلكتروني تعمل بشكل صحيح.
+                            </p>
+                            <p style='color: #34495e; line-height: 1.6; margin-bottom: 20px;'>
+                                ✅ إذا وصلتك هذه الرسالة، فهذا يعني أن النظام يعمل بنجاح!
+                            </p>
+                            <p style='color: #34495e; line-height: 1.6; margin-bottom: 20px;'>
+                                📧 تم الإرسال من: نظام الأوقاف - خدمة البريد الإلكتروني<br/>
+                                🕐 وقت الإرسال: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + @"<br/>
+                                🌐 البيئة: اختبار تطوير
+                            </p>
+                        </div>
+                        
+                        <div style='text-align: center; margin-bottom: 30px; padding: 20px; background-color: #e8f5e8; border-radius: 8px;'>
+                            <h3 style='color: #27ae60; margin: 0 0 10px 0;'>🎉 نجح الاختبار!</h3>
+                            <p style='color: #2d8f47; margin: 0;'>تم إرسال البريد الإلكتروني بنجاح</p>
+                        </div>
+                        
+                        <div style='text-align: center; color: #7f8c8d; font-size: 12px; border-top: 1px solid #ecf0f1; padding-top: 20px;'>
+                            <p>هذه رسالة تلقائية من نظام الأوقاف - لا تحتاج للرد عليها</p>
+                        </div>
+                    </div>
+                </div>";
+
+            // Create service with REAL Gmail settings
             var realGmailSettings = new EmailSettings
             {
                 SmtpServer = "smtp.gmail.com",
@@ -268,19 +331,18 @@ namespace SpecificSolutions.Endowment.Test
                 SmtpUsername = "khaled.send.mess@gmail.com",
                 SmtpPassword = "yqbz mjfx ylnf qubm", // Real app password
                 FromEmail = "khaled.send.mess@gmail.com",
-                FromName = "نظام الأوقاف",
+                FromName = "نظام الأوقاف - اختبار",
                 EnableSsl = true,
-                UseSmtp = true,
+                UseSmtp = true, // Use REAL SMTP
                 MaxEmailsPerDay = 500,
-                EmailRateLimit = 10,
+                EmailRateLimit = 0, // Disable rate limiting for test
                 EnableEmailValidation = true,
                 EnableEmailTracking = true,
                 RetryAttempts = 3,
                 RetryDelaySeconds = 2,
                 EnableFallbackLogging = true,
-                EnableEmailQueue = true,
-                QueueProcessingIntervalSeconds = 30,
-                EnableEmailTemplates = true,
+                EnableEmailQueue = false, // Send immediately
+                EnableEmailTemplates = false, // Use custom HTML
                 DefaultLanguage = "ar"
             };
 
@@ -293,7 +355,7 @@ namespace SpecificSolutions.Endowment.Test
             var result = await emailService.SendEmailAsync(email, subject, body);
 
             // Assert
-            Assert.True(result, "Email should be sent successfully with real Gmail settings");
+            Assert.True(result, "Email should be sent successfully to khaledalneffaati@gmail.com");
         }
     }
 }
