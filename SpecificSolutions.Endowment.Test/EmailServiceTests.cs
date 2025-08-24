@@ -329,7 +329,7 @@ namespace SpecificSolutions.Endowment.Test
                 SmtpServer = "smtp.gmail.com",
                 SmtpPort = 587,
                 SmtpUsername = "khaled.send.mess@gmail.com",
-                SmtpPassword = "yqbz mjfx ylnf qubm", // Real app password
+                SmtpPassword = Environment.GetEnvironmentVariable("SMTP_PASSWORD") ?? "", // Get from environment variable
                 FromEmail = "khaled.send.mess@gmail.com",
                 FromName = "نظام الأوقاف - اختبار",
                 EnableSsl = true,

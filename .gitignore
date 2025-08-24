@@ -63,6 +63,17 @@ appsettings.Testing.json
 appsettings.*.json
 !appsettings.Development.json
 
+# Environment variables and secrets
+.env
+.env.local
+.env.development
+.env.production
+*.env
+
+# Secrets and sensitive data
+secrets.json
+*secrets*.json
+
 # StyleCop
 StyleCopReport.xml
 
