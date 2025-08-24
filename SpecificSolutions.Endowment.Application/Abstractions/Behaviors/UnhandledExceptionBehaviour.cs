@@ -39,7 +39,8 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.Behaviors
                 _logger.LogWarning(ex, "Unauthorized Access Exception for Request {Name}", requestName);
 
                 // نمط خالد: رمي استثناء مخصص مع رسالة عربية
-                throw new UnauthorizedAccessException("لم يتم الموافقة على حسابك بعد. يرجى انتظار موافقة المسؤول.");
+                //throw new UnauthorizedAccessException("لم يتم الموافقة على حسابك بعد. يرجى انتظار موافقة المسؤول.");
+                throw;
             }
             catch (NotFoundException ex)
             {

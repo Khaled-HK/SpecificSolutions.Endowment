@@ -1,0 +1,1 @@
+import{d6 as t}from"./index-D_alb5sf.js";const l=u=>{const{showSuccess:r,showError:n,showWarning:c,showInfo:e}=t();return{success:(s,o)=>{r(s,o)},error:(s,o)=>{n(s,o)},warning:(s,o)=>{c(s,o)},info:(s,o)=>{e(s,o)}}};export{l as u};

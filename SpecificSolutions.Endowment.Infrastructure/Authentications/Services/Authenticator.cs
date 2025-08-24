@@ -59,43 +59,28 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
         /// </summary>
         public async Task<IUserLogin> LoginAsync(LoginCommand command)
         {
-            try
+            var user = await FindUserByEmailAsync(command.Email);
+
+            if (!user.EmailConfirmed)
             {
-                var user = await FindUserByEmailAsync(command.Email);
-
-                if (!user.EmailConfirmed)
-                {
-                    throw new UnauthorizedAccessException("يرجى تأكيد بريدك الإلكتروني قبل تسجيل الدخول. تحقق من صندوق الوارد الخاص بك.");
-                }
-
-                if (!user.IsUserApproved())
-                {
-                    throw new UnauthorizedAccessException("حسابك في انتظار موافقة المسؤول. يرجى المحاولة لاحقاً.");
-                }
-
-                await SignInUserAsync(user, command.Password);
-                ValidateHttpContext();
-
-                var token = await _tokenService.GenerateTokenAsync(user);
-                var refreshToken = _tokenService.GenerateRefreshTokenAsync();
-
-                await CreateUserSessionAsync(user);
-                var permissions = await _permissionService.GetUserPermissionsAsync(user);
-
-                return CreateUserLoginResponse(user, token, refreshToken, permissions);
+                throw new UnauthorizedAccessException("يرجى تأكيد بريدك الإلكتروني قبل تسجيل الدخول. تحقق من صندوق الوارد الخاص بك.");
             }
-            catch (NotFoundException e)
+
+            if (!user.IsUserApproved())
             {
-                throw;
+                throw new UnauthorizedAccessException("حسابك في انتظار موافقة المسؤول. يرجى المحاولة لاحقاً.");
             }
-            catch (UnauthorizedAccessException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException("An error occurred during login.", ex);
-            }
+
+            await SignInUserAsync(user, command.Password);
+            ValidateHttpContext();
+
+            var token = await _tokenService.GenerateTokenAsync(user);
+            var refreshToken = _tokenService.GenerateRefreshTokenAsync();
+
+            await CreateUserSessionAsync(user);
+            var permissions = await _permissionService.GetUserPermissionsAsync(user);
+
+            return CreateUserLoginResponse(user, token, refreshToken, permissions);
         }
 
         /// <summary>
@@ -141,7 +126,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
                 ApprovedAt = request.ApprovedAt,
                 ApprovedBy = request.ApprovedBy
             };
-            
+
             return await _registrationService.RegisterAsync(command);
         }
 

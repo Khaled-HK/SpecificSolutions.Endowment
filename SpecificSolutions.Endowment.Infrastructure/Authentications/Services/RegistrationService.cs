@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using SpecificSolutions.Endowment.Application.Abstractions.Contracts;
+using SpecificSolutions.Endowment.Application.Abstractions.Exceptions;
 using SpecificSolutions.Endowment.Application.Handlers.Authentications.Commands.Register;
 using SpecificSolutions.Endowment.Application.Models.Identity.Entities;
 using SpecificSolutions.Endowment.Application.Models.Identity;
+using SpecificSolutions.Endowment.Application.Models.Global;
 using SpecificSolutions.Endowment.Core.Models;
 using SpecificSolutions.Endowment.Infrastructure.Persistence;
 using SpecificSolutions.Endowment.Infrastructure.Services;
@@ -61,8 +63,8 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
             var result = await _userManager.CreateAsync(user, request.Password);
             if (!result.Succeeded)
             {
-                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                throw new Exception($"Registration failed: {errors}");
+                var errors = result.Errors.Select(e => new Error(e.Code, e.Description)).ToArray();
+                throw new ValidationException(errors);
             }
 
             // إرسال بريد تأكيد البريد الإلكتروني
@@ -84,13 +86,13 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
             var existingUser = await _userManager.FindByNameAsync(userName);
             if (existingUser != null)
             {
-                throw new Exception($"User {userName} already exists");
+                throw new ValidationException("UserName", $"اسم المستخدم '{userName}' مستخدم بالفعل");
             }
 
             var existingEmail = await _userManager.FindByEmailAsync(email);
             if (existingEmail != null)
             {
-                throw new Exception($"Email {email} already exists");
+                throw new ValidationException("Email", $"البريد الإلكتروني '{email}' مستخدم بالفعل");
             }
         }
 
@@ -104,12 +106,12 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
                 var mailAddress = new System.Net.Mail.MailAddress(email);
                 if (mailAddress.Address != email)
                 {
-                    throw new Exception("تنسيق البريد الإلكتروني غير صحيح");
+                    throw new ValidationException("Email", "تنسيق البريد الإلكتروني غير صحيح");
                 }
             }
             catch
             {
-                throw new Exception("تنسيق البريد الإلكتروني غير صحيح");
+                throw new ValidationException("Email", "تنسيق البريد الإلكتروني غير صحيح");
             }
         }
 
