@@ -15,21 +15,22 @@ namespace SpecificSolutions.Endowment.Application.Handlers.ConstructionRequests.
 
         public async Task<EndowmentResponse> Handle(UpdateConstructionRequestCommand request, CancellationToken cancellationToken)
         {
-            //var constructionRequest = await _constructionRequestRepository.GetByIdAsync(request.ConstructionRequest.ConstructionRequestID);
-            //if (constructionRequest == null) throw new ConstructionRequestNotFoundException();
+            var constructionRequest = await _unitOfWork.ConstructionRequests.GetByIdAsync(request.Id, cancellationToken);
+            if (constructionRequest == null)
+            {
+                return Response.FailureResponse("Id", "Construction request not found.");
+            }
 
-            //constructionRequest.RequestType = request.ConstructionRequest.RequestType;
-            //constructionRequest.SubmissionDate = request.ConstructionRequest.SubmissionDate;
-            //constructionRequest.RequestStatus = request.ConstructionRequest.RequestStatus;
-            //constructionRequest.Attachments = request.ConstructionRequest.Attachments;
-            //constructionRequest.BuildingType = request.ConstructionRequest.BuildingType;
-            //constructionRequest.ProposedLocation = request.ConstructionRequest.ProposedLocation;
-            //constructionRequest.ProposedArea = request.ConstructionRequest.ProposedArea;
-            //constructionRequest.EstimatedCost = request.ConstructionRequest.EstimatedCost;
-            //constructionRequest.ContractorName = request.ConstructionRequest.ContractorName;
+            // تحديث خصائص ConstructionRequest
+            constructionRequest.UpdateDetails(
+                proposedLocation: request.ProposedLocation,
+                proposedArea: request.ProposedArea,
+                estimatedCost: request.EstimatedCost,
+                contractorName: request.ContractorName
+            );
 
-            //await _constructionRequestRepository.UpdateAsync(constructionRequest);
-            //return Unit.Value;
+            await _unitOfWork.ConstructionRequests.UpdateAsync(constructionRequest);
+            await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Updated();
         }

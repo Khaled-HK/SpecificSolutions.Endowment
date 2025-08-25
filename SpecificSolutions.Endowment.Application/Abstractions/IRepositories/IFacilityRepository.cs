@@ -8,8 +8,8 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
     public interface IFacilityRepository : IRepository<Facility>
     {
         Task<Facility> GetByIdAsync(Guid id, CancellationToken cancellationToken);
-        Task<IEnumerable<Facility>> GetAllAsync(CancellationToken cancellationToken);
-        Task AddAsync(Facility facility, CancellationToken cancellationToken);
+        new Task<IEnumerable<Facility>> GetAllAsync(CancellationToken cancellationToken);
+        new Task AddAsync(Facility facility, CancellationToken cancellationToken);
         Task UpdateAsync(Facility facility);
         Task DeleteAsync(Guid id);
         Task<PagedList<FacilityDTO>> GetByFilterAsync(FilterFacilityQuery query, CancellationToken cancellationToken);

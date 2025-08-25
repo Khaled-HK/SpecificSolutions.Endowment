@@ -7,11 +7,11 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
 {
     public interface IBranchRepository : IRepository<Branch>
     {
-        Task<Branch> GetByIdAsync(Guid Id, CancellationToken cancellationToken);
-        Task<IEnumerable<Branch>> GetAllAsync(CancellationToken cancellationToken);
-        Task AddAsync(Branch branch, CancellationToken cancellationToken);
+        Task<Branch> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+        new Task<IEnumerable<Branch>> GetAllAsync(CancellationToken cancellationToken);
+        new Task AddAsync(Branch branch, CancellationToken cancellationToken);
         Task UpdateAsync(Branch branch);
-        Task DeleteAsync(Guid Id);
+        Task DeleteAsync(Guid id);
         Task<PagedList<BranchDTO>> GetByFilterAsync(FilterBranchQuery query, CancellationToken cancellationToken);
     }
 }

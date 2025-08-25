@@ -7,10 +7,10 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
 {
     public interface IChangeOfPathRequestRepository : IRepository<ChangeOfPathRequest>
     {
-        Task<ChangeOfPathRequest> GetByIdAsync(Guid id);
-        Task<IEnumerable<ChangeOfPathRequest>> GetAllAsync(CancellationToken cancellationToken);
-        Task AddAsync(ChangeOfPathRequest changeOfPathRequest, CancellationToken cancellationToken);
-        Task UpdateAsync(ChangeOfPathRequest changeOfPathRequest);
+        Task<ChangeOfPathRequest> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+        new Task<IEnumerable<ChangeOfPathRequest>> GetAllAsync(CancellationToken cancellationToken);
+        new Task AddAsync(ChangeOfPathRequest request, CancellationToken cancellationToken);
+        Task UpdateAsync(ChangeOfPathRequest request);
         Task DeleteAsync(Guid id);
         Task<PagedList<ChangeOfPathRequestDTO>> GetByFilterAsync(FilterChangeOfPathRequestQuery query, CancellationToken cancellationToken);
     }

@@ -6,8 +6,8 @@ namespace SpecificSolutions.Endowment.Core.Entities.Cities
     public class City
     {
         public Guid Id { get; private set; }
-        public string Name { get; private set; }
-        public string Country { get; private set; }
+        public string Name { get; private set; } = string.Empty;
+        public string Country { get; private set; } = string.Empty;
 
         // navigation property with Regions entity (one-to-many relationship)
         private HashSet<Region> _regions = new();

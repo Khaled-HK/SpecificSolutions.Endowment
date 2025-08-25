@@ -31,11 +31,6 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Ci
             // Remove SaveChangesAsync here as it should be handled by UnitOfWork
         }
 
-        public async Task UpdateAsync(City city)
-        {
-            _context.Cities.Update(city);
-            // Remove SaveChangesAsync here as it should be handled by UnitOfWork
-        }
 
         public async Task DeleteAsync(Guid id)
         {
@@ -68,7 +63,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Ci
             return await PagedList<CityDTO>.CreateAsync(dtos, query.PageNumber, query.PageSize, cancellationToken);
         }
 
-        public async Task<bool> GetRelatedDataAsync(Guid cityId)
+        public async Task<bool> GetRelatedDataAsync(Guid cityId, CancellationToken cancellationToken)
         {
             // Check for Regions related to this city
             var hasRelatedData = await _context.Regions

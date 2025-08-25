@@ -27,6 +27,9 @@ namespace SpecificSolutions.Endowment.Application
                 m.AddOpenBehavior(typeof(RetryBehavior<,>));
             });
 
+            // إضافة خدمات رموز التحقق
+            services.AddScoped<VerificationCodeService>();
+
             return services;
         }
 

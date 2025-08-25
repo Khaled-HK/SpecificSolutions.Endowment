@@ -21,29 +21,13 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Of
             return await _context.Offices.FindAsync(id, cancellationToken);
         }
 
-        public async Task AddAsync(Office office, CancellationToken cancellationToken)
-        {
-            await _context.Offices.AddAsync(office, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task UpdateAsync(Office office)
-        {
-            _context.Offices.Update(office);
-        }
-
-        public async Task RemoveAsync(Office office)
-        {
-            _context.Offices.Remove(office);
-        }
-
         //todo //Guid
         public async Task<bool> ExistsAsync(Guid id)
         {
             return await _context.Offices.AnyAsync(o => o.Id == id);
         }
 
-        public async Task<bool> GetRelatedDataAsync(Guid id)
+        public async Task<bool> GetRelatedDataAsync(Guid id, CancellationToken cancellationToken)
         {
             // Check if office has any related buildings
             return await _context.Buildings.AnyAsync(b => b.OfficeId == id);

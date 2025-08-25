@@ -4,11 +4,11 @@ namespace SpecificSolutions.Endowment.Core.Models.BuildingDetails
 {
     public interface ICreateBuildingDetailCommand
     {
-        public string Name { get; set; }
-        public bool WithinMosqueArea { get; set; }
-        public int Floors { get; set; }
-        public BuildingCategory BuildingCategory { get; set; }
+        string Name { get; set; }
+        string Description { get; set; }
+        bool WithinMosqueArea { get; set; }
+        int Floors { get; set; }
+        BuildingCategory BuildingCategory { get; set; }
         Guid BuildingId { get; set; }
-        //HashSet<ICreateFacilityDetailCommand> CreateFacilityDetailCommands { get; set; }
     }
 }

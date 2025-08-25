@@ -15,36 +15,14 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Na
             _context = context;
         }
 
-        public async Task<NameChangeRequest> GetByIdAsync(Guid id)
+        public async Task<NameChangeRequest> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return await _context.NameChangeRequests.FindAsync(id);
+            return await _context.NameChangeRequests.FindAsync(id, cancellationToken);
         }
 
         public async Task<IEnumerable<NameChangeRequest>> GetAllAsync(CancellationToken cancellationToken)
         {
             return await _context.NameChangeRequests.ToListAsync(cancellationToken);
-        }
-
-        public async Task AddAsync(NameChangeRequest nameChangeRequest, CancellationToken cancellationToken)
-        {
-            await _context.NameChangeRequests.AddAsync(nameChangeRequest, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task UpdateAsync(NameChangeRequest nameChangeRequest)
-        {
-            _context.NameChangeRequests.Update(nameChangeRequest);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteAsync(Guid id)
-        {
-            var nameChangeRequest = await _context.NameChangeRequests.FindAsync(id);
-            if (nameChangeRequest != null)
-            {
-                _context.NameChangeRequests.Remove(nameChangeRequest);
-                await _context.SaveChangesAsync();
-            }
         }
 
         public async Task<PagedList<NameChangeRequestDTO>> GetByFilterAsync(FilterNameChangeRequestQuery query, CancellationToken cancellationToken)
@@ -53,9 +31,9 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Na
 
             if (!string.IsNullOrWhiteSpace(query.SearchTerm))
             {
-                nameChangeRequests = nameChangeRequests.Where(ncr => 
-                    ncr.CurrentName.Contains(query.SearchTerm) || 
-                    ncr.NewName.Contains(query.SearchTerm) || 
+                nameChangeRequests = nameChangeRequests.Where(ncr =>
+                    ncr.CurrentName.Contains(query.SearchTerm) ||
+                    ncr.NewName.Contains(query.SearchTerm) ||
                     ncr.Reason.Contains(query.SearchTerm) ||
                     (ncr.Request != null && (
                         ncr.Request.Title.Contains(query.SearchTerm) ||

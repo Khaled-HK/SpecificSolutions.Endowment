@@ -15,19 +15,23 @@ namespace SpecificSolutions.Endowment.Application.Handlers.DemolitionRequests.Co
 
         public async Task<EndowmentResponse> Handle(UpdateDemolitionRequestCommand request, CancellationToken cancellationToken)
         {
-            //var DemolitionRequest = await _DemolitionRequestRepository.GetByIdAsync(request.DemolitionRequest.DemolitionRequestID);
-            //if (DemolitionRequest == null) throw new DemolitionRequestNotFoundException();
+            var demolitionRequest = await _unitOfWork.DemolitionRequests.GetByIdAsync(request.Id, cancellationToken);
+            if (demolitionRequest == null)
+            {
+                return Response.FailureResponse("Id", "Demolition request not found.");
+            }
 
-            //DemolitionRequest.RequestType = request.DemolitionRequest.RequestType;
-            //DemolitionRequest.SubmissionDate = request.DemolitionRequest.SubmissionDate;
-            //DemolitionRequest.RequestStatus = request.DemolitionRequest.RequestStatus;
-            //DemolitionRequest.Attachments = request.DemolitionRequest.Attachments;
-            //DemolitionRequest.Reason = request.DemolitionRequest.Reason;
-            //DemolitionRequest.EstimatedCost = request.DemolitionRequest.EstimatedCost;
-            //DemolitionRequest.EstimatedTime = request.DemolitionRequest.EstimatedTime;
+            // تحديث خصائص DemolitionRequest
+            demolitionRequest.UpdateDetails(
+                location: request.Location,
+                reason: request.Reason,
+                estimatedCost: request.EstimatedCost,
+                estimatedTime: request.EstimatedTime,
+                contractorName: request.ContractorName
+            );
 
-            //await _DemolitionRequestRepository.UpdateAsync(DemolitionRequest);
-            //return Unit.Value;
+            await _unitOfWork.DemolitionRequests.UpdateAsync(demolitionRequest);
+            await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Updated();
         }

@@ -7,10 +7,10 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
 {
     public interface INeedsRequestRepository : IRepository<NeedsRequest>
     {
-        Task<NeedsRequest> GetByIdAsync(Guid id);
-        Task<IEnumerable<NeedsRequest>> GetAllAsync(CancellationToken cancellationToken);
-        Task AddAsync(NeedsRequest needsRequest, CancellationToken cancellationToken);
-        Task UpdateAsync(NeedsRequest needsRequest);
+        Task<NeedsRequest> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+        new Task<IEnumerable<NeedsRequest>> GetAllAsync(CancellationToken cancellationToken);
+        new Task AddAsync(NeedsRequest request, CancellationToken cancellationToken);
+        Task UpdateAsync(NeedsRequest request);
         Task DeleteAsync(Guid id);
         Task<PagedList<NeedsRequestDTO>> GetByFilterAsync(FilterNeedsRequestQuery query, CancellationToken cancellationToken);
     }

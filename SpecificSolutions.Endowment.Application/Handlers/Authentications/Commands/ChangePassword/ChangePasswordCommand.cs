@@ -4,8 +4,8 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Authentications.Comma
 {
     public record ChangePasswordCommand : ICommand
     {
-        public string CurrentPassword { get; set; }
-        public string NewPassword { get; set; }
-        public string ConfirmPassword { get; set; }
+        public string CurrentPassword { get; set; } = string.Empty;
+        public string NewPassword { get; set; } = string.Empty;
+        public string ConfirmPassword { get; set; } = string.Empty;
     }
 } 

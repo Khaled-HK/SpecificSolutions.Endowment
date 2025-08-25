@@ -15,9 +15,9 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Ma
             _context = context;
         }
 
-        public async Task<MaintenanceRequest> GetByIdAsync(Guid id)
+        public async Task<MaintenanceRequest> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return await _context.MaintenanceRequests.FindAsync(id);
+            return await _context.MaintenanceRequests.FindAsync(id, cancellationToken);
         }
 
         public async Task<IEnumerable<MaintenanceRequest>> GetAllAsync(CancellationToken cancellationToken)
@@ -28,13 +28,11 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Ma
         public async Task AddAsync(MaintenanceRequest maintenanceRequest, CancellationToken cancellationToken)
         {
             await _context.MaintenanceRequests.AddAsync(maintenanceRequest, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task UpdateAsync(MaintenanceRequest maintenanceRequest)
         {
             _context.MaintenanceRequests.Update(maintenanceRequest);
-            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(Guid id)
@@ -43,7 +41,6 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Ma
             if (maintenanceRequest != null)
             {
                 _context.MaintenanceRequests.Remove(maintenanceRequest);
-                await _context.SaveChangesAsync();
             }
         }
 

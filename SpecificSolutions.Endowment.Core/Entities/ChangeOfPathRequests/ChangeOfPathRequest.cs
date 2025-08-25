@@ -5,11 +5,11 @@ namespace SpecificSolutions.Endowment.Core.Entities.ChangeOfPathRequests
     public class ChangeOfPathRequest
     {
         public Guid Id { get; private set; }
-        public string CurrentType { get; private set; } // e.g., "Friday Mosque"
-        public string NewType { get; private set; } // e.g., "Regular Mosque"
-        public string Reason { get; private set; }
+        public string CurrentType { get; private set; } = string.Empty; // e.g., "Friday Mosque"
+        public string NewType { get; private set; } = string.Empty; // e.g., "Regular Mosque"
+        public string Reason { get; private set; } = string.Empty;
         public Guid RequestId { get; private set; }
-        public Request Request { get; private set; }
+        public Request Request { get; private set; } = null!;
 
         private ChangeOfPathRequest() { }
 

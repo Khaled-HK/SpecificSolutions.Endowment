@@ -8,13 +8,13 @@ namespace SpecificSolutions.Endowment.Core.Entities.Decisions
         private Decision() { }
 
         public Guid Id { get; private set; }
-        public string Title { get; private set; }
-        public string Description { get; private set; }
+        public string Title { get; private set; } = string.Empty;
+        public string Description { get; private set; } = string.Empty;
         public DateTime CreatedDate { get; private set; }
-        public string ReferenceNumber { get; private set; }
+        public string ReferenceNumber { get; private set; } = string.Empty;
 
         // Navigation property for related appuser
-        public string UserId { get; private set; }
+        public string UserId { get; private set; } = string.Empty;
         //public AppUser AppUser { get; private set; }
         public ICollection<Request> Requests { get; private set; } = new List<Request>();
 

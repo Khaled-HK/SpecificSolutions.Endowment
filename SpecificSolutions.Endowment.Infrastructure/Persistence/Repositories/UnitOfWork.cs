@@ -1,5 +1,5 @@
+using Microsoft.EntityFrameworkCore;
 using SpecificSolutions.Endowment.Application.Abstractions.IRepositories;
-using SpecificSolutions.Endowment.Application.Contracts.IRepositories;
 using SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.AccountDetails;
 using SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Accounts;
 using SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.ApplicationRoles;

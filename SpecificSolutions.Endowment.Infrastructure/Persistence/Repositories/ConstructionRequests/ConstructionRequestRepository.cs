@@ -15,9 +15,9 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Co
             _context = context;
         }
 
-        public async Task<ConstructionRequest> GetByIdAsync(Guid id)
+        public async Task<ConstructionRequest> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return await _context.ConstructionRequests.FindAsync(id);
+            return await _context.ConstructionRequests.FindAsync(id, cancellationToken);
         }
 
         public async Task<IEnumerable<ConstructionRequest>> GetAllAsync(CancellationToken cancellationToken)
@@ -25,27 +25,6 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Co
             return await _context.ConstructionRequests.ToListAsync(cancellationToken);
         }
 
-        public async Task AddAsync(ConstructionRequest constructionRequest, CancellationToken cancellationToken)
-        {
-            await _context.ConstructionRequests.AddAsync(constructionRequest, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task UpdateAsync(ConstructionRequest constructionRequest)
-        {
-            _context.ConstructionRequests.Update(constructionRequest);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteAsync(Guid id)
-        {
-            var constructionRequest = await _context.ConstructionRequests.FindAsync(id);
-            if (constructionRequest != null)
-            {
-                _context.ConstructionRequests.Remove(constructionRequest);
-                await _context.SaveChangesAsync();
-            }
-        }
 
         public async Task<PagedList<ConstructionRequestDTO>> GetByFilterAsync(FilterConstructionRequestQuery query, CancellationToken cancellationToken)
         {

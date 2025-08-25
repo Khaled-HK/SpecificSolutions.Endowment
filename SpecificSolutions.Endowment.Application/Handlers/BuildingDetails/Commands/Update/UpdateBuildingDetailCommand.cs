@@ -11,7 +11,9 @@ namespace SpecificSolutions.Endowment.Application.Handlers.BuildingDetails.Comma
     public class UpdateBuildingDetailCommand : ICommand, IUpdateBuildingDetailCommand
     {
         public Guid Id { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public Guid BuildingId { get; set; }
         public int Floors { get; set; }
         public bool WithinMosqueArea { get; set; }
 

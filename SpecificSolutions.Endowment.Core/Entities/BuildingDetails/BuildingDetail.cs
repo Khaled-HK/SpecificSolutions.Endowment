@@ -9,14 +9,14 @@ namespace SpecificSolutions.Endowment.Core.Entities.BuildingDetails
     public class BuildingDetail
     {
         public Guid Id { get; private set; }
-        public string Name { get; private set; }
+        public string Name { get; private set; } = string.Empty;
         public bool WithinMosqueArea { get; private set; }
         public int Floors { get; private set; }
         public BuildingCategory BuildingCategory { get; private set; }
 
         // Navigation property
         public Guid BuildingId { get; private set; }
-        public Building Building { get; private set; }
+        public Building Building { get; private set; } = null!;
 
         private HashSet<FacilityDetail> _FacilityDetails = new();
         public IReadOnlyCollection<FacilityDetail> FacilityDetails => _FacilityDetails;

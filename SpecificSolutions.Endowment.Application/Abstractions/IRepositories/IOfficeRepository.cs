@@ -9,12 +9,13 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
     public interface IOfficeRepository : IRepository<Office>
     {
         Task<Office> GetByIdAsync(Guid id, CancellationToken cancellationToken);
-        Task AddAsync(Office office, CancellationToken cancellationToken);
+        new Task<IEnumerable<Office>> GetAllAsync(CancellationToken cancellationToken);
+        new Task AddAsync(Office office, CancellationToken cancellationToken);
         Task UpdateAsync(Office office);
-        Task RemoveAsync(Office office);
-        Task<bool> ExistsAsync(Guid id);
+        new Task RemoveAsync(Office office);
+        Task DeleteAsync(Guid id);
         Task<PagedList<FilterOfficeDTO>> GetByFilterAsync(FilterOfficeQuery query, CancellationToken cancellationToken);
-        Task<IEnumerable<KeyValuPair>> GetOfficesAsync(GetOfficesQuery query, CancellationToken cancellationToken);
-        Task<bool> GetRelatedDataAsync(Guid id);
+        Task<IEnumerable<KeyValuePair<string, string>>> GetOfficesAsync(GetOfficesQuery query, CancellationToken cancellationToken);
+        Task<bool> GetRelatedDataAsync(Guid id, CancellationToken cancellationToken);
     }
 }

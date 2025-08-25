@@ -4,8 +4,8 @@ namespace SpecificSolutions.Endowment.Application.Handlers.EndowmentExpenditureC
 {
     public class UpdateExpenditureChangeRequestCommand : UpdateRequestCommand
     {
-        public string CurrentExpenditure { get; set; }
-        public string NewExpenditure { get; set; }
-        public string Reason { get; set; }
+        public string CurrentExpenditure { get; set; } = string.Empty;
+        public string NewExpenditure { get; set; } = string.Empty;
+        public string Reason { get; set; } = string.Empty;
     }
 }

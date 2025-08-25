@@ -4,7 +4,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.MaintenanceRequests.C
 {
     public class CreateMaintenanceRequestCommand : CreateRequestCommand
     {
-        public string MaintenanceType { get; set; }
+        public string MaintenanceType { get; set; } = string.Empty;
         public double EstimatedCost { get; set; }
         public DateTime ExpectedStartDate { get; set; }
         public DateTime ExpectedEndDate { get; set; }

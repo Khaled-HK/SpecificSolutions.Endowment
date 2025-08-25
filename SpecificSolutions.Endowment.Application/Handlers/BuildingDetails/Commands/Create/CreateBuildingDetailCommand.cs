@@ -7,10 +7,11 @@ using System.Text.Json.Serialization;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.BuildingDetails.Commands.Create
 {
-    [Authorize(Permissions = Permission.FacilityDetailAdd)]
+    [Authorize(Permissions = Permission.BuildingDetailAdd)]
     public class CreateBuildingDetailCommand : ICommand, ICreateBuildingDetailCommand
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public Guid BuildingId { get; set; }
         public int Floors { get; set; }
         public bool WithinMosqueArea { get; set; }

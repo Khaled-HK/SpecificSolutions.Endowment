@@ -31,7 +31,6 @@ namespace SpecificSolutions.Endowment.Infrastructure.Authentications.Services
 
         public Task GetSessionAsync()
         {
-
             return Task.CompletedTask;
         }
     }

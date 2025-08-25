@@ -24,17 +24,6 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Re
             return await _context.Requests.AnyAsync(r => r.ReferenceNumber == referenceNumber);
         }
 
-        public void Update(Request request)
-        {
-            _context.Requests.Update(request);
-        }
-
-        public async Task AddAsync(Request request, CancellationToken cancellationToken)
-        {
-            await _context.Requests.AddAsync(request, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
-        }
-
         public async Task<PagedList<FilterRequestDTO>> GetByFilterAsync(FilterRequestQuery query, CancellationToken cancellationToken)
         {
             var requests = _context.Requests.AsQueryable();
@@ -70,9 +59,5 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Re
             return await PagedList<FilterRequestDTO>.CreateAsync(requestDTOs, query.PageNumber, (int)query.PageSize, cancellationToken);
         }
 
-        public void Delete(Request request)
-        {
-            _context.Requests.Remove(request);
-        }
     }
 }

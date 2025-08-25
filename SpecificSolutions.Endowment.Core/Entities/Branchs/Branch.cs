@@ -6,12 +6,12 @@ namespace SpecificSolutions.Endowment.Core.Entities.Branchs
     public class Branch
     {
         public Guid Id { get; private set; }
-        public string Name { get; private set; }
-        public string Address { get; private set; }
-        public string ContactNumber { get; private set; }
+        public string Name { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
+        public string ContactNumber { get; set; } = string.Empty;
 
         public Guid BankId { get; private set; } // Foreign key to Bank
-        public Bank Bank { get; private set; }
+        public Bank Bank { get; private set; } = null!;
 
         private HashSet<ExpenditureChangeRequest> _newExpenditureRequests = new();
         public IReadOnlyCollection<ExpenditureChangeRequest> NewExpenditureRequests => _newExpenditureRequests;

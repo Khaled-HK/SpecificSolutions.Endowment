@@ -4,8 +4,8 @@ namespace SpecificSolutions.Endowment.Application.Handlers.ChangeOfPathRequests.
 {
     public class UpdateChangeOfPathRequestCommand : UpdateRequestCommand
     {
-        public string CurrentType { get; set; }
-        public string NewType { get; set; }
-        public string Reason { get; set; }
+        public string CurrentType { get; set; } = string.Empty;
+        public string NewType { get; set; } = string.Empty;
+        public string Reason { get; set; } = string.Empty;
     }
 }

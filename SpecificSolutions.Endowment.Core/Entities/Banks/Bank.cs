@@ -5,9 +5,9 @@ namespace SpecificSolutions.Endowment.Core.Entities.Banks
     public class Bank
     {
         public Guid Id { get; private set; }
-        public string Name { get; private set; }
-        public string Address { get; private set; }
-        public string ContactNumber { get; private set; }
+        public string Name { get; private set; } = string.Empty;
+        public string Address { get; private set; } = string.Empty;
+        public string ContactNumber { get; private set; } = string.Empty;
 
         // navigation property branchs for one-to-many relationship 
         private HashSet<Branch> _branches = new();

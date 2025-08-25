@@ -7,10 +7,10 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
 {
     public interface IMaintenanceRequestRepository : IRepository<MaintenanceRequest>
     {
-        Task<MaintenanceRequest> GetByIdAsync(Guid id);
-        Task<IEnumerable<MaintenanceRequest>> GetAllAsync(CancellationToken cancellationToken);
-        Task AddAsync(MaintenanceRequest maintenanceRequest, CancellationToken cancellationToken);
-        Task UpdateAsync(MaintenanceRequest maintenanceRequest);
+        Task<MaintenanceRequest> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+        new Task<IEnumerable<MaintenanceRequest>> GetAllAsync(CancellationToken cancellationToken);
+        new Task AddAsync(MaintenanceRequest request, CancellationToken cancellationToken);
+        Task UpdateAsync(MaintenanceRequest request);
         Task DeleteAsync(Guid id);
         Task<PagedList<MaintenanceRequestDTO>> GetByFilterAsync(FilterMaintenanceRequestQuery query, CancellationToken cancellationToken);
     }

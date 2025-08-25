@@ -15,9 +15,9 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Ch
             _context = context;
         }
 
-        public async Task<ChangeOfPathRequest> GetByIdAsync(Guid id)
+        public async Task<ChangeOfPathRequest> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return await _context.ChangeOfPathRequests.FindAsync(id);
+            return await _context.ChangeOfPathRequests.FindAsync(id, cancellationToken);
         }
 
         public async Task<IEnumerable<ChangeOfPathRequest>> GetAllAsync(CancellationToken cancellationToken)
@@ -28,13 +28,11 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Ch
         public async Task AddAsync(ChangeOfPathRequest changeOfPathRequest, CancellationToken cancellationToken)
         {
             await _context.ChangeOfPathRequests.AddAsync(changeOfPathRequest, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task UpdateAsync(ChangeOfPathRequest changeOfPathRequest)
         {
             _context.ChangeOfPathRequests.Update(changeOfPathRequest);
-            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(Guid id)
@@ -43,7 +41,6 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Ch
             if (changeOfPathRequest != null)
             {
                 _context.ChangeOfPathRequests.Remove(changeOfPathRequest);
-                await _context.SaveChangesAsync();
             }
         }
 

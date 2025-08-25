@@ -5,7 +5,7 @@ using SpecificSolutions.Endowment.Core.Enums;
 namespace SpecificSolutions.Endowment.Application.Handlers.Facilities.Commands.Update
 {
     [Authorize(Permissions = Permission.FacilityEdit)]
-    public class UpdateFacilityCommand : ICommand
+    public class UpdateFacilityCommand : ICommand, IUpdateFacilityCommand
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

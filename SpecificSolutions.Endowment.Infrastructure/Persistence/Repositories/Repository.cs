@@ -37,14 +37,16 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories
             return await _context.Set<TDomain>().Select(target).ToListAsync(cancellationToken);
         }
 
-        public virtual async Task RemoveAsync(TDomain entity)
+        public virtual Task RemoveAsync(TDomain entity)
         {
             _context.Set<TDomain>().Remove(entity);
+            return Task.CompletedTask;
         }
 
-        public virtual async Task RemoveRangeAsync(IList<TDomain> entities)
+        public virtual Task RemoveRangeAsync(IList<TDomain> entities)
         {
             _context.Set<TDomain>().RemoveRange(entities);
+            return Task.CompletedTask;
         }
     }
 }

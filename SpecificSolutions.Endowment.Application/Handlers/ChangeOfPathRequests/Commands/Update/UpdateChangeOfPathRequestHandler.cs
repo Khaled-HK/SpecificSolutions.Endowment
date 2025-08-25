@@ -15,19 +15,21 @@ namespace SpecificSolutions.Endowment.Application.Handlers.ChangeOfPathRequests.
 
         public async Task<EndowmentResponse> Handle(UpdateChangeOfPathRequestCommand request, CancellationToken cancellationToken)
         {
-            //var changeOfPathRequest = await _changeOfPathRequestRepository.GetByIdAsync(request.ChangeOfPathRequest.ChangeOfPathRequestID);
-            //if (changeOfPathRequest == null) throw new ChangeOfPathRequestNotFoundException();
+            var changeOfPathRequest = await _unitOfWork.ChangeOfPathRequests.GetByIdAsync(request.Id, cancellationToken);
+            if (changeOfPathRequest == null)
+            {
+                return Response.FailureResponse("Id", "Change of path request not found.");
+            }
 
-            //changeOfPathRequest.RequestType = request.ChangeOfPathRequest.RequestType;
-            //changeOfPathRequest.SubmissionDate = request.ChangeOfPathRequest.SubmissionDate;
-            //changeOfPathRequest.RequestStatus = request.ChangeOfPathRequest.RequestStatus;
-            //changeOfPathRequest.Attachments = request.ChangeOfPathRequest.Attachments;
-            //changeOfPathRequest.CurrentType = request.ChangeOfPathRequest.CurrentType;
-            //changeOfPathRequest.NewType = request.ChangeOfPathRequest.NewType;
-            //changeOfPathRequest.Reason = request.ChangeOfPathRequest.Reason;
+            // تحديث خصائص ChangeOfPathRequest
+            changeOfPathRequest.UpdateDetails(
+                currentType: request.CurrentType,
+                newType: request.NewType,
+                reason: request.Reason
+            );
 
-            //await _changeOfPathRequestRepository.UpdateAsync(changeOfPathRequest);
-            //await _unitOfWork.CompleteAsync(cancellationToken);
+            await _unitOfWork.ChangeOfPathRequests.UpdateAsync(changeOfPathRequest);
+            await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Updated();
         }

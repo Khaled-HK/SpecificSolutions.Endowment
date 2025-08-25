@@ -35,10 +35,11 @@ public class BuildingDetailRepository : Repository<BuildingDetail>, IBuildingDet
         // Remove SaveChangesAsync here as it should be handled by UnitOfWork
     }
 
-    public async Task UpdateAsync(BuildingDetail buildingDetail)
+    public Task UpdateAsync(BuildingDetail buildingDetail)
     {
         _context.BuildingDetails.Update(buildingDetail);
         // Remove SaveChangesAsync here as it should be handled by UnitOfWork
+        return Task.CompletedTask;
     }
 
     public async Task DeleteAsync(Guid id)

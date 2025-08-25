@@ -7,7 +7,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.BuildingDetailRequest
     [Authorize(Permissions = Permission.BuildingDetailRequestAdd)]
     public class CreateBuildingDetailRequestCommand : ICommand
     {
-        public string RequestDetails { get; set; }
+        public string RequestDetails { get; set; } = string.Empty;
         public DateTime RequestDate { get; set; }
         public Guid Id { get; set; }
     }

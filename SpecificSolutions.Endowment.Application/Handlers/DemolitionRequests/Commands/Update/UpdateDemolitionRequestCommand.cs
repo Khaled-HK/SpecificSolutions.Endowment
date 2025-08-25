@@ -4,11 +4,11 @@ namespace SpecificSolutions.Endowment.Application.Handlers.DemolitionRequests.Co
 {
     public class UpdateDemolitionRequestCommand : UpdateRequestCommand
     {
-        public string EstimatedCost { get; set; }
-        public string EstimatedTime { get; set; }
-        public string DemolitionReason { get; set; }
+        public string EstimatedCost { get; set; } = string.Empty;
+        public string EstimatedTime { get; set; } = string.Empty;
+        public string DemolitionReason { get; set; } = string.Empty;
         public decimal EstimatedRebuildingCost { get; set; }
-        public string ContractorName { get; set; }
-        public string Reason { get; set; }
+        public string ContractorName { get; set; } = string.Empty;
+        public string Reason { get; set; } = string.Empty;
     }
 }

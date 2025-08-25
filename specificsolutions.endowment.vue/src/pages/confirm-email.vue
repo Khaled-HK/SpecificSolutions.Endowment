@@ -24,17 +24,19 @@ const router = useRouter()
 
 const form = reactive({
   email: route.query.email || '',
-  token: route.query.token || '',
+  verificationCode: '', // رمز التحقق الرقمي (6 أرقام)
+  token: route.query.token || '', // للتوافق مع النظام القديم
 })
 
 const isLoading = ref(false)
 const isSuccess = ref(false)
 const isAutoConfirming = ref(false)
 const showWelcomeMessage = ref(false)
+const showCodeInput = ref(true) // إظهار حقل رمز التحقق
 
-// التحقق التلقائي عند تحميل الصفحة
+// التحقق التلقائي عند تحميل الصفحة (للنظام القديم)
 onMounted(async () => {
-  if (form.email && form.token) {
+  if (form.email && form.token && !form.verificationCode) {
     isAutoConfirming.value = true
     await handleSubmit()
   } else {
@@ -54,25 +56,57 @@ const handleSubmit = async () => {
     isValid = false
   }
   
-  if (!validateRequired(form.token, 'token', 'رمز التحقق مطلوب')) {
+  // التحقق من رمز التحقق الرقمي
+  if (showCodeInput.value) {
+    if (!validateRequired(form.verificationCode, 'verificationCode', 'رمز التحقق مطلوب')) {
+      isValid = false
+    } else if (form.verificationCode.length !== 6) {
+      addError('verificationCode', 'رمز التحقق يجب أن يكون 6 أرقام')
+      isValid = false
+    } else if (!/^\d{6}$/.test(form.verificationCode)) {
+      addError('verificationCode', 'رمز التحقق يجب أن يحتوي على أرقام فقط')
+      isValid = false
+    }
+  }
+  
+  // التحقق من token (للنظام القديم)
+  if (!showCodeInput.value && !validateRequired(form.token, 'token', 'رمز التحقق مطلوب')) {
     isValid = false
   }
   
   setFieldTouched('email')
-  setFieldTouched('token')
+  if (showCodeInput.value) {
+    setFieldTouched('verificationCode')
+  } else {
+    setFieldTouched('token')
+  }
   
   if (!isValid) return
   
   isLoading.value = true
   
   try {
-    const response = await api('/auth/confirm-email', {
-      method: 'POST',
-      body: {
-        email: form.email,
-        token: form.token
-      }
-    })
+    let response
+    
+    if (showCodeInput.value) {
+      // استخدام رمز التحقق الرقمي
+      response = await api('/auth/confirm-email-with-code', {
+        method: 'POST',
+        body: {
+          email: form.email,
+          verificationCode: form.verificationCode
+        }
+      })
+    } else {
+      // استخدام token (للنظام القديم)
+      response = await api('/auth/confirm-email', {
+        method: 'POST',
+        body: {
+          email: form.email,
+          token: form.token
+        }
+      })
+    }
     
     if (response.isSuccess) {
       isSuccess.value = true
@@ -98,12 +132,37 @@ const handleSubmit = async () => {
   }
 }
 
-const handleBackToLogin = () => {
-  router.push('/login')
+const handleResendCode = async () => {
+  clearErrors()
+  
+  if (!validateRequired(form.email, 'email', 'البريد الإلكتروني مطلوب')) {
+    setFieldTouched('email')
+    return
+  }
+  
+  try {
+    const response = await api('/auth/resend-verification-code', {
+      method: 'POST',
+      body: {
+        email: form.email
+      }
+    })
+    
+    if (response.isSuccess) {
+      showSuccess('تم إرسال رمز التحقق الجديد بنجاح. تحقق من بريدك الإلكتروني.')
+    } else {
+      if (response.message) {
+        addError('general', response.message)
+      }
+    }
+  } catch (error) {
+    console.error('خطأ في إعادة إرسال رمز التحقق:', error)
+    addError('general', 'حدث خطأ أثناء إعادة إرسال رمز التحقق')
+  }
 }
 
-const handleResendEmail = () => {
-  router.push(`/resend-email-confirmation?email=${encodeURIComponent(form.email)}`)
+const handleBackToLogin = () => {
+  router.push('/login')
 }
 
 definePage({
@@ -184,7 +243,7 @@ definePage({
         </VAlert>
 
         <!-- Manual Form (only show if no auto-confirmation) -->
-        <div v-if="!form.email || !form.token">
+        <div v-if="!form.email || (!form.token && !showCodeInput)">
           <VAlert
             type="info"
             variant="tonal"
@@ -221,8 +280,26 @@ definePage({
                 />
               </VCol>
 
+              <!-- Verification Code -->
+              <VCol cols="12" v-if="showCodeInput">
+                <AppTextField
+                  v-model="form.verificationCode"
+                  label="رمز التحقق"
+                  placeholder="أدخل رمز التحقق"
+                  :error="validationState.errors.verificationCode && validationState.errors.verificationCode.length > 0 && validationState.touched.verificationCode"
+                  :error-messages="validationState.errors.verificationCode || []"
+                  @blur="setFieldTouched('verificationCode')"
+                  :disabled="isLoading || isSuccess"
+                  prepend-inner-icon="tabler-key"
+                  type="number"
+                  min="000000"
+                  max="999999"
+                  pattern="[0-9]*"
+                />
+              </VCol>
+
               <!-- Token -->
-              <VCol cols="12">
+              <VCol cols="12" v-if="!showCodeInput">
                 <AppTextField
                   v-model="form.token"
                   label="رمز التحقق"
@@ -289,7 +366,7 @@ definePage({
             <VBtn
               variant="text"
               color="secondary"
-              @click="handleResendEmail"
+              @click="handleResendCode"
               :disabled="isLoading || isSuccess"
             >
               <VIcon

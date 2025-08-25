@@ -11,7 +11,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.AccountDetails.Comman
         public Guid Id { get; set; }
         public decimal Debtor { get; set; }
         public decimal Creditor { get; set; }
-        public string Note { get; set; }
+        public string Note { get; set; } = string.Empty;
         public OperationType OperationType { get; set; }
         public int OperationNumber { get; set; }
         public decimal Balance { get; set; }

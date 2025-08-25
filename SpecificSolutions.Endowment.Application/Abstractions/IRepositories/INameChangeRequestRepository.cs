@@ -7,10 +7,10 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
 {
     public interface INameChangeRequestRepository : IRepository<NameChangeRequest>
     {
-        Task<NameChangeRequest> GetByIdAsync(Guid id);
-        Task<IEnumerable<NameChangeRequest>> GetAllAsync(CancellationToken cancellationToken);
-        Task AddAsync(NameChangeRequest nameChangeRequest, CancellationToken cancellationToken);
-        Task UpdateAsync(NameChangeRequest nameChangeRequest);
+        Task<NameChangeRequest> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+        new Task<IEnumerable<NameChangeRequest>> GetAllAsync(CancellationToken cancellationToken);
+        new Task AddAsync(NameChangeRequest request, CancellationToken cancellationToken);
+        Task UpdateAsync(NameChangeRequest request);
         Task DeleteAsync(Guid id);
         Task<PagedList<NameChangeRequestDTO>> GetByFilterAsync(FilterNameChangeRequestQuery query, CancellationToken cancellationToken);
     }

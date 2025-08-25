@@ -20,7 +20,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Offices.Commands.Dele
                 return Response.FailureResponse("Office not found.");
 
             // Check if office has any related data
-            var hasRelatedData = await _unitOfWork.Offices.GetRelatedDataAsync(request.Id);
+            var hasRelatedData = await _unitOfWork.Offices.GetRelatedDataAsync(request.Id, cancellationToken);
             if (hasRelatedData)
             {
                 var errorMessage = $"Cannot delete office '{office.Name}' because it has related data. Please delete the related data first.";

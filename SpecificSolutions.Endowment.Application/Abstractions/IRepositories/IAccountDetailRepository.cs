@@ -8,9 +8,9 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
     public interface IAccountDetailRepository : IRepository<AccountDetail>
     {
         Task<AccountDetail> GetByIdAsync(Guid id, CancellationToken cancellationToken);
-        Task AddAsync(AccountDetail accountDetail, CancellationToken cancellationToken);
+        new Task AddAsync(AccountDetail accountDetail, CancellationToken cancellationToken);
         Task UpdateAsync(AccountDetail accountDetail);
-        Task RemoveAsync(AccountDetail accountDetail);
+        new Task RemoveAsync(AccountDetail accountDetail);
         Task<bool> ExistsAsync(Guid id);
         Task<AccountDetail?> GetByAccountDetailIdAsync(Guid accountDetailId);
         Task<PagedList<FilterAccountDetailDTO>> GetByFilterAsync(FilterAccountDetailQuery query, CancellationToken cancellationToken);

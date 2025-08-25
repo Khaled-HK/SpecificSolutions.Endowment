@@ -4,8 +4,8 @@ namespace SpecificSolutions.Endowment.Application.Handlers.NeedsRequests.Command
 {
     public class CreateNeedsRequestCommand : CreateRequestCommand
     {
-        public string NeedsType { get; set; }
+        public string NeedsType { get; set; } = string.Empty;
         public decimal EstimatedCost { get; set; }
-        public string Provider { get; set; }
+        public string Provider { get; set; } = string.Empty;
     }
 }

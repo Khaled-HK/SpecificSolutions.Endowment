@@ -11,12 +11,12 @@ public class AccountDetail
     public Guid Id { get; private set; }
     public decimal Debtor { get; private set; }
     public decimal Creditor { get; private set; }
-    public string Note { get; private set; }
+    public string Note { get; private set; } = string.Empty;
     public OperationType OperationType { get; private set; }
     public int OperationNumber { get; private set; }
     public decimal Balance { get; private set; }
     public Guid AccountId { get; private set; }
-    public Account Account { get; private set; }
+    public Account Account { get; private set; } = null!;
     public DateTime CreatedDate { get; private set; }
 
     // Constructor to enforce invariants

@@ -5,12 +5,13 @@ using SpecificSolutions.Endowment.Core.Models.Office;
 
 namespace SpecificSolutions.Endowment.Application.Handlers.Offices.Commands.Update
 {
-    [Authorize(Permissions = Permission.OfficeEdit)]
+    [Authorize(Permissions = Permission.OfficeUpdate)]
     public class UpdateOfficeCommand : ICommand, IUpdateOfficeCommand
     {
         public Guid Id { get; set; }
-        public string Name { get; set; }
-        public string Location { get; set; }
-        public string PhoneNumber { get; set; }
+        public required string Name { get; set; }
+        public required string Location { get; set; }
+        public required string PhoneNumber { get; set; }
+        public Guid RegionId { get; set; }
     }
 }

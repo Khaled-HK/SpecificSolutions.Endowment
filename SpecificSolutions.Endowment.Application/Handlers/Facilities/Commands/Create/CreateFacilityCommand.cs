@@ -5,7 +5,7 @@ using SpecificSolutions.Endowment.Core.Enums;
 namespace SpecificSolutions.Endowment.Application.Handlers.Facilities.Commands.Create
 {
     [Authorize(Permissions = Permission.FacilityAdd)]
-    public class CreateFacilityCommand : ICommand
+    public class CreateFacilityCommand : ICommand, ICreateFacilityCommand
     {
         public string Name { get; set; }
         public string Location { get; set; }

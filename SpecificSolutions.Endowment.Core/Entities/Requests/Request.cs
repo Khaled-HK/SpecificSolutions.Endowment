@@ -13,15 +13,15 @@ namespace SpecificSolutions.Endowment.Core.Entities.Requests
     public class Request
     {
         public Guid Id { get; private set; }
-        public string Title { get; private set; }
-        public string Description { get; private set; }
-        public DateTime CreatedDate { get; private set; }
-        public string ReferenceNumber { get; private set; }
-        public string UserId { get; private set; }
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public DateTime CreatedDate { get; set; }
+        public string ReferenceNumber { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
 
         // Foreign key for Decision
         public Guid DecisionId { get; private set; }
-        public Decision Decision { get; private set; } // Navigation property
+        public Decision Decision { get; private set; } = null!; // Navigation property
                                                        // relationship with BuildingDetailRequests entity (one to many)
 
         private HashSet<BuildingDetailRequest> _buildingDetailRequests = new();
@@ -49,13 +49,13 @@ namespace SpecificSolutions.Endowment.Core.Entities.Requests
             DecisionId = decisionId;
         }
 
-        public ExpenditureChangeRequest ExpenditureChangeRequest { get; private set; }
-        public ChangeOfPathRequest ChangeOfPathRequest { get; private set; }
-        public ConstructionRequest ConstructionRequest { get; private set; }
-        public DemolitionRequest DemolitionRequest { get; private set; }
-        public MaintenanceRequest MaintenanceRequest { get; private set; }
-        public NameChangeRequest NameChangeRequest { get; private set; }
-        public NeedsRequest NeedsRequest { get; private set; }
+        public ExpenditureChangeRequest ExpenditureChangeRequest { get; private set; } = null!;
+        public ChangeOfPathRequest ChangeOfPathRequest { get; private set; } = null!;
+        public ConstructionRequest ConstructionRequest { get; private set; } = null!;
+        public DemolitionRequest DemolitionRequest { get; private set; } = null!;
+        public MaintenanceRequest MaintenanceRequest { get; private set; } = null!;
+        public NameChangeRequest NameChangeRequest { get; private set; } = null!;
+        public NeedsRequest NeedsRequest { get; private set; } = null!;
 
     }
 }

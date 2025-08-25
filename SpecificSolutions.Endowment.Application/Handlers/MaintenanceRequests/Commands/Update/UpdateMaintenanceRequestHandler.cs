@@ -15,24 +15,25 @@ namespace SpecificSolutions.Endowment.Application.Handlers.MaintenanceRequests.C
 
         public async Task<EndowmentResponse> Handle(UpdateMaintenanceRequestCommand request, CancellationToken cancellationToken)
         {
-            //var maintenanceRequest = await _maintenanceRequestRepository.GetByIdAsync(request.MaintenanceRequest.MaintenanceRequestID);
-            //if (maintenanceRequest == null) throw new MaintenanceRequestNotFoundException();
+            var maintenanceRequest = await _unitOfWork.MaintenanceRequests.GetByIdAsync(request.Id, cancellationToken);
+            if (maintenanceRequest == null)
+            {
+                return Response.FailureResponse("Id", "Maintenance request not found.");
+            }
 
-            //maintenanceRequest.RequestType = request.MaintenanceRequest.RequestType;
-            //maintenanceRequest.SubmissionDate = request.MaintenanceRequest.SubmissionDate;
-            //maintenanceRequest.RequestStatus = request.MaintenanceRequest.RequestStatus;
-            //maintenanceRequest.Attachments = request.MaintenanceRequest.Attachments;
-            //maintenanceRequest.MaintenanceType = request.MaintenanceRequest.MaintenanceType;
-            //maintenanceRequest.Location = request.MaintenanceRequest.Location;
-            //maintenanceRequest.EstimatedCost = request.MaintenanceRequest.EstimatedCost;
-            //maintenanceRequest.ExpectedStartDate = request.MaintenanceRequest.ExpectedStartDate;
-            //maintenanceRequest.ExpectedEndDate = request.MaintenanceRequest.ExpectedEndDate;
+            // تحديث خصائص MaintenanceRequest
+            maintenanceRequest.UpdateDetails(
+                maintenanceType: request.MaintenanceType,
+                location: request.Location,
+                estimatedCost: request.EstimatedCost,
+                expectedStartDate: request.ExpectedStartDate,
+                expectedEndDate: request.ExpectedEndDate
+            );
 
-            //await _maintenanceRequestRepository.UpdateAsync(maintenanceRequest);
-            //return Unit.Value;
+            await _unitOfWork.MaintenanceRequests.UpdateAsync(maintenanceRequest);
+            await _unitOfWork.CompleteAsync(cancellationToken);
 
             return Response.Updated();
-
         }
     }
 }

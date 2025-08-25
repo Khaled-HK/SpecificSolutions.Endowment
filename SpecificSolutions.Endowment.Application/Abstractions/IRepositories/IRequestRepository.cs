@@ -7,10 +7,13 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
 {
     public interface IRequestRepository : IRepository<Request>
     {
-        Task<Request> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
-        Task<bool> ReferenceNumberExists(string referenceNumber);
+        Task<Request> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+        new Task<IEnumerable<Request>> GetAllAsync(CancellationToken cancellationToken);
+        new Task AddAsync(Request request, CancellationToken cancellationToken);
+        Task UpdateAsync(Request request);
         void Update(Request request);
-        Task AddAsync(Request request, CancellationToken cancellationToken);
+        Task DeleteAsync(Guid id);
         Task<PagedList<FilterRequestDTO>> GetByFilterAsync(FilterRequestQuery query, CancellationToken cancellationToken);
+        Task<bool> ReferenceNumberExists(string referenceNumber);
     }
 }

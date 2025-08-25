@@ -5,14 +5,14 @@ namespace SpecificSolutions.Endowment.Core.Entities.ConstructionRequests
     public class ConstructionRequest
     {
         public Guid Id { get; private set; }
-        public string ProposedLocation { get; private set; }
+        public string ProposedLocation { get; private set; } = string.Empty;
         public double ProposedArea { get; private set; } // in square meters
         public double EstimatedCost { get; private set; }
-        public string ContractorName { get; private set; }
+        public string ContractorName { get; private set; } = string.Empty;
 
         // relationships with Request entity one-to-one
         public Guid RequestId { get; private set; }
-        public Request Request { get; private set; }
+        public Request Request { get; private set; } = null!;
 
         private ConstructionRequest() { }
 

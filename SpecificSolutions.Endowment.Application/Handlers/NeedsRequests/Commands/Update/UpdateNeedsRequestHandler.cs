@@ -16,7 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.NeedsRequests.Command
 
         public async Task<EndowmentResponse> Handle(UpdateNeedsRequestCommand request, CancellationToken cancellationToken)
         {
-            var needsRequest = await _unitOfWork.NeedsRequests.GetByIdAsync(request.Id);
+            var needsRequest = await _unitOfWork.NeedsRequests.GetByIdAsync(request.Id, cancellationToken);
             if (needsRequest == null)
             {
                 return Response.FailureResponse("NeedsRequest not found");

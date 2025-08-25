@@ -47,6 +47,34 @@ export const routes = [
         component: () => import('@/pages/register.vue'),
       },
       {
+        path: 'confirm-email',
+        component: () => import('@/pages/confirm-email.vue'),
+      },
+      {
+        path: 'resend-email-confirmation',
+        component: () => import('@/pages/resend-email-confirmation.vue'),
+      },
+      {
+        path: 'resend-verification-code',
+        component: () => import('@/pages/resend-verification-code.vue'),
+      },
+      {
+        path: 'email-not-confirmed',
+        component: () => import('@/pages/email-not-confirmed.vue'),
+      },
+      {
+        path: 'forgot-password',
+        component: () => import('@/pages/forgot-password.vue'),
+      },
+      {
+        path: 'reset-password',
+        component: () => import('@/pages/reset-password.vue'),
+      },
+      {
+        path: 'change-password',
+        component: () => import('@/pages/change-password.vue'),
+      },
+      {
         path: '/:pathMatch(.*)*',
         component: () => import('@/pages/[...error].vue'),
       },

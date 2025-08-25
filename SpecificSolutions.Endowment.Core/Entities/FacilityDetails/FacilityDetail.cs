@@ -11,10 +11,10 @@ namespace SpecificSolutions.Endowment.Core.Entities.FacilityDetails
         public int Quantity { get; set; }
         // price of the product 
         public Guid ProductId { get; set; }
-        public Product Product { get; private set; }
+        public Product Product { get; private set; } = null!;
 
         public Guid BuildingDetailId { get; private set; }
-        public BuildingDetail BuildingDetail { get; private set; }
+        public BuildingDetail BuildingDetail { get; private set; } = null!;
 
         // Private constructor for EF Core
         private FacilityDetail() { }

@@ -1,4 +1,4 @@
-using SpecificSolutions.Endowment.Application.Contracts.IRepositories;
+using SpecificSolutions.Endowment.Application.Abstractions.IRepositories;
 
 namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
 {

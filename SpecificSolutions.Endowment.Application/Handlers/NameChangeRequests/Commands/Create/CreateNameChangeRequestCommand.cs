@@ -4,8 +4,8 @@ namespace SpecificSolutions.Endowment.Application.Handlers.NameChangeRequests.Co
 {
     public class CreateNameChangeRequestCommand : CreateRequestCommand
     {
-        public string CurrentName { get; set; }
-        public string NewName { get; set; }
-        public string Reason { get; set; }
+        public string CurrentName { get; set; } = string.Empty;
+        public string NewName { get; set; } = string.Empty;
+        public string Reason { get; set; } = string.Empty;
     }
 }

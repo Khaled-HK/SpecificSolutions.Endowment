@@ -7,10 +7,10 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
 {
     public interface IConstructionRequestRepository : IRepository<ConstructionRequest>
     {
-        Task<ConstructionRequest> GetByIdAsync(Guid id);
-        Task<IEnumerable<ConstructionRequest>> GetAllAsync(CancellationToken cancellationToken);
-        Task AddAsync(ConstructionRequest constructionRequest, CancellationToken cancellationToken);
-        Task UpdateAsync(ConstructionRequest constructionRequest);
+        Task<ConstructionRequest> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+        new Task<IEnumerable<ConstructionRequest>> GetAllAsync(CancellationToken cancellationToken);
+        new Task AddAsync(ConstructionRequest request, CancellationToken cancellationToken);
+        Task UpdateAsync(ConstructionRequest request);
         Task DeleteAsync(Guid id);
         Task<PagedList<ConstructionRequestDTO>> GetByFilterAsync(FilterConstructionRequestQuery query, CancellationToken cancellationToken);
     }

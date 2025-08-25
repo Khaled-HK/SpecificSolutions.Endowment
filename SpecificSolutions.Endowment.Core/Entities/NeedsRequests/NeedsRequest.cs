@@ -5,12 +5,12 @@ namespace SpecificSolutions.Endowment.Core.Entities.NeedsRequests
     public class NeedsRequest
     {
         public Guid Id { get; private set; }
-        public string NeedsType { get; private set; }
-        public string Location { get; private set; } // Building location needing the items
+        public string NeedsType { get; private set; } = string.Empty;
+        public string Location { get; private set; } = string.Empty; // Building location needing the items
         public double EstimatedCost { get; private set; }
-        public string Provider { get; private set; } // Entity providing the needs
+        public string Provider { get; private set; } = string.Empty; // Entity providing the needs
         public Guid RequestId { get; private set; }
-        public Request Request { get; private set; }
+        public Request Request { get; private set; } = null!;
 
         private NeedsRequest() { }
 

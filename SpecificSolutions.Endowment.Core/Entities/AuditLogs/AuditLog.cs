@@ -8,8 +8,8 @@ namespace SpecificSolutions.Endowment.Core.Entities.AuditLogs
         public AuditLog() { }
 
         public Guid Id { get; private set; } = Guid.NewGuid();
-        public string UserId { get; private set; }
-        public string Context { get; private set; }
+        public string UserId { get; private set; } = string.Empty;
+        public string Context { get; private set; } = string.Empty;
         public EventType EventType { get; private set; }
         public string? Data { get; private set; }
         public DateTime CreatedAt { get; private set; } = DateTime.Now;
@@ -27,9 +27,9 @@ namespace SpecificSolutions.Endowment.Core.Entities.AuditLogs
             => new(userId, EventType.Created, context.ToString(), data);
     }
 
-    public class AuditLog<T>
+    public class AuditLog<TData>
     {
-        public static AuditLog ForCreate<T>(string userId, EntityContext context, T data)
+        public static AuditLog ForCreate<TEntity>(string userId, EntityContext context, TEntity data)
         {
             //ApplyChange(data);
 

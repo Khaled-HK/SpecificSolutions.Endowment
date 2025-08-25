@@ -6,13 +6,13 @@ namespace SpecificSolutions.Endowment.Core.Entities.BuildingDetailRequests
     public class BuildingDetailRequest
     {
         public Guid Id { get; private set; }
-        public string RequestDetails { get; private set; }
+        public string RequestDetails { get; private set; } = string.Empty;
         public DateTime RequestDate { get; private set; }
         public Guid BuildingDetailId { get; private set; }
-        public BuildingDetail BuildingDetail { get; private set; }
+        public BuildingDetail BuildingDetail { get; private set; } = null!;
 
         public Guid RequestId { get; private set; }
-        public Request Request { get; private set; }
+        public Request Request { get; private set; } = null!;
 
 
         // Private constructor for EF Core

@@ -20,7 +20,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Cities.Commands.Delet
                 return Response.FailureResponse("City not found.");
 
             // Check if city has any related data
-            var hasRelatedData = await _unitOfWork.Cities.GetRelatedDataAsync(request.Id);
+            var hasRelatedData = await _unitOfWork.Cities.GetRelatedDataAsync(request.Id, cancellationToken);
             if (hasRelatedData)
             {
                 var errorMessage = $"Cannot delete city '{city.Name}' because it has related regions. Please delete the related regions first.";

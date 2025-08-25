@@ -29,7 +29,6 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.De
         public async Task AddAsync(Decision decision, CancellationToken cancellationToken)
         {
             await _context.Decisions.AddAsync(decision, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public void Update(Decision decision)
@@ -37,9 +36,23 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.De
             _context.Decisions.Update(decision);
         }
 
+        public async Task UpdateAsync(Decision decision)
+        {
+            _context.Decisions.Update(decision);
+        }
+
         public void Delete(Decision decision)
         {
             _context.Decisions.Remove(decision);
+        }
+
+        public async Task DeleteAsync(Guid id)
+        {
+            var decision = await _context.Decisions.FindAsync(id);
+            if (decision != null)
+            {
+                _context.Decisions.Remove(decision);
+            }
         }
 
         public async Task<PagedList<FilterDecisionDTO>> GetByFilterAsync(FilterDecisionQuery query, CancellationToken cancellationToken)

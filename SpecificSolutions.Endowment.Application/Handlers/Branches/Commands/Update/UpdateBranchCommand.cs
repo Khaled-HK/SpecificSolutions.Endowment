@@ -5,12 +5,11 @@ using SpecificSolutions.Endowment.Core.Enums;
 namespace SpecificSolutions.Endowment.Application.Handlers.Branches.Commands.Update
 {
     [Authorize(Permissions = Permission.BranchEdit)]
-    public class UpdateBranchCommand : ICommand
+    public class UpdateBranchCommand : ICommand, IUpdateBranchCommand
     {
         public Guid Id { get; set; }
-        public string Name { get; set; }
-        public string Address { get; set; }
+        public string Name { get; set; } = string.Empty;
         public string ContactNumber { get; set; }
-        public int BankId { get; set; } // Foreign key to Bank
+        public Guid BankId { get; set; }
     }
 }

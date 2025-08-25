@@ -89,6 +89,9 @@ public static class InfrastructureContainer
         // Register Role Repository - نمط خالد
         services.AddScoped<IApplicationRoleRepository, ApplicationRoleRepository>();
 
+        // Register Verification Code Repository - نمط خالد
+        services.AddScoped<IVerificationCodeRepository, VerificationCodeRepository>();
+
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 

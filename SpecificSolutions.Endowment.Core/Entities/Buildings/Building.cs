@@ -9,34 +9,34 @@ namespace SpecificSolutions.Endowment.Core.Entities.Buildings;
 public class Building
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
-    public string Name { get; private set; }
-    public string FileNumber { get; private set; }
-    public string Definition { get; private set; }
-    public string Classification { get; private set; }
+    public string Name { get; private set; } = string.Empty;
+    public string FileNumber { get; private set; } = string.Empty;
+    public string Definition { get; private set; } = string.Empty;
+    public string Classification { get; private set; } = string.Empty;
     public Guid OfficeId { get; private set; }
-    public Office Office { get; private set; }
-    public string Unit { get; private set; }
+    public Office Office { get; private set; } = null!;
+    public string Unit { get; private set; } = string.Empty;
     public Guid RegionId { get; private set; }
-    public Region Region { get; private set; }
-    public string NearestLandmark { get; private set; }
+    public Region Region { get; private set; } = null!;
+    public string NearestLandmark { get; private set; } = string.Empty;
     public DateTime ConstructionDate { get; private set; }
     public DateTime OpeningDate { get; private set; }
-    public string MapLocation { get; private set; }
+    public string MapLocation { get; private set; } = string.Empty;
     public double TotalLandArea { get; private set; }
     public double TotalCoveredArea { get; private set; }
     public int NumberOfFloors { get; private set; }
-    public string ElectricityMeter { get; private set; }
-    public string AlternativeEnergySource { get; private set; }
-    public string WaterSource { get; private set; }
-    public string Sanitation { get; private set; }
-    public string BriefDescription { get; private set; }
-    public string LandDonorName { get; private set; }
+    public string ElectricityMeter { get; private set; } = string.Empty;
+    public string AlternativeEnergySource { get; private set; } = string.Empty;
+    public string WaterSource { get; private set; } = string.Empty;
+    public string Sanitation { get; private set; } = string.Empty;
+    public string BriefDescription { get; private set; } = string.Empty;
+    public string LandDonorName { get; private set; } = string.Empty;
     public SourceFunds SourceFunds { get; private set; }
-    public string PrayerCapacity { get; private set; }
-    public string UserId { get; private set; }
+    public string PrayerCapacity { get; private set; } = string.Empty;
+    public string UserId { get; private set; } = string.Empty;
     public bool ServicesSpecialNeeds { get; private set; }
     public bool SpecialEntranceWomen { get; private set; }
-    public string PicturePath { get; private set; }// have to be in the blob storage or in the file system or in the database or in the cloud or in the server 
+    public string PicturePath { get; private set; } = string.Empty;// have to be in the blob storage or in the file system or in the database or in the cloud or in the server
     // Navigation property BuildingDetails
 
     private HashSet<BuildingDetail> _buildingDetails = new();
@@ -68,7 +68,7 @@ public class Building
             UserId = command.UserId,
             ServicesSpecialNeeds = command.ServicesSpecialNeeds,
             SpecialEntranceWomen = command.SpecialEntranceWomen,
-            PicturePath = command.PicturePath ?? string.Empty,
+            PicturePath = command.PicturePath,
             LandDonorName = command.LandDonorName,
             PrayerCapacity = command.PrayerCapacity,
             SourceFunds = command.SourceFunds,
@@ -79,7 +79,6 @@ public class Building
             //_buildingDetails = command.BuildingDetails.Select(BuildingDetail.Create).ToHashSet(),
         };
     }
-    // add static method to update the building
 
     public void Update(IUpdateBuildingCommand command)
     {
@@ -100,15 +99,18 @@ public class Building
         WaterSource = command.WaterSource;
         Sanitation = command.Sanitation;
         BriefDescription = command.BriefDescription;
-        UserId = command.UserId;
         ServicesSpecialNeeds = command.ServicesSpecialNeeds;
         SpecialEntranceWomen = command.SpecialEntranceWomen;
-        PicturePath = command.PicturePath ?? string.Empty;
+        PicturePath = command.PicturePath;
         LandDonorName = command.LandDonorName;
         PrayerCapacity = command.PrayerCapacity;
         SourceFunds = command.SourceFunds;
-        OfficeId = new Guid(command.OfficeId);
-        RegionId = new Guid(command.RegionId);
-        //_buildingDetails = command.BuildingDetails.Select(BuildingDetail.Create).ToHashSet;
+        OfficeId = command.OfficeId;
+        RegionId = command.RegionId;
+    }
+
+    public void AddBuildingDetail(BuildingDetail buildingDetail)
+    {
+        _buildingDetails.Add(buildingDetail);
     }
 }

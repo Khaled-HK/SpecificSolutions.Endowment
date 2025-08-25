@@ -6,14 +6,13 @@ namespace SpecificSolutions.Endowment.Core.Entities.Products
     public class Product
     {
         public Guid Id { get; private set; }
-        public string Name { get; private set; }
-        public string Description { get; private set; }
+        public string Name { get; private set; } = string.Empty;
+        public string Description { get; private set; } = string.Empty;
 
         private HashSet<FacilityDetail> _FacilityDetails = new();
         public IReadOnlyCollection<FacilityDetail> FacilityDetails => _FacilityDetails;
 
         // Private constructor for EF Core
-
         private Product() { }
 
         // Factory method for creating a new Product
@@ -34,6 +33,20 @@ namespace SpecificSolutions.Endowment.Core.Entities.Products
                 Name = name,
                 Description = description,
             };
+        }
+
+        // Update method for updating Product properties
+        public void Update(IUpdateProductCommand command)
+        {
+            Name = command.Name;
+            Description = command.Description;
+        }
+
+        // Update method for updating product data
+        public void Update(string name, string description)
+        {
+            Name = name;
+            Description = description;
         }
     }
 }

@@ -1,4 +1,4 @@
-using SpecificSolutions.Endowment.Application.Contracts.IRepositories;
+using SpecificSolutions.Endowment.Application.Abstractions.IRepositories;
 using SpecificSolutions.Endowment.Application.Handlers.Mosques.Queries.Filter;
 using SpecificSolutions.Endowment.Application.Models.DTOs.Mosques;
 using SpecificSolutions.Endowment.Application.Models.Global;
@@ -76,12 +76,6 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence.Repositories.Mo
         public async Task AddAsync(Mosque mosque, CancellationToken cancellationToken)
         {
             await _context.Mosques.AddAsync(mosque, cancellationToken);
-            // Remove SaveChangesAsync here as it should be handled by UnitOfWork
-        }
-
-        public async Task UpdateAsync(Mosque mosque)
-        {
-            _context.Mosques.Update(mosque);
             // Remove SaveChangesAsync here as it should be handled by UnitOfWork
         }
 

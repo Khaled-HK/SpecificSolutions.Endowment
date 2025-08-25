@@ -7,12 +7,12 @@ namespace SpecificSolutions.Endowment.Core.Entities.Offices
     {
         private Office() { }
 
-        public Guid Id { get; private set; }
-        public string Name { get; private set; }
-        public string Location { get; private set; }
+        public Guid Id { get; private set; } = Guid.NewGuid();
+        public string Name { get; private set; } = string.Empty;
+        public string Location { get; private set; } = string.Empty;
         public Guid RegionId { get; private set; }
-        public Region Region { get; private set; }
-        public string PhoneNumber { get; private set; }
+        public Region Region { get; private set; } = null!;
+        public string PhoneNumber { get; private set; } = string.Empty;
         public Guid UserId { get; private set; }
 
         private HashSet<Building> _buildings = new();

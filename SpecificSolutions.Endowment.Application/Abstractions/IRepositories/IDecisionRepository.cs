@@ -9,8 +9,10 @@ namespace SpecificSolutions.Endowment.Application.Abstractions.IRepositories
     public interface IDecisionRepository : IRepository<Decision>
     {
         Task<Decision> GetByIdAsync(Guid id, CancellationToken cancellationToken);
-        Task<IEnumerable<Decision>> GetAllAsync(CancellationToken cancellationToken);
-        void Delete(Decision decision);
+        new Task<IEnumerable<Decision>> GetAllAsync(CancellationToken cancellationToken);
+        new Task AddAsync(Decision decision, CancellationToken cancellationToken);
+        Task UpdateAsync(Decision decision);
+        Task DeleteAsync(Guid id);
         Task<PagedList<FilterDecisionDTO>> GetByFilterAsync(FilterDecisionQuery query, CancellationToken cancellationToken);
         Task<IEnumerable<KeyValuPair>> GetDecisionsAsync(GetDecisionsQuery query, CancellationToken cancellationToken);
     }

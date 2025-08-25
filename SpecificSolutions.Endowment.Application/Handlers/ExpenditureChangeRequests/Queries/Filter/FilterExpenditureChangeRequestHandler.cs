@@ -2,8 +2,9 @@ using SpecificSolutions.Endowment.Application.Abstractions.IRepositories;
 using SpecificSolutions.Endowment.Application.Abstractions.Messaging;
 using SpecificSolutions.Endowment.Application.Models.DTOs.ExpenditureChangeRequests;
 using SpecificSolutions.Endowment.Application.Models.Global;
+using SpecificSolutions.Endowment.Application.Handlers.ExpenditureChangeRequests.Queries.Filter;
 
-namespace SpecificSolutions.Endowment.Application.Handlers.EndowmentExpenditureChangeRequests.Queries.Filter
+namespace SpecificSolutions.Endowment.Application.Handlers.ExpenditureChangeRequests.Queries.Filter
 {
     public class FilterExpenditureChangeRequestHandler : IQueryHandler<FilterExpenditureChangeRequestQuery, PagedList<ExpenditureChangeRequestDTO>>
     {

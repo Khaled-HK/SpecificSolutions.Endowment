@@ -7,12 +7,12 @@ namespace SpecificSolutions.Endowment.Core.Entities.Regions
     public class Region
     {
         public Guid Id { get; private set; }
-        public string Name { get; private set; }
-        public string Country { get; private set; }
+        public string Name { get; private set; } = string.Empty;
+        public string Country { get; private set; } = string.Empty;
 
         // navigation property with city
         public Guid CityId { get; private set; }
-        public City City { get; private set; }
+        public City City { get; private set; } = null!;
 
         private HashSet<Building> _buildings = new();
         public IReadOnlyCollection<Building> Buildings => _buildings;
