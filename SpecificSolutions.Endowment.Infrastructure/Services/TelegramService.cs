@@ -103,21 +103,27 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
         }
 
         // Implementation of other interface methods (for compatibility)
-        public async Task<bool> SendVerificationCodeViaEmailAsync(string email, string code, string purpose)
+        public Task<bool> SendVerificationCodeViaEmailAsync(string email, string code, string purpose)
         {
             _logger.LogWarning("Email sending not supported by TelegramService");
-            return false;
+            return Task.FromResult(false);
         }
 
-        public async Task<bool> SendVerificationCodeViaSmsAsync(string phoneNumber, string code, string purpose)
+        public Task<bool> SendVerificationCodeViaSmsAsync(string phoneNumber, string code, string purpose)
         {
             _logger.LogWarning("SMS sending not supported by TelegramService");
-            return false;
+            return Task.FromResult(false);
         }
 
-        public async Task<bool> SendVerificationCodeViaWhatsAppAsync(string phoneNumber, string code, string purpose)
+        public Task<bool> SendVerificationCodeViaWhatsAppAsync(string phoneNumber, string code, string purpose)
         {
             _logger.LogWarning("WhatsApp sending not supported by TelegramService");
+            return Task.FromResult(false);
+        }
+
+        public async Task<bool> SendVerificationCodeViaPushNotificationAsync(string subscription, string code, string purpose)
+        {
+            _logger.LogWarning("Push notification sending not implemented in TelegramService");
             return false;
         }
     }

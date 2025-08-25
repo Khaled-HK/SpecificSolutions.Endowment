@@ -26,7 +26,7 @@ namespace SpecificSolutions.Endowment.Application.Models.Global
 
         public Error[]? Errors { get; set; } = Array.Empty<Error>();
 
-        private string _message;
+        private string? _message;
         public string Message
         {
             get
@@ -34,9 +34,9 @@ namespace SpecificSolutions.Endowment.Application.Models.Global
                 if (!string.IsNullOrWhiteSpace(_message))
                     return _message;
 
-                var errors = string.Join("\n", Errors?.SelectMany(e => e.ErrorMessage));
+                var errors = Errors?.Select(e => e.ErrorMessage).ToArray() ?? Array.Empty<string>();
 
-                return string.IsNullOrWhiteSpace(errors) ? TranslateState(_state) : errors;
+                return string.IsNullOrWhiteSpace(string.Join("\n", errors)) ? TranslateState(_state) : string.Join("\n", errors);
             }
             private set => _message = value;
         }

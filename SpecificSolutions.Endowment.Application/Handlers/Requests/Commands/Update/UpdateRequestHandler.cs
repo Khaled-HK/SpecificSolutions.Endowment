@@ -16,7 +16,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Upd
 
         public async Task<EndowmentResponse> Handle(UpdateRequestCommand command, CancellationToken cancellationToken)
         {
-            var request = await _unitOfWork.Requests.GetByIdAsync(command.Id);
+            var request = await _unitOfWork.Requests.GetByIdAsync(command.Id, cancellationToken);
             if (request == null)
             {
                 throw new EntityNotFoundException(command.Id);

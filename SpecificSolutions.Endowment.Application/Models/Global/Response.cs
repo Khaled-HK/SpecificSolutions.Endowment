@@ -85,6 +85,14 @@ namespace SpecificSolutions.Endowment.Application.Models.Global
                 );
         }
 
+        public static EndowmentResponse<TValue> GetResponse<TValue>(TValue? tValue, string message)
+        {
+            return Responsee(ResponseState.Valid,
+                tValue,
+                message
+                );
+        }
+
         public static EndowmentResponse<TValue> Responsee<TValue>(TValue? tValue, string errorMessage = "", params Error[]? errors)
         {
             return new EndowmentResponse<TValue>(tValue, errors ?? Array.Empty<Error>(), errorMessage);

@@ -288,6 +288,66 @@ namespace SpecificSolutions.Endowment.Application.Services
         }
 
         /// <summary>
+        /// إرسال رمز تحقق عبر Push Notification
+        /// </summary>
+        public async Task<bool> SendVerificationCodeViaPushNotificationAsync(string subscription, string purpose, string? userId = null, string? ipAddress = null, string? userAgent = null)
+        {
+            try
+            {
+                // التحقق من عدد الرموز النشطة
+                var activeCodesCount = await _verificationCodeRepository.GetActiveCodesCountAsync(subscription, purpose);
+                var maxCodesPerSubscription = _configuration.GetValue<int>("VerificationCode:MaxCodesPerSubscription", 3);
+
+                if (activeCodesCount >= maxCodesPerSubscription)
+                {
+                    _logger.LogWarning("User subscription has reached maximum verification codes limit for purpose {Purpose}", purpose);
+                    return false;
+                }
+
+                // إنشاء رمز جديد
+                var code = GenerateCode();
+                var expirationMinutes = _configuration.GetValue<int>("VerificationCode:ExpirationMinutes", 15);
+                var expiresAt = DateTime.UtcNow.AddMinutes(expirationMinutes);
+
+                var verificationCode = new VerificationCode
+                {
+                    Email = subscription, // استخدام حقل Email لتخزين Subscription
+                    Code = code,
+                    CreatedAt = DateTime.UtcNow,
+                    ExpiresAt = expiresAt,
+                    IsUsed = false,
+                    IsExpired = false,
+                    Purpose = purpose,
+                    UserId = userId,
+                    IpAddress = ipAddress,
+                    UserAgent = userAgent
+                };
+
+                // حفظ الرمز في قاعدة البيانات
+                await _verificationCodeRepository.CreateAsync(verificationCode);
+
+                // إرسال Push Notification
+                var pushSent = await _messagingService.SendVerificationCodeViaPushNotificationAsync(subscription, code, purpose);
+
+                if (pushSent)
+                {
+                    _logger.LogInformation("Push notification verification code sent successfully for purpose {Purpose}", purpose);
+                    return true;
+                }
+                else
+                {
+                    _logger.LogError("Failed to send push notification verification code for purpose {Purpose}", purpose);
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending push notification verification code for purpose {Purpose}", purpose);
+                return false;
+            }
+        }
+
+        /// <summary>
         /// إنشاء محتوى البريد الإلكتروني
         /// </summary>
         private string GenerateEmailContent(string code, string purpose, int expirationMinutes)

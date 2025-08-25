@@ -15,7 +15,7 @@ namespace SpecificSolutions.Endowment.Application.Handlers.Requests.Commands.Del
 
         public async Task<EndowmentResponse> Handle(DeleteRequestCommand command, CancellationToken cancellationToken)
         {
-            var request = await _unitOfWork.Requests.GetByIdAsync(command.Id);
+            var request = await _unitOfWork.Requests.GetByIdAsync(command.Id, cancellationToken);
             if (request == null)
             {
                 return Response.FailureResponse("Id", "Request not found.");

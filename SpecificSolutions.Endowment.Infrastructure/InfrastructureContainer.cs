@@ -116,6 +116,13 @@ public static class InfrastructureContainer
         // Register Email Service
         services.AddScoped<IEmailService, EmailService>();
 
+        // Register Messaging Services
+        services.AddHttpClient();
+        services.AddScoped<IMessagingService, EmailService>(); // Use EmailService as default implementation
+        services.AddScoped<SmsService>();
+        services.AddScoped<TelegramService>();
+        services.AddScoped<PushNotificationService>();
+
         // Register Email Background Service
         services.AddHostedService<EmailBackgroundService>();
 

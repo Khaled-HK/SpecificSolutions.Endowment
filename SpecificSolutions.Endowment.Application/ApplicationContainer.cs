@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SpecificSolutions.Endowment.Application.Abstractions.Behaviors;
 using SpecificSolutions.Endowment.Application.Abstractions.Contracts;
+using SpecificSolutions.Endowment.Application.Services;
 using SpecificSolutions.Endowment.Application.Validators;
 using System.Reflection;
 

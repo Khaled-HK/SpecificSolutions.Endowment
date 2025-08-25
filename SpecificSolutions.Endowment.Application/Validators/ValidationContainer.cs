@@ -33,6 +33,7 @@ using SpecificSolutions.Endowment.Application.Validators.Regions;
 using SpecificSolutions.Endowment.Application.Validators.Requests;
 using SpecificSolutions.Endowment.Application.Validators.Accounts;
 using SpecificSolutions.Endowment.Application.Validators.UserApprovals;
+using SpecificSolutions.Endowment.Application.Models.DTOs;
 
 namespace SpecificSolutions.Endowment.Application.Validators
 {
@@ -43,6 +44,10 @@ namespace SpecificSolutions.Endowment.Application.Validators
             // Authentication Validators
             services.AddTransient<IValidator<RegisterCommand>, RegisterCommandValidator>();
             services.AddTransient<IValidator<LoginCommand>, LoginCommandValidator>();
+
+            // Verification Code Validators - نمط خالد
+            services.AddTransient<IValidator<SendVerificationCodeRequest>, SendVerificationCodeRequestValidator>();
+            services.AddTransient<IValidator<VerifyCodeRequest>, VerifyCodeRequestValidator>();
 
             // Office Validators
             services.AddTransient<IValidator<CreateOfficeCommand>, CreateOfficeCommandValidator>();

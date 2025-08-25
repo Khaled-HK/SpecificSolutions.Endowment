@@ -11,7 +11,7 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
     /// <summary>
     /// خدمة إرسال البريد الإلكتروني - النسخة المجانية المحسنة
     /// </summary>
-    public class EmailService : IEmailService
+    public class EmailService : IEmailService, IMessagingService
     {
         private readonly ILogger<EmailService> _logger;
         private readonly EmailSettings _emailSettings;
@@ -310,6 +310,83 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
                 ["EnableEmailValidation"] = _emailSettings.EnableEmailValidation,
                 ["EnableEmailTracking"] = _emailSettings.EnableEmailTracking
             };
+        }
+
+        // IMessagingService Implementation
+        /// <summary>
+        /// إرسال رمز تحقق عبر البريد الإلكتروني
+        /// </summary>
+        public async Task<bool> SendVerificationCodeViaEmailAsync(string email, string code, string purpose)
+        {
+            var purposeText = purpose switch
+            {
+                "EmailConfirmation" => "تأكيد البريد الإلكتروني",
+                "PasswordReset" => "إعادة تعيين كلمة المرور",
+                "TwoFactorAuth" => "المصادقة الثنائية",
+                _ => "التحقق"
+            };
+
+            var subject = $"رمز التحقق - {purposeText}";
+            var body = GenerateVerificationCodeEmailContent(code, purposeText);
+
+            return await SendEmailAsync(email, subject, body);
+        }
+
+        /// <summary>
+        /// إرسال رمز تحقق عبر SMS (غير مدعوم في EmailService)
+        /// </summary>
+        public async Task<bool> SendVerificationCodeViaSmsAsync(string phoneNumber, string code, string purpose)
+        {
+            _logger.LogWarning("SMS sending not supported by EmailService");
+            return false;
+        }
+
+        /// <summary>
+        /// إرسال رمز تحقق عبر Telegram (غير مدعوم في EmailService)
+        /// </summary>
+        public async Task<bool> SendVerificationCodeViaTelegramAsync(string chatId, string code, string purpose)
+        {
+            _logger.LogWarning("Telegram sending not supported by EmailService");
+            return false;
+        }
+
+        /// <summary>
+        /// إرسال رمز تحقق عبر WhatsApp (غير مدعوم في EmailService)
+        /// </summary>
+        public async Task<bool> SendVerificationCodeViaWhatsAppAsync(string phoneNumber, string code, string purpose)
+        {
+            _logger.LogWarning("WhatsApp sending not supported by EmailService");
+            return false;
+        }
+
+        /// <summary>
+        /// إرسال رمز تحقق عبر Push Notifications (غير مدعوم في EmailService)
+        /// </summary>
+        public async Task<bool> SendVerificationCodeViaPushNotificationAsync(string subscription, string code, string purpose)
+        {
+            _logger.LogWarning("Push notification sending not supported by EmailService");
+            return false;
+        }
+
+        /// <summary>
+        /// إنشاء محتوى بريد إلكتروني لرمز التحقق
+        /// </summary>
+        private string GenerateVerificationCodeEmailContent(string code, string purposeText)
+        {
+            return $@"
+<div dir='rtl' style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;'>
+    <div style='background-color: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center;'>
+        <h2 style='color: #2c3e50; margin-bottom: 20px;'>رمز التحقق - نظام الأوقاف</h2>
+        <p style='color: #34495e; font-size: 16px; margin-bottom: 15px;'>الغرض: {purposeText}</p>
+        <div style='background-color: #ffffff; padding: 20px; border-radius: 8px; border: 2px solid #3498db; margin: 20px 0;'>
+            <h3 style='color: #2c3e50; margin: 0; font-size: 24px; letter-spacing: 5px;'>{code}</h3>
+        </div>
+        <p style='color: #7f8c8d; font-size: 14px; margin-top: 20px;'>
+            هذا الرمز صالح لمدة 15 دقيقة فقط.<br>
+            لا تشارك هذا الرمز مع أي شخص.
+        </p>
+    </div>
+</div>";
         }
     }
 }

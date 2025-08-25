@@ -13,9 +13,8 @@ namespace SpecificSolutions.Endowment.Application.Validators.UserApprovals
         {
             RuleFor(x => x.UserId)
                 .NotEmpty()
-                .WithMessage("معرف المستخدم مطلوب")
                 .Must(BeValidGuid)
-                .WithMessage("معرف المستخدم غير صحيح");
+                .WithMessage("User ID must be a valid GUID");
 
             RuleFor(x => x.RoleName)
                 .NotEmpty()
@@ -24,9 +23,11 @@ namespace SpecificSolutions.Endowment.Application.Validators.UserApprovals
                 .WithMessage("اسم الدور يجب أن يكون نصاً صحيحاً");
         }
 
-        private static bool BeValidGuid(string userId)
+        new protected bool BeValidGuid(string guidString)
         {
-            return Guid.TryParse(userId, out _);
+            if (string.IsNullOrWhiteSpace(guidString))
+                return false;
+            return Guid.TryParse(guidString, out _);
         }
 
         private static bool BeValidRoleFormat(string roleName)

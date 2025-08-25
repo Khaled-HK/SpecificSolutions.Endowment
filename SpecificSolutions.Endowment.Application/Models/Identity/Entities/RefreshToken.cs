@@ -6,7 +6,7 @@ namespace SpecificSolutions.Endowment.Application.Models.Identity.Entities
     {
         public RefreshToken() { }
 
-        public string Token { get; private set; }
+        public string Token { get; private set; } = string.Empty;
         public DateTime ExpiryDate { get; private set; }
 
         // Constructor for creating a new RefreshToken

@@ -107,6 +107,34 @@ namespace SpecificSolutions.Endowment.Infrastructure.Services
         // Implementation of other interface methods (for compatibility)
         public async Task<bool> SendVerificationCodeViaEmailAsync(string email, string code, string purpose)
         {
+            _logger.LogWarning("Email sending not implemented in DiscordService");
+            return false;
+        }
+
+        public async Task<bool> SendVerificationCodeViaSmsAsync(string phoneNumber, string code, string purpose)
+        {
+            _logger.LogWarning("SMS sending not implemented in DiscordService");
+            return false;
+        }
+
+        public async Task<bool> SendVerificationCodeViaTelegramAsync(string chatId, string code, string purpose)
+        {
+            _logger.LogWarning("Telegram sending not implemented in DiscordService");
+            return false;
+        }
+
+        public async Task<bool> SendVerificationCodeViaWhatsAppAsync(string phoneNumber, string code, string purpose)
+        {
+            _logger.LogWarning("WhatsApp sending not implemented in DiscordService");
+            return false;
+        }
+
+        public async Task<bool> SendVerificationCodeViaPushNotificationAsync(string subscription, string code, string purpose)
+        {
+            _logger.LogWarning("Push notification sending not implemented in DiscordService");
+            return false;
+        }
+        {
             _logger.LogWarning("Email sending not supported by DiscordService");
             return false;
         }

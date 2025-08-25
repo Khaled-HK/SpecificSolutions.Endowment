@@ -26,6 +26,7 @@ using SpecificSolutions.Endowment.Core.Entities.Offices;
 using SpecificSolutions.Endowment.Core.Entities.Products;
 using SpecificSolutions.Endowment.Core.Entities.QuranicSchools;
 using SpecificSolutions.Endowment.Core.Entities.Regions;
+using SpecificSolutions.Endowment.Core.Entities;
 using SpecificSolutions.Endowment.Infrastructure.Persistence.Configurations;
 
 namespace SpecificSolutions.Endowment.Infrastructure.Persistence
@@ -207,5 +208,6 @@ namespace SpecificSolutions.Endowment.Infrastructure.Persistence
         public DbSet<Bank> Banks { get; set; }
         public DbSet<Branch> Branches { get; set; }
         public DbSet<BuildingDetailRequest> BuildingDetailRequests { get; set; }
+        public DbSet<VerificationCode> VerificationCodes { get; set; }
     }
 }

@@ -101,5 +101,104 @@ namespace SpecificSolutions.Endowment.Api.Controllers
             var result = await _mediator.Send(command);
             return Ok(result);
         }
+
+        /// <summary>
+        /// إرسال رمز تحقق عبر Push Notification
+        /// </summary>
+        [HttpPost("send-push")]
+        public async Task<ActionResult<EndowmentResponse<VerificationCodeResponse>>> SendPushNotification([FromBody] SendPushNotificationRequest request)
+        {
+            var command = new SendPushNotificationCommand
+            {
+                Subscription = request.Subscription,
+                Purpose = request.Purpose
+            };
+
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// التحقق من رمز Push Notification
+        /// </summary>
+        [HttpPost("verify-push")]
+        public async Task<ActionResult<EndowmentResponse<VerificationCodeResponse>>> VerifyPushNotification([FromBody] VerifyPushNotificationRequest request)
+        {
+            var command = new VerifyPushNotificationCommand
+            {
+                Subscription = request.Subscription,
+                Code = request.Code,
+                Purpose = request.Purpose
+            };
+
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// إرسال رمز تحقق عبر SMS
+        /// </summary>
+        [HttpPost("send-sms")]
+        public async Task<ActionResult<EndowmentResponse<VerificationCodeResponse>>> SendSmsVerificationCode([FromBody] SendSmsVerificationCodeRequest request)
+        {
+            var command = new SendSmsVerificationCodeCommand
+            {
+                PhoneNumber = request.PhoneNumber,
+                Purpose = request.Purpose
+            };
+
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// التحقق من رمز SMS
+        /// </summary>
+        [HttpPost("verify-sms")]
+        public async Task<ActionResult<EndowmentResponse<VerificationCodeResponse>>> VerifySmsCode([FromBody] VerifySmsCodeRequest request)
+        {
+            var command = new VerifySmsCodeCommand
+            {
+                PhoneNumber = request.PhoneNumber,
+                Code = request.Code,
+                Purpose = request.Purpose
+            };
+
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// إرسال رمز تحقق عبر Telegram
+        /// </summary>
+        [HttpPost("send-telegram")]
+        public async Task<ActionResult<EndowmentResponse<VerificationCodeResponse>>> SendTelegramVerificationCode([FromBody] SendTelegramVerificationCodeRequest request)
+        {
+            var command = new SendTelegramVerificationCodeCommand
+            {
+                ChatId = request.ChatId,
+                Purpose = request.Purpose
+            };
+
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// التحقق من رمز Telegram
+        /// </summary>
+        [HttpPost("verify-telegram")]
+        public async Task<ActionResult<EndowmentResponse<VerificationCodeResponse>>> VerifyTelegramCode([FromBody] VerifyTelegramCodeRequest request)
+        {
+            var command = new VerifyTelegramCodeCommand
+            {
+                ChatId = request.ChatId,
+                Code = request.Code,
+                Purpose = request.Purpose
+            };
+
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
     }
 }
